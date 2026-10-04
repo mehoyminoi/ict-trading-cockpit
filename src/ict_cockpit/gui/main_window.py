@@ -1,13 +1,19 @@
-from PySide6.QtWidgets import QLabel, QMainWindow, QStatusBar
+from PySide6.QtWidgets import QLabel, QMainWindow, QStatusBar, QTabWidget
 from PySide6.QtCore import QTimer
 
 from ict_cockpit.app_info import window_title
 from ict_cockpit.database.tda_repository import TDARepository
 from ict_cockpit.gui.tda_workflow import TDAWorkflowWidget
+from ict_cockpit.database.study_find_repository import StudyFindRepository
+from ict_cockpit.gui.study_find_widget import StudyFindWidget
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, tda_repository: TDARepository) -> None:
+    def __init__(
+    self,
+    tda_repository: TDARepository,
+    study_find_repository: StudyFindRepository,
+) -> None:
         super().__init__()
 
         self.tda_repository = tda_repository
@@ -17,9 +23,25 @@ class MainWindow(QMainWindow):
 
         self.tda_workflow = TDAWorkflowWidget()
 
-        self.tda_workflow.tda_ready.connect(self.save_tda)
+
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
+
+        self.tda_repository = tda_repository
+        self.study_find_repository = study_find_repository
+
+        self.tda_workflow = TDAWorkflowWidget()
+        self.study_find_widget = StudyFindWidget()
+
+        self.tda_workflow.tda_ready.connect(self.save_tda)
+
+        self.study_find_widget.study_find_ready.connect(
+                self.save_study_find
+        )
+
+        self.tabs = QTabWidget()
+        self.tabs.addTab(self.tda_workflow, "Guided TDA")
+        self.tabs.addTab(self.study_find_widget, "Study Find")
 
         latest_draft = self.tda_repository.get_latest_draft()
 
@@ -31,12 +53,13 @@ class MainWindow(QMainWindow):
                 3000,
             )
 
-        self.setCentralWidget(self.tda_workflow)
+        self.setCentralWidget(self.tabs)
         self.pending_draft = None
 
         self.draft_save_timer = QTimer(self)
         self.draft_save_timer.setSingleShot(True)
         self.draft_save_timer.setInterval(750)
+
 
         self.draft_save_timer.timeout.connect(
             self.save_pending_draft
@@ -76,4 +99,12 @@ class MainWindow(QMainWindow):
         self.status_bar.showMessage(
             "Draft saved",
             1500,
+        )
+
+    def save_study_find(self, study_find) -> None:
+        self.study_find_repository.save(study_find)
+
+        self.status_bar.showMessage(
+            "Study Find saved",
+            3000,
         )

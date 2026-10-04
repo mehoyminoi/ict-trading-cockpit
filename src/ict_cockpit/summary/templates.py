@@ -26,3 +26,17 @@ Summary: {summary}
 
 Chart Markup Picture(s):
 """
+
+
+STUDY_FIND_SUMMARY_V1 = """Date: {date}
+Asset: {asset}
+Session: {session}
+Pattern: {pattern}
+Available Move: {available_move}
+
+Observation:
+{observation}
+
+Notes:
+{notes}
+"""
