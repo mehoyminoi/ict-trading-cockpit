@@ -159,3 +159,38 @@ class TDARepository:
                     tda.status.value,
                 ),
             )
+    def get_latest_draft(self) -> TDARecord | None:
+        row = self.connection.execute(
+            """
+            SELECT
+                id,
+                analysis_date,
+                instrument,
+                weekly_bias,
+                daily_bias,
+                primary_draw,
+                secondary_draw,
+                narrative,
+                status
+            FROM tda_analysis
+            WHERE status = ?
+            ORDER BY rowid DESC
+            LIMIT 1
+            """,
+            (TDAStatus.DRAFT.value,),
+        ).fetchone()
+
+        if row is None:
+            return None
+
+        return TDARecord(
+            id=row[0],
+            analysis_date=date.fromisoformat(row[1]),
+            instrument=row[2],
+            weekly_bias=Bias(row[3]) if row[3] is not None else None,
+            daily_bias=Bias(row[4]) if row[4] is not None else None,
+            primary_draw=row[5],
+            secondary_draw=row[6],
+            narrative=row[7],
+            status=TDAStatus(row[8]),
+        )

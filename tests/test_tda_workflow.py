@@ -4,7 +4,9 @@ from ict_cockpit.gui.tda_workflow import TDAWorkflowWidget
 
 from PySide6.QtCore import QDate
 
-from ict_cockpit.analysis.tda import Bias, TDAStatus
+from datetime import date
+
+from ict_cockpit.analysis.tda import Bias, TDARecord, TDAStatus
 
 def test_tda_workflow_can_be_constructed() -> None:
     app = QApplication.instance()
@@ -156,3 +158,32 @@ def test_reset_workflow_creates_new_tda_id() -> None:
     workflow.reset_workflow()
 
     assert workflow.current_tda_id != original_id
+
+def test_load_tda_populates_workflow() -> None:
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    workflow = TDAWorkflowWidget()
+
+    tda = TDARecord(
+        analysis_date=date(2026, 10, 4),
+        instrument="MNQ",
+        weekly_bias=Bias.BULLISH,
+        daily_bias=Bias.BEARISH,
+        primary_draw="Previous Week High",
+        secondary_draw="Previous Day High",
+        narrative="Restored draft.",
+        status=TDAStatus.DRAFT,
+    )
+
+    workflow.load_tda(tda)
+
+    assert workflow.current_tda_id == tda.id
+    assert workflow.context_step.instrument_input.text() == "MNQ"
+    assert workflow.bias_step.weekly_bias() == Bias.BULLISH
+    assert workflow.bias_step.daily_bias() == Bias.BEARISH
+    assert workflow.draw_thesis_step.primary_draw() == "Previous Week High"
+    assert workflow.draw_thesis_step.secondary_draw() == "Previous Day High"
+    assert workflow.draw_thesis_step.narrative() == "Restored draft."

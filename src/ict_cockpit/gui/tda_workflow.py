@@ -293,3 +293,48 @@ class TDAWorkflowWidget(QWidget):
         tda = self.build_tda_record()
         tda.status = TDAStatus.DRAFT
         self.draft_changed.emit(tda)
+
+    def load_tda(self, tda: TDARecord) -> None:
+        self.current_tda_id = tda.id
+
+        self.context_step.instrument_input.setText(tda.instrument)
+
+        self.context_step.analysis_date_input.setDate(
+            QDate(
+                tda.analysis_date.year,
+                tda.analysis_date.month,
+                tda.analysis_date.day,
+            )
+        )
+
+        for button in self.bias_step.weekly_buttons:
+            button.setChecked(
+                tda.weekly_bias is not None
+                and button.text() == tda.weekly_bias.value
+            )
+
+        for button in self.bias_step.daily_buttons:
+            button.setChecked(
+                tda.daily_bias is not None
+                and button.text() == tda.daily_bias.value
+            )
+
+        self.draw_thesis_step.primary_draw_input.setText(
+            tda.primary_draw or ""
+        )
+
+        self.draw_thesis_step.secondary_draw_input.setText(
+            tda.secondary_draw
+        )
+
+        self.draw_thesis_step.narrative_input.setPlainText(
+            tda.narrative
+        )
+
+        self.current_step = 0
+
+        self.validation_label.setVisible(False)
+        self.override_button.setVisible(False)
+        self.new_tda_button.setVisible(False)
+
+        self._update_view()

@@ -359,3 +359,48 @@ def test_save_draft_rejects_finalized_record(tmp_path) -> None:
         repository.save_draft(draft)
 
     connection.close()
+    
+def test_get_latest_draft_returns_most_recent_draft(tmp_path) -> None:
+    database_path = tmp_path / "test.db"
+
+    connection = create_connection(database_path)
+    initialize_schema(connection)
+
+    repository = TDARepository(connection)
+
+    first = TDARecord(
+        analysis_date=date(2026, 10, 4),
+        instrument="MNQ",
+        status=TDAStatus.DRAFT,
+    )
+
+    second = TDARecord(
+        analysis_date=date(2026, 10, 4),
+        instrument="NQ",
+        status=TDAStatus.DRAFT,
+    )
+
+    repository.save_draft(first)
+    repository.save_draft(second)
+
+    loaded = repository.get_latest_draft()
+
+    assert loaded is not None
+    assert loaded.id == second.id
+    assert loaded.instrument == "NQ"
+
+    connection.close()
+    
+def test_get_latest_draft_returns_none_when_no_draft_exists(tmp_path) -> None:
+    database_path = tmp_path / "test.db"
+
+    connection = create_connection(database_path)
+    initialize_schema(connection)
+
+    repository = TDARepository(connection)
+
+    loaded = repository.get_latest_draft()
+
+    assert loaded is None
+
+    connection.close()

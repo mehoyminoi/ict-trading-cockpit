@@ -21,6 +21,16 @@ class MainWindow(QMainWindow):
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
 
+        latest_draft = self.tda_repository.get_latest_draft()
+
+        if latest_draft is not None:
+            self.tda_workflow.load_tda(latest_draft)
+
+            self.status_bar.showMessage(
+                "Restored unfinished TDA draft",
+                3000,
+            )
+
         self.setCentralWidget(self.tda_workflow)
         self.pending_draft = None
 
@@ -39,7 +49,7 @@ class MainWindow(QMainWindow):
     def save_tda(self, tda) -> None:
         self.draft_save_timer.stop()
         self.pending_draft = None   
-        
+
         self.tda_repository.save(tda)
 
         self.status_bar.showMessage(
