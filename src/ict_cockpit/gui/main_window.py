@@ -1,8 +1,8 @@
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QLabel, QMainWindow, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QMainWindow
 
 from ict_cockpit.app_info import window_title
 from ict_cockpit.database.tda_repository import TDARepository
+from ict_cockpit.gui.tda_workflow import TDAWorkflowWidget
 
 
 class MainWindow(QMainWindow):
@@ -14,19 +14,6 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(window_title())
         self.resize(800, 500)
 
-        title = QLabel("ICT Trading Cockpit")
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.tda_workflow = TDAWorkflowWidget()
 
-        status = QLabel("Development environment working")
-        status.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        layout = QVBoxLayout()
-        layout.addStretch()
-        layout.addWidget(title)
-        layout.addWidget(status)
-        layout.addStretch()
-
-        container = QWidget()
-        container.setLayout(layout)
-
-        self.setCentralWidget(container)
+        self.setCentralWidget(self.tda_workflow)
