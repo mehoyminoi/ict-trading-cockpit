@@ -67,7 +67,7 @@ def test_tda_rejects_invalid_bias() -> None:
             primary_draw="Previous Week High",
         )
 
-def test_tda_rejects_empty_primary_draw() -> None:
+def test_complete_tda_rejects_empty_primary_draw() -> None:
     with pytest.raises(ValueError):
         TDARecord(
             analysis_date=date(2026, 10, 3),
@@ -75,6 +75,7 @@ def test_tda_rejects_empty_primary_draw() -> None:
             weekly_bias=Bias.BULLISH,
             daily_bias=Bias.BULLISH,
             primary_draw="",
+            status=TDAStatus.COMPLETE,
         )
 
 def test_tda_normalizes_text_fields() -> None:
@@ -113,3 +114,26 @@ def test_tda_defaults_to_draft_status() -> None:
     )
 
     assert tda.status == TDAStatus.DRAFT
+
+def test_draft_tda_can_have_missing_required_fields() -> None:
+    tda = TDARecord(
+        analysis_date=date(2026, 10, 3),
+        instrument="MNQ",
+    )
+
+    assert tda.weekly_bias is None
+    assert tda.daily_bias is None
+    assert tda.primary_draw is None
+    assert tda.status == TDAStatus.DRAFT
+
+def test_tda_reports_missing_required_fields() -> None:
+    tda = TDARecord(
+        analysis_date=date(2026, 10, 3),
+        instrument="MNQ",
+        weekly_bias=Bias.BULLISH,
+    )
+
+    assert tda.missing_required_fields() == [
+        "Daily Bias",
+        "Primary Draw",
+    ]

@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 2
+CURRENT_SCHEMA_VERSION = 3
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -17,6 +17,10 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 1:
             _migrate_version_1_to_2(connection)
             version = 2
+
+        if version == 2:
+            _migrate_version_2_to_3(connection)
+            version = 3
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(
@@ -61,3 +65,60 @@ def _migrate_version_1_to_2(
         )
 
     connection.execute("PRAGMA user_version = 2")
+
+def _migrate_version_2_to_3(
+    connection: sqlite3.Connection,
+) -> None:
+    connection.execute(
+        """
+        CREATE TABLE tda_analysis_v3 (
+            id TEXT PRIMARY KEY,
+            analysis_date TEXT NOT NULL,
+            instrument TEXT NOT NULL,
+            weekly_bias TEXT,
+            daily_bias TEXT,
+            primary_draw TEXT,
+            secondary_draw TEXT NOT NULL DEFAULT '',
+            narrative TEXT NOT NULL DEFAULT '',
+            status TEXT NOT NULL DEFAULT 'Draft'
+        )
+        """
+    )
+
+    connection.execute(
+        """
+        INSERT INTO tda_analysis_v3 (
+            id,
+            analysis_date,
+            instrument,
+            weekly_bias,
+            daily_bias,
+            primary_draw,
+            secondary_draw,
+            narrative,
+            status
+        )
+        SELECT
+            id,
+            analysis_date,
+            instrument,
+            weekly_bias,
+            daily_bias,
+            primary_draw,
+            secondary_draw,
+            narrative,
+            status
+        FROM tda_analysis
+        """
+    )
+
+    connection.execute("DROP TABLE tda_analysis")
+
+    connection.execute(
+        """
+        ALTER TABLE tda_analysis_v3
+        RENAME TO tda_analysis
+        """
+    )
+
+    connection.execute("PRAGMA user_version = 3")

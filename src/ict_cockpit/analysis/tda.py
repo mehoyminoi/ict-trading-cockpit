@@ -19,31 +19,63 @@ class TDAStatus(str, Enum):
 class TDARecord:
     analysis_date: date
     instrument: str
-    weekly_bias: Bias
-    daily_bias: Bias
-    primary_draw: str
+    weekly_bias: Bias | None = None
+    daily_bias: Bias | None = None
+    primary_draw: str | None = None
     secondary_draw: str = ""
     narrative: str = ""
     status: TDAStatus = TDAStatus.DRAFT
     id: str = field(default_factory=lambda: str(uuid4()))
 
     def __post_init__(self) -> None:
-        if not isinstance(self.weekly_bias, Bias):
-            raise ValueError("weekly_bias must be a Bias value")
+        if self.weekly_bias is not None and not isinstance(
+            self.weekly_bias,
+            Bias,
+        ):
+            raise ValueError("weekly_bias must be a Bias value or None")
 
-        if not isinstance(self.daily_bias, Bias):
-            raise ValueError("daily_bias must be a Bias value")
+        if self.daily_bias is not None and not isinstance(
+            self.daily_bias,
+            Bias,
+        ):
+            raise ValueError("daily_bias must be a Bias value or None")
+
+        if not isinstance(self.status, TDAStatus):
+            raise ValueError("status must be a TDAStatus value")
 
         self.instrument = self.instrument.strip().upper()
-        self.primary_draw = self.primary_draw.strip()
+
+        if self.primary_draw is not None:
+            self.primary_draw = self.primary_draw.strip()
+
+            if not self.primary_draw:
+                self.primary_draw = None
+
         self.secondary_draw = self.secondary_draw.strip()
         self.narrative = self.narrative.strip()
 
         if not self.instrument:
             raise ValueError("instrument cannot be empty")
 
-        if not self.primary_draw:
-            raise ValueError("primary_draw cannot be empty")
-        
-        if not isinstance(self.status, TDAStatus):
-            raise ValueError("status must be a TDAStatus value")
+        if self.status == TDAStatus.COMPLETE:
+            missing = self.missing_required_fields()
+
+            if missing:
+                raise ValueError(
+                    "Complete TDA is missing required fields: "
+                    + ", ".join(missing)
+                )
+
+    def missing_required_fields(self) -> list[str]:
+        missing = []
+
+        if self.weekly_bias is None:
+            missing.append("Weekly Bias")
+
+        if self.daily_bias is None:
+            missing.append("Daily Bias")
+
+        if self.primary_draw is None:
+            missing.append("Primary Draw")
+
+        return missing

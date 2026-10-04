@@ -242,3 +242,53 @@ def test_tda_status_survives_persistence(tmp_path) -> None:
     assert loaded.status == TDAStatus.INCOMPLETE_OVERRIDE
 
     connection.close()
+
+def test_incomplete_tda_preserves_missing_values(tmp_path) -> None:
+    database_path = tmp_path / "test.db"
+
+    connection = create_connection(database_path)
+    initialize_schema(connection)
+
+    repository = TDARepository(connection)
+
+    original = TDARecord(
+        analysis_date=date(2026, 10, 3),
+        instrument="MNQ",
+        weekly_bias=Bias.BULLISH,
+        daily_bias=None,
+        primary_draw=None,
+        status=TDAStatus.INCOMPLETE_OVERRIDE,
+    )
+
+    repository.save(original)
+
+    loaded = repository.get_by_id(original.id)
+
+    assert loaded is not None
+    assert loaded.weekly_bias == Bias.BULLISH
+    assert loaded.daily_bias is None
+    assert loaded.primary_draw is None
+    assert loaded.status == TDAStatus.INCOMPLETE_OVERRIDE
+
+    connection.close()
+
+def test_schema_version_3_allows_incomplete_tda_fields(tmp_path) -> None:
+    database_path = tmp_path / "test.db"
+
+    connection = create_connection(database_path)
+    initialize_schema(connection)
+
+    columns = connection.execute(
+        "PRAGMA table_info(tda_analysis)"
+    ).fetchall()
+
+    columns_by_name = {
+        column[1]: column
+        for column in columns
+    }
+
+    assert columns_by_name["weekly_bias"][3] == 0
+    assert columns_by_name["daily_bias"][3] == 0
+    assert columns_by_name["primary_draw"][3] == 0
+
+    connection.close()
