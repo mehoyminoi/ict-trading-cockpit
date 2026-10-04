@@ -4,7 +4,7 @@ from ict_cockpit.gui.tda_workflow import TDAWorkflowWidget
 
 from PySide6.QtCore import QDate
 
-from ict_cockpit.analysis.tda import Bias
+from ict_cockpit.analysis.tda import Bias, TDAStatus
 
 def test_tda_workflow_can_be_constructed() -> None:
     app = QApplication.instance()
@@ -44,3 +44,62 @@ def test_build_tda_record_from_workflow() -> None:
     assert tda.primary_draw == "Previous Week High"
     assert tda.secondary_draw == "Previous Day High"
     assert tda.narrative == "Expecting expansion toward higher liquidity."
+
+def test_workflow_builds_complete_tda_when_required_fields_present() -> None:
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    workflow = TDAWorkflowWidget()
+
+    workflow.context_step.instrument_input.setText("MNQ")
+
+    workflow.bias_step.weekly_buttons[0].setChecked(True)
+    workflow.bias_step.daily_buttons[0].setChecked(True)
+
+    workflow.draw_thesis_step.primary_draw_input.setText(
+        "Previous Week High"
+    )
+
+    tda = workflow.build_tda_record()
+
+    assert tda.missing_required_fields() == []
+
+def test_attempt_completion_returns_to_bias_when_bias_missing() -> None:
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    workflow = TDAWorkflowWidget()
+
+    workflow.context_step.instrument_input.setText("MNQ")
+    workflow.draw_thesis_step.primary_draw_input.setText(
+        "Previous Week High"
+    )
+
+    workflow.current_step = 2
+    workflow._update_view()
+
+    workflow.attempt_completion()
+
+    assert workflow.current_step == 1
+
+def test_file_incomplete_emits_incomplete_tda() -> None:
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    workflow = TDAWorkflowWidget()
+
+    workflow.context_step.instrument_input.setText("MNQ")
+
+    emitted_records = []
+    workflow.tda_ready.connect(emitted_records.append)
+
+    workflow.file_incomplete()
+
+    assert len(emitted_records) == 1
+    assert emitted_records[0].status == TDAStatus.INCOMPLETE_OVERRIDE
