@@ -1,4 +1,5 @@
 from PySide6.QtWidgets import QLabel, QMainWindow, QStatusBar
+from PySide6.QtCore import QTimer
 
 from ict_cockpit.app_info import window_title
 from ict_cockpit.database.tda_repository import TDARepository
@@ -21,8 +22,24 @@ class MainWindow(QMainWindow):
         self.setStatusBar(self.status_bar)
 
         self.setCentralWidget(self.tda_workflow)
+        self.pending_draft = None
+
+        self.draft_save_timer = QTimer(self)
+        self.draft_save_timer.setSingleShot(True)
+        self.draft_save_timer.setInterval(750)
+
+        self.draft_save_timer.timeout.connect(
+            self.save_pending_draft
+        )
+
+        self.tda_workflow.draft_changed.connect(
+            self.schedule_draft_save
+)
 
     def save_tda(self, tda) -> None:
+        self.draft_save_timer.stop()
+        self.pending_draft = None   
+        
         self.tda_repository.save(tda)
 
         self.status_bar.showMessage(
@@ -31,3 +48,22 @@ class MainWindow(QMainWindow):
         )
 
         self.tda_workflow.mark_saved()
+
+    def schedule_draft_save(self, tda) -> None:
+        self.pending_draft = tda
+        self.draft_save_timer.start()
+
+    def save_pending_draft(self) -> None:
+        if self.pending_draft is None:
+            return
+
+        self.tda_repository.save_draft(
+            self.pending_draft
+        )
+
+        self.pending_draft = None
+
+        self.status_bar.showMessage(
+            "Draft saved",
+            1500,
+        )

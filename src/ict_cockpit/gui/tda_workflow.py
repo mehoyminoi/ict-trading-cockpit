@@ -13,15 +13,18 @@ from ict_cockpit.gui.context_step import ContextStep
 from ict_cockpit.gui.bias_step import BiasStep
 from ict_cockpit.gui.draw_thesis_step import DrawThesisStep
 from ict_cockpit.analysis.tda import TDARecord, TDAStatus
+from uuid import uuid4
 
 
 class TDAWorkflowWidget(QWidget):
     tda_ready = Signal(TDARecord)
+    draft_changed = Signal(TDARecord)
 
     def __init__(self) -> None:
         super().__init__()
 
         self.current_step = 0
+        self.current_tda_id = str(uuid4())
 
         self.step_titles = [
             "Context",
@@ -50,6 +53,32 @@ class TDAWorkflowWidget(QWidget):
         self.step_stack.addWidget(self.context_step)
         self.step_stack.addWidget(self.bias_step)
         self.step_stack.addWidget(self.draw_thesis_step)
+
+        self.context_step.instrument_input.textChanged.connect(
+        self.emit_draft_changed
+        )
+
+        self.context_step.analysis_date_input.dateChanged.connect(
+            self.emit_draft_changed
+        )
+
+        for button in self.bias_step.weekly_buttons:
+            button.toggled.connect(self.emit_draft_changed)
+
+        for button in self.bias_step.daily_buttons:
+            button.toggled.connect(self.emit_draft_changed)
+
+        self.draw_thesis_step.primary_draw_input.textChanged.connect(
+            self.emit_draft_changed
+        )
+
+        self.draw_thesis_step.secondary_draw_input.textChanged.connect(
+            self.emit_draft_changed
+        )
+
+        self.draw_thesis_step.narrative_input.textChanged.connect(
+            self.emit_draft_changed
+        )
 
         self.validation_label = QLabel()
         self.validation_label.setWordWrap(True)
@@ -173,6 +202,7 @@ class TDAWorkflowWidget(QWidget):
     
     def build_tda_record(self) -> TDARecord:
         return TDARecord(
+            id=self.current_tda_id,
             analysis_date=self.context_step.analysis_date(),
             instrument=self.context_step.instrument(),
             weekly_bias=self.bias_step.weekly_bias(),
@@ -251,9 +281,15 @@ class TDAWorkflowWidget(QWidget):
         self.draw_thesis_step.narrative_input.clear()
 
         self.current_step = 0
+        self.current_tda_id = str(uuid4())
 
         self.validation_label.setVisible(False)
         self.override_button.setVisible(False)
         self.new_tda_button.setVisible(False)
 
         self._update_view()
+
+    def emit_draft_changed(self) -> None:
+        tda = self.build_tda_record()
+        tda.status = TDAStatus.DRAFT
+        self.draft_changed.emit(tda)

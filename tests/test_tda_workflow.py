@@ -124,3 +124,35 @@ def test_reset_workflow_clears_previous_tda() -> None:
     assert workflow.bias_step.weekly_group.checkedButton() is None
     assert workflow.draw_thesis_step.primary_draw_input.text() == ""
     assert workflow.current_step == 0
+
+def test_workflow_reuses_same_tda_id_during_draft() -> None:
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    workflow = TDAWorkflowWidget()
+
+    workflow.context_step.instrument_input.setText("MNQ")
+
+    first = workflow.build_tda_record()
+
+    workflow.context_step.instrument_input.setText("NQ")
+
+    second = workflow.build_tda_record()
+
+    assert first.id == second.id
+
+def test_reset_workflow_creates_new_tda_id() -> None:
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    workflow = TDAWorkflowWidget()
+
+    original_id = workflow.current_tda_id
+
+    workflow.reset_workflow()
+
+    assert workflow.current_tda_id != original_id

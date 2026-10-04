@@ -292,3 +292,70 @@ def test_schema_version_3_allows_incomplete_tda_fields(tmp_path) -> None:
     assert columns_by_name["primary_draw"][3] == 0
 
     connection.close()
+
+def test_save_draft_updates_existing_draft(tmp_path) -> None:
+    database_path = tmp_path / "test.db"
+
+    connection = create_connection(database_path)
+    initialize_schema(connection)
+
+    repository = TDARepository(connection)
+
+    draft = TDARecord(
+        analysis_date=date(2026, 10, 4),
+        instrument="MNQ",
+        status=TDAStatus.DRAFT,
+    )
+
+    repository.save_draft(draft)
+
+    updated = TDARecord(
+        id=draft.id,
+        analysis_date=draft.analysis_date,
+        instrument="MNQ",
+        weekly_bias=Bias.BULLISH,
+        narrative="Updated draft.",
+        status=TDAStatus.DRAFT,
+    )
+
+    repository.save_draft(updated)
+
+    loaded = repository.get_by_id(draft.id)
+
+    assert loaded is not None
+    assert loaded.weekly_bias == Bias.BULLISH
+    assert loaded.narrative == "Updated draft."
+    assert loaded.status == TDAStatus.DRAFT
+
+    connection.close()
+
+def test_save_draft_rejects_finalized_record(tmp_path) -> None:
+    database_path = tmp_path / "test.db"
+
+    connection = create_connection(database_path)
+    initialize_schema(connection)
+
+    repository = TDARepository(connection)
+
+    complete = TDARecord(
+        analysis_date=date(2026, 10, 4),
+        instrument="MNQ",
+        weekly_bias=Bias.BULLISH,
+        daily_bias=Bias.BULLISH,
+        primary_draw="Previous Week High",
+        status=TDAStatus.COMPLETE,
+    )
+
+    repository.save(complete)
+
+    draft = TDARecord(
+        id=complete.id,
+        analysis_date=complete.analysis_date,
+        instrument="MNQ",
+        status=TDAStatus.DRAFT,
+    )
+
+    with pytest.raises(ValueError):
+        repository.save_draft(draft)
+
+    connection.close()

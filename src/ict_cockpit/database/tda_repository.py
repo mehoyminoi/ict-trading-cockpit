@@ -103,3 +103,59 @@ class TDARepository:
 
             if cursor.rowcount == 0:
                 raise KeyError(f"TDA record not found: {tda.id}")
+
+    def save_draft(self, tda: TDARecord) -> None:
+        if tda.status != TDAStatus.DRAFT:
+            raise ValueError("save_draft only accepts draft TDA records")
+
+        with self.connection:
+            existing = self.connection.execute(
+                """
+                SELECT status
+                FROM tda_analysis
+                WHERE id = ?
+                """,
+                (tda.id,),
+            ).fetchone()
+
+            if existing is not None and existing[0] != TDAStatus.DRAFT.value:
+                raise ValueError(
+                    f"Cannot overwrite finalized TDA record: {tda.id}"
+                )
+
+            self.connection.execute(
+                """
+                INSERT INTO tda_analysis (
+                    id,
+                    analysis_date,
+                    instrument,
+                    weekly_bias,
+                    daily_bias,
+                    primary_draw,
+                    secondary_draw,
+                    narrative,
+                    status
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(id) DO UPDATE SET
+                    analysis_date = excluded.analysis_date,
+                    instrument = excluded.instrument,
+                    weekly_bias = excluded.weekly_bias,
+                    daily_bias = excluded.daily_bias,
+                    primary_draw = excluded.primary_draw,
+                    secondary_draw = excluded.secondary_draw,
+                    narrative = excluded.narrative,
+                    status = excluded.status
+                """,
+                (
+                    tda.id,
+                    tda.analysis_date.isoformat(),
+                    tda.instrument,
+                    tda.weekly_bias.value if tda.weekly_bias is not None else None,
+                    tda.daily_bias.value if tda.daily_bias is not None else None,
+                    tda.primary_draw,
+                    tda.secondary_draw,
+                    tda.narrative,
+                    tda.status.value,
+                ),
+            )
