@@ -79,7 +79,9 @@ def test_study_find_widget_includes_image_path() -> None:
         "Bullish displacement followed the sweep."
     )
 
-    widget.image_path = "/tmp/chart.png"
+    widget.image_paths = [
+    "/tmp/chart.png",
+    ]
 
     study_find = widget.build_study_find()
 
@@ -104,3 +106,53 @@ def test_study_find_widget_reuses_same_id() -> None:
     second = widget.build_study_find()
 
     assert first.id == second.id
+
+def test_study_find_widget_tracks_multiple_image_paths() -> None:
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    widget = StudyFindWidget()
+
+    widget.image_paths = [
+        "/tmp/chart-1.png",
+        "/tmp/chart-2.png",
+    ]
+
+    widget.image_list.addItems(
+        widget.image_paths
+    )
+
+    assert widget.image_list.count() == 2
+    assert widget.image_paths == [
+        "/tmp/chart-1.png",
+        "/tmp/chart-2.png",
+    ]
+
+def test_study_find_widget_removes_selected_image() -> None:
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    widget = StudyFindWidget()
+
+    widget.image_paths = [
+        "/tmp/chart-1.png",
+        "/tmp/chart-2.png",
+    ]
+
+    widget.image_list.addItems(
+        widget.image_paths
+    )
+
+    widget.image_list.setCurrentRow(0)
+
+    widget.remove_selected_image()
+
+    assert widget.image_paths == [
+        "/tmp/chart-2.png"
+    ]
+
+    assert widget.image_list.count() == 1

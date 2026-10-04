@@ -104,6 +104,12 @@ class MainWindow(QMainWindow):
     def save_study_find(self, study_find) -> None:
         self.study_find_repository.save(study_find)
 
+        for image_path in self.study_find_widget.image_paths:
+            self.study_find_repository.add_image(
+                study_find.id,
+                image_path,
+            )
+
         self.status_bar.showMessage(
             "Study Find saved",
             3000,

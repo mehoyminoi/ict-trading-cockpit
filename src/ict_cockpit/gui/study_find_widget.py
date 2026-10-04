@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
     QTextEdit,
     QVBoxLayout,
     QWidget,
+    QListWidget,
 )
 
 from ict_cockpit.analysis.study_find import StudyFind
@@ -75,19 +76,28 @@ class StudyFindWidget(QWidget):
 
         layout = QVBoxLayout()
         layout.addLayout(form_layout)
-        layout.addWidget(self.save_button)
 
-        self.image_path = ""
 
-        self.image_path_label = QLabel("No chart image attached")
+        self.image_paths: list[str] = []
+        self.next_image_number = 1
 
-        self.attach_image_button = QPushButton("Attach Chart Image")
+        self.image_list = QListWidget()
+        self.image_list.setMinimumHeight(80)
+
+        self.attach_image_button = QPushButton("Add Chart Image")
+        self.remove_image_button = QPushButton("Remove Selected")
+
         self.attach_image_button.clicked.connect(
             self.choose_chart_image
         )
 
+        self.remove_image_button.clicked.connect(
+            self.remove_selected_image
+        )
+
         layout.addWidget(self.attach_image_button)
-        layout.addWidget(self.image_path_label)
+        layout.addWidget(self.image_list)
+        layout.addWidget(self.remove_image_button)
 
         self.summary_preview = QPlainTextEdit()
         self.summary_preview.setReadOnly(True)
@@ -121,6 +131,11 @@ class StudyFindWidget(QWidget):
 
         available_move = self.available_move_input.value()
 
+        primary_image_path = ""
+
+        if self.image_paths:
+            primary_image_path = self.image_paths[0]
+
         return StudyFind(
             id=self.current_study_find_id,
             observation_date=observation_date,
@@ -130,7 +145,7 @@ class StudyFindWidget(QWidget):
             observation=self.observation_input.toPlainText(),
             available_move_handles=available_move,
             notes=self.notes_input.toPlainText(),
-            image_path=self.image_path,
+            image_path=primary_image_path,
         )
 
     def submit(self) -> None:
@@ -170,11 +185,23 @@ class StudyFindWidget(QWidget):
             return
 
         stored_path = store_study_find_image(
-        self.current_study_find_id,
-        Path(file_path),
+            self.current_study_find_id,
+            Path(file_path),
+            self.next_image_number,
         )
 
-        self.image_path = str(stored_path)
-        self.image_path_label.setText(
-            str(stored_path)
-        )
+        self.next_image_number += 1
+
+        path_string = str(stored_path)
+
+        self.image_paths.append(path_string)
+        self.image_list.addItem(path_string)
+
+    def remove_selected_image(self) -> None:
+        selected_row = self.image_list.currentRow()
+
+        if selected_row < 0:
+            return
+
+        self.image_list.takeItem(selected_row)
+        self.image_paths.pop(selected_row)

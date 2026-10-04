@@ -180,3 +180,51 @@ def test_main_window_saves_study_find(tmp_path) -> None:
     assert saved.available_move_handles == 74.5
 
     connection.close()
+
+def test_main_window_saves_study_find_images(tmp_path) -> None:
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    database_path = tmp_path / "test.db"
+
+    connection = create_connection(database_path)
+    initialize_schema(connection)
+
+    tda_repository = TDARepository(connection)
+    study_find_repository = StudyFindRepository(connection)
+
+    window = MainWindow(
+        tda_repository,
+        study_find_repository,
+    )
+
+    widget = window.study_find_widget
+
+    widget.instrument_input.setText("MNQ")
+    widget.session_input.setText("NYAM")
+    widget.pattern_input.setText("Liquidity raid")
+    widget.observation_input.setPlainText(
+        "Test observation."
+    )
+
+    widget.image_paths = [
+        "/tmp/chart-1.png",
+        "/tmp/chart-2.png",
+    ]
+
+    study_find = widget.build_study_find()
+
+    window.save_study_find(study_find)
+
+    images = study_find_repository.get_images(
+        study_find.id
+    )
+
+    assert images == [
+        "/tmp/chart-1.png",
+        "/tmp/chart-2.png",
+    ]
+
+    connection.close()

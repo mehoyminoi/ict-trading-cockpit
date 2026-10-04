@@ -71,3 +71,53 @@ class StudyFindRepository:
             notes=row[7],
             image_path=row[8],
         )
+
+    def add_image(
+        self,
+        study_find_id: str,
+        image_path: str,
+    ) -> None:
+        with self.connection:
+            next_order = self.connection.execute(
+                """
+                SELECT COALESCE(MAX(image_order), 0) + 1
+                FROM study_find_image
+                WHERE study_find_id = ?
+                """,
+                (study_find_id,),
+            ).fetchone()[0]
+
+            self.connection.execute(
+                """
+                INSERT INTO study_find_image (
+                    study_find_id,
+                    image_path,
+                    image_order
+                )
+                VALUES (?, ?, ?)
+                """,
+                (
+                    study_find_id,
+                    image_path,
+                    next_order,
+                ),
+            )
+
+    def get_images(
+        self,
+        study_find_id: str,
+    ) -> list[str]:
+        rows = self.connection.execute(
+            """
+            SELECT image_path
+            FROM study_find_image
+            WHERE study_find_id = ?
+            ORDER BY image_order
+            """,
+            (study_find_id,),
+        ).fetchall()
+
+        return [
+            row[0]
+            for row in rows
+        ]

@@ -88,3 +88,42 @@ def test_get_by_id_returns_none_when_study_find_missing(tmp_path) -> None:
     assert loaded is None
 
     connection.close()
+
+def test_study_find_repository_stores_multiple_images(tmp_path) -> None:
+    database_path = tmp_path / "test.db"
+
+    connection = create_connection(database_path)
+    initialize_schema(connection)
+
+    repository = StudyFindRepository(connection)
+
+    study_find = StudyFind(
+        observation_date=date(2026, 10, 4),
+        instrument="MNQ",
+        session="NYAM",
+        pattern_name="London low raid",
+        observation="Test observation.",
+    )
+
+    repository.save(study_find)
+
+    repository.add_image(
+        study_find.id,
+        "/tmp/chart-1.png",
+    )
+
+    repository.add_image(
+        study_find.id,
+        "/tmp/chart-2.png",
+    )
+
+    images = repository.get_images(
+        study_find.id
+    )
+
+    assert images == [
+        "/tmp/chart-1.png",
+        "/tmp/chart-2.png",
+    ]
+
+    connection.close()

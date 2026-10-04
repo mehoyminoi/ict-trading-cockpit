@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 4
+CURRENT_SCHEMA_VERSION = 5
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -25,6 +25,10 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 3:
             _migrate_version_3_to_4(connection)
             version = 4
+
+        if version == 4:
+            _migrate_version_4_to_5(connection)
+            version = 5
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(
@@ -148,3 +152,29 @@ def _migrate_version_3_to_4(
     )
 
     connection.execute("PRAGMA user_version = 4")
+
+def _migrate_version_4_to_5(
+    connection: sqlite3.Connection,
+) -> None:
+    connection.execute(
+        """
+        CREATE TABLE study_find_image (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            study_find_id TEXT NOT NULL,
+            image_path TEXT NOT NULL,
+            image_order INTEGER NOT NULL,
+            FOREIGN KEY (study_find_id)
+                REFERENCES study_find(id)
+                ON DELETE CASCADE
+        )
+        """
+    )
+
+    connection.execute(
+        """
+        CREATE INDEX idx_study_find_image_study_find_id
+        ON study_find_image(study_find_id)
+        """
+    )
+
+    connection.execute("PRAGMA user_version = 5")

@@ -7,6 +7,7 @@ from ict_cockpit.app_paths import get_study_find_media_path
 def store_study_find_image(
     study_find_id: str,
     source_path: Path,
+    image_number: int,
 ) -> Path:
     destination_directory = get_study_find_media_path(
         study_find_id
@@ -19,7 +20,7 @@ def store_study_find_image(
 
     destination_path = (
         destination_directory
-        / f"chart-1{source_path.suffix.lower()}"
+        / f"chart-{image_number}{source_path.suffix.lower()}"
     )
 
     shutil.copy2(
