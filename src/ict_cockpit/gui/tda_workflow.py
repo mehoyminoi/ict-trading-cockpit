@@ -1,4 +1,4 @@
-from PySide6.QtCore import QEvent, Qt, Signal
+from PySide6.QtCore import QEvent, Qt, Signal, QDate
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -66,12 +66,17 @@ class TDAWorkflowWidget(QWidget):
         self.override_button.setVisible(False)
         self.override_button.clicked.connect(self.file_incomplete)
 
+        self.new_tda_button = QPushButton("Start New TDA")
+        self.new_tda_button.setVisible(False)
+        self.new_tda_button.clicked.connect(self.reset_workflow)
+
 
         navigation_layout = QHBoxLayout()
         navigation_layout.addWidget(self.back_button)
         navigation_layout.addWidget(self.override_button)
         navigation_layout.addStretch()
         navigation_layout.addWidget(self.next_button)
+        navigation_layout.addWidget(self.new_tda_button)
 
         main_layout = QVBoxLayout()
         main_layout.addWidget(self.progress_label)
@@ -214,3 +219,41 @@ class TDAWorkflowWidget(QWidget):
         self.override_button.setVisible(False)
 
         self.tda_ready.emit(tda)
+    
+    def mark_saved(self) -> None:
+        self.validation_label.setVisible(False)
+        self.override_button.setVisible(False)
+
+        self.next_button.setText("Saved")
+        self.next_button.setEnabled(False)
+
+        self.new_tda_button.setVisible(True)
+
+    def reset_workflow(self) -> None:
+        self.context_step.instrument_input.clear()
+
+        self.context_step.analysis_date_input.setDate(
+            QDate.currentDate()
+        )
+
+        self.bias_step.weekly_group.setExclusive(False)
+        for button in self.bias_step.weekly_buttons:
+            button.setChecked(False)
+        self.bias_step.weekly_group.setExclusive(True)
+
+        self.bias_step.daily_group.setExclusive(False)
+        for button in self.bias_step.daily_buttons:
+            button.setChecked(False)
+        self.bias_step.daily_group.setExclusive(True)
+
+        self.draw_thesis_step.primary_draw_input.clear()
+        self.draw_thesis_step.secondary_draw_input.clear()
+        self.draw_thesis_step.narrative_input.clear()
+
+        self.current_step = 0
+
+        self.validation_label.setVisible(False)
+        self.override_button.setVisible(False)
+        self.new_tda_button.setVisible(False)
+
+        self._update_view()

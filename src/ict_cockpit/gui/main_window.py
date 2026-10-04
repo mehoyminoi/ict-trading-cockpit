@@ -29,3 +29,5 @@ class MainWindow(QMainWindow):
             f"TDA saved — {tda.status.value}",
             5000,
         )
+
+        self.tda_workflow.mark_saved()

@@ -103,3 +103,24 @@ def test_file_incomplete_emits_incomplete_tda() -> None:
 
     assert len(emitted_records) == 1
     assert emitted_records[0].status == TDAStatus.INCOMPLETE_OVERRIDE
+
+def test_reset_workflow_clears_previous_tda() -> None:
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    workflow = TDAWorkflowWidget()
+
+    workflow.context_step.instrument_input.setText("MNQ")
+    workflow.bias_step.weekly_buttons[0].setChecked(True)
+    workflow.draw_thesis_step.primary_draw_input.setText(
+        "Previous Week High"
+    )
+
+    workflow.reset_workflow()
+
+    assert workflow.context_step.instrument_input.text() == ""
+    assert workflow.bias_step.weekly_group.checkedButton() is None
+    assert workflow.draw_thesis_step.primary_draw_input.text() == ""
+    assert workflow.current_step == 0
