@@ -124,3 +124,23 @@ def test_schema_migrates_existing_v1_database(tmp_path) -> None:
     assert version == CURRENT_SCHEMA_VERSION
 
     connection.close()
+    
+def test_schema_creates_study_find_table(tmp_path) -> None:
+    database_path = tmp_path / "test.db"
+
+    connection = create_connection(database_path)
+    initialize_schema(connection)
+
+    table = connection.execute(
+        """
+        SELECT name
+        FROM sqlite_master
+        WHERE type = 'table'
+          AND name = 'study_find'
+        """
+    ).fetchone()
+
+    assert table is not None
+    assert table[0] == "study_find"
+
+    connection.close()

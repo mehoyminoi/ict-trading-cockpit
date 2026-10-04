@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 3
+CURRENT_SCHEMA_VERSION = 4
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -21,6 +21,10 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 2:
             _migrate_version_2_to_3(connection)
             version = 3
+
+        if version == 3:
+            _migrate_version_3_to_4(connection)
+            version = 4
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(
@@ -85,6 +89,7 @@ def _migrate_version_2_to_3(
         """
     )
 
+
     connection.execute(
         """
         INSERT INTO tda_analysis_v3 (
@@ -122,3 +127,24 @@ def _migrate_version_2_to_3(
     )
 
     connection.execute("PRAGMA user_version = 3")
+
+def _migrate_version_3_to_4(
+    connection: sqlite3.Connection,
+) -> None:
+    connection.execute(
+        """
+        CREATE TABLE study_find (
+            id TEXT PRIMARY KEY,
+            observation_date TEXT NOT NULL,
+            instrument TEXT NOT NULL,
+            session TEXT NOT NULL,
+            pattern_name TEXT NOT NULL,
+            observation TEXT NOT NULL,
+            available_move_handles REAL,
+            notes TEXT NOT NULL DEFAULT '',
+            image_path TEXT NOT NULL DEFAULT ''
+        )
+        """
+    )
+
+    connection.execute("PRAGMA user_version = 4")
