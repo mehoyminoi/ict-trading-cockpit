@@ -1,21 +1,29 @@
 from PySide6.QtCore import QDate, Signal
 from PySide6.QtWidgets import (
+    QApplication,
     QDateEdit,
     QDoubleSpinBox,
+    QFileDialog,
     QFormLayout,
+    QLabel,
     QLineEdit,
+    QPlainTextEdit,
     QPushButton,
     QTextEdit,
     QVBoxLayout,
     QWidget,
-    QApplication,
-    QPlainTextEdit,
 )
 
 from ict_cockpit.analysis.study_find import StudyFind
 from ict_cockpit.summary.renderer import SummaryRenderer
 from ict_cockpit.summary.study_find_context import StudyFindSummaryContext
 from ict_cockpit.summary.templates import STUDY_FIND_SUMMARY_V1
+from uuid import uuid4
+from pathlib import Path
+
+from ict_cockpit.media.study_find_media import (
+    store_study_find_image,
+)
 
 
 class StudyFindWidget(QWidget):
@@ -64,17 +72,30 @@ class StudyFindWidget(QWidget):
         form_layout.addRow("Available Move", self.available_move_input)
         form_layout.addRow("Notes", self.notes_input)
 
+
         layout = QVBoxLayout()
         layout.addLayout(form_layout)
         layout.addWidget(self.save_button)
 
-    
+        self.image_path = ""
+
+        self.image_path_label = QLabel("No chart image attached")
+
+        self.attach_image_button = QPushButton("Attach Chart Image")
+        self.attach_image_button.clicked.connect(
+            self.choose_chart_image
+        )
+
+        layout.addWidget(self.attach_image_button)
+        layout.addWidget(self.image_path_label)
 
         self.summary_preview = QPlainTextEdit()
         self.summary_preview.setReadOnly(True)
         self.summary_preview.setPlaceholderText(
             "Generated Study Find summary will appear here."
         )
+
+        self.current_study_find_id = str(uuid4())
 
         self.generate_summary_button = QPushButton("Generate Summary")
         self.copy_summary_button = QPushButton("Copy Summary")
@@ -101,6 +122,7 @@ class StudyFindWidget(QWidget):
         available_move = self.available_move_input.value()
 
         return StudyFind(
+            id=self.current_study_find_id,
             observation_date=observation_date,
             instrument=self.instrument_input.text(),
             session=self.session_input.text(),
@@ -108,6 +130,7 @@ class StudyFindWidget(QWidget):
             observation=self.observation_input.toPlainText(),
             available_move_handles=available_move,
             notes=self.notes_input.toPlainText(),
+            image_path=self.image_path,
         )
 
     def submit(self) -> None:
@@ -134,3 +157,24 @@ class StudyFindWidget(QWidget):
 
         clipboard = QApplication.clipboard()
         clipboard.setText(rendered)
+
+    def choose_chart_image(self) -> None:
+        file_path, _ = QFileDialog.getOpenFileName(
+            self,
+            "Attach Chart Image",
+            "",
+            "Images (*.png *.jpg *.jpeg *.webp)",
+        )
+
+        if not file_path:
+            return
+
+        stored_path = store_study_find_image(
+        self.current_study_find_id,
+        Path(file_path),
+        )
+
+        self.image_path = str(stored_path)
+        self.image_path_label.setText(
+            str(stored_path)
+        )

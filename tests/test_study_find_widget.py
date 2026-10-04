@@ -63,3 +63,44 @@ def test_study_find_widget_generates_summary() -> None:
     assert "Session: NYAM" in rendered
     assert "Pattern: London low raid" in rendered
     assert "74.50 handles" in rendered
+
+def test_study_find_widget_includes_image_path() -> None:
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    widget = StudyFindWidget()
+
+    widget.instrument_input.setText("MNQ")
+    widget.session_input.setText("NYAM")
+    widget.pattern_input.setText("London low raid")
+    widget.observation_input.setPlainText(
+        "Bullish displacement followed the sweep."
+    )
+
+    widget.image_path = "/tmp/chart.png"
+
+    study_find = widget.build_study_find()
+
+    assert study_find.image_path == "/tmp/chart.png"
+
+def test_study_find_widget_reuses_same_id() -> None:
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    widget = StudyFindWidget()
+
+    widget.instrument_input.setText("MNQ")
+    widget.session_input.setText("NYAM")
+    widget.pattern_input.setText("Pattern")
+    widget.observation_input.setPlainText(
+        "Observation"
+    )
+
+    first = widget.build_study_find()
+    second = widget.build_study_find()
+
+    assert first.id == second.id
