@@ -1,7 +1,7 @@
 import sqlite3
 from datetime import date
 
-from ict_cockpit.analysis.tda import Bias, TDARecord
+from ict_cockpit.analysis.tda import Bias, TDARecord, TDAStatus
 
 
 class TDARepository:
@@ -20,9 +20,10 @@ class TDARepository:
                     daily_bias,
                     primary_draw,
                     secondary_draw,
-                    narrative
+                    narrative,
+                    status
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     tda.id,
@@ -33,6 +34,7 @@ class TDARepository:
                     tda.primary_draw,
                     tda.secondary_draw,
                     tda.narrative,
+                    tda.status.value,
                 ),
             )
 
@@ -47,7 +49,8 @@ class TDARepository:
                 daily_bias,
                 primary_draw,
                 secondary_draw,
-                narrative
+                narrative,
+                status
             FROM tda_analysis
             WHERE id = ?
             """,
@@ -66,6 +69,7 @@ class TDARepository:
             primary_draw=row[5],
             secondary_draw=row[6],
             narrative=row[7],
+            status=TDAStatus(row[8]),
         )
 
     def update(self, tda: TDARecord) -> None:
@@ -80,7 +84,8 @@ class TDARepository:
                     daily_bias = ?,
                     primary_draw = ?,
                     secondary_draw = ?,
-                    narrative = ?
+                    narrative = ?,
+                    status = ?
                 WHERE id = ?
                 """,
                 (
@@ -91,7 +96,8 @@ class TDARepository:
                     tda.primary_draw,
                     tda.secondary_draw,
                     tda.narrative,
-                    tda.id,
+                    tda.status.value,
+                    tda.id
                 ),
             )
 

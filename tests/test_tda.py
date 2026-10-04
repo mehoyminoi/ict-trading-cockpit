@@ -2,7 +2,7 @@ from datetime import date
 
 import pytest
 
-from ict_cockpit.analysis.tda import Bias, TDARecord
+from ict_cockpit.analysis.tda import Bias, TDARecord, TDAStatus
 
 
 def test_create_tda_record() -> None:
@@ -102,3 +102,14 @@ def test_tda_rejects_whitespace_only_instrument() -> None:
             daily_bias=Bias.BULLISH,
             primary_draw="Previous Week High",
         )
+
+def test_tda_defaults_to_draft_status() -> None:
+    tda = TDARecord(
+        analysis_date=date(2026, 10, 3),
+        instrument="MNQ",
+        weekly_bias=Bias.BULLISH,
+        daily_bias=Bias.BULLISH,
+        primary_draw="Previous Week High",
+    )
+
+    assert tda.status == TDAStatus.DRAFT

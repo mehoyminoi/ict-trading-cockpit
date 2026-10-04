@@ -2,7 +2,7 @@ from datetime import date
 import sqlite3
 import pytest
 
-from ict_cockpit.analysis.tda import Bias, TDARecord
+from ict_cockpit.analysis.tda import Bias, TDARecord, TDAStatus
 from ict_cockpit.database.connection import create_connection
 from ict_cockpit.database.schema import initialize_schema
 from ict_cockpit.database.tda_repository import TDARepository
@@ -214,5 +214,31 @@ def test_update_raises_when_tda_does_not_exist(tmp_path) -> None:
 
     with pytest.raises(KeyError):
         repository.update(missing)
+
+    connection.close()
+
+def test_tda_status_survives_persistence(tmp_path) -> None:
+    database_path = tmp_path / "test.db"
+
+    connection = create_connection(database_path)
+    initialize_schema(connection)
+
+    repository = TDARepository(connection)
+
+    original = TDARecord(
+        analysis_date=date(2026, 10, 3),
+        instrument="MNQ",
+        weekly_bias=Bias.BULLISH,
+        daily_bias=Bias.BULLISH,
+        primary_draw="Previous Week High",
+        status=TDAStatus.INCOMPLETE_OVERRIDE,
+    )
+
+    repository.save(original)
+
+    loaded = repository.get_by_id(original.id)
+
+    assert loaded is not None
+    assert loaded.status == TDAStatus.INCOMPLETE_OVERRIDE
 
     connection.close()

@@ -9,6 +9,11 @@ class Bias(str, Enum):
     BEARISH = "Bearish"
     NEUTRAL = "Neutral"
 
+class TDAStatus(str, Enum):
+    DRAFT = "Draft"
+    COMPLETE = "Complete"
+    INCOMPLETE_OVERRIDE = "Incomplete Override"
+
 
 @dataclass
 class TDARecord:
@@ -19,6 +24,7 @@ class TDARecord:
     primary_draw: str
     secondary_draw: str = ""
     narrative: str = ""
+    status: TDAStatus = TDAStatus.DRAFT
     id: str = field(default_factory=lambda: str(uuid4()))
 
     def __post_init__(self) -> None:
@@ -38,3 +44,6 @@ class TDARecord:
 
         if not self.primary_draw:
             raise ValueError("primary_draw cannot be empty")
+        
+        if not isinstance(self.status, TDAStatus):
+            raise ValueError("status must be a TDAStatus value")
