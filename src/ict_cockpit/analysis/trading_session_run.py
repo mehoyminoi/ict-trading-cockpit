@@ -4,7 +4,10 @@ from enum import Enum
 from uuid import uuid4
 
 
-SESSION_NAMES = ("Asia", "London", "NYAM", "NYPM")
+# Market-session names remain useful context, but no longer define the lifecycle
+# boundary of a run. They will be derived/tagged inside a Trading Run later.
+MARKET_SESSION_NAMES = ("Asia", "London", "NYAM", "NYPM")
+SESSION_NAMES = MARKET_SESSION_NAMES  # Backward-compatible alias.
 
 
 class TradingSessionRunStatus(str, Enum):
@@ -14,7 +17,12 @@ class TradingSessionRunStatus(str, Enum):
 
 @dataclass
 class TradingSessionRun:
-    """One deliberate market-session operating run inside a Trading Day."""
+    """One deliberate operating run inside a Trading Day.
+
+    ``session_name`` is retained as the persisted column/name for schema-v12
+    compatibility, but semantically it is now a neutral run label rather than a
+    required Asia/London/NYAM/NYPM market-session choice.
+    """
 
     trading_day_id: str
     session_name: str
@@ -44,9 +52,21 @@ class TradingSessionRun:
         if not self.trading_day_id:
             raise ValueError("trading day id cannot be empty")
         if not self.session_name:
-            raise ValueError("session name cannot be empty")
+            raise ValueError("trading run label cannot be empty")
         if not self.process_session_id:
             raise ValueError("process session id cannot be empty")
+
+    @property
+    def run_label(self) -> str:
+        """Preferred domain name for the persisted legacy ``session_name`` field."""
+        return self.session_name
+
+    @run_label.setter
+    def run_label(self, value: str) -> None:
+        value = value.strip()
+        if not value:
+            raise ValueError("trading run label cannot be empty")
+        self.session_name = value
 
     def conclude(self, outcome: str = "") -> None:
         """Conclude this run without implying that the Trading Day is complete."""
@@ -57,3 +77,9 @@ class TradingSessionRun:
         now = datetime.now().astimezone().isoformat(timespec="seconds")
         self.concluded_at = now
         self.updated_at = now
+
+
+# Preferred names going forward. Old names stay import-compatible while the
+# branch migrates callers and while schema-v12 data remains readable.
+TradingRun = TradingSessionRun
+TradingRunStatus = TradingSessionRunStatus
