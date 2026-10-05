@@ -12,6 +12,9 @@ from ict_cockpit.app_info import APP_VERSION, window_title
 from ict_cockpit.database.feedback_repository import FeedbackRepository
 from ict_cockpit.database.study_find_repository import StudyFindRepository
 from ict_cockpit.database.tda_repository import TDARepository
+from ict_cockpit.database.tda_station_session_repository import (
+    TDAStationSessionRepository,
+)
 from ict_cockpit.database.trade_record_repository import TradeRecordRepository
 from ict_cockpit.default_trade_plan import build_default_trade_plan
 from ict_cockpit.gui.feedback_dialog import FeedbackDialog
@@ -40,6 +43,9 @@ class MainWindow(QMainWindow):
         self.trade_record_repository = (
             trade_record_repository
             or TradeRecordRepository(study_find_repository.connection)
+        )
+        self.tda_station_session_repository = TDAStationSessionRepository(
+            study_find_repository.connection
         )
 
         self.setWindowTitle(window_title())
@@ -77,6 +83,9 @@ class MainWindow(QMainWindow):
         self.tda_workflow.tda_ready.connect(self.save_tda)
         self.study_find_widget.study_find_ready.connect(self.save_study_find)
         self.trade_summary_widget.trade_ready.connect(self.save_trade_record)
+        self.trade_plan_widget.tda_station_runner_widget.session_changed.connect(
+            self.save_tda_station_session
+        )
 
         self.pending_tda_draft = None
         self.tda_draft_save_timer = QTimer(self)
@@ -190,6 +199,12 @@ class MainWindow(QMainWindow):
                 3000,
             )
 
+        latest_station_session = self.tda_station_session_repository.get_latest()
+        if latest_station_session is not None:
+            self.trade_plan_widget.tda_station_runner_widget.load_session(
+                latest_station_session
+            )
+
         latest_study_find_draft = (
             self.study_find_repository.get_latest_draft()
         )
@@ -207,6 +222,10 @@ class MainWindow(QMainWindow):
                 "Restored unfinished Trade Summary draft",
                 3000,
             )
+
+    def save_tda_station_session(self, session) -> None:
+        self.tda_station_session_repository.save(session)
+        self.status_bar.showMessage("TDA station progress saved", 1200)
 
     def save_tda(self, tda) -> None:
         self.tda_draft_save_timer.stop()
