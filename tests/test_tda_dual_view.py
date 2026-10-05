@@ -62,6 +62,19 @@ def test_focus_and_deck_views_share_current_station() -> None:
     assert widget._current_deck().id == "tda-context"
 
 
+def test_deck_station_opens_directly_in_focus_view() -> None:
+    get_app()
+    blueprint = build_default_process_blueprint()
+    widget = TDAStationRunnerWidget(blueprint)
+
+    second_station_id = widget.session.station_ids[1]
+    widget.view_tabs.setCurrentWidget(widget.deck_page)
+    widget.open_station_from_deck(second_station_id)
+
+    assert widget.current_station_id == second_station_id
+    assert widget.view_tabs.currentWidget() is widget.focus_page
+
+
 def test_action_checkbox_updates_shared_session_state() -> None:
     get_app()
     blueprint = build_default_process_blueprint()
