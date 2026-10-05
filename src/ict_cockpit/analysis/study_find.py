@@ -15,6 +15,19 @@ class StudyFindDraft:
     image_paths: list[str] = field(default_factory=list)
     id: str = field(default_factory=lambda: str(uuid4()))
 
+    def has_content(self) -> bool:
+        return any(
+            (
+                self.instrument.strip(),
+                self.session.strip(),
+                self.pattern_name.strip(),
+                self.observation.strip(),
+                self.notes.strip(),
+                self.image_paths,
+                self.available_move_handles not in (None, 0.0),
+            )
+        )
+
 
 @dataclass
 class StudyFind:
