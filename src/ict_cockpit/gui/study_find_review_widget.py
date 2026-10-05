@@ -10,6 +10,8 @@ from PySide6.QtWidgets import (
     QTextEdit,
     QVBoxLayout,
     QWidget,
+    QSplitter,
+    QHBoxLayout,
 )
 
 from ict_cockpit.analysis.study_find import StudyFind
@@ -73,18 +75,70 @@ class StudyFindReviewWidget(QWidget):
             self.copy_selected_image
         )
 
+        # New full-size button
+        self.open_image_button = QPushButton(
+            "Open Full Size"
+        )
+        self.open_image_button.setEnabled(False)
+        self.open_image_button.clicked.connect(
+            self.open_selected_image
+        )
+
+        image_button_layout = QHBoxLayout()
+
+        image_button_layout.addWidget(
+            self.copy_image_button
+        )
+
+        image_button_layout.addWidget(
+            self.open_image_button
+        )
+
+        left_widget = QWidget()
+        left_layout = QVBoxLayout()
+
+        left_layout.addWidget(QLabel("Saved Study Finds"))
+        left_layout.addWidget(self.study_list)
+
+        left_widget.setLayout(left_layout)
+
+
+        right_widget = QWidget()
+        right_layout = QVBoxLayout()
+
+        right_layout.addWidget(self.details_label)
+
+        right_layout.addWidget(QLabel("Observation"))
+        right_layout.addWidget(self.observation_view)
+
+        right_layout.addWidget(QLabel("Notes"))
+        right_layout.addWidget(self.notes_view)
+
+        right_layout.addWidget(QLabel("Chart Attachments"))
+        right_layout.addWidget(self.image_list)
+
+        right_layout.addWidget(self.image_preview)
+        right_layout.addLayout(
+            image_button_layout
+        )
+
+        right_widget.setLayout(right_layout)
+
+
+        splitter = QSplitter(
+            Qt.Orientation.Horizontal
+        )
+
+        splitter.addWidget(left_widget)
+        splitter.addWidget(right_widget)
+
+        splitter.setStretchFactor(0, 1)
+        splitter.setStretchFactor(1, 3)
+
         layout = QVBoxLayout()
-        layout.addWidget(QLabel("Saved Study Finds"))
-        layout.addWidget(self.study_list)
-        layout.addWidget(self.details_label)
-        layout.addWidget(QLabel("Observation"))
-        layout.addWidget(self.observation_view)
-        layout.addWidget(QLabel("Notes"))
-        layout.addWidget(self.notes_view)
-        layout.addWidget(QLabel("Chart Attachments"))
-        layout.addWidget(self.image_list)
-        layout.addWidget(self.image_preview)
-        layout.addWidget(self.copy_image_button)
+        layout.addWidget(splitter)
+
+        self.setLayout(layout)
 
         self.setLayout(layout)
 
@@ -104,11 +158,17 @@ class StudyFindReviewWidget(QWidget):
             )
 
             self.study_list.addItem(label)
+        if self.study_finds:
+            self.study_list.setCurrentRow(0)
+        else:
+            self.clear_selection()
+
     def show_selected_study_find(
         self,
         row: int,
     ) -> None:
         if row < 0 or row >= len(self.study_finds):
+            self.clear_selection()
             return
 
         study_find = self.study_finds[row]
@@ -171,6 +231,7 @@ class StudyFindReviewWidget(QWidget):
                 "Unable to load chart image"
             )
             self.copy_image_button.setEnabled(False)
+            self.open_image_button.setEnabled(False)
             return
 
         preview = pixmap.scaled(
@@ -182,6 +243,8 @@ class StudyFindReviewWidget(QWidget):
 
         self.image_preview.setPixmap(preview)
         self.copy_image_button.setEnabled(True)
+        self.copy_image_button.setEnabled(True)
+        self.open_image_button.setEnabled(True)
 
 
     def copy_selected_image(self) -> None:
@@ -200,3 +263,48 @@ class StudyFindReviewWidget(QWidget):
         QApplication.clipboard().setPixmap(
             pixmap
         )
+
+    def clear_selection(self) -> None:
+        self.details_label.setText(
+            "No saved Study Finds."
+        )
+
+        self.observation_view.clear()
+        self.notes_view.clear()
+
+        self.image_paths.clear()
+        self.image_list.clear()
+
+        self.update_image_preview(-1)
+
+    def open_selected_image(self) -> None:
+        row = self.image_list.currentRow()
+
+        if row < 0 or row >= len(self.image_paths):
+            return
+
+        pixmap = QPixmap(
+            self.image_paths[row]
+        )
+
+        if pixmap.isNull():
+            return
+
+        viewer = QLabel()
+        viewer.setPixmap(pixmap)
+        viewer.setAlignment(
+            Qt.AlignmentFlag.AlignCenter
+        )
+
+        viewer.setWindowTitle(
+            Path(self.image_paths[row]).name
+        )
+
+        viewer.resize(
+            min(pixmap.width(), 1400),
+            min(pixmap.height(), 900),
+        )
+
+        viewer.show()
+
+        self.full_size_viewer = viewer
