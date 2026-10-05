@@ -91,6 +91,16 @@ class TradingDayShellWidget(QWidget):
         self.session_runs = self.trading_runs
         self.active_session_run = self.active_trading_run
 
+    def ensure_primary_trading_run_started(self) -> bool:
+        """Start Trading Run 1 automatically when a fresh day enters Run Trading Day."""
+        if self.trading_day.status is TradingDayLifecycleStatus.COMPLETE:
+            return False
+        if self.active_trading_run is not None:
+            return False
+        if self.trading_runs:
+            return False
+        return self.start_trading_run()
+
     def start_trading_run(self) -> bool:
         if self.trading_day.status is TradingDayLifecycleStatus.COMPLETE:
             return False
@@ -219,9 +229,15 @@ class TradingDayShellWidget(QWidget):
             )
 
         self.runtime_frame.setVisible(self.active_trading_run is not None)
-        self.start_run_button.setEnabled(
-            not day_complete and self.active_trading_run is None
+        can_start_another = (
+            not day_complete
+            and self.active_trading_run is None
+            and bool(self.trading_runs)
         )
+        self.start_run_button.setVisible(can_start_another)
+        self.start_run_button.setEnabled(can_start_another)
+        self.start_run_button.setText("Start Another Trading Run")
+
         self.complete_day_button.setEnabled(
             not day_complete and self.active_trading_run is None
         )
