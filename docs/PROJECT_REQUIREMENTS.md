@@ -20,6 +20,7 @@ The application is not primarily a P&L dashboard. Its first measure of success i
 6. **Low-friction interaction.** Buttons, keyboard navigation, mouse controls, and future macro-pad inputs should trigger shared application actions rather than duplicate logic.
 7. **Local-first and resilient.** Temporary NAS, network, Trilium, or external-service outages must not stop core local data capture.
 8. **Safe evolution.** Database schema changes use explicit migrations. Application behavior should be testable in small, known-good milestones.
+9. **Close the alpha feedback loop.** While the product is being dogfooded, friction and feature wishes should be capturable in seconds and retained in a human-readable form for later prioritization.
 
 ## 3. Desired Operating Modes
 
@@ -134,9 +135,26 @@ Desired outputs:
 
 Near-term preference: use screenshots/captures from the existing TradingView workflow rather than rebuilding the charting environment.
 
-Potential future flow:
+Current/near-term flow:
 
-`TradingView chart -> capture/import -> structured study/trade record -> generated share card`
+`TradingView chart -> clipboard/file capture -> managed attachment -> structured study/trade record -> generated share card`
+
+Clipboard image paste is an accepted high-value bridge for TradingView/Ksnip use.
+
+### 5.4 Responsive chart gallery — alpha priority 6/10
+
+Chart images are first-class study data and should become automatically visible when reviewing a Study Find or Trade Summary rather than requiring filename-by-filename navigation.
+
+Desired behavior:
+- 1 image: large primary view.
+- 2 images: side-by-side when space permits.
+- 3 images: balanced 2+1 or equivalent responsive arrangement.
+- 4+ images: compact responsive grid with easy access to full resolution.
+- Clicking/selecting an image opens the original full-resolution capture.
+- Layout should adapt to available panel/window size rather than assume one fixed geometry.
+- The gallery infrastructure should eventually be shared by Study Find, Trade Summary, Film Night, and Lab review views.
+
+Priority: **6/10**. Important for visual review and Film Night, but below the immediate alpha feedback loop and Trade Summary data-capture path.
 
 An embedded TradingView-style chart can remain a later option if it becomes valuable, but is not currently a priority.
 
@@ -148,6 +166,7 @@ An embedded TradingView-style chart can remain a later option if it becomes valu
 - Standard Tab/Shift+Tab navigation inside steps, with workflow navigation at step boundaries.
 - Logitech MX Master horizontal thumbwheel for previous/next workflow navigation.
 - Logitech MX Master Back/Forward buttons for previous/next workflow navigation.
+- Clipboard chart paste from the normal TradingView/Ksnip workflow.
 
 ### 6.2 Input architecture direction
 
@@ -173,22 +192,51 @@ Possible triggers:
 
 Dangerous actions such as arming or order submission must have stronger safeguards than harmless navigation actions.
 
-## 7. Friction / Process-Improvement Feedback — defer implementation, preserve concept
+## 7. Alpha Feedback / Friction Capture — alpha priority 9/10
 
-Guided Mode should eventually support a nearly instantaneous way to mark “something here felt wrong” without opening settings or interrupting the current process.
+During alpha testing, the application should provide a nearly instantaneous way to record friction, missing capability, workflow confusion, or a feature wish without abandoning the current trading/study context.
 
-Future flow:
+Priority: **9/10**. This is now an early alpha capability rather than a deferred analytics feature because it closes the feedback loop while the product is being actively dogfooded.
 
-`notice friction -> one-action flag -> continue workflow -> review later in Workbench/Lab`
+### 7.1 Design goal
 
-Possible future analysis:
-- Friction heat map by workflow step/field/revision.
+The capture mechanism should take only a few seconds and should not force the user into a separate planning system while trading or reviewing charts.
+
+Preferred flow:
+
+`notice friction/wish -> one action/hotkey -> short note -> continue workflow`
+
+A friction marker should automatically capture useful context where available, such as:
+- Timestamp.
+- Active app area/tab/workflow.
+- Current record or draft identifier when applicable.
+- Current workflow step or field when available.
+- A lightweight category such as `friction`, `wish`, `bug`, or `review later`.
+- Freeform human-readable note.
+
+The note text is the important artifact. Structured context exists to make later triage easier, not to make capture cumbersome.
+
+### 7.2 Human-readable review/export
+
+Feedback records should be easy to review inside the suite and easy to bring into development/planning sessions.
+
+Near-term acceptable outputs include:
+- A simple chronological Feedback/Review queue in the application.
+- Copy selected/all as Markdown or plain text.
+- A generated Markdown feedback digest suitable for pasting into ChatGPT or committing to project notes.
+
+This should not require GitHub issue creation during capture. Later, selected feedback items can be promoted into roadmap items, GitHub issues, or completed/archived states.
+
+### 7.3 Future analysis
+
+Once enough usage exists, the same data may support:
+- Friction heat maps by workflow step/field/revision.
 - Repeated Back/Next behavior.
 - Time spent per step.
 - Fields frequently revised before completion.
 - Steps frequently skipped or overridden.
 
-Do not prioritize this before enough real workflow usage exists to justify it.
+Those analytics remain later work; fast capture is the current requirement.
 
 ## 8. TDA Status and Adherence
 
@@ -220,6 +268,7 @@ Desired future adherence data:
 - SQLite authoritative local database
 - pytest
 - Git local version control
+- GitHub remote repository / connected development workflow
 - VS Code
 - Linux primary workstation
 - NAS for safe snapshots/backups, not the live database
@@ -325,7 +374,7 @@ Specific implications:
 
 ### Completed foundations
 
-- Git repository and known-good commit workflow.
+- Git repository, GitHub remote, and known-good commit workflow.
 - Python virtual environment and packaging.
 - PySide6 application skeleton.
 - TDA domain model.
@@ -333,7 +382,7 @@ Specific implications:
 - Text normalization/validation.
 - SQLite connection infrastructure.
 - WAL and foreign-key configuration.
-- SQL schema and explicit migrations through schema version 3.
+- SQL schema and explicit migrations through schema version 6.
 - TDA repository create/read/update behavior.
 - Duplicate protection.
 - Persistence across database reopen.
@@ -355,52 +404,59 @@ Specific implications:
 - Quiet saved-state confirmation.
 - Saved/reset state and Start New TDA.
 - Stable UUID throughout a draft lifecycle.
-- Draft-specific repository upsert with finalized-record protection.
-- Debounced TDA draft autosave.
-- Test suite currently at 42 passing tests at this checkpoint.
+- TDA draft autosave and restart restore.
+- Study Find domain/repository/capture workflow.
+- Study Find text summary generation/copy.
+- Multiple managed chart attachments.
+- Study Find clipboard chart paste.
+- Study Review split-pane workflow and full-size chart opening.
+- Separate Study Find draft model/table.
+- Debounced Study Find draft autosave and restart restore.
+- Draft chart-path restoration and safe image numbering.
+- Final Study Find save clears its draft.
+- Test suite currently at 95 passing tests at this checkpoint.
 
-### Next planned milestone
+### Next planned milestones
 
-Restore the most recent unfinished draft on application launch:
-1. `TDARepository.get_latest_draft()`.
-2. `TDAWorkflowWidget.load_tda()`.
-3. Test each independently.
-4. Wire restore behavior into startup.
+1. Add low-friction alpha Feedback/Friction capture.
+2. Build first Trade Summary UI with draft autosave from the beginning.
+3. Dogfood Study Find + Trade Summary during TradingView replay/backtesting.
+4. Use captured friction/wishes to revise priorities.
+5. Add responsive chart-gallery behavior when it becomes the best next visual-review improvement.
 
 ## 12. Priority Roadmap
 
 | Priority | Area | Status |
 |---|---|---|
-| P0 | Stable local data foundation | In progress / strong foundation |
-| P0 | Guided TDA workflow | In progress |
-| P0 | Draft autosave + restore | Autosave complete; restore next |
-| P1 | Study/backtesting observation capture | Planned |
-| P1 | Configurable text summaries | Planned early |
-| P1 | Chart screenshot/import + share package | Planned early |
-| P1 | Revision-controlled workflow/template definitions | Planned architecture; implementation later |
-| P1 | Workbench/Lab shell | Planned |
-| P2 | Process/revision analytics | Planned |
-| P2 | Basic configurable bindings/macro actions | Prototype inputs working; generalized binding system later |
-| P2 | Friction flags / Lab task queue | Concept preserved; intentionally deferred |
-| P2 | Multi-device study access | Requirement accepted; sync implementation deferred |
-| P3 | Trilium integration | Planned |
-| P3 | NinjaTrader execution adapter | Later |
-| P3 | Live Trade Mode / safety enforcement | Intentionally last major focus |
-| P3 | Cross-device authoritative live safety | Later; requires central shared state |
+| 10/10 | Stable local data foundation and preservation | Strong foundation / ongoing |
+| 10/10 | Guided TDA workflow and draft reliability | Working alpha |
+| 9/10 | Alpha Feedback/Friction capture and human-readable review/export | **Next early capability** |
+| 9/10 | Trade Summary capture with draft autosave and Trade Source/Account Context | Immediate next product workflow |
+| 9/10 | Study/backtesting observation capture and clipboard chart bridge | Working alpha |
+| 8/10 | Dogfood TradingView replay/backtest workflow and gather real records | Begin as soon as Trade Summary exists |
+| 7/10 | Economic-news/calendar context and later filters/lockouts | Planned |
+| 6/10 | Responsive chart gallery / Film Night visual review foundation | Restored to roadmap; planned |
+| 6/10 | Actions/intent layer and reduced button dependence | Started with Paste Chart; expand incrementally |
+| 6/10 | Workbench/Lab shell | Planned when review/configuration needs justify it |
+| 5/10 | Revision-controlled workflow/template definitions | Architecture direction accepted; implementation later |
+| 4/10 | Process/revision analytics | Planned after useful sample size |
+| 4/10 | Multi-device study access | Requirement accepted; sync implementation deferred |
+| 3/10 | Trilium integration | Planned |
+| 2/10 | NinjaTrader execution adapter | Later |
+| 1/10 | Live Trade Mode / safety enforcement | Intentionally last major focus |
 
 ## 13. Near-Term Development Sequence
 
-1. Restore latest draft on launch.
-2. Verify draft lifecycle end-to-end.
-3. Begin expanding Guided Mode based on actual use rather than speculative field growth.
-4. Introduce study/backtesting-find record concept.
-5. Create first configurable text-summary template system.
-6. Add quick copy/share workflow.
-7. Add chart screenshot/import attachment flow.
-8. Begin Workbench/Lab shell when configuration/revision needs justify it.
-9. Add process revision definitions and immutable published revisions.
-10. Build analytics around accumulated study/process data.
-11. Defer live execution until the study/process system is mature.
+1. Implement minimal alpha Feedback/Friction capture and human-readable review/export.
+2. Build first Trade Summary UI using the existing calculation/render pipeline.
+3. Include Trade Source / Account Context in Trade Summary from the start.
+4. Give Trade Summary draft autosave/restart restore from its first usable version.
+5. Reuse the managed attach/paste/preview/copy chart workflow in Trade Summary.
+6. Begin actual TradingView replay/backtesting sessions using Study Find + Trade Summary.
+7. Periodically ingest the Feedback/Friction queue into roadmap/prioritization sessions.
+8. Add responsive chart gallery (priority 6/10) when visual review friction justifies the next slice.
+9. Continue expanding actions/intents and reducing button proliferation based on real use.
+10. Defer live execution until the study/process system is mature.
 
 ## 14. Development Practices
 
@@ -438,8 +494,10 @@ These should remain explicit rather than being silently decided in code:
 - Exact workflow revision/publishing UX.
 - Study observation taxonomy.
 - Summary-template syntax and editor UX.
-- Screenshot capture mechanism from TradingView workflow.
 - Exact Workbench layout.
+- Feedback capture categories and whether context tagging should remain fully automatic or allow optional editing.
+- Feedback queue lifecycle: open / promoted / resolved / archived.
+- Exact responsive gallery layout behavior beyond the 1–3 image priority cases.
 - Draft restoration policy if multiple drafts exist.
 - Whether portable laptop use initially uses manual export/import, sync service, or central DB/API.
 - Offline behavior for future multi-device operation.
@@ -449,4 +507,4 @@ These should remain explicit rather than being silently decided in code:
 
 ---
 
-**Guiding test for future features:** Does this reduce friction, improve process adherence, preserve honest data, or create a meaningful way to analyze/communicate that data? If not, it is probably not a current priority.
+**Guiding test for future features:** Does this reduce friction, improve process adherence, preserve honest data, close the alpha feedback loop, or create a meaningful way to analyze/communicate that data? If not, it is probably not a current priority.
