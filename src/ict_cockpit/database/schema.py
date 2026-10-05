@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 8
+CURRENT_SCHEMA_VERSION = 9
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -32,6 +32,9 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 7:
             _migrate_version_7_to_8(connection)
             version = 8
+        if version == 8:
+            _migrate_version_8_to_9(connection)
+            version = 9
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -225,3 +228,21 @@ def _migrate_version_7_to_8(connection: sqlite3.Connection) -> None:
         """
     )
     connection.execute("PRAGMA user_version = 8")
+
+
+def _migrate_version_8_to_9(connection: sqlite3.Connection) -> None:
+    connection.execute(
+        """
+        CREATE TABLE tda_station_session (
+            id TEXT PRIMARY KEY,
+            blueprint_revision TEXT NOT NULL,
+            current_station_id TEXT NOT NULL,
+            observations_json TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+        """
+    )
+    connection.execute(
+        "CREATE INDEX idx_tda_station_session_updated_at ON tda_station_session(updated_at)"
+    )
+    connection.execute("PRAGMA user_version = 9")

@@ -5,16 +5,18 @@ from PySide6.QtWidgets import (
     QListWidget,
     QListWidgetItem,
     QStackedWidget,
+    QTabWidget,
     QVBoxLayout,
     QWidget,
 )
 
 from ict_cockpit.gui.process_blueprint_widget import ProcessBlueprintWidget
+from ict_cockpit.gui.tda_station_runner_widget import TDAStationRunnerWidget
 from ict_cockpit.trade_plan import TradePlanDefinition, TradePlanSectionDefinition
 
 
 class TradePlanWidget(QWidget):
-    """Read-only alpha shell for the trading system and its executable process."""
+    """Alpha shell for the trading system and its executable process."""
 
     def __init__(self, trade_plan: TradePlanDefinition) -> None:
         super().__init__()
@@ -44,13 +46,19 @@ class TradePlanWidget(QWidget):
         self.process_blueprint_widget = ProcessBlueprintWidget(
             trade_plan.process_blueprint
         )
+        self.tda_station_runner_widget = TDAStationRunnerWidget(
+            trade_plan.process_blueprint
+        )
+        self.process_tabs = QTabWidget()
+        self.process_tabs.addTab(self.process_blueprint_widget, "Process Map")
+        self.process_tabs.addTab(self.tda_station_runner_widget, "Run TDA")
 
         self._section_ids: list[str] = []
         for section in trade_plan.sections:
             self._section_ids.append(section.id)
             self.section_list.addItem(QListWidgetItem(section.name))
             if section.id == "process":
-                page = self.process_blueprint_widget
+                page = self.process_tabs
             else:
                 page = self._build_section_page(section)
             self.stack.addWidget(page)
@@ -103,6 +111,8 @@ class TradePlanWidget(QWidget):
     @property
     def feedback_record_id(self) -> str:
         if self.selected_section_id == "process":
+            if self.process_tabs.currentWidget() is self.tda_station_runner_widget:
+                return self.tda_station_runner_widget.current_station_id
             station_id = self.process_blueprint_widget.selected_station_id
             if station_id:
                 return station_id

@@ -1,6 +1,13 @@
 from dataclasses import dataclass, field
 
 
+DEFAULT_STATION_ACTIONS = (
+    "Prepare the paired TradingView pane and make any required manual chart markings.",
+    "Observe the chart in the context of this station's question.",
+    "Record the observation that should carry forward in the analysis.",
+)
+
+
 @dataclass(frozen=True)
 class StationDefinition:
     id: str
@@ -8,6 +15,9 @@ class StationDefinition:
     question: str
     tradingview_role: str = ""
     reference: str = ""
+    action_items: tuple[str, ...] = DEFAULT_STATION_ACTIONS
+    layout_row: int = -1
+    layout_column: int = -1
 
     def __post_init__(self) -> None:
         if not self.id.strip():
@@ -16,6 +26,10 @@ class StationDefinition:
             raise ValueError("station name cannot be empty")
         if not self.question.strip():
             raise ValueError("station question cannot be empty")
+        if any(not item.strip() for item in self.action_items):
+            raise ValueError("station action items cannot be empty")
+        if self.layout_row < -1 or self.layout_column < -1:
+            raise ValueError("station layout coordinates cannot be less than -1")
 
 
 @dataclass(frozen=True)
@@ -24,6 +38,7 @@ class DeckDefinition:
     name: str
     tradingview_layout: str = ""
     stations: tuple[StationDefinition, ...] = field(default_factory=tuple)
+    grid_columns: int = 2
 
     def __post_init__(self) -> None:
         if not self.id.strip():
@@ -32,6 +47,8 @@ class DeckDefinition:
             raise ValueError("deck name cannot be empty")
         if not self.stations:
             raise ValueError("deck must contain at least one station")
+        if self.grid_columns < 1:
+            raise ValueError("deck grid columns must be at least one")
 
 
 @dataclass(frozen=True)
