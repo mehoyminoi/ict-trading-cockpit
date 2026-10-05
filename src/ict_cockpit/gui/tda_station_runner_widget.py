@@ -23,18 +23,22 @@ from ict_cockpit.process_blueprint import ProcessBlueprint
 
 
 class TDAStationRunnerWidget(QWidget):
-    """Execute TDA stations in Focus view or spatial Deck view."""
+    """Execute TDA stations in Focus view or a global spatial Deck overview."""
 
     session_changed = Signal(TDAStationSession)
 
     def __init__(self, blueprint: ProcessBlueprint) -> None:
         super().__init__()
         self.blueprint = blueprint
-        self._stations = [
-            (deck, station)
+        self._tda_decks = [
+            deck
             for mode in blueprint.modes
             if mode.id == "tda"
             for deck in mode.decks
+        ]
+        self._stations = [
+            (deck, station)
+            for deck in self._tda_decks
             for station in deck.stations
         ]
         if not self._stations:
@@ -96,12 +100,16 @@ class TDAStationRunnerWidget(QWidget):
         focus_layout.addLayout(nav)
 
         self.deck_layout = QVBoxLayout(self.deck_page)
-        self.deck_heading = QLabel()
-        self.deck_heading.setStyleSheet("font-size: 16px; font-weight: 600;")
-        self.deck_layout.addWidget(self.deck_heading)
-        self.deck_grid_host = QWidget()
-        self.deck_grid = QGridLayout(self.deck_grid_host)
-        self.deck_layout.addWidget(self.deck_grid_host, 1)
+        self.deck_overview_heading = QLabel("TDA Deck Overview")
+        self.deck_overview_heading.setStyleSheet(
+            "font-size: 16px; font-weight: 600;"
+        )
+        self.deck_layout.addWidget(self.deck_overview_heading)
+        self.deck_overview_host = QWidget()
+        self.deck_overview_layout = QVBoxLayout(self.deck_overview_host)
+        self.deck_overview_layout.setContentsMargins(0, 0, 0, 0)
+        self.deck_layout.addWidget(self.deck_overview_host, 1)
+        self.deck_section_headings: list[QLabel] = []
 
         outer = QVBoxLayout(self)
         outer.addWidget(self.view_tabs)
@@ -133,7 +141,9 @@ class TDAStationRunnerWidget(QWidget):
         return self.session.current_station_id
 
     def _touch(self) -> None:
-        self.session.updated_at = datetime.now().astimezone().isoformat(timespec="seconds")
+        self.session.updated_at = datetime.now().astimezone().isoformat(
+            timespec="seconds"
+        )
         self.session_changed.emit(self.session)
 
     def _observation_changed(self) -> None:
@@ -199,7 +209,7 @@ class TDAStationRunnerWidget(QWidget):
             self.view_tabs.setCurrentWidget(self.focus_page)
 
     def _navigate_wheel_direction(self, delta: int) -> None:
-        """Navigate stations, using Deck as the zoomed-out boundary of Focus."""
+        """Navigate stations, using the global Deck overview as Focus boundary."""
         index = self.current_station_index
         if delta < 0:
             if index >= len(self._stations) - 1:
@@ -248,7 +258,11 @@ class TDAStationRunnerWidget(QWidget):
                     and not isinstance(watched, QTextEdit)
                 ):
                     delta = event.angleDelta()
-                    dominant = delta.x() if abs(delta.x()) > abs(delta.y()) else delta.y()
+                    dominant = (
+                        delta.x()
+                        if abs(delta.x()) > abs(delta.y())
+                        else delta.y()
+                    )
                     if self._accumulate_wheel_navigation(dominant):
                         return True
 
@@ -268,7 +282,11 @@ class TDAStationRunnerWidget(QWidget):
         self._touch()
         self._update_view()
 
-    def _rebuild_actions(self, action_items: tuple[str, ...], completed: list[int]) -> None:
+    def _rebuild_actions(
+        self,
+        action_items: tuple[str, ...],
+        completed: list[int],
+    ) -> None:
         while self.actions_layout.count():
             item = self.actions_layout.takeAt(0)
             widget = item.widget()
@@ -281,7 +299,10 @@ class TDAStationRunnerWidget(QWidget):
             checkbox = QCheckBox(text)
             checkbox.setChecked(index in completed)
             checkbox.toggled.connect(
-                lambda checked, action_index=index: self._action_changed(action_index, checked)
+                lambda checked, action_index=index: self._action_changed(
+                    action_index,
+                    checked,
+                )
             )
             self.actions_layout.addWidget(checkbox)
             self._action_checkboxes.append(checkbox)
@@ -290,57 +311,78 @@ class TDAStationRunnerWidget(QWidget):
     def _current_deck(self):
         return self._stations[self.current_station_index][0]
 
-    def _refresh_deck_view(self) -> None:
-        while self.deck_grid.count():
-            item = self.deck_grid.takeAt(0)
+    def _clear_layout(self, layout) -> None:
+        while layout.count():
+            item = layout.takeAt(0)
+            child_layout = item.layout()
+            if child_layout is not None:
+                self._clear_layout(child_layout)
+                child_layout.deleteLater()
             widget = item.widget()
             if widget is not None:
                 widget.deleteLater()
 
-        current_deck = self._current_deck()
-        self.deck_heading.setText(
-            f"{current_deck.name} · TradingView: {current_deck.tradingview_layout}"
+    def _build_station_button(self, station) -> QPushButton:
+        observation = self.session.observation_for(station.id)
+        if observation.completed:
+            state = "✓ Complete"
+        elif station.id == self.current_station_id:
+            state = "▶ Current"
+        else:
+            state = "○ Pending"
+
+        summary = observation.observation.strip().replace("\n", " ")
+        if len(summary) > 90:
+            summary = summary[:87] + "..."
+        if not summary:
+            summary = "No observation yet"
+
+        action_count = len(station.action_items)
+        action_progress = (
+            f"{len(observation.completed_actions)}/{action_count} actions"
         )
-
-        deck_stations = [
-            station
-            for deck, station in self._stations
-            if deck.id == current_deck.id
-        ]
-        for index, station in enumerate(deck_stations):
-            observation = self.session.observation_for(station.id)
-            if observation.completed:
-                state = "✓ Complete"
-            elif station.id == self.current_station_id:
-                state = "▶ Current"
-            else:
-                state = "○ Pending"
-
-            summary = observation.observation.strip().replace("\n", " ")
-            if len(summary) > 90:
-                summary = summary[:87] + "..."
-            if not summary:
-                summary = "No observation yet"
-
-            action_count = len(station.action_items)
-            action_progress = f"{len(observation.completed_actions)}/{action_count} actions"
-            button = QPushButton(
-                f"{state}\n{station.name}\n{action_progress}\n\n{summary}"
+        button = QPushButton(
+            f"{state}\n{station.name}\n{action_progress}\n\n{summary}"
+        )
+        button.setMinimumHeight(120)
+        button.setCheckable(True)
+        button.setChecked(station.id == self.current_station_id)
+        button.clicked.connect(
+            lambda _checked=False, station_id=station.id: (
+                self.open_station_from_deck(station_id)
             )
-            button.setMinimumHeight(130)
-            button.setCheckable(True)
-            button.setChecked(station.id == self.current_station_id)
-            button.clicked.connect(
-                lambda _checked=False, station_id=station.id: self.open_station_from_deck(station_id)
-            )
+        )
+        return button
 
-            if station.layout_row >= 0 and station.layout_column >= 0:
-                row = station.layout_row
-                column = station.layout_column
-            else:
-                row = index // current_deck.grid_columns
-                column = index % current_deck.grid_columns
-            self.deck_grid.addWidget(button, row, column)
+    def _refresh_deck_view(self) -> None:
+        self._clear_layout(self.deck_overview_layout)
+        self.deck_section_headings = []
+
+        for deck in self._tda_decks:
+            heading = QLabel(
+                f"{deck.name} · TradingView: {deck.tradingview_layout}"
+            )
+            heading.setStyleSheet("font-weight: 600;")
+            self.deck_overview_layout.addWidget(heading)
+            self.deck_section_headings.append(heading)
+
+            grid_host = QWidget()
+            grid = QGridLayout(grid_host)
+            grid.setContentsMargins(0, 0, 0, 8)
+
+            for index, station in enumerate(deck.stations):
+                button = self._build_station_button(station)
+                if station.layout_row >= 0 and station.layout_column >= 0:
+                    row = station.layout_row
+                    column = station.layout_column
+                else:
+                    row = index // deck.grid_columns
+                    column = index % deck.grid_columns
+                grid.addWidget(button, row, column)
+
+            self.deck_overview_layout.addWidget(grid_host)
+
+        self.deck_overview_layout.addStretch()
 
     def _update_view(self) -> None:
         index = self.current_station_index
@@ -363,7 +405,10 @@ class TDAStationRunnerWidget(QWidget):
         self._loading = True
         self.observation_input.setPlainText(observation.observation)
         self._loading = False
-        self._rebuild_actions(station.action_items, observation.completed_actions)
+        self._rebuild_actions(
+            station.action_items,
+            observation.completed_actions,
+        )
 
         self.back_button.setEnabled(index > 0)
         if index == len(self._stations) - 1 and observation.completed:
