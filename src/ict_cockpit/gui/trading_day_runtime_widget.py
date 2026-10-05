@@ -218,9 +218,8 @@ class TradingDayRuntimeWidget(QWidget):
     def _focus_first_incomplete_tda_station(self) -> None:
         if not self.incomplete_tda_station_ids:
             return
-        self.tda_station_runner_widget.select_station(self.incomplete_tda_station_ids[0])
-        self.tda_station_runner_widget.view_tabs.setCurrentWidget(
-            self.tda_station_runner_widget.focus_page
+        self.tda_station_runner_widget.open_station_from_deck(
+            self.incomplete_tda_station_ids[0]
         )
 
     # Backward-compatible helper while older tests/callers migrate to named transitions.
