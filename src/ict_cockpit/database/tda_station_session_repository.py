@@ -17,6 +17,7 @@ class TDAStationSessionRepository:
                 "station_id": item.station_id,
                 "observation": item.observation,
                 "completed": item.completed,
+                "completed_actions": item.completed_actions,
             }
             for item in session.observations
         ]
@@ -65,6 +66,7 @@ class TDAStationSessionRepository:
                     station_id=item["station_id"],
                     observation=item.get("observation", ""),
                     completed=bool(item.get("completed", False)),
+                    completed_actions=list(item.get("completed_actions", [])),
                 )
                 for item in payload
             ],
