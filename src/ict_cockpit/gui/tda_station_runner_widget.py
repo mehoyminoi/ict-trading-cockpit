@@ -58,6 +58,9 @@ class TDAStationRunnerWidget(QWidget):
 
         self.progress_label = QLabel()
         self.progress_label.setStyleSheet("font-weight: 600;")
+        self.station_state_label = QLabel()
+        self.station_state_label.setFrameShape(QFrame.Shape.StyledPanel)
+        self.station_state_label.setContentsMargins(8, 5, 8, 5)
         self.deck_label = QLabel()
         self.deck_label.setWordWrap(True)
         self.station_label = QLabel()
@@ -84,7 +87,7 @@ class TDAStationRunnerWidget(QWidget):
         self.completion_guidance_label.hide()
 
         self.back_button = QPushButton("← Previous Station")
-        self.next_button = QPushButton("Complete & Continue →")
+        self.next_button = QPushButton("Mark Station Complete & Continue →")
         self.back_button.clicked.connect(self.go_back)
         self.next_button.clicked.connect(self.complete_and_continue)
 
@@ -95,6 +98,7 @@ class TDAStationRunnerWidget(QWidget):
 
         focus_layout = QVBoxLayout(self.focus_page)
         focus_layout.addWidget(self.progress_label)
+        focus_layout.addWidget(self.station_state_label)
         focus_layout.addWidget(self.deck_label)
         focus_layout.addWidget(self.station_label)
         focus_layout.addWidget(self.question_label)
@@ -147,6 +151,23 @@ class TDAStationRunnerWidget(QWidget):
     def current_station_id(self) -> str:
         return self.session.current_station_id
 
+    @staticmethod
+    def station_state(observation: TDAStationObservation) -> str:
+        """Return the station's process state without conflating work with completion."""
+        if observation.completed:
+            return "complete"
+        if observation.observation.strip() or observation.completed_actions:
+            return "in_progress"
+        return "pending"
+
+    @staticmethod
+    def station_state_text(state: str) -> str:
+        if state == "complete":
+            return "✓ Complete"
+        if state == "in_progress":
+            return "◐ In Progress — work recorded, not yet marked complete"
+        return "○ Pending"
+
     def _touch(self) -> None:
         self.session.updated_at = datetime.now().astimezone().isoformat(
             timespec="seconds"
@@ -158,6 +179,9 @@ class TDAStationRunnerWidget(QWidget):
             return
         observation = self.session.observation_for(self.current_station_id)
         observation.observation = self.observation_input.toPlainText().strip()
+        self.station_state_label.setText(
+            self.station_state_text(self.station_state(observation))
+        )
         self._touch()
         self._refresh_deck_view()
 
@@ -171,6 +195,9 @@ class TDAStationRunnerWidget(QWidget):
         else:
             indexes.discard(action_index)
         observation.completed_actions = sorted(indexes)
+        self.station_state_label.setText(
+            self.station_state_text(self.station_state(observation))
+        )
         self._touch()
         self._refresh_deck_view()
 
@@ -331,12 +358,10 @@ class TDAStationRunnerWidget(QWidget):
 
     def _build_station_button(self, station) -> QPushButton:
         observation = self.session.observation_for(station.id)
-        if observation.completed:
-            state = "✓ Complete"
-        elif station.id == self.current_station_id:
-            state = "▶ Current"
-        else:
-            state = "○ Pending"
+        state = self.station_state(observation)
+        state_text = self.station_state_text(state)
+        if station.id == self.current_station_id:
+            state_text = f"▶ Current · {state_text}"
 
         summary = observation.observation.strip().replace("\n", " ")
         if len(summary) > 90:
@@ -349,7 +374,7 @@ class TDAStationRunnerWidget(QWidget):
             f"{len(observation.completed_actions)}/{action_count} actions"
         )
         button = QPushButton(
-            f"{state}\n{station.name}\n{action_progress}\n\n{summary}"
+            f"{state_text}\n{station.name}\n{action_progress}\n\n{summary}"
         )
         button.setMinimumHeight(120)
         button.setCheckable(True)
@@ -402,6 +427,9 @@ class TDAStationRunnerWidget(QWidget):
             f"TDA station {index + 1} of {len(self._stations)} · "
             f"{completed_count} complete"
         )
+        self.station_state_label.setText(
+            self.station_state_text(self.station_state(observation))
+        )
         self.deck_label.setText(
             f"Deck: {deck.name}\nTradingView layout: {deck.tradingview_layout}"
         )
@@ -430,14 +458,14 @@ class TDAStationRunnerWidget(QWidget):
             self.completion_guidance_label.hide()
 
         self.back_button.setEnabled(index > 0)
-        if index == len(self._stations) - 1 and observation.completed:
+        if observation.completed:
             self.next_button.setText("Station Complete")
             self.next_button.setEnabled(False)
         elif index == len(self._stations) - 1:
-            self.next_button.setText("Complete Final Station")
+            self.next_button.setText("Mark Final Station Complete")
             self.next_button.setEnabled(True)
         else:
-            self.next_button.setText("Complete & Continue →")
+            self.next_button.setText("Mark Station Complete & Continue →")
             self.next_button.setEnabled(True)
 
         self._refresh_deck_view()
