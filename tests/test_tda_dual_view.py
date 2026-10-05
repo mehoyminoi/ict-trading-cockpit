@@ -62,6 +62,18 @@ def test_focus_and_deck_views_share_current_station() -> None:
     assert widget._current_deck().id == "tda-context"
 
 
+def test_deck_view_shows_all_tda_decks_at_once() -> None:
+    get_app()
+    blueprint = build_default_process_blueprint()
+    widget = TDAStationRunnerWidget(blueprint)
+
+    headings = [label.text() for label in widget.deck_section_headings]
+
+    assert len(headings) == 2
+    assert any("TDA Deck 1" in text for text in headings)
+    assert any("TDA Deck 2" in text for text in headings)
+
+
 def test_deck_station_opens_directly_in_focus_view() -> None:
     get_app()
     blueprint = build_default_process_blueprint()
