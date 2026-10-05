@@ -1,8 +1,8 @@
 from pathlib import Path
 from uuid import uuid4
 
-from PySide6.QtCore import QDate, Qt, Signal
-from PySide6.QtGui import QPixmap
+from PySide6.QtCore import QDate, QEvent, Qt, Signal
+from PySide6.QtGui import QAction, QKeySequence, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
     QDateEdit,
@@ -20,7 +20,10 @@ from PySide6.QtWidgets import (
 )
 
 from ict_cockpit.analysis.study_find import StudyFind
-from ict_cockpit.media.study_find_media import store_study_find_image
+from ict_cockpit.media.study_find_media import (
+    get_study_find_image_destination,
+    store_study_find_image,
+)
 from ict_cockpit.summary.renderer import SummaryRenderer
 from ict_cockpit.summary.study_find_context import StudyFindSummaryContext
 from ict_cockpit.summary.templates import STUDY_FIND_SUMMARY_V1
@@ -37,6 +40,12 @@ class StudyFindWidget(QWidget):
         self.current_study_find_id = str(uuid4())
         self.image_paths: list[str] = []
         self.next_image_number = 1
+
+        self.paste_chart_action = QAction("Paste Chart", self)
+        self.paste_chart_action.triggered.connect(
+            self.paste_chart_from_clipboard
+        )
+        self.addAction(self.paste_chart_action)
 
         self.date_input = QDateEdit()
         self.date_input.setCalendarPopup(True)
@@ -127,6 +136,24 @@ class StudyFindWidget(QWidget):
 
         self.setLayout(layout)
 
+        app = QApplication.instance()
+        if app is not None:
+            app.installEventFilter(self)
+
+    def eventFilter(self, watched, event) -> bool:
+        if (
+            isinstance(watched, QWidget)
+            and (watched is self or self.isAncestorOf(watched))
+            and event.type() == QEvent.Type.KeyPress
+            and event.matches(QKeySequence.StandardKey.Paste)
+            and QApplication.clipboard().mimeData().hasImage()
+            and self.paste_chart_action.isEnabled()
+        ):
+            self.paste_chart_action.trigger()
+            return True
+
+        return super().eventFilter(watched, event)
+
     def build_study_find(self) -> StudyFind:
         primary_image_path = self.image_paths[0] if self.image_paths else ""
 
@@ -177,11 +204,31 @@ class StudyFindWidget(QWidget):
             Path(file_path),
             self.next_image_number,
         )
-        self.next_image_number += 1
+        self._add_managed_image(stored_path)
 
-        path_string = str(stored_path)
+    def paste_chart_from_clipboard(self) -> bool:
+        image = QApplication.clipboard().image()
+        if image.isNull():
+            return False
+
+        destination_path = get_study_find_image_destination(
+            self.current_study_find_id,
+            self.next_image_number,
+            ".png",
+        )
+
+        if not image.save(str(destination_path), "PNG"):
+            return False
+
+        self._add_managed_image(destination_path)
+        return True
+
+    def _add_managed_image(self, image_path: Path) -> None:
+        path_string = str(image_path)
         self.image_paths.append(path_string)
-        self.image_list.addItem(Path(path_string).name)
+        self.image_list.addItem(image_path.name)
+        self.next_image_number += 1
+        self.image_list.setCurrentRow(self.image_list.count() - 1)
 
     def remove_selected_image(self) -> None:
         selected_row = self.image_list.currentRow()
@@ -202,6 +249,7 @@ class StudyFindWidget(QWidget):
         self.save_button.setEnabled(False)
         self.attach_image_button.setEnabled(False)
         self.remove_image_button.setEnabled(False)
+        self.paste_chart_action.setEnabled(False)
         self.new_study_find_button.show()
 
     def reset_form(self) -> None:
@@ -225,6 +273,7 @@ class StudyFindWidget(QWidget):
         self.save_button.setEnabled(True)
         self.attach_image_button.setEnabled(True)
         self.remove_image_button.setEnabled(True)
+        self.paste_chart_action.setEnabled(True)
         self.new_study_find_button.hide()
 
         self.instrument_input.setFocus()
