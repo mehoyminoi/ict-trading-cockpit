@@ -12,10 +12,12 @@ from ict_cockpit.app_info import APP_VERSION, window_title
 from ict_cockpit.database.feedback_repository import FeedbackRepository
 from ict_cockpit.database.study_find_repository import StudyFindRepository
 from ict_cockpit.database.tda_repository import TDARepository
+from ict_cockpit.database.trade_record_repository import TradeRecordRepository
 from ict_cockpit.gui.feedback_dialog import FeedbackDialog
 from ict_cockpit.gui.study_find_review_widget import StudyFindReviewWidget
 from ict_cockpit.gui.study_find_widget import StudyFindWidget
 from ict_cockpit.gui.tda_workflow import TDAWorkflowWidget
+from ict_cockpit.gui.trade_summary_widget import TradeSummaryWidget
 
 
 class MainWindow(QMainWindow):
@@ -24,6 +26,7 @@ class MainWindow(QMainWindow):
         tda_repository: TDARepository,
         study_find_repository: StudyFindRepository,
         feedback_repository: FeedbackRepository | None = None,
+        trade_record_repository: TradeRecordRepository | None = None,
     ) -> None:
         super().__init__()
 
@@ -32,12 +35,17 @@ class MainWindow(QMainWindow):
         self.feedback_repository = feedback_repository or FeedbackRepository(
             study_find_repository.connection
         )
+        self.trade_record_repository = (
+            trade_record_repository
+            or TradeRecordRepository(study_find_repository.connection)
+        )
 
         self.setWindowTitle(window_title())
-        self.resize(800, 500)
+        self.resize(900, 650)
 
         self.tda_workflow = TDAWorkflowWidget()
         self.study_find_widget = StudyFindWidget()
+        self.trade_summary_widget = TradeSummaryWidget()
         self.study_find_review_widget = StudyFindReviewWidget(
             self.study_find_repository
         )
@@ -45,6 +53,7 @@ class MainWindow(QMainWindow):
         self.tabs = QTabWidget()
         self.tabs.addTab(self.tda_workflow, "Guided TDA")
         self.tabs.addTab(self.study_find_widget, "Study Find")
+        self.tabs.addTab(self.trade_summary_widget, "Trade Summary")
         self.tabs.addTab(self.study_find_review_widget, "Study Review")
         self.setCentralWidget(self.tabs)
 
@@ -55,6 +64,7 @@ class MainWindow(QMainWindow):
 
         self.tda_workflow.tda_ready.connect(self.save_tda)
         self.study_find_widget.study_find_ready.connect(self.save_study_find)
+        self.trade_summary_widget.trade_ready.connect(self.save_trade_record)
 
         self.pending_tda_draft = None
         self.tda_draft_save_timer = QTimer(self)
@@ -76,6 +86,17 @@ class MainWindow(QMainWindow):
         )
         self.study_find_widget.draft_changed.connect(
             self.schedule_study_find_draft_save
+        )
+
+        self.pending_trade_draft = None
+        self.trade_draft_save_timer = QTimer(self)
+        self.trade_draft_save_timer.setSingleShot(True)
+        self.trade_draft_save_timer.setInterval(750)
+        self.trade_draft_save_timer.timeout.connect(
+            self.save_pending_trade_draft
+        )
+        self.trade_summary_widget.draft_changed.connect(
+            self.schedule_trade_draft_save
         )
 
         self._restore_drafts()
@@ -109,6 +130,9 @@ class MainWindow(QMainWindow):
 
         if current_widget is self.study_find_widget:
             return tab_name, self.study_find_widget.current_study_find_id
+
+        if current_widget is self.trade_summary_widget:
+            return tab_name, self.trade_summary_widget.current_trade_id
 
         if current_widget is self.study_find_review_widget:
             row = self.study_find_review_widget.study_list.currentRow()
@@ -161,6 +185,14 @@ class MainWindow(QMainWindow):
                 3000,
             )
 
+        latest_trade_draft = self.trade_record_repository.get_latest_draft()
+        if latest_trade_draft is not None:
+            self.trade_summary_widget.load_draft(latest_trade_draft)
+            self.status_bar.showMessage(
+                "Restored unfinished Trade Summary draft",
+                3000,
+            )
+
     def save_tda(self, tda) -> None:
         self.tda_draft_save_timer.stop()
         self.pending_tda_draft = None
@@ -208,6 +240,23 @@ class MainWindow(QMainWindow):
 
         self.pending_study_find_draft = None
 
+    def schedule_trade_draft_save(self, draft) -> None:
+        self.pending_trade_draft = draft
+        self.trade_draft_save_timer.start()
+
+    def save_pending_trade_draft(self) -> None:
+        draft = self.pending_trade_draft
+        if draft is None:
+            return
+
+        if draft.has_content():
+            self.trade_record_repository.save_draft(draft)
+            self.status_bar.showMessage("Trade Summary draft saved", 1500)
+        else:
+            self.trade_record_repository.delete_draft(draft.id)
+
+        self.pending_trade_draft = None
+
     def save_study_find(self, study_find) -> None:
         self.study_find_draft_save_timer.stop()
         self.pending_study_find_draft = None
@@ -224,3 +273,15 @@ class MainWindow(QMainWindow):
         self.study_find_widget.mark_saved()
         self.study_find_review_widget.refresh()
         self.status_bar.showMessage("Study Find saved", 3000)
+
+    def save_trade_record(self, trade) -> None:
+        self.trade_draft_save_timer.stop()
+        self.pending_trade_draft = None
+
+        self.trade_record_repository.save(trade)
+        for image_path in self.trade_summary_widget.image_paths:
+            self.trade_record_repository.add_image(trade.id, image_path)
+
+        self.trade_record_repository.delete_draft(trade.id)
+        self.trade_summary_widget.mark_saved()
+        self.status_bar.showMessage("Trade Summary saved", 3000)
