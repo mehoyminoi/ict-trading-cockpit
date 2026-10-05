@@ -1,8 +1,26 @@
 from pathlib import Path
 
 from ict_cockpit.media.study_find_media import (
+    get_study_find_image_destination,
     store_study_find_image,
 )
+
+
+def test_study_find_image_destination_uses_managed_media_path(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path))
+
+    destination = get_study_find_image_destination(
+        "study-123",
+        3,
+        "PNG",
+    )
+
+    assert destination.name == "chart-3.png"
+    assert destination.parent.name == "study-123"
+    assert destination.parent.exists()
 
 
 def test_store_study_find_image_copies_file(
@@ -15,14 +33,15 @@ def test_store_study_find_image_copies_file(
     source.write_bytes(b"fake image data")
 
     stored = store_study_find_image(
-    "study-123",
-    source,
-    1,
+        "study-123",
+        source,
+        1,
     )
 
     assert stored.exists()
     assert stored.read_bytes() == b"fake image data"
     assert stored.name == "chart-1.png"
+
 
 def test_store_multiple_study_find_images(
     monkeypatch,
