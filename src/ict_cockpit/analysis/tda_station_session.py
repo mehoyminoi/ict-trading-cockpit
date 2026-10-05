@@ -8,12 +8,16 @@ class TDAStationObservation:
     station_id: str
     observation: str = ""
     completed: bool = False
+    completed_actions: list[int] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         self.station_id = self.station_id.strip()
         self.observation = self.observation.strip()
+        self.completed_actions = sorted(set(self.completed_actions))
         if not self.station_id:
             raise ValueError("station id cannot be empty")
+        if any(index < 0 for index in self.completed_actions):
+            raise ValueError("completed action indexes cannot be negative")
 
 
 @dataclass
