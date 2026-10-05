@@ -202,7 +202,7 @@ def test_shell_starts_neutral_trading_run_without_market_session_choice() -> Non
     assert shell.active_trading_run.run_label == "Trading Run 1"
     assert shell.trading_day.active_trading_run_id == shell.active_trading_run.id
     assert shell.complete_day_button.isEnabled() is False
-    assert shell.runtime_frame.isVisible() is False or shell.runtime_frame.isHidden() is False
+    assert shell.runtime_scroll.widget() is shell.runtime_frame
 
 
 def test_shell_process_completion_concludes_run_but_leaves_day_active() -> None:
@@ -244,7 +244,7 @@ def test_shell_can_use_one_run_across_market_sessions_and_optionally_start_anoth
     assert shell.trading_day.status is TradingDayLifecycleStatus.ACTIVE
 
 
-def test_completed_day_offers_fresh_trading_day() -> None:
+def test_completed_day_starts_fresh_day_directly_in_trading_run_one() -> None:
     get_app()
     shell = TradingDayShellWidget(build_default_process_blueprint())
     old_day_id = shell.trading_day.id
@@ -257,4 +257,19 @@ def test_completed_day_offers_fresh_trading_day() -> None:
 
     assert shell.trading_day.id != old_day_id
     assert shell.trading_day.status is TradingDayLifecycleStatus.ACTIVE
-    assert shell.trading_runs == []
+    assert len(shell.trading_runs) == 1
+    assert shell.active_trading_run is shell.trading_runs[0]
+    assert shell.active_trading_run.run_label == "Trading Run 1"
+    assert shell.runtime.session.current_mode_id == "tda"
+
+
+def test_active_runtime_uses_compact_scrollable_viewport() -> None:
+    get_app()
+    shell = TradingDayShellWidget(build_default_process_blueprint())
+
+    shell.start_trading_run()
+
+    assert shell.runtime_scroll.widgetResizable() is True
+    assert shell.runtime_scroll.widget() is shell.runtime_frame
+    assert shell.run_history.maximumHeight() <= 72
+    assert shell.run_history.isHidden() is True
