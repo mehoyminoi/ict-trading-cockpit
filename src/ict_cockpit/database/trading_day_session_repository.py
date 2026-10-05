@@ -70,9 +70,23 @@ class TradingDaySessionRepository:
             LIMIT 1
             """
         ).fetchone()
-        if row is None:
-            return None
+        return self._from_row(row) if row is not None else None
 
+    def get_by_id(self, session_id: str) -> TradingDaySession | None:
+        row = self.connection.execute(
+            """
+            SELECT id, blueprint_revision, mode_ids_json, current_mode_id,
+                   completed_mode_ids_json, updated_at, status, day_outcome,
+                   transitions_json
+            FROM trading_day_session
+            WHERE id = ?
+            """,
+            (session_id,),
+        ).fetchone()
+        return self._from_row(row) if row is not None else None
+
+    @staticmethod
+    def _from_row(row) -> TradingDaySession:
         transitions = [
             TradingDayTransition(
                 from_mode_id=item["from_mode_id"],
