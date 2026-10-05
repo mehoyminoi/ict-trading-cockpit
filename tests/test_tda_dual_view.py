@@ -99,6 +99,41 @@ def test_action_checkbox_updates_shared_session_state() -> None:
     assert isinstance(widget.session, TDAStationSession)
 
 
+def test_station_state_distinguishes_work_from_explicit_completion() -> None:
+    get_app()
+    widget = TDAStationRunnerWidget(build_default_process_blueprint())
+    observation = widget.session.observations[0]
+
+    assert widget.station_state(observation) == "pending"
+    assert widget.station_state_label.text() == "○ Pending"
+
+    widget.observation_input.setPlainText("Price is in discount.")
+
+    assert widget.station_state(observation) == "in_progress"
+    assert "In Progress" in widget.station_state_label.text()
+    assert observation.completed is False
+
+    widget.complete_and_continue()
+
+    assert observation.completed is True
+    assert widget.station_state(observation) == "complete"
+
+
+def test_completion_button_makes_explicit_station_contract_clear() -> None:
+    get_app()
+    widget = TDAStationRunnerWidget(build_default_process_blueprint())
+
+    assert widget.next_button.text() == "Mark Station Complete & Continue →"
+
+    widget.observation_input.setPlainText("Work entered but not certified.")
+    widget.go_next_station()
+
+    first = widget.session.observations[0]
+    assert first.observation == "Work entered but not certified."
+    assert first.completed is False
+    assert widget.station_state(first) == "in_progress"
+
+
 def test_wheel_navigation_requires_more_deliberate_scroll() -> None:
     get_app()
     blueprint = build_default_process_blueprint()
