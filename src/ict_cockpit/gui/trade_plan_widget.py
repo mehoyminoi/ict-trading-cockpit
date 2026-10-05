@@ -1,4 +1,5 @@
 from PySide6.QtWidgets import (
+    QFrame,
     QHBoxLayout,
     QLabel,
     QListWidget,
@@ -26,6 +27,15 @@ class TradePlanWidget(QWidget):
             "Define the plan, execute the plan, observe the execution, learn from it, revise the plan."
         )
         self.subtitle_label.setWordWrap(True)
+
+        self.operating_model_label = QLabel(
+            "Foundation + Rules / Safety define the system. Playbooks define valid methods. "
+            "Process operates the trading day. Review / Development improves the system and "
+            "may be entered directly for Film Night, Lab, backtesting, or revision work."
+        )
+        self.operating_model_label.setWordWrap(True)
+        self.operating_model_label.setFrameShape(QFrame.Shape.StyledPanel)
+        self.operating_model_label.setContentsMargins(10, 8, 10, 8)
 
         self.section_list = QListWidget()
         self.section_list.setMaximumWidth(220)
@@ -55,6 +65,7 @@ class TradePlanWidget(QWidget):
         layout = QVBoxLayout(self)
         layout.addWidget(self.title_label)
         layout.addWidget(self.subtitle_label)
+        layout.addWidget(self.operating_model_label)
         layout.addLayout(body)
 
     def _build_section_page(self, section: TradePlanSectionDefinition) -> QWidget:
