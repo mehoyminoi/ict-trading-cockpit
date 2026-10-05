@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 11
+CURRENT_SCHEMA_VERSION = 12
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -41,6 +41,9 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 10:
             _migrate_version_10_to_11(connection)
             version = 11
+        if version == 11:
+            _migrate_version_11_to_12(connection)
+            version = 12
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -284,3 +287,44 @@ def _migrate_version_10_to_11(connection: sqlite3.Connection) -> None:
         "ALTER TABLE trading_day_session ADD COLUMN transitions_json TEXT NOT NULL DEFAULT '[]'"
     )
     connection.execute("PRAGMA user_version = 11")
+
+
+def _migrate_version_11_to_12(connection: sqlite3.Connection) -> None:
+    connection.execute(
+        """
+        CREATE TABLE trading_day (
+            id TEXT PRIMARY KEY,
+            futures_day_label TEXT NOT NULL DEFAULT '',
+            status TEXT NOT NULL DEFAULT 'Active',
+            active_session_run_id TEXT NOT NULL DEFAULT '',
+            started_at TEXT NOT NULL,
+            completed_at TEXT NOT NULL DEFAULT '',
+            updated_at TEXT NOT NULL
+        )
+        """
+    )
+    connection.execute(
+        "CREATE INDEX idx_trading_day_updated_at ON trading_day(updated_at)"
+    )
+    connection.execute(
+        """
+        CREATE TABLE trading_session_run (
+            id TEXT PRIMARY KEY,
+            trading_day_id TEXT NOT NULL,
+            session_name TEXT NOT NULL,
+            process_session_id TEXT NOT NULL,
+            tda_station_session_id TEXT NOT NULL DEFAULT '',
+            status TEXT NOT NULL DEFAULT 'Active',
+            outcome TEXT NOT NULL DEFAULT '',
+            started_at TEXT NOT NULL,
+            concluded_at TEXT NOT NULL DEFAULT '',
+            updated_at TEXT NOT NULL,
+            FOREIGN KEY (trading_day_id) REFERENCES trading_day(id) ON DELETE CASCADE,
+            FOREIGN KEY (process_session_id) REFERENCES trading_day_session(id) ON DELETE RESTRICT
+        )
+        """
+    )
+    connection.execute(
+        "CREATE INDEX idx_trading_session_run_day ON trading_session_run(trading_day_id, started_at)"
+    )
+    connection.execute("PRAGMA user_version = 12")
