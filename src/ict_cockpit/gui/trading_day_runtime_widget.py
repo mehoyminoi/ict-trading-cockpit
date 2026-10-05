@@ -251,6 +251,8 @@ class TradingDayRuntimeWidget(QWidget):
         self._update_view()
 
     def start_new(self) -> None:
+        """Begin a fresh trading day without mutating the completed day record."""
+        self.tda_station_runner_widget.start_new()
         self.session = self._new_session()
         self.transition_note_input.clear()
         self._touch()
@@ -305,6 +307,13 @@ class TradingDayRuntimeWidget(QWidget):
             label = QLabel("✓ Trading day complete")
             self.transition_buttons_layout.addWidget(label)
             self.transition_buttons_layout.addStretch()
+            start_new_button = QPushButton("Start New Trading Day")
+            start_new_button.setToolTip(
+                "Create a fresh trading-day and TDA session. The completed day remains saved."
+            )
+            start_new_button.clicked.connect(self.start_new)
+            self.transition_buttons["start-new-day"] = start_new_button
+            self.transition_buttons_layout.addWidget(start_new_button)
             self.transition_note_input.setEnabled(False)
             return
 
