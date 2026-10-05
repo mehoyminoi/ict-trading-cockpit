@@ -119,14 +119,17 @@ class MainWindow(QMainWindow):
         self.study_find_draft_save_timer.start()
 
     def save_pending_study_find_draft(self) -> None:
-        if self.pending_study_find_draft is None:
+        draft = self.pending_study_find_draft
+        if draft is None:
             return
 
-        self.study_find_repository.save_draft(
-            self.pending_study_find_draft
-        )
+        if draft.has_content():
+            self.study_find_repository.save_draft(draft)
+            self.status_bar.showMessage("Study Find draft saved", 1500)
+        else:
+            self.study_find_repository.delete_draft(draft.id)
+
         self.pending_study_find_draft = None
-        self.status_bar.showMessage("Study Find draft saved", 1500)
 
     def save_study_find(self, study_find) -> None:
         self.study_find_draft_save_timer.stop()
