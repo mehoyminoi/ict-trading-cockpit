@@ -53,9 +53,22 @@ class TDAStationSessionRepository:
             LIMIT 1
             """
         ).fetchone()
-        if row is None:
-            return None
+        return self._from_row(row) if row is not None else None
 
+    def get_by_id(self, session_id: str) -> TDAStationSession | None:
+        row = self.connection.execute(
+            """
+            SELECT id, blueprint_revision, current_station_id,
+                   observations_json, updated_at
+            FROM tda_station_session
+            WHERE id = ?
+            """,
+            (session_id,),
+        ).fetchone()
+        return self._from_row(row) if row is not None else None
+
+    @staticmethod
+    def _from_row(row) -> TDAStationSession:
         payload = json.loads(row[3])
         return TDAStationSession(
             id=row[0],

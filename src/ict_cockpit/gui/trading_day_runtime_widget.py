@@ -27,20 +27,29 @@ from ict_cockpit.process_blueprint import (
 
 
 class TradingDayRuntimeWidget(QWidget):
-    """Runtime shell for deliberate movement through trading-day process modes."""
+    """Runtime shell for deliberate movement through process modes."""
 
     session_changed = Signal(TradingDaySession)
 
-    def __init__(self, blueprint: ProcessBlueprint) -> None:
+    def __init__(
+        self,
+        blueprint: ProcessBlueprint,
+        *,
+        embedded_session_run: bool = False,
+    ) -> None:
         super().__init__()
         self.blueprint = blueprint
+        # Parameter name retained for compatibility; the embedded lifecycle is
+        # now a Trading Run rather than a market-session-specific run.
+        self.embedded_session_run = embedded_session_run
         self.modes = list(blueprint.modes)
         if not self.modes:
             raise ValueError("blueprint must contain trading-day modes")
 
         self.session = self._new_session()
 
-        self.title_label = QLabel("Trading Day Session")
+        title = "Trading Run Process" if embedded_session_run else "Trading Day Session"
+        self.title_label = QLabel(title)
         self.title_label.setStyleSheet("font-size: 17px; font-weight: 600;")
         self.summary_label = QLabel()
         self.summary_label.setWordWrap(True)
@@ -250,7 +259,7 @@ class TradingDayRuntimeWidget(QWidget):
         self._update_view()
 
     def start_new(self) -> None:
-        """Begin a fresh trading day without mutating the completed day record."""
+        """Begin a fresh process session and TDA station session."""
         self.tda_station_runner_widget.start_new()
         self.session = self._new_session()
         self.transition_note_input.clear()
@@ -303,6 +312,13 @@ class TradingDayRuntimeWidget(QWidget):
     def _rebuild_transition_buttons(self) -> None:
         self._clear_transition_buttons()
         if self.session.status is TradingDayStatus.COMPLETE:
+            if self.embedded_session_run:
+                label = QLabel("✓ Trading Run process complete")
+                self.transition_buttons_layout.addWidget(label)
+                self.transition_buttons_layout.addStretch()
+                self.transition_note_input.setEnabled(False)
+                return
+
             label = QLabel("✓ Trading day complete")
             self.transition_buttons_layout.addWidget(label)
             self.transition_buttons_layout.addStretch()
@@ -318,7 +334,10 @@ class TradingDayRuntimeWidget(QWidget):
 
         self.transition_note_input.setEnabled(True)
         for transition in self.current_mode.transitions:
-            button = QPushButton(transition.name)
+            button_name = transition.name
+            if self.embedded_session_run and transition.id == "complete-day":
+                button_name = "Conclude Trading Run"
+            button = QPushButton(button_name)
             button.setToolTip(transition.description)
             button.clicked.connect(
                 lambda _checked=False, transition_id=transition.id: self.request_transition(
@@ -335,10 +354,16 @@ class TradingDayRuntimeWidget(QWidget):
         self.mode_stack.setCurrentWidget(self.mode_pages[current_mode.id])
 
         if self.session.status is TradingDayStatus.COMPLETE:
-            summary = (
-                f"Trading day complete · Outcome: {self.session.day_outcome or 'Complete'} · "
-                f"{len(self.session.transitions)} recorded transition(s)"
-            )
+            if self.embedded_session_run:
+                summary = (
+                    f"Trading Run process complete · Outcome: {self.session.day_outcome or 'Complete'} · "
+                    f"{len(self.session.transitions)} recorded transition(s)"
+                )
+            else:
+                summary = (
+                    f"Trading day complete · Outcome: {self.session.day_outcome or 'Complete'} · "
+                    f"{len(self.session.transitions)} recorded transition(s)"
+                )
         else:
             summary = (
                 f"Current mode: {current_mode.name} · "
