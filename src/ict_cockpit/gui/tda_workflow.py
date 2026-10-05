@@ -1,22 +1,25 @@
-from PySide6.QtCore import QEvent, Qt, Signal, QDate
+from uuid import uuid4
+
+from PySide6.QtCore import QDate, QEvent, Qt, Signal
 from PySide6.QtWidgets import (
+    QApplication,
     QHBoxLayout,
     QLabel,
     QPushButton,
     QStackedWidget,
     QVBoxLayout,
     QWidget,
-    QApplication
 )
 
-from ict_cockpit.gui.context_step import ContextStep
-from ict_cockpit.gui.bias_step import BiasStep
-from ict_cockpit.gui.draw_thesis_step import DrawThesisStep
 from ict_cockpit.analysis.tda import TDARecord, TDAStatus
-from uuid import uuid4
+from ict_cockpit.gui.bias_step import BiasStep
+from ict_cockpit.gui.context_step import ContextStep
+from ict_cockpit.gui.draw_thesis_step import DrawThesisStep
 
 
 class TDAWorkflowWidget(QWidget):
+    """Guided top-down-analysis workflow with draft and completion states."""
+
     tda_ready = Signal(TDARecord)
     draft_changed = Signal(TDARecord)
 
@@ -25,7 +28,6 @@ class TDAWorkflowWidget(QWidget):
 
         self.current_step = 0
         self.current_tda_id = str(uuid4())
-
         self.step_titles = [
             "Context",
             "Bias",
@@ -36,17 +38,14 @@ class TDAWorkflowWidget(QWidget):
         self.progress_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.step_stack = QStackedWidget()
-
         self.context_step = ContextStep()
         self.bias_step = BiasStep()
         self.draw_thesis_step = DrawThesisStep()
 
         self.context_step.next_requested.connect(self.go_next)
         self.context_step.back_requested.connect(self.go_back)
-        
         self.bias_step.next_requested.connect(self.go_next)
         self.bias_step.back_requested.connect(self.go_back)
-
         self.draw_thesis_step.next_requested.connect(self.go_next)
         self.draw_thesis_step.back_requested.connect(self.go_back)
 
@@ -55,9 +54,8 @@ class TDAWorkflowWidget(QWidget):
         self.step_stack.addWidget(self.draw_thesis_step)
 
         self.context_step.instrument_input.textChanged.connect(
-        self.emit_draft_changed
+            self.emit_draft_changed
         )
-
         self.context_step.analysis_date_input.dateChanged.connect(
             self.emit_draft_changed
         )
@@ -71,11 +69,9 @@ class TDAWorkflowWidget(QWidget):
         self.draw_thesis_step.primary_draw_input.textChanged.connect(
             self.emit_draft_changed
         )
-
         self.draw_thesis_step.secondary_draw_input.textChanged.connect(
             self.emit_draft_changed
         )
-
         self.draw_thesis_step.narrative_input.textChanged.connect(
             self.emit_draft_changed
         )
@@ -84,10 +80,8 @@ class TDAWorkflowWidget(QWidget):
         self.validation_label.setWordWrap(True)
         self.validation_label.setVisible(False)
 
-
         self.back_button = QPushButton("← Back")
         self.next_button = QPushButton("Next →")
-
         self.back_button.clicked.connect(self.go_back)
         self.next_button.clicked.connect(self.go_next)
 
@@ -98,7 +92,6 @@ class TDAWorkflowWidget(QWidget):
         self.new_tda_button = QPushButton("Start New TDA")
         self.new_tda_button.setVisible(False)
         self.new_tda_button.clicked.connect(self.reset_workflow)
-
 
         navigation_layout = QHBoxLayout()
         navigation_layout.addWidget(self.back_button)
@@ -112,30 +105,13 @@ class TDAWorkflowWidget(QWidget):
         main_layout.addWidget(self.step_stack, 1)
         main_layout.addWidget(self.validation_label)
         main_layout.addLayout(navigation_layout)
-
         self.setLayout(main_layout)
 
         self._update_view()
 
         app = QApplication.instance()
-
         if app is not None:
             app.installEventFilter(self)
-
-    def _create_placeholder_step(self, title: str) -> QWidget:
-        page = QWidget()
-
-        label = QLabel(title)
-        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        layout = QVBoxLayout()
-        layout.addStretch()
-        layout.addWidget(label)
-        layout.addStretch()
-
-        page.setLayout(layout)
-
-        return page
 
     def go_next(self) -> None:
         if self.current_step < len(self.step_titles) - 1:
@@ -160,22 +136,18 @@ class TDAWorkflowWidget(QWidget):
         self.progress_label.setText(
             f"Step {step_number} of {total_steps} — {current_title}"
         )
-
         self.back_button.setEnabled(self.current_step > 0)
 
         if self.current_step == total_steps - 1:
             self.next_button.setText("Complete TDA")
-            self.next_button.setEnabled(True)
         else:
             self.next_button.setText("Next →")
-            self.next_button.setEnabled(True)
+
+        self.next_button.setEnabled(True)
 
     def eventFilter(self, watched, event) -> bool:
         if isinstance(watched, QWidget):
-            belongs_to_workflow = (
-                watched is self
-                or self.isAncestorOf(watched)
-            )
+            belongs_to_workflow = watched is self or self.isAncestorOf(watched)
 
             if belongs_to_workflow:
                 if event.type() == QEvent.Type.MouseButtonRelease:
@@ -189,17 +161,15 @@ class TDAWorkflowWidget(QWidget):
 
                 if event.type() == QEvent.Type.Wheel:
                     delta = event.angleDelta()
-
                     if abs(delta.x()) > abs(delta.y()) and delta.x() != 0:
                         if delta.x() < 0:
                             self.go_next()
                         else:
                             self.go_back()
-
                         return True
 
         return super().eventFilter(watched, event)
-    
+
     def build_tda_record(self) -> TDARecord:
         return TDARecord(
             id=self.current_tda_id,
@@ -214,7 +184,6 @@ class TDAWorkflowWidget(QWidget):
 
     def attempt_completion(self) -> None:
         tda = self.build_tda_record()
-
         missing = tda.missing_required_fields()
 
         if missing:
@@ -223,7 +192,6 @@ class TDAWorkflowWidget(QWidget):
             )
             self.validation_label.setVisible(True)
             self.override_button.setVisible(True)
-
             self._go_to_first_missing_field(missing)
             return
 
@@ -232,7 +200,7 @@ class TDAWorkflowWidget(QWidget):
 
         tda.status = TDAStatus.COMPLETE
         self.tda_ready.emit(tda)
-    
+
     def _go_to_first_missing_field(self, missing: list[str]) -> None:
         if "Weekly Bias" in missing or "Daily Bias" in missing:
             self.current_step = 1
@@ -247,24 +215,18 @@ class TDAWorkflowWidget(QWidget):
 
         self.validation_label.setVisible(False)
         self.override_button.setVisible(False)
-
         self.tda_ready.emit(tda)
-    
+
     def mark_saved(self) -> None:
         self.validation_label.setVisible(False)
         self.override_button.setVisible(False)
-
         self.next_button.setText("Saved")
         self.next_button.setEnabled(False)
-
         self.new_tda_button.setVisible(True)
 
     def reset_workflow(self) -> None:
         self.context_step.instrument_input.clear()
-
-        self.context_step.analysis_date_input.setDate(
-            QDate.currentDate()
-        )
+        self.context_step.analysis_date_input.setDate(QDate.currentDate())
 
         self.bias_step.weekly_group.setExclusive(False)
         for button in self.bias_step.weekly_buttons:
@@ -286,7 +248,6 @@ class TDAWorkflowWidget(QWidget):
         self.validation_label.setVisible(False)
         self.override_button.setVisible(False)
         self.new_tda_button.setVisible(False)
-
         self._update_view()
 
     def emit_draft_changed(self) -> None:
@@ -298,7 +259,6 @@ class TDAWorkflowWidget(QWidget):
         self.current_tda_id = tda.id
 
         self.context_step.instrument_input.setText(tda.instrument)
-
         self.context_step.analysis_date_input.setDate(
             QDate(
                 tda.analysis_date.year,
@@ -319,22 +279,12 @@ class TDAWorkflowWidget(QWidget):
                 and button.text() == tda.daily_bias.value
             )
 
-        self.draw_thesis_step.primary_draw_input.setText(
-            tda.primary_draw or ""
-        )
-
-        self.draw_thesis_step.secondary_draw_input.setText(
-            tda.secondary_draw
-        )
-
-        self.draw_thesis_step.narrative_input.setPlainText(
-            tda.narrative
-        )
+        self.draw_thesis_step.primary_draw_input.setText(tda.primary_draw or "")
+        self.draw_thesis_step.secondary_draw_input.setText(tda.secondary_draw)
+        self.draw_thesis_step.narrative_input.setPlainText(tda.narrative)
 
         self.current_step = 0
-
         self.validation_label.setVisible(False)
         self.override_button.setVisible(False)
         self.new_tda_button.setVisible(False)
-
         self._update_view()
