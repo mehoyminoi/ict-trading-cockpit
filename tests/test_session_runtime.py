@@ -8,8 +8,8 @@ from ict_cockpit.analysis.tda_station_session import (
 from ict_cockpit.analysis.trading_day import TradingDay, TradingDayLifecycleStatus
 from ict_cockpit.analysis.trading_day_session import TradingDaySession
 from ict_cockpit.analysis.trading_session_run import (
-    TradingSessionRun,
-    TradingSessionRunStatus,
+    TradingRun,
+    TradingRunStatus,
 )
 from ict_cockpit.database.connection import create_connection
 from ict_cockpit.database.schema import CURRENT_SCHEMA_VERSION, initialize_schema
@@ -36,7 +36,7 @@ def build_process_session() -> TradingDaySession:
     )
 
 
-def test_schema_v12_creates_trading_day_and_session_run_tables(tmp_path) -> None:
+def test_schema_v12_creates_trading_day_and_run_storage(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
 
@@ -49,14 +49,16 @@ def test_schema_v12_creates_trading_day_and_session_run_tables(tmp_path) -> None
 
     assert CURRENT_SCHEMA_VERSION == 12
     assert "trading_day" in names
+    # Legacy storage name retained so branch users who already migrated to v12
+    # can continue without a destructive schema rewrite.
     assert "trading_session_run" in names
     connection.close()
 
 
-def test_trading_day_allows_only_one_active_session_run() -> None:
+def test_trading_day_allows_only_one_active_trading_run() -> None:
     day = TradingDay(futures_day_label="2026-10-06")
-    first = TradingSessionRun(day.id, "NYAM", "process-1")
-    second = TradingSessionRun(day.id, "NYPM", "process-2")
+    first = TradingRun(day.id, "Trading Run 1", "process-1")
+    second = TradingRun(day.id, "Trading Run 2", "process-2")
 
     day.activate_session_run(first)
 
@@ -64,36 +66,36 @@ def test_trading_day_allows_only_one_active_session_run() -> None:
         day.activate_session_run(second)
 
 
-def test_concluding_session_run_does_not_complete_trading_day() -> None:
+def test_concluding_trading_run_does_not_complete_trading_day() -> None:
     day = TradingDay(futures_day_label="2026-10-06")
-    run = TradingSessionRun(day.id, "NYAM", "process-1")
+    run = TradingRun(day.id, "Trading Run 1", "process-1")
     day.activate_session_run(run)
 
     day.conclude_session_run(run, "No Trade — Process Followed")
 
-    assert run.status is TradingSessionRunStatus.CONCLUDED
+    assert run.status is TradingRunStatus.CONCLUDED
     assert run.outcome == "No Trade — Process Followed"
     assert day.status is TradingDayLifecycleStatus.ACTIVE
     assert day.active_session_run_id == ""
 
 
-def test_new_session_run_can_start_after_prior_run_concludes() -> None:
+def test_new_trading_run_can_start_after_prior_run_concludes() -> None:
     day = TradingDay(futures_day_label="2026-10-06")
-    nyam = TradingSessionRun(day.id, "NYAM", "process-1")
-    nypm = TradingSessionRun(day.id, "NYPM", "process-2")
+    morning = TradingRun(day.id, "Trading Run 1", "process-1")
+    later = TradingRun(day.id, "Trading Run 2", "process-2")
 
-    day.activate_session_run(nyam)
-    day.conclude_session_run(nyam)
-    day.activate_session_run(nypm)
+    day.activate_session_run(morning)
+    day.conclude_session_run(morning)
+    day.activate_session_run(later)
 
-    assert nyam.status is TradingSessionRunStatus.CONCLUDED
-    assert nypm.status is TradingSessionRunStatus.ACTIVE
-    assert day.active_session_run_id == nypm.id
+    assert morning.status is TradingRunStatus.CONCLUDED
+    assert later.status is TradingRunStatus.ACTIVE
+    assert day.active_session_run_id == later.id
 
 
-def test_trading_day_cannot_complete_with_active_session_run() -> None:
+def test_trading_day_cannot_complete_with_active_trading_run() -> None:
     day = TradingDay()
-    run = TradingSessionRun(day.id, "Asia", "process-1")
+    run = TradingRun(day.id, "Trading Run 1", "process-1")
     day.activate_session_run(run)
 
     with pytest.raises(ValueError, match="session run is active"):
@@ -104,7 +106,7 @@ def test_trading_day_cannot_complete_with_active_session_run() -> None:
     assert day.status is TradingDayLifecycleStatus.COMPLETE
 
 
-def test_day_and_session_runs_round_trip_through_repositories(tmp_path) -> None:
+def test_day_and_trading_runs_round_trip_through_repositories(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
     day_repository = TradingDayRepository(connection)
@@ -114,9 +116,9 @@ def test_day_and_session_runs_round_trip_through_repositories(tmp_path) -> None:
     day = TradingDay(futures_day_label="2026-10-06")
     process_session = build_process_session()
     process_repository.save(process_session)
-    run = TradingSessionRun(
+    run = TradingRun(
         trading_day_id=day.id,
-        session_name="NYAM",
+        session_name="Trading Run 1",
         process_session_id=process_session.id,
         tda_station_session_id="tda-session-1",
     )
@@ -132,13 +134,13 @@ def test_day_and_session_runs_round_trip_through_repositories(tmp_path) -> None:
     assert restored_day.id == day.id
     assert restored_day.active_session_run_id == run.id
     assert restored_run is not None
-    assert restored_run.session_name == "NYAM"
+    assert restored_run.run_label == "Trading Run 1"
     assert restored_run.process_session_id == process_session.id
     assert restored_run.tda_station_session_id == "tda-session-1"
     connection.close()
 
 
-def test_repository_keeps_multiple_runs_for_same_trading_day(tmp_path) -> None:
+def test_repository_keeps_multiple_trading_runs_for_same_day(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
     day_repository = TradingDayRepository(connection)
@@ -149,10 +151,10 @@ def test_repository_keeps_multiple_runs_for_same_trading_day(tmp_path) -> None:
     day_repository.save(day)
 
     created = []
-    for session_name in ("NYAM", "NYPM"):
+    for run_number in (1, 2):
         process_session = build_process_session()
         process_repository.save(process_session)
-        run = TradingSessionRun(day.id, session_name, process_session.id)
+        run = TradingRun(day.id, f"Trading Run {run_number}", process_session.id)
         day.activate_session_run(run)
         run_repository.save(run)
         day.conclude_session_run(run)
@@ -163,8 +165,8 @@ def test_repository_keeps_multiple_runs_for_same_trading_day(tmp_path) -> None:
     restored = run_repository.get_for_day(day.id)
 
     assert [item.id for item in restored] == [item.id for item in created]
-    assert [item.session_name for item in restored] == ["NYAM", "NYPM"]
-    assert all(item.status is TradingSessionRunStatus.CONCLUDED for item in restored)
+    assert [item.run_label for item in restored] == ["Trading Run 1", "Trading Run 2"]
+    assert all(item.status is TradingRunStatus.CONCLUDED for item in restored)
     connection.close()
 
 
@@ -191,14 +193,14 @@ def test_exact_process_and_tda_sessions_can_be_restored_by_id(tmp_path) -> None:
     connection.close()
 
 
-def test_shell_starts_session_run_without_completing_day() -> None:
+def test_shell_starts_neutral_trading_run_without_market_session_choice() -> None:
     get_app()
     shell = TradingDayShellWidget(build_default_process_blueprint())
 
-    assert shell.start_session_run("NYAM") is True
-    assert shell.active_session_run is not None
-    assert shell.active_session_run.session_name == "NYAM"
-    assert shell.trading_day.active_session_run_id == shell.active_session_run.id
+    assert shell.start_trading_run() is True
+    assert shell.active_trading_run is not None
+    assert shell.active_trading_run.run_label == "Trading Run 1"
+    assert shell.trading_day.active_session_run_id == shell.active_trading_run.id
     assert shell.complete_day_button.isEnabled() is False
     assert shell.runtime_frame.isVisible() is False or shell.runtime_frame.isHidden() is False
 
@@ -206,29 +208,53 @@ def test_shell_starts_session_run_without_completing_day() -> None:
 def test_shell_process_completion_concludes_run_but_leaves_day_active() -> None:
     get_app()
     shell = TradingDayShellWidget(build_default_process_blueprint())
-    shell.start_session_run("NYAM")
-    run = shell.active_session_run
+    shell.start_trading_run()
+    run = shell.active_trading_run
     assert run is not None
 
     shell.runtime.apply_transition("tda-stand-down")
     shell.runtime.apply_transition("complete-day")
 
-    assert run.status is TradingSessionRunStatus.CONCLUDED
-    assert shell.active_session_run is None
+    assert run.status is TradingRunStatus.CONCLUDED
+    assert shell.active_trading_run is None
     assert shell.trading_day.status is TradingDayLifecycleStatus.ACTIVE
-    assert shell.start_session_button.isEnabled() is True
+    assert shell.start_run_button.isEnabled() is True
     assert shell.complete_day_button.isEnabled() is True
 
 
-def test_shell_can_run_nyam_then_nypm_before_completing_day() -> None:
+def test_shell_can_use_one_run_across_market_sessions_and_optionally_start_another() -> None:
     get_app()
     shell = TradingDayShellWidget(build_default_process_blueprint())
 
-    shell.start_session_run("NYAM")
+    shell.start_trading_run()
+    first = shell.active_trading_run
+    assert first is not None
+    assert first.run_label == "Trading Run 1"
+
+    # Nothing in the run lifecycle requires declaring Asia/London/NYAM/NYPM.
     shell.runtime.apply_transition("tda-stand-down")
     shell.runtime.apply_transition("complete-day")
-    shell.start_session_run("NYPM")
+    shell.start_trading_run()
 
-    assert [run.session_name for run in shell.session_runs] == ["NYAM", "NYPM"]
-    assert shell.active_session_run is shell.session_runs[-1]
+    assert [run.run_label for run in shell.trading_runs] == [
+        "Trading Run 1",
+        "Trading Run 2",
+    ]
+    assert shell.active_trading_run is shell.trading_runs[-1]
     assert shell.trading_day.status is TradingDayLifecycleStatus.ACTIVE
+
+
+def test_completed_day_offers_fresh_trading_day() -> None:
+    get_app()
+    shell = TradingDayShellWidget(build_default_process_blueprint())
+    old_day_id = shell.trading_day.id
+
+    assert shell.complete_trading_day() is True
+    assert shell.trading_day.status is TradingDayLifecycleStatus.COMPLETE
+    assert shell.start_new_day_button.isEnabled() is True
+
+    shell.start_new_trading_day()
+
+    assert shell.trading_day.id != old_day_id
+    assert shell.trading_day.status is TradingDayLifecycleStatus.ACTIVE
+    assert shell.trading_runs == []
