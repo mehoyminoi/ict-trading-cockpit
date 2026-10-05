@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ict_cockpit.analysis.study_find import StudyFind
+from ict_cockpit.analysis.study_find import StudyFind, StudyFindDraft
 from ict_cockpit.media.study_find_media import (
     get_study_find_image_destination,
     store_study_find_image,
@@ -33,6 +33,7 @@ class StudyFindWidget(QWidget):
     """Capture a single Study Find and its chart attachments."""
 
     study_find_ready = Signal(StudyFind)
+    draft_changed = Signal(StudyFindDraft)
 
     def __init__(self) -> None:
         super().__init__()
@@ -40,6 +41,7 @@ class StudyFindWidget(QWidget):
         self.current_study_find_id = str(uuid4())
         self.image_paths: list[str] = []
         self.next_image_number = 1
+        self._loading_draft = False
 
         self.paste_chart_action = QAction("Paste Chart", self)
         self.paste_chart_action.triggered.connect(
@@ -133,12 +135,22 @@ class StudyFindWidget(QWidget):
         layout.addWidget(self.copy_summary_button)
         layout.addWidget(self.save_button)
         layout.addWidget(self.new_study_find_button)
-
         self.setLayout(layout)
+
+        self._connect_draft_signals()
 
         app = QApplication.instance()
         if app is not None:
             app.installEventFilter(self)
+
+    def _connect_draft_signals(self) -> None:
+        self.date_input.dateChanged.connect(self.emit_draft_changed)
+        self.instrument_input.textChanged.connect(self.emit_draft_changed)
+        self.session_input.textChanged.connect(self.emit_draft_changed)
+        self.pattern_input.textChanged.connect(self.emit_draft_changed)
+        self.observation_input.textChanged.connect(self.emit_draft_changed)
+        self.available_move_input.valueChanged.connect(self.emit_draft_changed)
+        self.notes_input.textChanged.connect(self.emit_draft_changed)
 
     def eventFilter(self, watched, event) -> bool:
         if (
@@ -153,6 +165,68 @@ class StudyFindWidget(QWidget):
             return True
 
         return super().eventFilter(watched, event)
+
+    def build_draft(self) -> StudyFindDraft:
+        return StudyFindDraft(
+            id=self.current_study_find_id,
+            observation_date=self.date_input.date().toPython(),
+            instrument=self.instrument_input.text(),
+            session=self.session_input.text(),
+            pattern_name=self.pattern_input.text(),
+            observation=self.observation_input.toPlainText(),
+            available_move_handles=self.available_move_input.value(),
+            notes=self.notes_input.toPlainText(),
+            image_paths=list(self.image_paths),
+        )
+
+    def emit_draft_changed(self) -> None:
+        if self._loading_draft or not self.save_button.isEnabled():
+            return
+        self.draft_changed.emit(self.build_draft())
+
+    def load_draft(self, draft: StudyFindDraft) -> None:
+        self._loading_draft = True
+        try:
+            self.current_study_find_id = draft.id
+            self.date_input.setDate(
+                QDate(
+                    draft.observation_date.year,
+                    draft.observation_date.month,
+                    draft.observation_date.day,
+                )
+            )
+            self.instrument_input.setText(draft.instrument)
+            self.session_input.setText(draft.session)
+            self.pattern_input.setText(draft.pattern_name)
+            self.observation_input.setPlainText(draft.observation)
+            self.available_move_input.setValue(
+                draft.available_move_handles or 0.0
+            )
+            self.notes_input.setPlainText(draft.notes)
+
+            self.image_paths = list(draft.image_paths)
+            self.image_list.clear()
+            for image_path in self.image_paths:
+                self.image_list.addItem(Path(image_path).name)
+
+            self.next_image_number = self._calculate_next_image_number()
+            if self.image_paths:
+                self.image_list.setCurrentRow(0)
+            else:
+                self.update_image_preview(-1)
+        finally:
+            self._loading_draft = False
+
+    def _calculate_next_image_number(self) -> int:
+        used_numbers: list[int] = []
+        for image_path in self.image_paths:
+            stem = Path(image_path).stem
+            if stem.startswith("chart-"):
+                try:
+                    used_numbers.append(int(stem.removeprefix("chart-")))
+                except ValueError:
+                    pass
+        return max(used_numbers, default=0) + 1
 
     def build_study_find(self) -> StudyFind:
         primary_image_path = self.image_paths[0] if self.image_paths else ""
@@ -177,7 +251,6 @@ class StudyFindWidget(QWidget):
             study_find=self.build_study_find(),
             image_paths=self.image_paths,
         )
-
         rendered = SummaryRenderer().render(
             STUDY_FIND_SUMMARY_V1,
             context.to_template_values(),
@@ -195,7 +268,6 @@ class StudyFindWidget(QWidget):
             "",
             "Images (*.png *.jpg *.jpeg *.webp)",
         )
-
         if not file_path:
             return
 
@@ -216,7 +288,6 @@ class StudyFindWidget(QWidget):
             self.next_image_number,
             ".png",
         )
-
         if not image.save(str(destination_path), "PNG"):
             return False
 
@@ -229,6 +300,7 @@ class StudyFindWidget(QWidget):
         self.image_list.addItem(image_path.name)
         self.next_image_number += 1
         self.image_list.setCurrentRow(self.image_list.count() - 1)
+        self.emit_draft_changed()
 
     def remove_selected_image(self) -> None:
         selected_row = self.image_list.currentRow()
@@ -243,6 +315,8 @@ class StudyFindWidget(QWidget):
             self.image_list.setCurrentRow(new_row)
         else:
             self.update_image_preview(-1)
+
+        self.emit_draft_changed()
 
     def mark_saved(self) -> None:
         self.save_button.setText("Saved")
@@ -276,6 +350,7 @@ class StudyFindWidget(QWidget):
         self.paste_chart_action.setEnabled(True)
         self.new_study_find_button.hide()
 
+        self.emit_draft_changed()
         self.instrument_input.setFocus()
 
     def update_image_preview(self, row: int) -> None:
