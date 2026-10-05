@@ -77,6 +77,12 @@ class TDAStationRunnerWidget(QWidget):
         )
         self.observation_input.textChanged.connect(self._observation_changed)
 
+        self.completion_guidance_label = QLabel()
+        self.completion_guidance_label.setWordWrap(True)
+        self.completion_guidance_label.setFrameShape(QFrame.Shape.StyledPanel)
+        self.completion_guidance_label.setContentsMargins(10, 8, 10, 8)
+        self.completion_guidance_label.hide()
+
         self.back_button = QPushButton("← Previous Station")
         self.next_button = QPushButton("Complete & Continue →")
         self.back_button.clicked.connect(self.go_back)
@@ -97,6 +103,7 @@ class TDAStationRunnerWidget(QWidget):
         focus_layout.addWidget(self.actions_frame)
         focus_layout.addWidget(QLabel("Observation"))
         focus_layout.addWidget(self.observation_input, 1)
+        focus_layout.addWidget(self.completion_guidance_label)
         focus_layout.addLayout(nav)
 
         self.deck_layout = QVBoxLayout(self.deck_page)
@@ -388,10 +395,12 @@ class TDAStationRunnerWidget(QWidget):
         index = self.current_station_index
         deck, station = self._stations[index]
         observation = self.session.observation_for(station.id)
+        completed_count = self.session.completed_count()
+        all_stations_complete = completed_count == len(self._stations)
 
         self.progress_label.setText(
             f"TDA station {index + 1} of {len(self._stations)} · "
-            f"{self.session.completed_count()} complete"
+            f"{completed_count} complete"
         )
         self.deck_label.setText(
             f"Deck: {deck.name}\nTradingView layout: {deck.tradingview_layout}"
@@ -410,12 +419,22 @@ class TDAStationRunnerWidget(QWidget):
             observation.completed_actions,
         )
 
+        if all_stations_complete:
+            self.completion_guidance_label.setText(
+                "✓ All TDA stations are complete. Station work is finished; use "
+                "Finish TDA / Enter Live Watch in the process transitions below to "
+                "conclude the TDA mode."
+            )
+            self.completion_guidance_label.show()
+        else:
+            self.completion_guidance_label.hide()
+
         self.back_button.setEnabled(index > 0)
         if index == len(self._stations) - 1 and observation.completed:
-            self.next_button.setText("TDA Stations Complete")
+            self.next_button.setText("Station Complete")
             self.next_button.setEnabled(False)
         elif index == len(self._stations) - 1:
-            self.next_button.setText("Complete TDA Stations")
+            self.next_button.setText("Complete Final Station")
             self.next_button.setEnabled(True)
         else:
             self.next_button.setText("Complete & Continue →")
