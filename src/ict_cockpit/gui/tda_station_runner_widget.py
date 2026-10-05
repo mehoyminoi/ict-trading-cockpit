@@ -1,7 +1,8 @@
 from datetime import datetime
 
-from PySide6.QtCore import Signal
+from PySide6.QtCore import QEvent, Qt, Signal
 from PySide6.QtWidgets import (
+    QApplication,
     QCheckBox,
     QFrame,
     QGridLayout,
@@ -42,6 +43,8 @@ class TDAStationRunnerWidget(QWidget):
         self.session = self._new_session()
         self._loading = False
         self._action_checkboxes: list[QCheckBox] = []
+        self._wheel_accumulator = 0
+        self._wheel_threshold = 240
 
         self.view_tabs = QTabWidget()
         self.focus_page = QWidget()
@@ -105,6 +108,10 @@ class TDAStationRunnerWidget(QWidget):
 
         self._update_view()
 
+        app = QApplication.instance()
+        if app is not None:
+            app.installEventFilter(self)
+
     def _new_session(self) -> TDAStationSession:
         observations = [
             TDAStationObservation(station_id=station.id)
@@ -162,14 +169,19 @@ class TDAStationRunnerWidget(QWidget):
         self._update_view()
 
     def go_back(self) -> None:
+        self.go_previous_station()
+
+    def go_previous_station(self) -> None:
         index = self.current_station_index
         if index == 0:
             return
-        current = self.session.observation_for(self.current_station_id)
-        current.observation = self.observation_input.toPlainText().strip()
-        self.session.current_station_id = self._stations[index - 1][1].id
-        self._touch()
-        self._update_view()
+        self.select_station(self._stations[index - 1][1].id)
+
+    def go_next_station(self) -> None:
+        index = self.current_station_index
+        if index >= len(self._stations) - 1:
+            return
+        self.select_station(self._stations[index + 1][1].id)
 
     def select_station(self, station_id: str) -> None:
         if station_id not in self.session.station_ids:
@@ -185,6 +197,47 @@ class TDAStationRunnerWidget(QWidget):
         self.select_station(station_id)
         if self.current_station_id == station_id:
             self.view_tabs.setCurrentWidget(self.focus_page)
+
+    def _accumulate_wheel_navigation(self, delta: int) -> bool:
+        """Accumulate wheel movement and navigate only after a deliberate threshold."""
+        if delta == 0:
+            return False
+
+        if self._wheel_accumulator and (
+            (delta > 0) != (self._wheel_accumulator > 0)
+        ):
+            self._wheel_accumulator = 0
+
+        self._wheel_accumulator += delta
+        if abs(self._wheel_accumulator) < self._wheel_threshold:
+            return False
+
+        if self._wheel_accumulator < 0:
+            self.go_next_station()
+        else:
+            self.go_previous_station()
+        self._wheel_accumulator = 0
+        return True
+
+    def eventFilter(self, watched, event) -> bool:
+        if isinstance(watched, QWidget):
+            belongs_to_runner = watched is self or self.isAncestorOf(watched)
+            if belongs_to_runner:
+                if event.type() == QEvent.Type.MouseButtonRelease:
+                    if event.button() == Qt.MouseButton.BackButton:
+                        self.go_previous_station()
+                        return True
+                    if event.button() == Qt.MouseButton.ForwardButton:
+                        self.go_next_station()
+                        return True
+
+                if event.type() == QEvent.Type.Wheel and not isinstance(watched, QTextEdit):
+                    delta = event.angleDelta()
+                    dominant = delta.x() if abs(delta.x()) > abs(delta.y()) else delta.y()
+                    if self._accumulate_wheel_navigation(dominant):
+                        return True
+
+        return super().eventFilter(watched, event)
 
     def load_session(self, session: TDAStationSession) -> None:
         expected_ids = [station.id for _deck, station in self._stations]
