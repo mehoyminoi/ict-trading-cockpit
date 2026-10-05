@@ -180,6 +180,12 @@ class TDAStationRunnerWidget(QWidget):
         self._touch()
         self._update_view()
 
+    def open_station_from_deck(self, station_id: str) -> None:
+        """Use Deck as a spatial index, then return directly to station work."""
+        self.select_station(station_id)
+        if self.current_station_id == station_id:
+            self.view_tabs.setCurrentWidget(self.focus_page)
+
     def load_session(self, session: TDAStationSession) -> None:
         expected_ids = [station.id for _deck, station in self._stations]
         if session.blueprint_revision != self.blueprint.revision:
@@ -257,7 +263,7 @@ class TDAStationRunnerWidget(QWidget):
             button.setCheckable(True)
             button.setChecked(station.id == self.current_station_id)
             button.clicked.connect(
-                lambda _checked=False, station_id=station.id: self.select_station(station_id)
+                lambda _checked=False, station_id=station.id: self.open_station_from_deck(station_id)
             )
 
             if station.layout_row >= 0 and station.layout_column >= 0:
