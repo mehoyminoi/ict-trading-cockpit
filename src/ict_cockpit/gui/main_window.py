@@ -1,9 +1,18 @@
 from PySide6.QtCore import QTimer
-from PySide6.QtWidgets import QMainWindow, QStatusBar, QTabWidget
+from PySide6.QtGui import QAction, QKeySequence
+from PySide6.QtWidgets import (
+    QApplication,
+    QDialog,
+    QMainWindow,
+    QStatusBar,
+    QTabWidget,
+)
 
-from ict_cockpit.app_info import window_title
+from ict_cockpit.app_info import APP_VERSION, window_title
+from ict_cockpit.database.feedback_repository import FeedbackRepository
 from ict_cockpit.database.study_find_repository import StudyFindRepository
 from ict_cockpit.database.tda_repository import TDARepository
+from ict_cockpit.gui.feedback_dialog import FeedbackDialog
 from ict_cockpit.gui.study_find_review_widget import StudyFindReviewWidget
 from ict_cockpit.gui.study_find_widget import StudyFindWidget
 from ict_cockpit.gui.tda_workflow import TDAWorkflowWidget
@@ -14,11 +23,15 @@ class MainWindow(QMainWindow):
         self,
         tda_repository: TDARepository,
         study_find_repository: StudyFindRepository,
+        feedback_repository: FeedbackRepository | None = None,
     ) -> None:
         super().__init__()
 
         self.tda_repository = tda_repository
         self.study_find_repository = study_find_repository
+        self.feedback_repository = feedback_repository or FeedbackRepository(
+            study_find_repository.connection
+        )
 
         self.setWindowTitle(window_title())
         self.resize(800, 500)
@@ -37,6 +50,8 @@ class MainWindow(QMainWindow):
 
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
+
+        self._configure_feedback_actions()
 
         self.tda_workflow.tda_ready.connect(self.save_tda)
         self.study_find_widget.study_find_ready.connect(self.save_study_find)
@@ -64,6 +79,68 @@ class MainWindow(QMainWindow):
         )
 
         self._restore_drafts()
+
+    def _configure_feedback_actions(self) -> None:
+        feedback_menu = self.menuBar().addMenu("Feedback")
+
+        self.capture_feedback_action = QAction("Capture Feedback", self)
+        self.capture_feedback_action.setShortcut(QKeySequence("Ctrl+Alt+F"))
+        self.capture_feedback_action.triggered.connect(
+            self.capture_feedback
+        )
+        self.addAction(self.capture_feedback_action)
+        feedback_menu.addAction(self.capture_feedback_action)
+
+        self.copy_feedback_digest_action = QAction(
+            "Copy Feedback Digest",
+            self,
+        )
+        self.copy_feedback_digest_action.triggered.connect(
+            self.copy_feedback_digest
+        )
+        feedback_menu.addAction(self.copy_feedback_digest_action)
+
+    def current_feedback_context(self) -> tuple[str, str]:
+        current_widget = self.tabs.currentWidget()
+        tab_name = self.tabs.tabText(self.tabs.currentIndex())
+
+        if current_widget is self.tda_workflow:
+            return tab_name, self.tda_workflow.current_tda_id
+
+        if current_widget is self.study_find_widget:
+            return tab_name, self.study_find_widget.current_study_find_id
+
+        if current_widget is self.study_find_review_widget:
+            row = self.study_find_review_widget.study_list.currentRow()
+            if 0 <= row < len(self.study_find_review_widget.study_finds):
+                study_find = self.study_find_review_widget.study_finds[row]
+                return tab_name, study_find.id
+
+        return tab_name or "Unknown", ""
+
+    def capture_feedback(self) -> None:
+        context, record_id = self.current_feedback_context()
+        dialog = FeedbackDialog(
+            context=context,
+            record_id=record_id,
+            app_version=APP_VERSION,
+            parent=self,
+        )
+
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return
+
+        self.feedback_repository.save(dialog.build_entry())
+        self.status_bar.showMessage("Feedback captured", 2000)
+
+    def copy_feedback_digest(self) -> str:
+        digest = self.feedback_repository.render_markdown_digest()
+        QApplication.clipboard().setText(digest)
+        self.status_bar.showMessage(
+            "Feedback digest copied to clipboard",
+            2500,
+        )
+        return digest
 
     def _restore_drafts(self) -> None:
         latest_tda_draft = self.tda_repository.get_latest_draft()

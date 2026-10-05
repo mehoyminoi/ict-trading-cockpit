@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 6
+CURRENT_SCHEMA_VERSION = 7
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -33,6 +33,10 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 5:
             _migrate_version_5_to_6(connection)
             version = 6
+
+        if version == 6:
+            _migrate_version_6_to_7(connection)
+            version = 7
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(
@@ -170,3 +174,26 @@ def _migrate_version_5_to_6(connection: sqlite3.Connection) -> None:
         """
     )
     connection.execute("PRAGMA user_version = 6")
+
+
+def _migrate_version_6_to_7(connection: sqlite3.Connection) -> None:
+    connection.execute(
+        """
+        CREATE TABLE feedback_entry (
+            id TEXT PRIMARY KEY,
+            created_at TEXT NOT NULL,
+            category TEXT NOT NULL,
+            note TEXT NOT NULL,
+            context TEXT NOT NULL DEFAULT '',
+            record_id TEXT NOT NULL DEFAULT '',
+            app_version TEXT NOT NULL DEFAULT ''
+        )
+        """
+    )
+    connection.execute(
+        """
+        CREATE INDEX idx_feedback_entry_created_at
+        ON feedback_entry(created_at)
+        """
+    )
+    connection.execute("PRAGMA user_version = 7")
