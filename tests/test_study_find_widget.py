@@ -156,3 +156,105 @@ def test_study_find_widget_removes_selected_image() -> None:
     ]
 
     assert widget.image_list.count() == 1
+
+def test_study_find_widget_mark_saved() -> None:
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    widget = StudyFindWidget()
+
+    widget.mark_saved()
+
+    assert widget.save_button.text() == "Saved"
+    assert not widget.save_button.isEnabled()
+
+    assert not widget.attach_image_button.isEnabled()
+    assert not widget.remove_image_button.isEnabled()
+
+    assert not widget.new_study_find_button.isHidden()
+
+def test_study_find_widget_reset_creates_new_id() -> None:
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    widget = StudyFindWidget()
+
+    original_id = widget.current_study_find_id
+
+    widget.reset_form()
+
+    assert widget.current_study_find_id != original_id
+
+def test_study_find_widget_reset_clears_form() -> None:
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    widget = StudyFindWidget()
+
+    widget.instrument_input.setText("MNQ")
+    widget.session_input.setText("NYAM")
+    widget.pattern_input.setText("London low raid")
+    widget.observation_input.setPlainText(
+        "Bullish reaction."
+    )
+    widget.notes_input.setPlainText(
+        "Interesting example."
+    )
+    widget.available_move_input.setValue(125.5)
+
+    widget.image_paths = [
+        "/tmp/chart-1.png",
+        "/tmp/chart-2.png",
+    ]
+    widget.image_list.addItems(
+        widget.image_paths
+    )
+
+    widget.summary_preview.setPlainText(
+        "Old summary."
+    )
+
+    widget.mark_saved()
+    widget.reset_form()
+
+    assert widget.instrument_input.text() == ""
+    assert widget.session_input.text() == ""
+    assert widget.pattern_input.text() == ""
+
+    assert (
+        widget.observation_input.toPlainText()
+        == ""
+    )
+
+    assert (
+        widget.notes_input.toPlainText()
+        == ""
+    )
+
+    assert widget.available_move_input.value() == 0
+
+    assert widget.image_paths == []
+    assert widget.image_list.count() == 0
+    assert widget.next_image_number == 1
+
+    assert (
+        widget.summary_preview.toPlainText()
+        == ""
+    )
+
+    assert (
+        widget.save_button.text()
+        == "Save Study Find"
+    )
+
+    assert widget.save_button.isEnabled()
+    assert widget.attach_image_button.isEnabled()
+    assert widget.remove_image_button.isEnabled()
+
+    assert widget.new_study_find_button.isHidden()

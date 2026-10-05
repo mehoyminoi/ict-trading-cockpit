@@ -110,6 +110,8 @@ class MainWindow(QMainWindow):
                 image_path,
             )
 
+        self.study_find_widget.mark_saved()
+
         self.status_bar.showMessage(
             "Study Find saved",
             3000,

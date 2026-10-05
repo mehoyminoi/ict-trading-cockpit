@@ -64,6 +64,15 @@ class StudyFindWidget(QWidget):
         self.save_button = QPushButton("Save Study Find")
         self.save_button.clicked.connect(self.submit)
 
+        self.new_study_find_button = QPushButton(
+            "Start New Study Find"
+        )
+        self.new_study_find_button.hide()
+
+        self.new_study_find_button.clicked.connect(
+            self.reset_form
+        )
+
         form_layout = QFormLayout()
         form_layout.addRow("Date", self.date_input)
         form_layout.addRow("Instrument", self.instrument_input)
@@ -121,6 +130,8 @@ class StudyFindWidget(QWidget):
         layout.addWidget(self.summary_preview)
         layout.addWidget(self.copy_summary_button)
         layout.addWidget(self.save_button)
+        layout.addWidget(self.save_button)
+        layout.addWidget(self.new_study_find_button)
 
         self.setLayout(layout)
 
@@ -205,3 +216,39 @@ class StudyFindWidget(QWidget):
 
         self.image_list.takeItem(selected_row)
         self.image_paths.pop(selected_row)
+
+    def mark_saved(self) -> None:
+        self.save_button.setText("Saved")
+        self.save_button.setEnabled(False)
+
+        self.attach_image_button.setEnabled(False)
+        self.remove_image_button.setEnabled(False)
+
+        self.new_study_find_button.show()
+
+    def reset_form(self) -> None:
+        self.current_study_find_id = str(uuid4())
+
+        self.instrument_input.clear()
+        self.session_input.clear()
+        self.pattern_input.clear()
+        self.observation_input.clear()
+        self.notes_input.clear()
+
+        self.available_move_input.setValue(0)
+
+        self.image_paths.clear()
+        self.image_list.clear()
+        self.next_image_number = 1
+
+        self.summary_preview.clear()
+
+        self.save_button.setText("Save Study Find")
+        self.save_button.setEnabled(True)
+
+        self.attach_image_button.setEnabled(True)
+        self.remove_image_button.setEnabled(True)
+
+        self.new_study_find_button.hide()
+
+        self.instrument_input.setFocus()
