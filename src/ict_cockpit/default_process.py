@@ -90,8 +90,21 @@ def build_default_process_blueprint() -> ProcessBlueprint:
             StationDefinition(
                 id="live-thesis-reference",
                 name="Carry Forward TDA",
-                question="Is current price action still consistent with the active TDA thesis and invalidation?",
+                question="What parts of the active TDA thesis matter most right now?",
                 tradingview_role="Live chart deck with TDA context available as subordinate reference.",
+            ),
+            StationDefinition(
+                id="live-thesis-crossroads",
+                name="Thesis Crossroads",
+                question=(
+                    "Is current price action still supporting the thesis, weakening it, "
+                    "invalidating it, or providing enough new evidence to deliberately pivot?"
+                ),
+                tradingview_role="Pause at meaningful new information; compare live evidence with the saved thesis and invalidation.",
+                reference=(
+                    "Changing the thesis is not failure. A pivot should be an explicit process result, "
+                    "with uncertainty allowed to resolve to no-trade or a return to analysis."
+                ),
             ),
             StationDefinition(
                 id="live-setup-state",
@@ -112,6 +125,19 @@ def build_default_process_blueprint() -> ProcessBlueprint:
                 name="Thesis vs Outcome",
                 question="What matched the premarket thesis, what differed, and why?",
                 tradingview_role="Review chart deck showing the completed day beside the saved premarket analysis.",
+            ),
+            StationDefinition(
+                id="review-outcome-diagnosis",
+                name="Outcome Diagnosis",
+                question=(
+                    "What explains the outcome: market information, thesis quality, execution, "
+                    "process adherence, or a combination of these?"
+                ),
+                tradingview_role="Use the full trade/day as evidence without reducing the diagnosis to win or loss.",
+                reference=(
+                    "After a losing trade, explicitly ask what was missed, what changed after entry, "
+                    "whether process broke down, and what should be tested or adjusted next time."
+                ),
             ),
             StationDefinition(
                 id="review-process",
@@ -162,7 +188,7 @@ def build_default_process_blueprint() -> ProcessBlueprint:
             ModeDefinition(
                 id="post-market",
                 name="Post-Market Review",
-                purpose="Compare thesis, outcome, and adherence after the session.",
+                purpose="Compare thesis, outcome, adherence, and learning after the session.",
                 decks=(review_deck,),
             ),
             ModeDefinition(
