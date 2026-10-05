@@ -16,6 +16,9 @@ from ict_cockpit.database.tda_station_session_repository import (
     TDAStationSessionRepository,
 )
 from ict_cockpit.database.trade_record_repository import TradeRecordRepository
+from ict_cockpit.database.trading_day_session_repository import (
+    TradingDaySessionRepository,
+)
 from ict_cockpit.default_trade_plan import build_default_trade_plan
 from ict_cockpit.gui.feedback_dialog import FeedbackDialog
 from ict_cockpit.gui.study_find_review_widget import StudyFindReviewWidget
@@ -45,6 +48,9 @@ class MainWindow(QMainWindow):
             or TradeRecordRepository(study_find_repository.connection)
         )
         self.tda_station_session_repository = TDAStationSessionRepository(
+            study_find_repository.connection
+        )
+        self.trading_day_session_repository = TradingDaySessionRepository(
             study_find_repository.connection
         )
 
@@ -85,6 +91,9 @@ class MainWindow(QMainWindow):
         self.trade_summary_widget.trade_ready.connect(self.save_trade_record)
         self.trade_plan_widget.tda_station_runner_widget.session_changed.connect(
             self.save_tda_station_session
+        )
+        self.trade_plan_widget.trading_day_runtime_widget.session_changed.connect(
+            self.save_trading_day_session
         )
 
         self.pending_tda_draft = None
@@ -205,6 +214,12 @@ class MainWindow(QMainWindow):
                 latest_station_session
             )
 
+        latest_trading_day_session = self.trading_day_session_repository.get_latest()
+        if latest_trading_day_session is not None:
+            self.trade_plan_widget.trading_day_runtime_widget.load_session(
+                latest_trading_day_session
+            )
+
         latest_study_find_draft = (
             self.study_find_repository.get_latest_draft()
         )
@@ -226,6 +241,10 @@ class MainWindow(QMainWindow):
     def save_tda_station_session(self, session) -> None:
         self.tda_station_session_repository.save(session)
         self.status_bar.showMessage("TDA station progress saved", 1200)
+
+    def save_trading_day_session(self, session) -> None:
+        self.trading_day_session_repository.save(session)
+        self.status_bar.showMessage("Trading-day process saved", 1200)
 
     def save_tda(self, tda) -> None:
         self.tda_draft_save_timer.stop()

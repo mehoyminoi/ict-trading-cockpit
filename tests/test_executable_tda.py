@@ -97,7 +97,7 @@ def test_tda_runner_restores_saved_progress() -> None:
     assert widget.session.completed_count() == 1
 
 
-def test_trade_plan_embeds_tda_runner_under_process() -> None:
+def test_trade_plan_embeds_tda_runner_under_trading_day_runtime() -> None:
     get_app()
     trade_plan = build_default_trade_plan()
     from ict_cockpit.gui.trade_plan_widget import TradePlanWidget
@@ -107,5 +107,9 @@ def test_trade_plan_embeds_tda_runner_under_process() -> None:
     widget.section_list.setCurrentRow(process_index)
 
     assert widget.stack.currentWidget() is widget.process_tabs
-    assert widget.process_tabs.tabText(1) == "Run TDA"
+    assert widget.process_tabs.tabText(1) == "Run Trading Day"
+    assert (
+        widget.trading_day_runtime_widget.tda_station_runner_widget
+        is widget.tda_station_runner_widget
+    )
     assert widget.tda_station_runner_widget.current_station_id.startswith("tda-")

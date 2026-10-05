@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
 )
 
 from ict_cockpit.gui.process_blueprint_widget import ProcessBlueprintWidget
-from ict_cockpit.gui.tda_station_runner_widget import TDAStationRunnerWidget
+from ict_cockpit.gui.trading_day_runtime_widget import TradingDayRuntimeWidget
 from ict_cockpit.trade_plan import TradePlanDefinition, TradePlanSectionDefinition
 
 
@@ -46,12 +46,18 @@ class TradePlanWidget(QWidget):
         self.process_blueprint_widget = ProcessBlueprintWidget(
             trade_plan.process_blueprint
         )
-        self.tda_station_runner_widget = TDAStationRunnerWidget(
+        self.trading_day_runtime_widget = TradingDayRuntimeWidget(
             trade_plan.process_blueprint
         )
+        # Backward-compatible alias while callers/tests transition from the
+        # standalone executable-TDA surface to the trading-day runtime.
+        self.tda_station_runner_widget = (
+            self.trading_day_runtime_widget.tda_station_runner_widget
+        )
+
         self.process_tabs = QTabWidget()
         self.process_tabs.addTab(self.process_blueprint_widget, "Process Map")
-        self.process_tabs.addTab(self.tda_station_runner_widget, "Run TDA")
+        self.process_tabs.addTab(self.trading_day_runtime_widget, "Run Trading Day")
 
         self._section_ids: list[str] = []
         for section in trade_plan.sections:
@@ -111,8 +117,8 @@ class TradePlanWidget(QWidget):
     @property
     def feedback_record_id(self) -> str:
         if self.selected_section_id == "process":
-            if self.process_tabs.currentWidget() is self.tda_station_runner_widget:
-                return self.tda_station_runner_widget.current_station_id
+            if self.process_tabs.currentWidget() is self.trading_day_runtime_widget:
+                return self.trading_day_runtime_widget.feedback_record_id
             station_id = self.process_blueprint_widget.selected_station_id
             if station_id:
                 return station_id
