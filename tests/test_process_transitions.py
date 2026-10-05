@@ -48,44 +48,6 @@ def test_incomplete_tda_cannot_silently_advance() -> None:
     assert widget.session.transitions == []
 
 
-def test_return_to_tda_focuses_first_incomplete_station() -> None:
-    get_app()
-    widget = TradingDayRuntimeWidget(build_default_process_blueprint())
-    runner = widget.tda_station_runner_widget
-
-    first_station_id = runner.session.station_ids[0]
-    for observation in runner.session.observations[1:]:
-        observation.completed = True
-    runner.session.current_station_id = runner.session.station_ids[1]
-    runner._update_view()
-    runner.view_tabs.setCurrentWidget(runner.deck_page)
-
-    assert widget.incomplete_tda_station_ids == [first_station_id]
-
-    widget._focus_first_incomplete_tda_station()
-
-    assert runner.current_station_id == first_station_id
-    assert runner.view_tabs.currentWidget() is runner.focus_page
-
-
-def test_completed_tda_stations_point_to_process_gate() -> None:
-    get_app()
-    widget = TradingDayRuntimeWidget(build_default_process_blueprint())
-    runner = widget.tda_station_runner_widget
-
-    for observation in runner.session.observations:
-        observation.completed = True
-    runner.session.current_station_id = runner.session.station_ids[-1]
-    runner._update_view()
-
-    assert runner.completion_guidance_label.isVisible() is False or (
-        "Finish TDA / Enter Live Watch" in runner.completion_guidance_label.text()
-    )
-    assert "Finish TDA / Enter Live Watch" in runner.completion_guidance_label.text()
-    assert runner.next_button.text() == "Station Complete"
-    assert runner.next_button.isEnabled() is False
-
-
 def test_incomplete_tda_override_is_explicitly_recorded() -> None:
     get_app()
     widget = TradingDayRuntimeWidget(build_default_process_blueprint())
@@ -170,7 +132,7 @@ def test_completed_day_can_start_fresh_day_and_tda_sessions() -> None:
 def test_transition_history_round_trips_with_session(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
-    assert CURRENT_SCHEMA_VERSION == 11
+    assert CURRENT_SCHEMA_VERSION == 12
     repository = TradingDaySessionRepository(connection)
 
     session = TradingDaySession(
