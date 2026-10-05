@@ -39,4 +39,7 @@ Observation:
 
 Notes:
 {notes}
+
+Chart Markup Picture(s):
+{chart_images}
 """

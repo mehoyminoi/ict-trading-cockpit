@@ -1,4 +1,5 @@
-from PySide6.QtCore import QDate, Signal
+from PySide6.QtCore import QDate, Signal, Qt
+from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QApplication,
     QDateEdit,
@@ -97,15 +98,37 @@ class StudyFindWidget(QWidget):
         self.remove_image_button = QPushButton("Remove Selected")
 
         self.attach_image_button.clicked.connect(
-            self.choose_chart_image
+                    self.choose_chart_image
         )
-
+        
         self.remove_image_button.clicked.connect(
             self.remove_selected_image
         )
 
-        layout.addWidget(self.attach_image_button)
+        self.image_preview = QLabel("No chart image selected")
+        self.image_preview.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+
+        self.image_preview.setMinimumHeight(200)
+        self.image_preview.setScaledContents(False)
+
+        self.copy_image_button = QPushButton("Copy Selected Image")
+        self.copy_image_button.setEnabled(False)
+
+        self.image_list.currentRowChanged.connect(
+            self.update_image_preview
+        )
+
+        self.copy_image_button.clicked.connect(
+            self.copy_selected_image
+        )
+
+
         layout.addWidget(self.image_list)
+        layout.addWidget(self.image_preview)
+        layout.addWidget(self.copy_image_button)
+        layout.addWidget(self.attach_image_button)
+
         layout.addWidget(self.remove_image_button)
 
         self.summary_preview = QPlainTextEdit()
@@ -166,7 +189,10 @@ class StudyFindWidget(QWidget):
     def generate_summary(self) -> str:
         study_find = self.build_study_find()
 
-        context = StudyFindSummaryContext(study_find)
+        context = StudyFindSummaryContext(
+            study_find=study_find,
+            image_paths=self.image_paths,
+        )
 
         rendered = SummaryRenderer().render(
             STUDY_FIND_SUMMARY_V1,
@@ -216,6 +242,15 @@ class StudyFindWidget(QWidget):
 
         self.image_list.takeItem(selected_row)
         self.image_paths.pop(selected_row)
+        if self.image_paths:
+            new_row = min(
+                selected_row,
+                len(self.image_paths) - 1,
+            )
+
+            self.image_list.setCurrentRow(new_row)
+        else:
+            self.update_image_preview(-1)
 
     def mark_saved(self) -> None:
         self.save_button.setText("Saved")
@@ -239,6 +274,8 @@ class StudyFindWidget(QWidget):
 
         self.image_paths.clear()
         self.image_list.clear()
+        self.update_image_preview(-1)
+
         self.next_image_number = 1
 
         self.summary_preview.clear()
@@ -252,3 +289,52 @@ class StudyFindWidget(QWidget):
         self.new_study_find_button.hide()
 
         self.instrument_input.setFocus()
+
+    def update_image_preview(self, row: int) -> None:
+        if row < 0 or row >= len(self.image_paths):
+            self.image_preview.clear()
+            self.image_preview.setText(
+                "No chart image selected"
+            )
+            self.copy_image_button.setEnabled(False)
+            return
+
+        image_path = self.image_paths[row]
+
+        pixmap = QPixmap(image_path)
+
+        if pixmap.isNull():
+            self.image_preview.clear()
+            self.image_preview.setText(
+                "Unable to load chart image"
+            )
+            self.copy_image_button.setEnabled(False)
+            return
+
+        preview = pixmap.scaled(
+            700,
+            400,
+            Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.SmoothTransformation,
+        )
+
+        self.image_preview.setPixmap(preview)
+        self.copy_image_button.setEnabled(True)
+
+    def copy_selected_image(self) -> None:
+        selected_row = self.image_list.currentRow()
+
+        if selected_row < 0:
+            return
+
+        if selected_row >= len(self.image_paths):
+            return
+
+        pixmap = QPixmap(
+            self.image_paths[selected_row]
+        )
+
+        if pixmap.isNull():
+            return
+
+        QApplication.clipboard().setPixmap(pixmap)

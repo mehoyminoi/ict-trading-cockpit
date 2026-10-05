@@ -258,3 +258,15 @@ def test_study_find_widget_reset_clears_form() -> None:
     assert widget.remove_image_button.isEnabled()
 
     assert widget.new_study_find_button.isHidden()
+
+def test_image_preview_disabled_without_selection() -> None:
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    widget = StudyFindWidget()
+
+    widget.update_image_preview(-1)
+
+    assert not widget.copy_image_button.isEnabled()
