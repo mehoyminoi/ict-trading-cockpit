@@ -109,7 +109,8 @@ class StudyFindWidget(QWidget):
         self.image_preview.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
 
-        self.image_preview.setMinimumHeight(200)
+        self.image_preview.setMinimumHeight(140)
+        self.image_preview.setMaximumHeight(220)
         self.image_preview.setScaledContents(False)
 
         self.copy_image_button = QPushButton("Copy Selected Image")
@@ -232,7 +233,9 @@ class StudyFindWidget(QWidget):
         path_string = str(stored_path)
 
         self.image_paths.append(path_string)
-        self.image_list.addItem(path_string)
+        self.image_list.addItem(
+            Path(path_string).name
+        )
 
     def remove_selected_image(self) -> None:
         selected_row = self.image_list.currentRow()
@@ -312,8 +315,8 @@ class StudyFindWidget(QWidget):
             return
 
         preview = pixmap.scaled(
-            700,
-            400,
+            420,
+            200,
             Qt.AspectRatioMode.KeepAspectRatio,
             Qt.TransformationMode.SmoothTransformation,
         )

@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QApplication
-
+from pathlib import Path
 from ict_cockpit.gui.study_find_widget import StudyFindWidget
 
 
@@ -121,7 +121,10 @@ def test_study_find_widget_tracks_multiple_image_paths() -> None:
     ]
 
     widget.image_list.addItems(
-        widget.image_paths
+        [
+            Path(path).name
+            for path in widget.image_paths
+        ]
     )
 
     assert widget.image_list.count() == 2
@@ -144,7 +147,10 @@ def test_study_find_widget_removes_selected_image() -> None:
     ]
 
     widget.image_list.addItems(
-        widget.image_paths
+        [
+            Path(path).name
+            for path in widget.image_paths
+        ]
     )
 
     widget.image_list.setCurrentRow(0)
@@ -213,7 +219,10 @@ def test_study_find_widget_reset_clears_form() -> None:
         "/tmp/chart-2.png",
     ]
     widget.image_list.addItems(
-        widget.image_paths
+        [
+            Path(path).name
+            for path in widget.image_paths
+        ]
     )
 
     widget.summary_preview.setPlainText(
@@ -270,3 +279,21 @@ def test_image_preview_disabled_without_selection() -> None:
     widget.update_image_preview(-1)
 
     assert not widget.copy_image_button.isEnabled()
+
+def test_study_find_widget_displays_image_filename() -> None:
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    widget = StudyFindWidget()
+
+    widget.image_paths = [
+        "/tmp/example/chart-1.png",
+    ]
+
+    widget.image_list.addItem(
+        Path(widget.image_paths[0]).name
+    )
+
+    assert widget.image_list.item(0).text() == "chart-1.png"
