@@ -52,11 +52,40 @@ class DeckDefinition:
 
 
 @dataclass(frozen=True)
+class TransitionDefinition:
+    """One legitimate outcome from a trading-day process mode."""
+
+    id: str
+    name: str
+    outcome: str
+    target_mode_id: str = ""
+    description: str = ""
+
+    def __post_init__(self) -> None:
+        if not self.id.strip():
+            raise ValueError("transition id cannot be empty")
+        if not self.name.strip():
+            raise ValueError("transition name cannot be empty")
+        if self.outcome not in {
+            "advance",
+            "return_to_analysis",
+            "stand_down",
+            "complete_day",
+        }:
+            raise ValueError("unsupported transition outcome")
+        if self.outcome != "complete_day" and not self.target_mode_id.strip():
+            raise ValueError("non-terminal transition must define a target mode")
+        if self.outcome == "complete_day" and self.target_mode_id.strip():
+            raise ValueError("complete-day transition cannot define a target mode")
+
+
+@dataclass(frozen=True)
 class ModeDefinition:
     id: str
     name: str
     purpose: str
     decks: tuple[DeckDefinition, ...] = field(default_factory=tuple)
+    transitions: tuple[TransitionDefinition, ...] = field(default_factory=tuple)
 
     def __post_init__(self) -> None:
         if not self.id.strip():
@@ -65,6 +94,15 @@ class ModeDefinition:
             raise ValueError("mode name cannot be empty")
         if not self.decks:
             raise ValueError("mode must contain at least one deck")
+        transition_ids = [transition.id for transition in self.transitions]
+        if len(transition_ids) != len(set(transition_ids)):
+            raise ValueError("mode transition ids must be unique")
+
+    def transition_by_id(self, transition_id: str) -> TransitionDefinition | None:
+        for transition in self.transitions:
+            if transition.id == transition_id:
+                return transition
+        return None
 
 
 @dataclass(frozen=True)
@@ -84,6 +122,15 @@ class ProcessBlueprint:
         if not self.modes:
             raise ValueError("process must contain at least one mode")
 
+        mode_ids = [mode.id for mode in self.modes]
+        if len(mode_ids) != len(set(mode_ids)):
+            raise ValueError("process mode ids must be unique")
+        valid_mode_ids = set(mode_ids)
+        for mode in self.modes:
+            for transition in mode.transitions:
+                if transition.target_mode_id and transition.target_mode_id not in valid_mode_ids:
+                    raise ValueError("transition target must exist in process modes")
+
     def iter_stations(self):
         for mode in self.modes:
             for deck in mode.decks:
@@ -97,4 +144,10 @@ class ProcessBlueprint:
         for mode, deck, station in self.iter_stations():
             if station.id == station_id:
                 return mode, deck, station
+        return None
+
+    def mode_by_id(self, mode_id: str) -> ModeDefinition | None:
+        for mode in self.modes:
+            if mode.id == mode_id:
+                return mode
         return None

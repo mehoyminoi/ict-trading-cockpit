@@ -133,13 +133,26 @@ def test_trade_summary_widget_generates_expected_summary() -> None:
 
 
 def test_trade_summary_clipboard_image_is_managed(monkeypatch, tmp_path) -> None:
-    app = get_app()
+    get_app()
     monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path))
     widget = TradeSummaryWidget()
 
     image = QImage(12, 12, QImage.Format.Format_RGB32)
     image.fill(0)
-    app.clipboard().setImage(image)
+
+    class FakeClipboard:
+        def image(self) -> QImage:
+            return image
+
+    class FakeApplication:
+        @staticmethod
+        def clipboard() -> FakeClipboard:
+            return FakeClipboard()
+
+    monkeypatch.setattr(
+        "ict_cockpit.gui.trade_summary_widget.QApplication",
+        FakeApplication,
+    )
 
     assert widget.paste_chart_from_clipboard()
     assert len(widget.image_paths) == 1

@@ -3,6 +3,7 @@ from ict_cockpit.process_blueprint import (
     ModeDefinition,
     ProcessBlueprint,
     StationDefinition,
+    TransitionDefinition,
 )
 
 
@@ -149,18 +150,65 @@ def build_default_process_blueprint() -> ProcessBlueprint:
                 name="Premarket / TDA",
                 purpose="Build market context and an explicit thesis before live observation.",
                 decks=(tda_deck_1, tda_deck_2),
+                transitions=(
+                    TransitionDefinition(
+                        id="finish-tda",
+                        name="Finish TDA / Enter Live Watch",
+                        outcome="advance",
+                        target_mode_id="live-watch",
+                        description="Commit the current premarket analysis and begin live observation.",
+                    ),
+                    TransitionDefinition(
+                        id="tda-stand-down",
+                        name="Stand Down / No Trade",
+                        outcome="stand_down",
+                        target_mode_id="post-market",
+                        description="No trade is the correct process outcome; preserve the analysis and review the day later.",
+                    ),
+                ),
             ),
             ModeDefinition(
                 id="live-watch",
                 name="Live Watch",
                 purpose="Observe price through the active thesis while allowing evidence-based re-evaluation.",
                 decks=(live_deck,),
+                transitions=(
+                    TransitionDefinition(
+                        id="live-finish",
+                        name="Finish Live Watch / Enter Review",
+                        outcome="advance",
+                        target_mode_id="post-market",
+                        description="End live observation and move into outcome/process review.",
+                    ),
+                    TransitionDefinition(
+                        id="live-return-analysis",
+                        name="Return to Analysis",
+                        outcome="return_to_analysis",
+                        target_mode_id="tda",
+                        description="New evidence requires deliberate re-evaluation before continuing live watch.",
+                    ),
+                    TransitionDefinition(
+                        id="live-stand-down",
+                        name="Stand Down / No Trade",
+                        outcome="stand_down",
+                        target_mode_id="post-market",
+                        description="Stop seeking a trade and preserve the decision as a valid process outcome.",
+                    ),
+                ),
             ),
             ModeDefinition(
                 id="post-market",
                 name="Post-Market Review",
                 purpose="Compare thesis, outcome, adherence, and lessons after the session.",
                 decks=(review_deck,),
+                transitions=(
+                    TransitionDefinition(
+                        id="complete-day",
+                        name="Complete Trading Day",
+                        outcome="complete_day",
+                        description="Close the daily operating loop after review.",
+                    ),
+                ),
             ),
         ),
     )
