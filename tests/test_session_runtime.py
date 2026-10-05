@@ -60,23 +60,23 @@ def test_trading_day_allows_only_one_active_trading_run() -> None:
     first = TradingRun(day.id, "Trading Run 1", "process-1")
     second = TradingRun(day.id, "Trading Run 2", "process-2")
 
-    day.activate_session_run(first)
+    day.activate_trading_run(first)
 
-    with pytest.raises(ValueError, match="already has an active session run"):
-        day.activate_session_run(second)
+    with pytest.raises(ValueError, match="already has an active trading run"):
+        day.activate_trading_run(second)
 
 
 def test_concluding_trading_run_does_not_complete_trading_day() -> None:
     day = TradingDay(futures_day_label="2026-10-06")
     run = TradingRun(day.id, "Trading Run 1", "process-1")
-    day.activate_session_run(run)
+    day.activate_trading_run(run)
 
-    day.conclude_session_run(run, "No Trade — Process Followed")
+    day.conclude_trading_run(run, "No Trade — Process Followed")
 
     assert run.status is TradingRunStatus.CONCLUDED
     assert run.outcome == "No Trade — Process Followed"
     assert day.status is TradingDayLifecycleStatus.ACTIVE
-    assert day.active_session_run_id == ""
+    assert day.active_trading_run_id == ""
 
 
 def test_new_trading_run_can_start_after_prior_run_concludes() -> None:
@@ -84,24 +84,24 @@ def test_new_trading_run_can_start_after_prior_run_concludes() -> None:
     morning = TradingRun(day.id, "Trading Run 1", "process-1")
     later = TradingRun(day.id, "Trading Run 2", "process-2")
 
-    day.activate_session_run(morning)
-    day.conclude_session_run(morning)
-    day.activate_session_run(later)
+    day.activate_trading_run(morning)
+    day.conclude_trading_run(morning)
+    day.activate_trading_run(later)
 
     assert morning.status is TradingRunStatus.CONCLUDED
     assert later.status is TradingRunStatus.ACTIVE
-    assert day.active_session_run_id == later.id
+    assert day.active_trading_run_id == later.id
 
 
 def test_trading_day_cannot_complete_with_active_trading_run() -> None:
     day = TradingDay()
     run = TradingRun(day.id, "Trading Run 1", "process-1")
-    day.activate_session_run(run)
+    day.activate_trading_run(run)
 
-    with pytest.raises(ValueError, match="session run is active"):
+    with pytest.raises(ValueError, match="trading run is active"):
         day.complete()
 
-    day.conclude_session_run(run)
+    day.conclude_trading_run(run)
     day.complete()
     assert day.status is TradingDayLifecycleStatus.COMPLETE
 
@@ -122,7 +122,7 @@ def test_day_and_trading_runs_round_trip_through_repositories(tmp_path) -> None:
         process_session_id=process_session.id,
         tda_station_session_id="tda-session-1",
     )
-    day.activate_session_run(run)
+    day.activate_trading_run(run)
 
     day_repository.save(day)
     run_repository.save(run)
@@ -132,7 +132,7 @@ def test_day_and_trading_runs_round_trip_through_repositories(tmp_path) -> None:
 
     assert restored_day is not None
     assert restored_day.id == day.id
-    assert restored_day.active_session_run_id == run.id
+    assert restored_day.active_trading_run_id == run.id
     assert restored_run is not None
     assert restored_run.run_label == "Trading Run 1"
     assert restored_run.process_session_id == process_session.id
@@ -155,9 +155,9 @@ def test_repository_keeps_multiple_trading_runs_for_same_day(tmp_path) -> None:
         process_session = build_process_session()
         process_repository.save(process_session)
         run = TradingRun(day.id, f"Trading Run {run_number}", process_session.id)
-        day.activate_session_run(run)
+        day.activate_trading_run(run)
         run_repository.save(run)
-        day.conclude_session_run(run)
+        day.conclude_trading_run(run)
         run_repository.save(run)
         created.append(run)
 
@@ -200,7 +200,7 @@ def test_shell_starts_neutral_trading_run_without_market_session_choice() -> Non
     assert shell.start_trading_run() is True
     assert shell.active_trading_run is not None
     assert shell.active_trading_run.run_label == "Trading Run 1"
-    assert shell.trading_day.active_session_run_id == shell.active_trading_run.id
+    assert shell.trading_day.active_trading_run_id == shell.active_trading_run.id
     assert shell.complete_day_button.isEnabled() is False
     assert shell.runtime_frame.isVisible() is False or shell.runtime_frame.isHidden() is False
 
