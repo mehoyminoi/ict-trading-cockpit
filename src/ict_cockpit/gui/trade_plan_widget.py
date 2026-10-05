@@ -51,7 +51,7 @@ class TradePlanWidget(QWidget):
         )
 
         # Compatibility aliases while older callers/tests migrate to the new
-        # Trading Day -> Session Run ownership model.
+        # Trading Day -> Trading Run ownership model.
         self.trading_day_runtime_widget = self.trading_day_shell_widget.runtime
         self.tda_station_runner_widget = (
             self.trading_day_runtime_widget.tda_station_runner_widget
@@ -60,6 +60,7 @@ class TradePlanWidget(QWidget):
         self.process_tabs = QTabWidget()
         self.process_tabs.addTab(self.process_blueprint_widget, "Process Map")
         self.process_tabs.addTab(self.trading_day_shell_widget, "Run Trading Day")
+        self.process_tabs.currentChanged.connect(self._process_tab_changed)
 
         self._section_ids: list[str] = []
         for section in trade_plan.sections:
@@ -83,6 +84,11 @@ class TradePlanWidget(QWidget):
         layout.addWidget(self.subtitle_label)
         layout.addWidget(self.operating_model_label)
         layout.addLayout(body)
+
+    def _process_tab_changed(self, _index: int) -> None:
+        """Entering Run Trading Day is the normal Go action for Trading Run 1."""
+        if self.process_tabs.currentWidget() is self.trading_day_shell_widget:
+            self.trading_day_shell_widget.ensure_primary_trading_run_started()
 
     def _build_section_page(self, section: TradePlanSectionDefinition) -> QWidget:
         page = QWidget()
