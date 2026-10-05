@@ -4,6 +4,19 @@ from uuid import uuid4
 
 
 @dataclass
+class StudyFindDraft:
+    observation_date: date
+    instrument: str = ""
+    session: str = ""
+    pattern_name: str = ""
+    observation: str = ""
+    available_move_handles: float | None = None
+    notes: str = ""
+    image_paths: list[str] = field(default_factory=list)
+    id: str = field(default_factory=lambda: str(uuid4()))
+
+
+@dataclass
 class StudyFind:
     observation_date: date
     instrument: str
