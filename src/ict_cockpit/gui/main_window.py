@@ -107,6 +107,13 @@ class MainWindow(QMainWindow):
         self.pending_tda_draft = None
         self.status_bar.showMessage("TDA draft saved", 1500)
 
+    # Backward-compatible names retained for existing callers/tests.
+    def schedule_draft_save(self, tda) -> None:
+        self.schedule_tda_draft_save(tda)
+
+    def save_pending_draft(self) -> None:
+        self.save_pending_tda_draft()
+
     def schedule_study_find_draft_save(self, draft) -> None:
         self.pending_study_find_draft = draft
         self.study_find_draft_save_timer.start()
