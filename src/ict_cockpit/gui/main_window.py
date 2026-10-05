@@ -13,10 +13,12 @@ from ict_cockpit.database.feedback_repository import FeedbackRepository
 from ict_cockpit.database.study_find_repository import StudyFindRepository
 from ict_cockpit.database.tda_repository import TDARepository
 from ict_cockpit.database.trade_record_repository import TradeRecordRepository
+from ict_cockpit.default_trade_plan import build_default_trade_plan
 from ict_cockpit.gui.feedback_dialog import FeedbackDialog
 from ict_cockpit.gui.study_find_review_widget import StudyFindReviewWidget
 from ict_cockpit.gui.study_find_widget import StudyFindWidget
 from ict_cockpit.gui.tda_workflow import TDAWorkflowWidget
+from ict_cockpit.gui.trade_plan_widget import TradePlanWidget
 from ict_cockpit.gui.trade_summary_widget import TradeSummaryWidget
 
 
@@ -43,6 +45,15 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(window_title())
         self.resize(900, 650)
 
+        self.trade_plan = build_default_trade_plan()
+        self.trade_plan_widget = TradePlanWidget(self.trade_plan)
+        # Backward-compatible references retained while Process Map tests and
+        # callers transition to the Trade Plan parent model.
+        self.process_blueprint = self.trade_plan.process_blueprint
+        self.process_blueprint_widget = (
+            self.trade_plan_widget.process_blueprint_widget
+        )
+
         self.tda_workflow = TDAWorkflowWidget()
         self.study_find_widget = StudyFindWidget()
         self.trade_summary_widget = TradeSummaryWidget()
@@ -51,6 +62,7 @@ class MainWindow(QMainWindow):
         )
 
         self.tabs = QTabWidget()
+        self.tabs.addTab(self.trade_plan_widget, "Trade Plan")
         self.tabs.addTab(self.tda_workflow, "Guided TDA")
         self.tabs.addTab(self.study_find_widget, "Study Find")
         self.tabs.addTab(self.trade_summary_widget, "Trade Summary")
@@ -124,6 +136,9 @@ class MainWindow(QMainWindow):
     def current_feedback_context(self) -> tuple[str, str]:
         current_widget = self.tabs.currentWidget()
         tab_name = self.tabs.tabText(self.tabs.currentIndex())
+
+        if current_widget is self.trade_plan_widget:
+            return tab_name, self.trade_plan_widget.feedback_record_id
 
         if current_widget is self.tda_workflow:
             return tab_name, self.tda_workflow.current_tda_id
