@@ -1,7 +1,8 @@
+import json
 import sqlite3
 from datetime import date
 
-from ict_cockpit.analysis.study_find import StudyFind
+from ict_cockpit.analysis.study_find import StudyFind, StudyFindDraft
 
 
 class StudyFindRepository:
@@ -72,6 +73,88 @@ class StudyFindRepository:
             image_path=row[8],
         )
 
+    def save_draft(self, draft: StudyFindDraft) -> None:
+        with self.connection:
+            self.connection.execute(
+                """
+                INSERT INTO study_find_draft (
+                    id,
+                    observation_date,
+                    instrument,
+                    session,
+                    pattern_name,
+                    observation,
+                    available_move_handles,
+                    notes,
+                    image_paths,
+                    updated_at
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                ON CONFLICT(id) DO UPDATE SET
+                    observation_date = excluded.observation_date,
+                    instrument = excluded.instrument,
+                    session = excluded.session,
+                    pattern_name = excluded.pattern_name,
+                    observation = excluded.observation,
+                    available_move_handles = excluded.available_move_handles,
+                    notes = excluded.notes,
+                    image_paths = excluded.image_paths,
+                    updated_at = CURRENT_TIMESTAMP
+                """,
+                (
+                    draft.id,
+                    draft.observation_date.isoformat(),
+                    draft.instrument,
+                    draft.session,
+                    draft.pattern_name,
+                    draft.observation,
+                    draft.available_move_handles,
+                    draft.notes,
+                    json.dumps(draft.image_paths),
+                ),
+            )
+
+    def get_latest_draft(self) -> StudyFindDraft | None:
+        row = self.connection.execute(
+            """
+            SELECT
+                id,
+                observation_date,
+                instrument,
+                session,
+                pattern_name,
+                observation,
+                available_move_handles,
+                notes,
+                image_paths
+            FROM study_find_draft
+            ORDER BY updated_at DESC, rowid DESC
+            LIMIT 1
+            """
+        ).fetchone()
+
+        if row is None:
+            return None
+
+        return StudyFindDraft(
+            id=row[0],
+            observation_date=date.fromisoformat(row[1]),
+            instrument=row[2],
+            session=row[3],
+            pattern_name=row[4],
+            observation=row[5],
+            available_move_handles=row[6],
+            notes=row[7],
+            image_paths=json.loads(row[8]),
+        )
+
+    def delete_draft(self, study_find_id: str) -> None:
+        with self.connection:
+            self.connection.execute(
+                "DELETE FROM study_find_draft WHERE id = ?",
+                (study_find_id,),
+            )
+
     def add_image(
         self,
         study_find_id: str,
@@ -117,10 +200,7 @@ class StudyFindRepository:
             (study_find_id,),
         ).fetchall()
 
-        return [
-            row[0]
-            for row in rows
-        ]
+        return [row[0] for row in rows]
 
     def get_recent(
         self,

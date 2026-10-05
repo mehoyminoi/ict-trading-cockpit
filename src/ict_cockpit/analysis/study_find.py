@@ -4,6 +4,32 @@ from uuid import uuid4
 
 
 @dataclass
+class StudyFindDraft:
+    observation_date: date
+    instrument: str = ""
+    session: str = ""
+    pattern_name: str = ""
+    observation: str = ""
+    available_move_handles: float | None = None
+    notes: str = ""
+    image_paths: list[str] = field(default_factory=list)
+    id: str = field(default_factory=lambda: str(uuid4()))
+
+    def has_content(self) -> bool:
+        return any(
+            (
+                self.instrument.strip(),
+                self.session.strip(),
+                self.pattern_name.strip(),
+                self.observation.strip(),
+                self.notes.strip(),
+                self.image_paths,
+                self.available_move_handles not in (None, 0.0),
+            )
+        )
+
+
+@dataclass
 class StudyFind:
     observation_date: date
     instrument: str
