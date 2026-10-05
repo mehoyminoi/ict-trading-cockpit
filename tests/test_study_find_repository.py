@@ -127,3 +127,67 @@ def test_study_find_repository_stores_multiple_images(tmp_path) -> None:
     ]
 
     connection.close()
+
+def test_study_find_repository_gets_recent_study_finds(
+    tmp_path,
+) -> None:
+    database_path = tmp_path / "test.db"
+
+    connection = create_connection(database_path)
+    initialize_schema(connection)
+
+    repository = StudyFindRepository(connection)
+
+    older = StudyFind(
+        observation_date=date(2026, 10, 1),
+        instrument="MNQ",
+        session="NYAM",
+        pattern_name="Older pattern",
+        observation="Older observation.",
+    )
+
+    newer = StudyFind(
+        observation_date=date(2026, 10, 4),
+        instrument="MNQ",
+        session="NYPM",
+        pattern_name="Newer pattern",
+        observation="Newer observation.",
+    )
+
+    repository.save(older)
+    repository.save(newer)
+
+    results = repository.get_recent()
+
+    assert len(results) == 2
+    assert results[0].id == newer.id
+    assert results[1].id == older.id
+
+    connection.close()
+
+def test_study_find_repository_recent_limit(
+    tmp_path,
+) -> None:
+    database_path = tmp_path / "test.db"
+
+    connection = create_connection(database_path)
+    initialize_schema(connection)
+
+    repository = StudyFindRepository(connection)
+
+    for index in range(3):
+        repository.save(
+            StudyFind(
+                observation_date=date(2026, 10, 4),
+                instrument="MNQ",
+                session="NYAM",
+                pattern_name=f"Pattern {index}",
+                observation=f"Observation {index}",
+            )
+        )
+
+    results = repository.get_recent(limit=2)
+
+    assert len(results) == 2
+
+    connection.close()
