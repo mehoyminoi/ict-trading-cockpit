@@ -106,6 +106,29 @@ def test_complete_day_is_terminal() -> None:
     assert widget.apply_transition("complete-day") is False
 
 
+def test_completed_day_can_start_fresh_day_and_tda_sessions() -> None:
+    get_app()
+    widget = TradingDayRuntimeWidget(build_default_process_blueprint())
+    old_day_id = widget.session.id
+    old_tda_id = widget.tda_station_runner_widget.session.id
+
+    widget.apply_transition("tda-stand-down")
+    widget.apply_transition("complete-day")
+
+    assert widget.session.status is TradingDayStatus.COMPLETE
+    assert "start-new-day" in widget.transition_buttons
+
+    widget.start_new()
+
+    assert widget.session.id != old_day_id
+    assert widget.tda_station_runner_widget.session.id != old_tda_id
+    assert widget.session.status is TradingDayStatus.ACTIVE
+    assert widget.session.current_mode_id == "tda"
+    assert widget.session.completed_mode_ids == []
+    assert widget.session.transitions == []
+    assert widget.tda_station_runner_widget.session.completed_count() == 0
+
+
 def test_transition_history_round_trips_with_session(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
