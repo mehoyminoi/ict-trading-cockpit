@@ -7,11 +7,14 @@ from ict_cockpit.process_blueprint import (
 
 
 def build_default_process_blueprint() -> ProcessBlueprint:
-    """Return the first explicit process map used to shape alpha workflows.
+    """Return the first explicit operating process used to shape alpha workflows.
 
     This is intentionally a code-defined alpha blueprint rather than a permanent
     workflow editor format. The goal is to validate the Process -> Mode -> Deck
     -> Station hierarchy before making definitions persistent/configurable.
+
+    Film Night / Lab is deliberately not part of this operating process. It is a
+    parallel Review / Development activity owned by the Trade Plan.
     """
 
     tda_deck_1 = DeckDefinition(
@@ -90,21 +93,15 @@ def build_default_process_blueprint() -> ProcessBlueprint:
             StationDefinition(
                 id="live-thesis-reference",
                 name="Carry Forward TDA",
-                question="What parts of the active TDA thesis matter most right now?",
+                question="Is current price action still consistent with the active TDA thesis and invalidation?",
                 tradingview_role="Live chart deck with TDA context available as subordinate reference.",
             ),
             StationDefinition(
                 id="live-thesis-crossroads",
                 name="Thesis Crossroads",
-                question=(
-                    "Is current price action still supporting the thesis, weakening it, "
-                    "invalidating it, or providing enough new evidence to deliberately pivot?"
-                ),
-                tradingview_role="Pause at meaningful new information; compare live evidence with the saved thesis and invalidation.",
-                reference=(
-                    "Changing the thesis is not failure. A pivot should be an explicit process result, "
-                    "with uncertainty allowed to resolve to no-trade or a return to analysis."
-                ),
+                question="Is the thesis still supported, weakened, invalidated, or does new evidence justify a deliberate pivot or no-trade state?",
+                tradingview_role="Pause live execution context long enough to compare new information with the saved TDA thesis.",
+                reference="Changing the thesis is successful process execution when predefined evidence requires a re-evaluation.",
             ),
             StationDefinition(
                 id="live-setup-state",
@@ -129,15 +126,9 @@ def build_default_process_blueprint() -> ProcessBlueprint:
             StationDefinition(
                 id="review-outcome-diagnosis",
                 name="Outcome Diagnosis",
-                question=(
-                    "What explains the outcome: market information, thesis quality, execution, "
-                    "process adherence, or a combination of these?"
-                ),
-                tradingview_role="Use the full trade/day as evidence without reducing the diagnosis to win or loss.",
-                reference=(
-                    "After a losing trade, explicitly ask what was missed, what changed after entry, "
-                    "whether process broke down, and what should be tested or adjusted next time."
-                ),
+                question="What did the outcome teach me about market information, thesis quality, execution, and process adherence?",
+                tradingview_role="Use the completed trade/day as evidence rather than treating win or loss as the diagnosis itself.",
+                reference="After a losing trade, ask what was missed, what changed after entry, whether process broke down, and what can be learned for the next similar scenario.",
             ),
             StationDefinition(
                 id="review-process",
@@ -148,30 +139,10 @@ def build_default_process_blueprint() -> ProcessBlueprint:
         ),
     )
 
-    lab_deck = DeckDefinition(
-        id="film-night-lab",
-        name="Film Night / Lab Deck",
-        tradingview_layout="Film Night / Lab",
-        stations=(
-            StationDefinition(
-                id="lab-study-question",
-                name="Study Question",
-                question="What concept, lecture idea, or market behavior am I testing?",
-                tradingview_role="Replay/backtest deck arranged specifically for the research question.",
-            ),
-            StationDefinition(
-                id="lab-capture-find",
-                name="Capture Find",
-                question="What observation is worth preserving as structured evidence?",
-                tradingview_role="Capture charts into Study Find without interrupting the research sequence.",
-            ),
-        ),
-    )
-
     return ProcessBlueprint(
         id="ict-process-alpha",
-        name="ICT Trading Process",
-        revision="Alpha 0.1",
+        name="ICT Trading-Day Process",
+        revision="Alpha 0.2",
         modes=(
             ModeDefinition(
                 id="tda",
@@ -182,20 +153,14 @@ def build_default_process_blueprint() -> ProcessBlueprint:
             ModeDefinition(
                 id="live-watch",
                 name="Live Watch",
-                purpose="Observe price through the active thesis without losing process context.",
+                purpose="Observe price through the active thesis while allowing evidence-based re-evaluation.",
                 decks=(live_deck,),
             ),
             ModeDefinition(
                 id="post-market",
                 name="Post-Market Review",
-                purpose="Compare thesis, outcome, adherence, and learning after the session.",
+                purpose="Compare thesis, outcome, adherence, and lessons after the session.",
                 decks=(review_deck,),
-            ),
-            ModeDefinition(
-                id="lab",
-                name="Film Night / Lab",
-                purpose="Study concepts, replay examples, and accumulate structured evidence.",
-                decks=(lab_deck,),
             ),
         ),
     )
