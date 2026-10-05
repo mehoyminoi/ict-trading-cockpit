@@ -1,5 +1,7 @@
 TRADE_SUMMARY_V1 = """Date: {date} Trade #{trade_number}
 Asset: {asset}
+Source: {trade_source}
+Account: {account_context}
 Model: {model}
 Direction: {direction}
 Entry TF: {entry_tf}
@@ -25,6 +27,7 @@ Session: {session}
 Summary: {summary}
 
 Chart Markup Picture(s):
+{chart_images}
 """
 
 

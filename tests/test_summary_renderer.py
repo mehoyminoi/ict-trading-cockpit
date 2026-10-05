@@ -9,6 +9,8 @@ def test_trade_summary_template_renders_values() -> None:
         "date": "26-10-04",
         "trade_number": 1,
         "asset": "MNQ",
+        "trade_source": "TradingView Replay",
+        "account_context": "October 2026 replay",
         "model": "NYAM FVG",
         "direction": "Long",
         "entry_tf": "5m",
@@ -34,6 +36,7 @@ def test_trade_summary_template_renders_values() -> None:
             "Bullish morning bias. Waited for NYAM manipulation "
             "and entered after bullish displacement."
         ),
+        "chart_images": "- chart-1.png",
     }
 
     rendered = renderer.render(
@@ -42,10 +45,14 @@ def test_trade_summary_template_renders_values() -> None:
     )
 
     assert "Asset: MNQ" in rendered
+    assert "Source: TradingView Replay" in rendered
+    assert "Account: October 2026 replay" in rendered
     assert "Trade Results: 185.25 handles/ 741 ticks" in rendered
     assert "Reward/Risk: 2.72:1" in rendered
     assert "16Y Cycle: 2023-2026 M" in rendered
     assert "Summary: Bullish morning bias." in rendered
+    assert "- chart-1.png" in rendered
+
 
 def test_renderer_allows_blank_optional_values() -> None:
     renderer = SummaryRenderer()

@@ -6,6 +6,7 @@ from ict_cockpit.database.bootstrap import open_default_application_database
 from ict_cockpit.database.feedback_repository import FeedbackRepository
 from ict_cockpit.database.study_find_repository import StudyFindRepository
 from ict_cockpit.database.tda_repository import TDARepository
+from ict_cockpit.database.trade_record_repository import TradeRecordRepository
 from ict_cockpit.gui.main_window import MainWindow
 
 
@@ -16,11 +17,13 @@ def main() -> int:
     tda_repository = TDARepository(connection)
     study_find_repository = StudyFindRepository(connection)
     feedback_repository = FeedbackRepository(connection)
+    trade_record_repository = TradeRecordRepository(connection)
 
     window = MainWindow(
         tda_repository,
         study_find_repository,
         feedback_repository,
+        trade_record_repository,
     )
     window.show()
 
