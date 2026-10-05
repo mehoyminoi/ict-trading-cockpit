@@ -5,6 +5,8 @@ from PySide6.QtWidgets import (
     QLabel,
     QListWidget,
     QPushButton,
+    QScrollArea,
+    QSizePolicy,
     QVBoxLayout,
     QWidget,
 )
@@ -41,8 +43,15 @@ class TradingDayShellWidget(QWidget):
         self.summary_label = QLabel()
         self.summary_label.setWordWrap(True)
 
+        self.run_history_label = QLabel("Trading Runs")
         self.run_history = QListWidget()
-        self.run_history.setMaximumHeight(120)
+        # The run list is context, not the working surface. Keep it compact so
+        # the active process owns the available vertical space.
+        self.run_history.setMaximumHeight(72)
+        self.run_history.setSizePolicy(
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.Maximum,
+        )
         self.session_history = self.run_history
 
         self.start_run_button = QPushButton("Start Trading Run")
@@ -56,6 +65,7 @@ class TradingDayShellWidget(QWidget):
         self.start_new_day_button.clicked.connect(self.start_new_trading_day)
 
         controls = QHBoxLayout()
+        controls.setContentsMargins(0, 0, 0, 0)
         controls.addWidget(self.start_run_button)
         controls.addStretch()
         controls.addWidget(self.complete_day_button)
@@ -64,6 +74,7 @@ class TradingDayShellWidget(QWidget):
         self.runtime_frame = QFrame()
         self.runtime_frame.setFrameShape(QFrame.Shape.StyledPanel)
         runtime_layout = QVBoxLayout(self.runtime_frame)
+        runtime_layout.setContentsMargins(8, 8, 8, 8)
         self.runtime = TradingDayRuntimeWidget(
             blueprint,
             embedded_session_run=True,
@@ -71,13 +82,27 @@ class TradingDayShellWidget(QWidget):
         runtime_layout.addWidget(self.runtime)
         self.runtime.session_changed.connect(self._process_session_changed)
 
+        # The executable process has grown taller than some displays. A scroll
+        # viewport keeps the window responsive to monitor height without
+        # changing the runtime's internal navigation behavior.
+        self.runtime_scroll = QScrollArea()
+        self.runtime_scroll.setWidgetResizable(True)
+        self.runtime_scroll.setFrameShape(QFrame.Shape.NoFrame)
+        self.runtime_scroll.setSizePolicy(
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.Expanding,
+        )
+        self.runtime_scroll.setWidget(self.runtime_frame)
+
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(8, 8, 8, 8)
+        layout.setSpacing(6)
         layout.addWidget(self.title_label)
         layout.addWidget(self.summary_label)
-        layout.addWidget(QLabel("Trading Runs"))
+        layout.addWidget(self.run_history_label)
         layout.addWidget(self.run_history)
         layout.addLayout(controls)
-        layout.addWidget(self.runtime_frame, 1)
+        layout.addWidget(self.runtime_scroll, 1)
 
         self._update_view()
 
@@ -160,15 +185,20 @@ class TradingDayShellWidget(QWidget):
         return True
 
     def start_new_trading_day(self) -> None:
+        """Begin the next day and immediately enter its normal Trading Run 1 flow."""
         if self.active_trading_run is not None:
             return
+
         self.trading_day = TradingDay()
         self.trading_runs = []
         self.active_trading_run = None
         self._sync_legacy_aliases()
-        self.runtime.start_new()
         self.trading_day_changed.emit(self.trading_day)
         self._update_view()
+
+        # One Trading Run is the normal day. Starting a new day should feel the
+        # same as entering Run Trading Day on a fresh day: go directly to TDA.
+        self.ensure_primary_trading_run_started()
 
     def load_state(
         self,
@@ -228,7 +258,14 @@ class TradingDayShellWidget(QWidget):
                 f"{len(self.trading_runs)} concluded run(s)"
             )
 
-        self.runtime_frame.setVisible(self.active_trading_run is not None)
+        active = self.active_trading_run is not None
+        self.runtime_scroll.setVisible(active)
+
+        # Keep history available between runs and at day completion, but get it
+        # out of the way while the operator is actively working the process.
+        self.run_history_label.setVisible(not active)
+        self.run_history.setVisible(not active)
+
         can_start_another = (
             not day_complete
             and self.active_trading_run is None
@@ -238,6 +275,7 @@ class TradingDayShellWidget(QWidget):
         self.start_run_button.setEnabled(can_start_another)
         self.start_run_button.setText("Start Another Trading Run")
 
+        self.complete_day_button.setVisible(not active)
         self.complete_day_button.setEnabled(
             not day_complete and self.active_trading_run is None
         )
