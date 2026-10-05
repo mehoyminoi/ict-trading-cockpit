@@ -44,7 +44,7 @@ class TDAStationRunnerWidget(QWidget):
         self._loading = False
         self._action_checkboxes: list[QCheckBox] = []
         self._wheel_accumulator = 0
-        self._wheel_threshold = 240
+        self._wheel_threshold = 480
 
         self.view_tabs = QTabWidget()
         self.focus_page = QWidget()
@@ -198,6 +198,20 @@ class TDAStationRunnerWidget(QWidget):
         if self.current_station_id == station_id:
             self.view_tabs.setCurrentWidget(self.focus_page)
 
+    def _navigate_wheel_direction(self, delta: int) -> None:
+        """Navigate stations, using Deck as the zoomed-out boundary of Focus."""
+        index = self.current_station_index
+        if delta < 0:
+            if index >= len(self._stations) - 1:
+                self.view_tabs.setCurrentWidget(self.deck_page)
+            else:
+                self.go_next_station()
+        else:
+            if index == 0:
+                self.view_tabs.setCurrentWidget(self.deck_page)
+            else:
+                self.go_previous_station()
+
     def _accumulate_wheel_navigation(self, delta: int) -> bool:
         """Accumulate wheel movement and navigate only after a deliberate threshold."""
         if delta == 0:
@@ -212,10 +226,7 @@ class TDAStationRunnerWidget(QWidget):
         if abs(self._wheel_accumulator) < self._wheel_threshold:
             return False
 
-        if self._wheel_accumulator < 0:
-            self.go_next_station()
-        else:
-            self.go_previous_station()
+        self._navigate_wheel_direction(self._wheel_accumulator)
         self._wheel_accumulator = 0
         return True
 
@@ -231,7 +242,11 @@ class TDAStationRunnerWidget(QWidget):
                         self.go_next_station()
                         return True
 
-                if event.type() == QEvent.Type.Wheel and not isinstance(watched, QTextEdit):
+                if (
+                    event.type() == QEvent.Type.Wheel
+                    and self.view_tabs.currentWidget() is self.focus_page
+                    and not isinstance(watched, QTextEdit)
+                ):
                     delta = event.angleDelta()
                     dominant = delta.x() if abs(delta.x()) > abs(delta.y()) else delta.y()
                     if self._accumulate_wheel_navigation(dominant):
