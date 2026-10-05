@@ -39,6 +39,8 @@ class TradingDayRuntimeWidget(QWidget):
     ) -> None:
         super().__init__()
         self.blueprint = blueprint
+        # Parameter name retained for compatibility; the embedded lifecycle is
+        # now a Trading Run rather than a market-session-specific run.
         self.embedded_session_run = embedded_session_run
         self.modes = list(blueprint.modes)
         if not self.modes:
@@ -46,7 +48,7 @@ class TradingDayRuntimeWidget(QWidget):
 
         self.session = self._new_session()
 
-        title = "Session Run Process" if embedded_session_run else "Trading Day Session"
+        title = "Trading Run Process" if embedded_session_run else "Trading Day Session"
         self.title_label = QLabel(title)
         self.title_label.setStyleSheet("font-size: 17px; font-weight: 600;")
         self.summary_label = QLabel()
@@ -311,7 +313,7 @@ class TradingDayRuntimeWidget(QWidget):
         self._clear_transition_buttons()
         if self.session.status is TradingDayStatus.COMPLETE:
             if self.embedded_session_run:
-                label = QLabel("✓ Session Run process complete")
+                label = QLabel("✓ Trading Run process complete")
                 self.transition_buttons_layout.addWidget(label)
                 self.transition_buttons_layout.addStretch()
                 self.transition_note_input.setEnabled(False)
@@ -334,7 +336,7 @@ class TradingDayRuntimeWidget(QWidget):
         for transition in self.current_mode.transitions:
             button_name = transition.name
             if self.embedded_session_run and transition.id == "complete-day":
-                button_name = "Conclude Session Run"
+                button_name = "Conclude Trading Run"
             button = QPushButton(button_name)
             button.setToolTip(transition.description)
             button.clicked.connect(
@@ -354,7 +356,7 @@ class TradingDayRuntimeWidget(QWidget):
         if self.session.status is TradingDayStatus.COMPLETE:
             if self.embedded_session_run:
                 summary = (
-                    f"Session Run process complete · Outcome: {self.session.day_outcome or 'Complete'} · "
+                    f"Trading Run process complete · Outcome: {self.session.day_outcome or 'Complete'} · "
                     f"{len(self.session.transitions)} recorded transition(s)"
                 )
             else:
