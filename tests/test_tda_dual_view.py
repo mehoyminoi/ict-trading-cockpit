@@ -85,3 +85,30 @@ def test_action_checkbox_updates_shared_session_state() -> None:
 
     assert widget.session.observations[0].completed_actions == [0]
     assert isinstance(widget.session, TDAStationSession)
+
+
+def test_wheel_navigation_requires_accumulated_scroll() -> None:
+    get_app()
+    blueprint = build_default_process_blueprint()
+    widget = TDAStationRunnerWidget(blueprint)
+
+    first_station_id = widget.session.station_ids[0]
+    second_station_id = widget.session.station_ids[1]
+
+    assert widget._accumulate_wheel_navigation(-120) is False
+    assert widget.current_station_id == first_station_id
+
+    assert widget._accumulate_wheel_navigation(-120) is True
+    assert widget.current_station_id == second_station_id
+
+
+def test_wheel_direction_change_resets_partial_accumulation() -> None:
+    get_app()
+    blueprint = build_default_process_blueprint()
+    widget = TDAStationRunnerWidget(blueprint)
+
+    first_station_id = widget.session.station_ids[0]
+
+    assert widget._accumulate_wheel_navigation(-120) is False
+    assert widget._accumulate_wheel_navigation(120) is False
+    assert widget.current_station_id == first_station_id
