@@ -1,23 +1,28 @@
-from PySide6.QtWidgets import QApplication
 from pathlib import Path
+
+from PySide6.QtGui import QImage
+from PySide6.QtWidgets import QApplication
+
 from ict_cockpit.gui.study_find_widget import StudyFindWidget
 
 
-def test_study_find_widget_can_be_constructed() -> None:
+def get_app() -> QApplication:
     app = QApplication.instance()
-
     if app is None:
         app = QApplication([])
+    return app
+
+
+def test_study_find_widget_can_be_constructed() -> None:
+    get_app()
 
     widget = StudyFindWidget()
 
     assert widget is not None
 
-def test_study_find_widget_builds_study_find() -> None:
-    app = QApplication.instance()
 
-    if app is None:
-        app = QApplication([])
+def test_study_find_widget_builds_study_find() -> None:
+    get_app()
 
     widget = StudyFindWidget()
 
@@ -41,11 +46,9 @@ def test_study_find_widget_builds_study_find() -> None:
     assert study_find.available_move_handles == 74.5
     assert study_find.notes == "Clean example."
 
-def test_study_find_widget_generates_summary() -> None:
-    app = QApplication.instance()
 
-    if app is None:
-        app = QApplication([])
+def test_study_find_widget_generates_summary() -> None:
+    get_app()
 
     widget = StudyFindWidget()
 
@@ -64,11 +67,9 @@ def test_study_find_widget_generates_summary() -> None:
     assert "Pattern: London low raid" in rendered
     assert "74.50 handles" in rendered
 
-def test_study_find_widget_includes_image_path() -> None:
-    app = QApplication.instance()
 
-    if app is None:
-        app = QApplication([])
+def test_study_find_widget_includes_image_path() -> None:
+    get_app()
 
     widget = StudyFindWidget()
 
@@ -79,39 +80,31 @@ def test_study_find_widget_includes_image_path() -> None:
         "Bullish displacement followed the sweep."
     )
 
-    widget.image_paths = [
-    "/tmp/chart.png",
-    ]
+    widget.image_paths = ["/tmp/chart.png"]
 
     study_find = widget.build_study_find()
 
     assert study_find.image_path == "/tmp/chart.png"
 
-def test_study_find_widget_reuses_same_id() -> None:
-    app = QApplication.instance()
 
-    if app is None:
-        app = QApplication([])
+def test_study_find_widget_reuses_same_id() -> None:
+    get_app()
 
     widget = StudyFindWidget()
 
     widget.instrument_input.setText("MNQ")
     widget.session_input.setText("NYAM")
     widget.pattern_input.setText("Pattern")
-    widget.observation_input.setPlainText(
-        "Observation"
-    )
+    widget.observation_input.setPlainText("Observation")
 
     first = widget.build_study_find()
     second = widget.build_study_find()
 
     assert first.id == second.id
 
-def test_study_find_widget_tracks_multiple_image_paths() -> None:
-    app = QApplication.instance()
 
-    if app is None:
-        app = QApplication([])
+def test_study_find_widget_tracks_multiple_image_paths() -> None:
+    get_app()
 
     widget = StudyFindWidget()
 
@@ -121,10 +114,7 @@ def test_study_find_widget_tracks_multiple_image_paths() -> None:
     ]
 
     widget.image_list.addItems(
-        [
-            Path(path).name
-            for path in widget.image_paths
-        ]
+        [Path(path).name for path in widget.image_paths]
     )
 
     assert widget.image_list.count() == 2
@@ -133,11 +123,9 @@ def test_study_find_widget_tracks_multiple_image_paths() -> None:
         "/tmp/chart-2.png",
     ]
 
-def test_study_find_widget_removes_selected_image() -> None:
-    app = QApplication.instance()
 
-    if app is None:
-        app = QApplication([])
+def test_study_find_widget_removes_selected_image() -> None:
+    get_app()
 
     widget = StudyFindWidget()
 
@@ -147,27 +135,18 @@ def test_study_find_widget_removes_selected_image() -> None:
     ]
 
     widget.image_list.addItems(
-        [
-            Path(path).name
-            for path in widget.image_paths
-        ]
+        [Path(path).name for path in widget.image_paths]
     )
 
     widget.image_list.setCurrentRow(0)
-
     widget.remove_selected_image()
 
-    assert widget.image_paths == [
-        "/tmp/chart-2.png"
-    ]
-
+    assert widget.image_paths == ["/tmp/chart-2.png"]
     assert widget.image_list.count() == 1
 
-def test_study_find_widget_mark_saved() -> None:
-    app = QApplication.instance()
 
-    if app is None:
-        app = QApplication([])
+def test_study_find_widget_mark_saved() -> None:
+    get_app()
 
     widget = StudyFindWidget()
 
@@ -175,43 +154,33 @@ def test_study_find_widget_mark_saved() -> None:
 
     assert widget.save_button.text() == "Saved"
     assert not widget.save_button.isEnabled()
-
     assert not widget.attach_image_button.isEnabled()
     assert not widget.remove_image_button.isEnabled()
-
+    assert not widget.paste_chart_action.isEnabled()
     assert not widget.new_study_find_button.isHidden()
 
-def test_study_find_widget_reset_creates_new_id() -> None:
-    app = QApplication.instance()
 
-    if app is None:
-        app = QApplication([])
+def test_study_find_widget_reset_creates_new_id() -> None:
+    get_app()
 
     widget = StudyFindWidget()
 
     original_id = widget.current_study_find_id
-
     widget.reset_form()
 
     assert widget.current_study_find_id != original_id
 
-def test_study_find_widget_reset_clears_form() -> None:
-    app = QApplication.instance()
 
-    if app is None:
-        app = QApplication([])
+def test_study_find_widget_reset_clears_form() -> None:
+    get_app()
 
     widget = StudyFindWidget()
 
     widget.instrument_input.setText("MNQ")
     widget.session_input.setText("NYAM")
     widget.pattern_input.setText("London low raid")
-    widget.observation_input.setPlainText(
-        "Bullish reaction."
-    )
-    widget.notes_input.setPlainText(
-        "Interesting example."
-    )
+    widget.observation_input.setPlainText("Bullish reaction.")
+    widget.notes_input.setPlainText("Interesting example.")
     widget.available_move_input.setValue(125.5)
 
     widget.image_paths = [
@@ -219,15 +188,10 @@ def test_study_find_widget_reset_clears_form() -> None:
         "/tmp/chart-2.png",
     ]
     widget.image_list.addItems(
-        [
-            Path(path).name
-            for path in widget.image_paths
-        ]
+        [Path(path).name for path in widget.image_paths]
     )
 
-    widget.summary_preview.setPlainText(
-        "Old summary."
-    )
+    widget.summary_preview.setPlainText("Old summary.")
 
     widget.mark_saved()
     widget.reset_form()
@@ -235,44 +199,23 @@ def test_study_find_widget_reset_clears_form() -> None:
     assert widget.instrument_input.text() == ""
     assert widget.session_input.text() == ""
     assert widget.pattern_input.text() == ""
-
-    assert (
-        widget.observation_input.toPlainText()
-        == ""
-    )
-
-    assert (
-        widget.notes_input.toPlainText()
-        == ""
-    )
-
+    assert widget.observation_input.toPlainText() == ""
+    assert widget.notes_input.toPlainText() == ""
     assert widget.available_move_input.value() == 0
-
     assert widget.image_paths == []
     assert widget.image_list.count() == 0
     assert widget.next_image_number == 1
-
-    assert (
-        widget.summary_preview.toPlainText()
-        == ""
-    )
-
-    assert (
-        widget.save_button.text()
-        == "Save Study Find"
-    )
-
+    assert widget.summary_preview.toPlainText() == ""
+    assert widget.save_button.text() == "Save Study Find"
     assert widget.save_button.isEnabled()
     assert widget.attach_image_button.isEnabled()
     assert widget.remove_image_button.isEnabled()
-
+    assert widget.paste_chart_action.isEnabled()
     assert widget.new_study_find_button.isHidden()
 
-def test_image_preview_disabled_without_selection() -> None:
-    app = QApplication.instance()
 
-    if app is None:
-        app = QApplication([])
+def test_image_preview_disabled_without_selection() -> None:
+    get_app()
 
     widget = StudyFindWidget()
 
@@ -280,20 +223,52 @@ def test_image_preview_disabled_without_selection() -> None:
 
     assert not widget.copy_image_button.isEnabled()
 
-def test_study_find_widget_displays_image_filename() -> None:
-    app = QApplication.instance()
 
-    if app is None:
-        app = QApplication([])
+def test_study_find_widget_displays_image_filename() -> None:
+    get_app()
 
     widget = StudyFindWidget()
 
-    widget.image_paths = [
-        "/tmp/example/chart-1.png",
-    ]
-
-    widget.image_list.addItem(
-        Path(widget.image_paths[0]).name
-    )
+    widget.image_paths = ["/tmp/example/chart-1.png"]
+    widget.image_list.addItem(Path(widget.image_paths[0]).name)
 
     assert widget.image_list.item(0).text() == "chart-1.png"
+
+
+def test_study_find_widget_pastes_clipboard_image(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    app = get_app()
+    monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path))
+
+    widget = StudyFindWidget()
+
+    image = QImage(32, 24, QImage.Format.Format_RGB32)
+    image.fill(0xFFFFFF)
+    app.clipboard().setImage(image)
+
+    pasted = widget.paste_chart_from_clipboard()
+
+    assert pasted
+    assert len(widget.image_paths) == 1
+    assert widget.image_list.count() == 1
+    assert widget.image_list.currentRow() == 0
+    assert Path(widget.image_paths[0]).exists()
+    assert Path(widget.image_paths[0]).name == "chart-1.png"
+    assert widget.next_image_number == 2
+
+    app.clipboard().clear()
+
+
+def test_study_find_widget_ignores_empty_clipboard() -> None:
+    app = get_app()
+    app.clipboard().clear()
+
+    widget = StudyFindWidget()
+
+    pasted = widget.paste_chart_from_clipboard()
+
+    assert not pasted
+    assert widget.image_paths == []
+    assert widget.image_list.count() == 0
