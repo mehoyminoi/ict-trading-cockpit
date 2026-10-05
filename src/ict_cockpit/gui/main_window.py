@@ -16,8 +16,12 @@ from ict_cockpit.database.tda_station_session_repository import (
     TDAStationSessionRepository,
 )
 from ict_cockpit.database.trade_record_repository import TradeRecordRepository
+from ict_cockpit.database.trading_day_repository import TradingDayRepository
 from ict_cockpit.database.trading_day_session_repository import (
     TradingDaySessionRepository,
+)
+from ict_cockpit.database.trading_session_run_repository import (
+    TradingSessionRunRepository,
 )
 from ict_cockpit.default_trade_plan import build_default_trade_plan
 from ict_cockpit.gui.feedback_dialog import FeedbackDialog
@@ -51,6 +55,12 @@ class MainWindow(QMainWindow):
             study_find_repository.connection
         )
         self.trading_day_session_repository = TradingDaySessionRepository(
+            study_find_repository.connection
+        )
+        self.trading_day_repository = TradingDayRepository(
+            study_find_repository.connection
+        )
+        self.trading_session_run_repository = TradingSessionRunRepository(
             study_find_repository.connection
         )
 
@@ -95,6 +105,9 @@ class MainWindow(QMainWindow):
         self.trade_plan_widget.trading_day_runtime_widget.session_changed.connect(
             self.save_trading_day_session
         )
+        shell = self.trade_plan_widget.trading_day_shell_widget
+        shell.trading_day_changed.connect(self.save_trading_day)
+        shell.session_run_changed.connect(self.save_trading_session_run)
 
         self.pending_tda_draft = None
         self.tda_draft_save_timer = QTimer(self)
@@ -208,17 +221,44 @@ class MainWindow(QMainWindow):
                 3000,
             )
 
-        latest_station_session = self.tda_station_session_repository.get_latest()
-        if latest_station_session is not None:
-            self.trade_plan_widget.tda_station_runner_widget.load_session(
-                latest_station_session
+        active_day = self.trading_day_repository.get_latest_active()
+        if active_day is not None:
+            runs = self.trading_session_run_repository.get_for_day(active_day.id)
+            active_run = next(
+                (run for run in runs if run.id == active_day.active_session_run_id),
+                None,
             )
+            process_session = None
+            tda_session = None
+            if active_run is not None:
+                process_session = self.trading_day_session_repository.get_by_id(
+                    active_run.process_session_id
+                )
+                if active_run.tda_station_session_id:
+                    tda_session = self.tda_station_session_repository.get_by_id(
+                        active_run.tda_station_session_id
+                    )
+            self.trade_plan_widget.trading_day_shell_widget.load_state(
+                active_day,
+                runs,
+                process_session=process_session,
+                tda_session=tda_session,
+            )
+            self.status_bar.showMessage("Restored active Trading Day", 3000)
+        else:
+            # Compatibility fallback for databases created before Session Runs
+            # became the owner of process/TDA runtime records.
+            latest_station_session = self.tda_station_session_repository.get_latest()
+            if latest_station_session is not None:
+                self.trade_plan_widget.tda_station_runner_widget.load_session(
+                    latest_station_session
+                )
 
-        latest_trading_day_session = self.trading_day_session_repository.get_latest()
-        if latest_trading_day_session is not None:
-            self.trade_plan_widget.trading_day_runtime_widget.load_session(
-                latest_trading_day_session
-            )
+            latest_trading_day_session = self.trading_day_session_repository.get_latest()
+            if latest_trading_day_session is not None:
+                self.trade_plan_widget.trading_day_runtime_widget.load_session(
+                    latest_trading_day_session
+                )
 
         latest_study_find_draft = (
             self.study_find_repository.get_latest_draft()
@@ -244,7 +284,18 @@ class MainWindow(QMainWindow):
 
     def save_trading_day_session(self, session) -> None:
         self.trading_day_session_repository.save(session)
-        self.status_bar.showMessage("Trading-day process saved", 1200)
+        self.status_bar.showMessage("Session process saved", 1200)
+
+    def save_trading_day(self, trading_day) -> None:
+        self.trading_day_repository.save(trading_day)
+        self.status_bar.showMessage("Trading Day saved", 1200)
+
+    def save_trading_session_run(self, session_run) -> None:
+        self.trading_session_run_repository.save(session_run)
+        self.status_bar.showMessage(
+            f"{session_run.session_name} Session Run saved",
+            1200,
+        )
 
     def save_tda(self, tda) -> None:
         self.tda_draft_save_timer.stop()
