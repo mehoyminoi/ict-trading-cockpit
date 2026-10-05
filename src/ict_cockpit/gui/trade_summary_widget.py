@@ -50,6 +50,7 @@ class TradeSummaryWidget(QWidget):
         self.image_paths: list[str] = []
         self.next_image_number = 1
         self._loading_draft = False
+        self._is_saved = False
 
         self.paste_chart_action = QAction("Paste Chart", self)
         self.paste_chart_action.triggered.connect(self.paste_chart_from_clipboard)
@@ -62,7 +63,9 @@ class TradeSummaryWidget(QWidget):
         self.trade_source_input.addItems(TRADE_SOURCES)
 
         self.account_context_input = QLineEdit()
-        self.account_context_input.setPlaceholderText("Replay session, sim account, prop account...")
+        self.account_context_input.setPlaceholderText(
+            "Replay session, sim account, prop account..."
+        )
 
         self.trade_number_input = QSpinBox()
         self.trade_number_input.setRange(1, 999)
@@ -230,14 +233,23 @@ class TradeSummaryWidget(QWidget):
         return group
 
     def _connect_draft_signals(self) -> None:
-        text_widgets = [
-            self.instrument_input, self.account_context_input, self.model_input,
-            self.entry_tf_input, self.entry_price_input, self.close_price_input,
-            self.stop_price_input, self.cycle_16y_input, self.quadrennial_input,
-            self.quarter_input, self.month_input, self.week_input,
-            self.day_input, self.session_input, self.macro_90m_input,
-        ]
-        for widget in text_widgets:
+        for widget in (
+            self.instrument_input,
+            self.account_context_input,
+            self.model_input,
+            self.entry_tf_input,
+            self.entry_price_input,
+            self.close_price_input,
+            self.stop_price_input,
+            self.cycle_16y_input,
+            self.quadrennial_input,
+            self.quarter_input,
+            self.month_input,
+            self.week_input,
+            self.day_input,
+            self.session_input,
+            self.macro_90m_input,
+        ):
             widget.textChanged.connect(self.emit_draft_changed)
 
         self.summary_input.textChanged.connect(self.emit_draft_changed)
@@ -264,7 +276,12 @@ class TradeSummaryWidget(QWidget):
     @staticmethod
     def _optional_float(text: str) -> float | None:
         value = text.strip().replace(",", "")
-        return float(value) if value else None
+        if not value:
+            return None
+        try:
+            return float(value)
+        except ValueError:
+            return None
 
     @staticmethod
     def _to_datetime(value: QDateTime) -> datetime:
@@ -402,12 +419,17 @@ class TradeSummaryWidget(QWidget):
 
     def choose_chart_image(self) -> None:
         file_path, _ = QFileDialog.getOpenFileName(
-            self, "Attach Chart Image", "", "Images (*.png *.jpg *.jpeg *.webp)"
+            self,
+            "Attach Chart Image",
+            "",
+            "Images (*.png *.jpg *.jpeg *.webp)",
         )
         if not file_path:
             return
         stored = store_trade_image(
-            self.current_trade_id, Path(file_path), self.next_image_number
+            self.current_trade_id,
+            Path(file_path),
+            self.next_image_number,
         )
         self._add_managed_image(stored)
 
@@ -416,7 +438,9 @@ class TradeSummaryWidget(QWidget):
         if image.isNull():
             return False
         destination = get_trade_image_destination(
-            self.current_trade_id, self.next_image_number, ".png"
+            self.current_trade_id,
+            self.next_image_number,
+            ".png",
         )
         if not image.save(str(destination), "PNG"):
             return False
@@ -448,15 +472,18 @@ class TradeSummaryWidget(QWidget):
             self.image_preview.setText("No chart image selected")
             self.copy_image_button.setEnabled(False)
             return
+
         pixmap = QPixmap(self.image_paths[row])
         if pixmap.isNull():
             self.image_preview.clear()
             self.image_preview.setText("Unable to load chart image")
             self.copy_image_button.setEnabled(False)
             return
+
         self.image_preview.setPixmap(
             pixmap.scaled(
-                520, 220,
+                520,
+                220,
                 Qt.AspectRatioMode.KeepAspectRatio,
                 Qt.TransformationMode.SmoothTransformation,
             )
@@ -472,11 +499,12 @@ class TradeSummaryWidget(QWidget):
             QApplication.clipboard().setPixmap(pixmap)
 
     def emit_draft_changed(self) -> None:
-        if not self._loading_draft:
+        if not self._loading_draft and not self._is_saved:
             self.draft_changed.emit(self.build_draft())
 
     def load_draft(self, draft: TradeRecordDraft) -> None:
         self._loading_draft = True
+        self._is_saved = False
         try:
             self.current_trade_id = draft.id
             self.instrument_input.setText(draft.instrument)
@@ -512,7 +540,9 @@ class TradeSummaryWidget(QWidget):
 
             self.image_paths = list(draft.image_paths)
             self.image_list.clear()
-            self.image_list.addItems([Path(path).name for path in self.image_paths])
+            self.image_list.addItems(
+                [Path(path).name for path in self.image_paths]
+            )
             self.next_image_number = self._next_image_number()
             if self.image_paths:
                 self.image_list.setCurrentRow(0)
@@ -533,6 +563,7 @@ class TradeSummaryWidget(QWidget):
         return highest + 1
 
     def mark_saved(self) -> None:
+        self._is_saved = True
         self.save_button.setText("Saved")
         self.save_button.setEnabled(False)
         self.attach_image_button.setEnabled(False)
@@ -542,6 +573,7 @@ class TradeSummaryWidget(QWidget):
 
     def reset_form(self) -> None:
         self._loading_draft = True
+        self._is_saved = False
         try:
             self.current_trade_id = str(uuid4())
             self.instrument_input.clear()
@@ -559,9 +591,14 @@ class TradeSummaryWidget(QWidget):
             self.stop_price_input.clear()
             self.tick_size_input.setValue(0.25)
             for widget in (
-                self.cycle_16y_input, self.quadrennial_input, self.quarter_input,
-                self.month_input, self.week_input, self.day_input,
-                self.session_input, self.macro_90m_input,
+                self.cycle_16y_input,
+                self.quadrennial_input,
+                self.quarter_input,
+                self.month_input,
+                self.week_input,
+                self.day_input,
+                self.session_input,
+                self.macro_90m_input,
             ):
                 widget.clear()
             self.summary_input.clear()
@@ -579,5 +616,6 @@ class TradeSummaryWidget(QWidget):
             self.new_trade_button.hide()
         finally:
             self._loading_draft = False
+
         self.instrument_input.setFocus()
         self.emit_draft_changed()
