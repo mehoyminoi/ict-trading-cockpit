@@ -9,14 +9,15 @@ def build_default_trade_plan() -> TradePlanDefinition:
     """Return the first alpha Trade Plan definition.
 
     This remains code-defined and read-only while the hierarchy is validated.
-    The process blueprint is nested inside the plan rather than acting as the
-    top-level system definition.
+    The Trade Plan defines the whole system. Its Process section is the normal
+    trading-day operating path; Review / Development is a parallel improvement
+    area that can be entered directly for study, backtesting, or revision work.
     """
 
     return TradePlanDefinition(
         id="ict-trade-plan-alpha",
         name="ICT Trading Plan",
-        revision="Alpha 0.1",
+        revision="Alpha 0.2",
         sections=(
             TradePlanSectionDefinition(
                 id="foundation",
@@ -50,15 +51,15 @@ def build_default_trade_plan() -> TradePlanDefinition:
                 id="process",
                 name="Process",
                 purpose=(
-                    "Execute the plan through ordered modes, TradingView decks, "
-                    "decision stations, and explicit if-then transitions."
+                    "Operate the current Trade Plan through the normal trading-day "
+                    "sequence of modes, TradingView decks, decision stations, and "
+                    "explicit if-then transitions."
                 ),
                 topics=(
                     "Premarket / TDA",
                     "Live Watch and thesis crossroads",
                     "Entry / management flow",
-                    "Post-market outcome diagnosis",
-                    "Film Night / Lab study loop",
+                    "Post-market outcome diagnosis and process review",
                 ),
             ),
             TradePlanSectionDefinition(
@@ -79,14 +80,16 @@ def build_default_trade_plan() -> TradePlanDefinition:
                 id="review-development",
                 name="Review / Development",
                 purpose=(
-                    "Observe execution, diagnose outcomes, study deliberately, "
-                    "and turn evidence into controlled plan revisions."
+                    "Improve the Trade Plan through deliberate study, evidence review, "
+                    "feedback, and controlled revision. This area is directly enterable "
+                    "and does not require completing the trading-day Process first."
                 ),
                 topics=(
-                    "Thesis vs outcome review",
-                    "Loss / win diagnosis and process adherence",
-                    "Structured Film Night / Lab questions",
-                    "Feedback, study evidence, and revision proposals",
+                    "Film Night / Lab study sessions",
+                    "Backtesting with an explicit study question",
+                    "Cross-trade and cross-day pattern review",
+                    "Feedback and friction review",
+                    "Revision proposals backed by evidence",
                 ),
             ),
         ),
