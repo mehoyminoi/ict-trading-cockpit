@@ -23,13 +23,15 @@ class MainWindow(QMainWindow):
         self,
         tda_repository: TDARepository,
         study_find_repository: StudyFindRepository,
-        feedback_repository: FeedbackRepository,
+        feedback_repository: FeedbackRepository | None = None,
     ) -> None:
         super().__init__()
 
         self.tda_repository = tda_repository
         self.study_find_repository = study_find_repository
-        self.feedback_repository = feedback_repository
+        self.feedback_repository = feedback_repository or FeedbackRepository(
+            study_find_repository.connection
+        )
 
         self.setWindowTitle(window_title())
         self.resize(800, 500)
