@@ -87,7 +87,7 @@ def test_action_checkbox_updates_shared_session_state() -> None:
     assert isinstance(widget.session, TDAStationSession)
 
 
-def test_wheel_navigation_requires_accumulated_scroll() -> None:
+def test_wheel_navigation_requires_more_deliberate_scroll() -> None:
     get_app()
     blueprint = build_default_process_blueprint()
     widget = TDAStationRunnerWidget(blueprint)
@@ -95,8 +95,9 @@ def test_wheel_navigation_requires_accumulated_scroll() -> None:
     first_station_id = widget.session.station_ids[0]
     second_station_id = widget.session.station_ids[1]
 
-    assert widget._accumulate_wheel_navigation(-120) is False
-    assert widget.current_station_id == first_station_id
+    for _ in range(3):
+        assert widget._accumulate_wheel_navigation(-120) is False
+        assert widget.current_station_id == first_station_id
 
     assert widget._accumulate_wheel_navigation(-120) is True
     assert widget.current_station_id == second_station_id
@@ -112,3 +113,30 @@ def test_wheel_direction_change_resets_partial_accumulation() -> None:
     assert widget._accumulate_wheel_navigation(-120) is False
     assert widget._accumulate_wheel_navigation(120) is False
     assert widget.current_station_id == first_station_id
+
+
+def test_scrolling_before_first_station_opens_deck_view() -> None:
+    get_app()
+    blueprint = build_default_process_blueprint()
+    widget = TDAStationRunnerWidget(blueprint)
+
+    assert widget.current_station_index == 0
+    assert widget.view_tabs.currentWidget() is widget.focus_page
+
+    assert widget._accumulate_wheel_navigation(480) is True
+    assert widget.current_station_index == 0
+    assert widget.view_tabs.currentWidget() is widget.deck_page
+
+
+def test_scrolling_after_last_station_opens_deck_view() -> None:
+    get_app()
+    blueprint = build_default_process_blueprint()
+    widget = TDAStationRunnerWidget(blueprint)
+
+    last_station_id = widget.session.station_ids[-1]
+    widget.select_station(last_station_id)
+
+    assert widget.view_tabs.currentWidget() is widget.focus_page
+    assert widget._accumulate_wheel_navigation(-480) is True
+    assert widget.current_station_id == last_station_id
+    assert widget.view_tabs.currentWidget() is widget.deck_page
