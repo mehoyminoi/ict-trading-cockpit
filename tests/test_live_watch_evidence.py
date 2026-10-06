@@ -31,7 +31,7 @@ def build_process_session() -> TradingDaySession:
     )
 
 
-def test_schema_v13_adds_run_evidence_columns(tmp_path) -> None:
+def test_schema_v14_preserves_run_evidence_columns(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
 
@@ -40,7 +40,7 @@ def test_schema_v13_adds_run_evidence_columns(tmp_path) -> None:
         for row in connection.execute("PRAGMA table_info(trading_session_run)").fetchall()
     }
 
-    assert CURRENT_SCHEMA_VERSION == 13
+    assert CURRENT_SCHEMA_VERSION == 14
     assert "current_thesis_state" in columns
     assert "evidence_json" in columns
     connection.close()
