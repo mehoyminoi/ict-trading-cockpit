@@ -1,6 +1,10 @@
+import json
 import sqlite3
 
 from ict_cockpit.analysis.trading_session_run import (
+    RunEvidenceEntry,
+    RunEvidenceKind,
+    ThesisState,
     TradingSessionRun,
     TradingSessionRunStatus,
 )
@@ -11,14 +15,26 @@ class TradingSessionRunRepository:
         self.connection = connection
 
     def save(self, session_run: TradingSessionRun) -> None:
+        evidence_json = json.dumps(
+            [
+                {
+                    "id": item.id,
+                    "kind": item.kind.value,
+                    "note": item.note,
+                    "thesis_state": item.thesis_state.value,
+                    "created_at": item.created_at,
+                }
+                for item in session_run.evidence
+            ]
+        )
         with self.connection:
             self.connection.execute(
                 """
                 INSERT INTO trading_session_run (
                     id, trading_day_id, session_name, process_session_id,
                     tda_station_session_id, status, outcome, started_at,
-                    concluded_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    concluded_at, updated_at, current_thesis_state, evidence_json
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                     trading_day_id = excluded.trading_day_id,
                     session_name = excluded.session_name,
@@ -28,7 +44,9 @@ class TradingSessionRunRepository:
                     outcome = excluded.outcome,
                     started_at = excluded.started_at,
                     concluded_at = excluded.concluded_at,
-                    updated_at = excluded.updated_at
+                    updated_at = excluded.updated_at,
+                    current_thesis_state = excluded.current_thesis_state,
+                    evidence_json = excluded.evidence_json
                 """,
                 (
                     session_run.id,
@@ -41,6 +59,8 @@ class TradingSessionRunRepository:
                     session_run.started_at,
                     session_run.concluded_at,
                     session_run.updated_at,
+                    session_run.current_thesis_state.value,
+                    evidence_json,
                 ),
             )
 
@@ -49,7 +69,7 @@ class TradingSessionRunRepository:
             """
             SELECT id, trading_day_id, session_name, process_session_id,
                    tda_station_session_id, status, outcome, started_at,
-                   concluded_at, updated_at
+                   concluded_at, updated_at, current_thesis_state, evidence_json
             FROM trading_session_run
             WHERE id = ?
             """,
@@ -62,7 +82,7 @@ class TradingSessionRunRepository:
             """
             SELECT id, trading_day_id, session_name, process_session_id,
                    tda_station_session_id, status, outcome, started_at,
-                   concluded_at, updated_at
+                   concluded_at, updated_at, current_thesis_state, evidence_json
             FROM trading_session_run
             WHERE trading_day_id = ?
             ORDER BY started_at, rowid
@@ -73,6 +93,16 @@ class TradingSessionRunRepository:
 
     @staticmethod
     def _from_row(row) -> TradingSessionRun:
+        evidence = [
+            RunEvidenceEntry(
+                id=item["id"],
+                kind=RunEvidenceKind(item["kind"]),
+                note=item.get("note", ""),
+                thesis_state=ThesisState(item.get("thesis_state", ThesisState.NOT_SET.value)),
+                created_at=item["created_at"],
+            )
+            for item in json.loads(row[11])
+        ]
         return TradingSessionRun(
             id=row[0],
             trading_day_id=row[1],
@@ -84,4 +114,6 @@ class TradingSessionRunRepository:
             started_at=row[7],
             concluded_at=row[8],
             updated_at=row[9],
+            current_thesis_state=ThesisState(row[10]),
+            evidence=evidence,
         )
