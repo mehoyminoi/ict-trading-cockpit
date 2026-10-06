@@ -80,7 +80,7 @@ class TradingDayRuntimeWidget(QWidget):
         self.live_watch_widget.thesis_state_submitted.connect(
             self.live_thesis_state_submitted.emit
         )
-        self.post_market_review_widget = PostMarketReviewWidget()
+        self.post_market_review_widget = PostMarketReviewWidget(blueprint)
         self.post_market_review_widget.review_changed.connect(
             self.post_market_review_submitted.emit
         )
@@ -289,7 +289,7 @@ class TradingDayRuntimeWidget(QWidget):
         )
         self.post_market_review_widget.load_state(
             trading_run,
-            self.session.transitions,
+            self.tda_station_runner_widget.session,
         )
 
     def start_new(self) -> None:
@@ -393,7 +393,7 @@ class TradingDayRuntimeWidget(QWidget):
         if current_mode.id == "post-market" and self.trading_run is not None:
             self.post_market_review_widget.load_state(
                 self.trading_run,
-                self.session.transitions,
+                self.tda_station_runner_widget.session,
             )
 
         if self.session.status is TradingDayStatus.COMPLETE:
