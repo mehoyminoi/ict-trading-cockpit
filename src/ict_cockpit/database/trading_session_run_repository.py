@@ -2,6 +2,7 @@ import json
 import sqlite3
 
 from ict_cockpit.analysis.trading_session_run import (
+    InterpretationOutcome,
     ProcessAdherence,
     RunEnvironment,
     RunEvidenceEntry,
@@ -50,8 +51,8 @@ class TradingSessionRunRepository:
                     concluded_at, updated_at, current_thesis_state, evidence_json,
                     review_process_adherence, review_takeaway, review_film_night,
                     entry_condition_states_json, watch_point_states_json,
-                    run_environment, trade_plan_revision
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    run_environment, trade_plan_revision, review_interpretation_outcome
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                     trading_day_id = excluded.trading_day_id,
                     session_name = excluded.session_name,
@@ -70,7 +71,8 @@ class TradingSessionRunRepository:
                     entry_condition_states_json = excluded.entry_condition_states_json,
                     watch_point_states_json = excluded.watch_point_states_json,
                     run_environment = excluded.run_environment,
-                    trade_plan_revision = excluded.trade_plan_revision
+                    trade_plan_revision = excluded.trade_plan_revision,
+                    review_interpretation_outcome = excluded.review_interpretation_outcome
                 """,
                 (
                     session_run.id,
@@ -92,6 +94,7 @@ class TradingSessionRunRepository:
                     watch_point_states_json,
                     session_run.environment.value,
                     session_run.trade_plan_revision,
+                    session_run.review_interpretation_outcome.value,
                 ),
             )
 
@@ -103,7 +106,7 @@ class TradingSessionRunRepository:
                    concluded_at, updated_at, current_thesis_state, evidence_json,
                    review_process_adherence, review_takeaway, review_film_night,
                    entry_condition_states_json, watch_point_states_json,
-                   run_environment, trade_plan_revision
+                   run_environment, trade_plan_revision, review_interpretation_outcome
             FROM trading_session_run
             WHERE id = ?
             """,
@@ -119,7 +122,7 @@ class TradingSessionRunRepository:
                    concluded_at, updated_at, current_thesis_state, evidence_json,
                    review_process_adherence, review_takeaway, review_film_night,
                    entry_condition_states_json, watch_point_states_json,
-                   run_environment, trade_plan_revision
+                   run_environment, trade_plan_revision, review_interpretation_outcome
             FROM trading_session_run
             WHERE trading_day_id = ?
             ORDER BY started_at, rowid
@@ -163,4 +166,5 @@ class TradingSessionRunRepository:
             },
             environment=RunEnvironment(row[17]),
             trade_plan_revision=row[18],
+            review_interpretation_outcome=InterpretationOutcome(row[19]),
         )
