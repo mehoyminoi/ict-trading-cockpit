@@ -170,7 +170,7 @@ def test_completed_day_can_start_fresh_day_and_tda_sessions() -> None:
 def test_transition_history_round_trips_with_session(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
-    assert CURRENT_SCHEMA_VERSION == 14
+    assert connection.execute("PRAGMA user_version").fetchone()[0] == CURRENT_SCHEMA_VERSION
     repository = TradingDaySessionRepository(connection)
 
     session = TradingDaySession(
