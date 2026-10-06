@@ -18,6 +18,8 @@ from ict_cockpit.analysis.trading_day_session import (
     TradingDayStatus,
     TransitionOutcome,
 )
+from ict_cockpit.analysis.trading_session_run import TradingRun
+from ict_cockpit.gui.live_watch_widget import LiveWatchWidget
 from ict_cockpit.gui.tda_station_runner_widget import TDAStationRunnerWidget
 from ict_cockpit.process_blueprint import (
     ModeDefinition,
@@ -30,6 +32,8 @@ class TradingDayRuntimeWidget(QWidget):
     """Runtime shell for deliberate movement through process modes."""
 
     session_changed = Signal(TradingDaySession)
+    live_observation_submitted = Signal(str)
+    live_thesis_state_submitted = Signal(str, str)
 
     def __init__(
         self,
@@ -67,9 +71,19 @@ class TradingDayRuntimeWidget(QWidget):
         self.mode_pages: dict[str, QWidget] = {}
 
         self.tda_station_runner_widget = TDAStationRunnerWidget(blueprint)
+        self.live_watch_widget = LiveWatchWidget()
+        self.live_watch_widget.observation_submitted.connect(
+            self.live_observation_submitted.emit
+        )
+        self.live_watch_widget.thesis_state_submitted.connect(
+            self.live_thesis_state_submitted.emit
+        )
+
         for mode in self.modes:
             if mode.id == "tda":
                 page = self.tda_station_runner_widget
+            elif mode.id == "live-watch":
+                page = self.live_watch_widget
             else:
                 page = self._build_placeholder_mode_page(mode)
             self.mode_pages[mode.id] = page
@@ -258,9 +272,17 @@ class TradingDayRuntimeWidget(QWidget):
         self.session = session
         self._update_view()
 
+    def load_trading_run(self, trading_run: TradingRun) -> None:
+        """Refresh Live Watch from the Trading Run that owns its evidence."""
+        self.live_watch_widget.load_state(
+            trading_run.current_thesis_state,
+            trading_run.evidence,
+        )
+
     def start_new(self) -> None:
         """Begin a fresh process session and TDA station session."""
         self.tda_station_runner_widget.start_new()
+        self.live_watch_widget.clear_state()
         self.session = self._new_session()
         self.transition_note_input.clear()
         self._touch()
