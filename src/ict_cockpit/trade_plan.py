@@ -5,7 +5,7 @@ from ict_cockpit.process_blueprint import ProcessBlueprint
 
 @dataclass(frozen=True)
 class EntryCriterionDefinition:
-    """One plan-owned condition that contributes to entry authorization."""
+    """One plan-owned condition that contributes to setup authorization."""
 
     id: str
     name: str
@@ -26,6 +26,47 @@ class EntryCriterionDefinition:
             id=str(payload.get("id", "")),
             name=str(payload.get("name", "")),
             description=str(payload.get("description", "")),
+        )
+
+
+@dataclass(frozen=True)
+class AuthorizationGateDefinition:
+    """A Trade Plan safety/risk gate outside model-specific setup criteria.
+
+    ``scope`` is either ``Run`` for conditions shared by every candidate in the
+    Trading Run, or ``Candidate`` for conditions that must be evaluated for each
+    setup independently. The definition is declarative so later no-code editing
+    and automatic evaluators can use the same object.
+    """
+
+    id: str
+    name: str
+    description: str = ""
+    scope: str = "Run"
+
+    def __post_init__(self) -> None:
+        if not self.id.strip():
+            raise ValueError("authorization gate id cannot be empty")
+        if not self.name.strip():
+            raise ValueError("authorization gate name cannot be empty")
+        if self.scope not in {"Run", "Candidate"}:
+            raise ValueError("authorization gate scope must be 'Run' or 'Candidate'")
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "scope": self.scope,
+        }
+
+    @classmethod
+    def from_dict(cls, payload: dict) -> "AuthorizationGateDefinition":
+        return cls(
+            id=str(payload.get("id", "")),
+            name=str(payload.get("name", "")),
+            description=str(payload.get("description", "")),
+            scope=str(payload.get("scope", "Run")),
         )
 
 
@@ -78,7 +119,7 @@ class WatchPointTemplateDefinition:
 
 @dataclass(frozen=True)
 class LiveWatchPolicyDefinition:
-    """Trade Plan rules inherited by the Live Watch operating surface."""
+    """Legacy/global Live Watch policy retained for compatibility."""
 
     entry_criteria: tuple[EntryCriterionDefinition, ...] = field(default_factory=tuple)
     required_entry_count: int | None = None
@@ -225,6 +266,7 @@ class TradePlanDefinition:
     sections: tuple[TradePlanSectionDefinition, ...]
     process_blueprint: ProcessBlueprint
     playbooks: tuple[PlaybookDefinition, ...] = field(default_factory=tuple)
+    authorization_gates: tuple[AuthorizationGateDefinition, ...] = field(default_factory=tuple)
     live_watch_policy: LiveWatchPolicyDefinition = field(default_factory=LiveWatchPolicyDefinition)
 
     def __post_init__(self) -> None:
@@ -244,6 +286,9 @@ class TradePlanDefinition:
         playbook_ids = [playbook.id for playbook in self.playbooks]
         if len(playbook_ids) != len(set(playbook_ids)):
             raise ValueError("trade plan playbook ids must be unique")
+        gate_ids = [gate.id for gate in self.authorization_gates]
+        if len(gate_ids) != len(set(gate_ids)):
+            raise ValueError("trade plan authorization gate ids must be unique")
 
     def section_by_id(self, section_id: str) -> TradePlanSectionDefinition | None:
         for section in self.sections:
@@ -256,3 +301,6 @@ class TradePlanDefinition:
             if playbook.id == playbook_id:
                 return playbook
         return None
+
+    def authorization_snapshot(self) -> list[dict]:
+        return [gate.to_dict() for gate in self.authorization_gates]
