@@ -7,6 +7,7 @@ from ict_cockpit.analysis.trading_session_run import (
     RunEnvironment,
     RunEvidenceEntry,
     RunEvidenceKind,
+    SetupCandidate,
     ThesisState,
     TradingSessionRun,
     TradingSessionRunStatus,
@@ -31,19 +32,14 @@ class TradingSessionRunRepository:
                 for item in session_run.evidence
             ]
         )
-        entry_condition_states_json = json.dumps(
-            session_run.entry_condition_states,
-            sort_keys=True,
-        )
+        entry_condition_states_json = json.dumps(session_run.entry_condition_states, sort_keys=True)
         watch_point_states_json = json.dumps(
-            {
-                watch_point_id: state.value
-                for watch_point_id, state in session_run.watch_point_states.items()
-            },
+            {watch_point_id: state.value for watch_point_id, state in session_run.watch_point_states.items()},
             sort_keys=True,
         )
-        playbook_snapshot_json = json.dumps(
-            session_run.playbook_snapshot,
+        playbook_snapshot_json = json.dumps(session_run.playbook_snapshot, sort_keys=True)
+        setup_candidates_json = json.dumps(
+            [candidate.to_dict() for candidate in session_run.setup_candidates],
             sort_keys=True,
         )
         with self.connection:
@@ -57,8 +53,8 @@ class TradingSessionRunRepository:
                     entry_condition_states_json, watch_point_states_json,
                     run_environment, trade_plan_revision, review_interpretation_outcome,
                     selected_playbook_id, selected_playbook_revision,
-                    playbook_snapshot_json
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    playbook_snapshot_json, setup_candidates_json
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                     trading_day_id = excluded.trading_day_id,
                     session_name = excluded.session_name,
@@ -81,7 +77,8 @@ class TradingSessionRunRepository:
                     review_interpretation_outcome = excluded.review_interpretation_outcome,
                     selected_playbook_id = excluded.selected_playbook_id,
                     selected_playbook_revision = excluded.selected_playbook_revision,
-                    playbook_snapshot_json = excluded.playbook_snapshot_json
+                    playbook_snapshot_json = excluded.playbook_snapshot_json,
+                    setup_candidates_json = excluded.setup_candidates_json
                 """,
                 (
                     session_run.id,
@@ -107,30 +104,24 @@ class TradingSessionRunRepository:
                     session_run.selected_playbook_id,
                     session_run.selected_playbook_revision,
                     playbook_snapshot_json,
+                    setup_candidates_json,
                 ),
             )
 
     def get_by_id(self, session_run_id: str) -> TradingSessionRun | None:
-        row = self.connection.execute(
-            """
-            SELECT id, trading_day_id, session_name, process_session_id,
-                   tda_station_session_id, status, outcome, started_at,
-                   concluded_at, updated_at, current_thesis_state, evidence_json,
-                   review_process_adherence, review_takeaway, review_film_night,
-                   entry_condition_states_json, watch_point_states_json,
-                   run_environment, trade_plan_revision, review_interpretation_outcome,
-                   selected_playbook_id, selected_playbook_revision,
-                   playbook_snapshot_json
-            FROM trading_session_run
-            WHERE id = ?
-            """,
-            (session_run_id,),
-        ).fetchone()
+        row = self.connection.execute(self._select_sql("WHERE id = ?"), (session_run_id,)).fetchone()
         return self._from_row(row) if row is not None else None
 
     def get_for_day(self, trading_day_id: str) -> list[TradingSessionRun]:
         rows = self.connection.execute(
-            """
+            self._select_sql("WHERE trading_day_id = ? ORDER BY started_at, rowid"),
+            (trading_day_id,),
+        ).fetchall()
+        return [self._from_row(row) for row in rows]
+
+    @staticmethod
+    def _select_sql(where_clause: str) -> str:
+        return f"""
             SELECT id, trading_day_id, session_name, process_session_id,
                    tda_station_session_id, status, outcome, started_at,
                    concluded_at, updated_at, current_thesis_state, evidence_json,
@@ -138,14 +129,10 @@ class TradingSessionRunRepository:
                    entry_condition_states_json, watch_point_states_json,
                    run_environment, trade_plan_revision, review_interpretation_outcome,
                    selected_playbook_id, selected_playbook_revision,
-                   playbook_snapshot_json
+                   playbook_snapshot_json, setup_candidates_json
             FROM trading_session_run
-            WHERE trading_day_id = ?
-            ORDER BY started_at, rowid
-            """,
-            (trading_day_id,),
-        ).fetchall()
-        return [self._from_row(row) for row in rows]
+            {where_clause}
+        """
 
     @staticmethod
     def _from_row(row) -> TradingSessionRun:
@@ -158,6 +145,10 @@ class TradingSessionRunRepository:
                 created_at=item["created_at"],
             )
             for item in json.loads(row[11])
+        ]
+        setup_candidates = [
+            SetupCandidate.from_dict(item)
+            for item in json.loads(row[23] or "[]")
         ]
         return TradingSessionRun(
             id=row[0],
@@ -186,4 +177,5 @@ class TradingSessionRunRepository:
             selected_playbook_id=row[20],
             selected_playbook_revision=row[21],
             playbook_snapshot=json.loads(row[22]),
+            setup_candidates=setup_candidates,
         )
