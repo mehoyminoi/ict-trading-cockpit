@@ -36,7 +36,7 @@ def build_process_session() -> TradingDaySession:
     )
 
 
-def test_schema_v14_preserves_trading_day_and_run_storage(tmp_path) -> None:
+def test_schema_preserves_trading_day_and_run_storage(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
 
@@ -47,10 +47,8 @@ def test_schema_v14_preserves_trading_day_and_run_storage(tmp_path) -> None:
         ).fetchall()
     }
 
-    assert CURRENT_SCHEMA_VERSION == 14
+    assert CURRENT_SCHEMA_VERSION == 16
     assert "trading_day" in names
-    # Legacy storage name retained so databases already migrated through v12
-    # continue without a destructive schema rewrite.
     assert "trading_session_run" in names
     connection.close()
 
@@ -231,7 +229,6 @@ def test_shell_can_use_one_run_across_market_sessions_and_optionally_start_anoth
     assert first is not None
     assert first.run_label == "Trading Run 1"
 
-    # Nothing in the run lifecycle requires declaring Asia/London/NYAM/NYPM.
     shell.runtime.apply_transition("tda-stand-down")
     shell.runtime.apply_transition("complete-day")
     shell.start_trading_run()
