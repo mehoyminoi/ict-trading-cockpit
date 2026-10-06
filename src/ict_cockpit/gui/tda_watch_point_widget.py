@@ -1,11 +1,11 @@
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
-    QComboBox,
     QFrame,
     QHBoxLayout,
     QLabel,
     QLineEdit,
     QListWidget,
+    QListWidgetItem,
     QPushButton,
     QVBoxLayout,
     QWidget,
@@ -16,16 +16,19 @@ from ict_cockpit.trade_plan import PlaybookDefinition
 
 
 class TDAWatchPointWidget(QWidget):
-    """TDA surface for Playbook selection plus day-specific IF/THEN points."""
+    """TDA surface for Models in Play plus day-specific IF/THEN points."""
 
     add_requested = Signal(str, str)
     remove_requested = Signal(str)
+    models_in_play_changed = Signal(object)
+    # Compatibility signal for older tests/callers. It emits the sole selected
+    # playbook id, or an empty string when the selection is not singular.
     playbook_selected = Signal(str)
 
     def __init__(self, playbooks: tuple[PlaybookDefinition, ...] = ()) -> None:
         super().__init__()
         self.playbooks = tuple(playbooks)
-        self._loading_playbook = False
+        self._loading_models = False
 
         self.frame = QFrame()
         self.frame.setFrameShape(QFrame.Shape.StyledPanel)
@@ -33,36 +36,39 @@ class TDAWatchPointWidget(QWidget):
         frame_layout.setContentsMargins(8, 6, 8, 6)
         frame_layout.setSpacing(4)
 
-        heading = QLabel("Playbook & Live Watch Points")
+        heading = QLabel("Models in Play & Live Watch Points")
         heading.setStyleSheet("font-weight: 600;")
         guidance = QLabel(
-            "Choose the Trade Plan Playbook for this run. Its standard watch points are inherited; add only day-specific IF/THEN conditions below."
+            "Mark any reference models that may be in play today. This is not a commitment to trade one named model. Their standard conditions are carried forward alongside technician/day-specific observations."
         )
         guidance.setWordWrap(True)
         frame_layout.addWidget(heading)
         frame_layout.addWidget(guidance)
 
-        playbook_row = QHBoxLayout()
-        playbook_row.addWidget(QLabel("Playbook"))
-        self.playbook_combo = QComboBox()
-        self.playbook_combo.addItem("No Playbook selected", "")
+        self.models_list = QListWidget()
+        self.models_list.setMaximumHeight(95)
         for playbook in self.playbooks:
             label = f"{playbook.name} · {playbook.revision}"
             if not playbook.available:
                 label += " · Locked"
-            self.playbook_combo.addItem(label, playbook.id)
-        self.playbook_combo.currentIndexChanged.connect(self._playbook_changed)
-        playbook_row.addWidget(self.playbook_combo, 1)
-        frame_layout.addLayout(playbook_row)
+            item = QListWidgetItem(label)
+            item.setData(Qt.ItemDataRole.UserRole, playbook.id)
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+            item.setCheckState(Qt.CheckState.Unchecked)
+            if not playbook.available:
+                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEnabled)
+            self.models_list.addItem(item)
+        self.models_list.itemChanged.connect(self._models_changed)
+        frame_layout.addWidget(self.models_list)
 
-        inherited_heading = QLabel("Inherited from Playbook")
+        inherited_heading = QLabel("Inherited Standard Watch Points")
         inherited_heading.setStyleSheet("font-weight: 600;")
         frame_layout.addWidget(inherited_heading)
         self.inherited_list = QListWidget()
-        self.inherited_list.setMaximumHeight(95)
+        self.inherited_list.setMaximumHeight(125)
         frame_layout.addWidget(self.inherited_list)
 
-        day_heading = QLabel("Day-Specific Additions")
+        day_heading = QLabel("Technician / Day-Specific Additions")
         day_heading.setStyleSheet("font-weight: 600;")
         frame_layout.addWidget(day_heading)
 
@@ -95,67 +101,75 @@ class TDAWatchPointWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.frame)
 
-        self.load_context("", [])
+        self.load_context([], [])
 
     def playbook_by_id(self, playbook_id: str) -> PlaybookDefinition | None:
-        for playbook in self.playbooks:
-            if playbook.id == playbook_id:
-                return playbook
-        return None
+        return next((item for item in self.playbooks if item.id == playbook_id), None)
+
+    def selected_playbook_ids(self) -> list[str]:
+        selected: list[str] = []
+        for index in range(self.models_list.count()):
+            item = self.models_list.item(index)
+            if item.checkState() == Qt.CheckState.Checked:
+                selected.append(str(item.data(Qt.ItemDataRole.UserRole) or ""))
+        return [item for item in selected if item]
 
     def load_context(
         self,
-        selected_playbook_id: str,
+        selected_playbook_ids: list[str] | tuple[str, ...] | str,
         watch_points: list[TDAWatchPoint],
     ) -> None:
-        self._loading_playbook = True
+        if isinstance(selected_playbook_ids, str):
+            selected = {selected_playbook_ids} if selected_playbook_ids else set()
+        else:
+            selected = {str(item) for item in selected_playbook_ids}
+
+        self._loading_models = True
         try:
-            index = self.playbook_combo.findData(selected_playbook_id)
-            self.playbook_combo.setCurrentIndex(index if index >= 0 else 0)
+            for index in range(self.models_list.count()):
+                item = self.models_list.item(index)
+                playbook_id = str(item.data(Qt.ItemDataRole.UserRole) or "")
+                item.setCheckState(
+                    Qt.CheckState.Checked if playbook_id in selected else Qt.CheckState.Unchecked
+                )
         finally:
-            self._loading_playbook = False
+            self._loading_models = False
 
         self.inherited_list.clear()
-        playbook = self.playbook_by_id(selected_playbook_id)
-        if playbook is None:
-            self.inherited_list.addItem("No Playbook watch points inherited.")
-        elif not playbook.watch_point_templates:
-            self.inherited_list.addItem(
-                "This Playbook revision does not define standard watch points."
-            )
-        else:
+        inherited_count = 0
+        for playbook_id in selected:
+            playbook = self.playbook_by_id(playbook_id)
+            if playbook is None:
+                continue
             for template in playbook.watch_point_templates:
+                inherited_count += 1
                 self.inherited_list.addItem(
-                    f"IF {template.if_condition}  →  THEN {template.then_action}"
+                    f"{playbook.name} · IF {template.if_condition} → THEN {template.then_action}"
                 )
+        if inherited_count == 0:
+            self.inherited_list.addItem("No standard Playbook watch points currently in play.")
 
         self.watch_point_list.clear()
         for watch_point in watch_points:
             self.watch_point_list.addItem(
-                f"IF {watch_point.if_condition}  →  THEN {watch_point.then_action}"
+                f"IF {watch_point.if_condition} → THEN {watch_point.then_action}"
             )
             item = self.watch_point_list.item(self.watch_point_list.count() - 1)
-            item.setData(256, watch_point.id)
+            item.setData(Qt.ItemDataRole.UserRole, watch_point.id)
         if not watch_points:
             self.watch_point_list.addItem("No day-specific watch points added.")
         self.remove_button.setEnabled(bool(watch_points))
 
     def load_watch_points(self, watch_points: list[TDAWatchPoint]) -> None:
-        """Backward-compatible helper for older tests/callers."""
-        selected = str(self.playbook_combo.currentData() or "")
-        self.load_context(selected, watch_points)
+        self.load_context(self.selected_playbook_ids(), watch_points)
 
-    def _playbook_changed(self) -> None:
-        if self._loading_playbook:
+    def _models_changed(self, _item: QListWidgetItem) -> None:
+        if self._loading_models:
             return
-        playbook_id = str(self.playbook_combo.currentData() or "")
-        playbook = self.playbook_by_id(playbook_id)
-        if playbook is not None and not playbook.available:
-            self._loading_playbook = True
-            self.playbook_combo.setCurrentIndex(0)
-            self._loading_playbook = False
-            return
-        self.playbook_selected.emit(playbook_id)
+        selected = self.selected_playbook_ids()
+        self.models_in_play_changed.emit(selected)
+        self.playbook_selected.emit(selected[0] if len(selected) == 1 else "")
+        self.load_context(selected, [])
 
     def _add(self) -> None:
         if_condition = self.if_input.text().strip()
@@ -170,6 +184,6 @@ class TDAWatchPointWidget(QWidget):
         item = self.watch_point_list.currentItem()
         if item is None:
             return
-        watch_point_id = item.data(256)
+        watch_point_id = item.data(Qt.ItemDataRole.UserRole)
         if watch_point_id:
             self.remove_requested.emit(str(watch_point_id))
