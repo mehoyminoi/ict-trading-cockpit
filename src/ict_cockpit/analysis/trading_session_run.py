@@ -4,10 +4,8 @@ from enum import Enum
 from uuid import uuid4
 
 
-# Market-session names remain useful context, but no longer define the lifecycle
-# boundary of a run. They will be derived/tagged inside a Trading Run later.
 MARKET_SESSION_NAMES = ("Asia", "London", "NYAM", "NYPM")
-SESSION_NAMES = MARKET_SESSION_NAMES  # Backward-compatible alias.
+SESSION_NAMES = MARKET_SESSION_NAMES
 
 
 class TradingSessionRunStatus(str, Enum):
@@ -21,6 +19,12 @@ class ThesisState(str, Enum):
     WEAKENED = "Weakened"
     INVALIDATED = "Invalidated"
     UNCERTAIN = "Uncertain"
+
+
+class WatchPointState(str, Enum):
+    WAITING = "Waiting"
+    OCCURRED = "Occurred"
+    INVALIDATED = "Invalidated"
 
 
 class RunEvidenceKind(str, Enum):
@@ -55,12 +59,7 @@ class RunEvidenceEntry:
 
 @dataclass
 class TradingSessionRun:
-    """One deliberate operating run inside a Trading Day.
-
-    ``session_name`` is retained as the persisted column/name for schema-v12
-    compatibility, but semantically it is now a neutral run label rather than a
-    required Asia/London/NYAM/NYPM market-session choice.
-    """
+    """One deliberate operating run inside a Trading Day."""
 
     trading_day_id: str
     session_name: str
@@ -71,6 +70,7 @@ class TradingSessionRun:
     current_thesis_state: ThesisState = ThesisState.NOT_SET
     evidence: list[RunEvidenceEntry] = field(default_factory=list)
     entry_condition_states: dict[str, bool] = field(default_factory=dict)
+    watch_point_states: dict[str, WatchPointState] = field(default_factory=dict)
     review_process_adherence: ProcessAdherence = ProcessAdherence.NOT_REVIEWED
     review_takeaway: str = ""
     review_film_night: bool = False
@@ -106,6 +106,13 @@ class TradingSessionRun:
             for criterion_id, state in self.entry_condition_states.items()
             if str(criterion_id).strip()
         }
+        self.watch_point_states = {
+            str(watch_point_id).strip(): (
+                state if isinstance(state, WatchPointState) else WatchPointState(state)
+            )
+            for watch_point_id, state in self.watch_point_states.items()
+            if str(watch_point_id).strip()
+        }
 
         if not self.trading_day_id:
             raise ValueError("trading day id cannot be empty")
@@ -116,7 +123,6 @@ class TradingSessionRun:
 
     @property
     def run_label(self) -> str:
-        """Preferred domain name for the persisted legacy ``session_name`` field."""
         return self.session_name
 
     @run_label.setter
@@ -127,21 +133,28 @@ class TradingSessionRun:
         self.session_name = value
 
     def set_entry_condition(self, criterion_id: str, satisfied: bool) -> None:
-        """Record current readiness for one Trade Plan-owned entry criterion."""
         criterion_id = criterion_id.strip()
         if not criterion_id:
             raise ValueError("entry criterion id cannot be empty")
         self.entry_condition_states[criterion_id] = bool(satisfied)
         self._touch()
 
+    def set_watch_point_state(
+        self,
+        watch_point_id: str,
+        state: WatchPointState | str,
+    ) -> None:
+        watch_point_id = watch_point_id.strip()
+        if not watch_point_id:
+            raise ValueError("watch point id cannot be empty")
+        self.watch_point_states[watch_point_id] = WatchPointState(state)
+        self._touch()
+
     def add_observation(self, note: str) -> RunEvidenceEntry:
         note = note.strip()
         if not note:
             raise ValueError("observation cannot be empty")
-        entry = RunEvidenceEntry(
-            kind=RunEvidenceKind.OBSERVATION,
-            note=note,
-        )
+        entry = RunEvidenceEntry(kind=RunEvidenceKind.OBSERVATION, note=note)
         self.evidence.append(entry)
         self._touch()
         return entry
@@ -171,7 +184,6 @@ class TradingSessionRun:
         takeaway: str | None = None,
         film_night: bool | None = None,
     ) -> None:
-        """Persist the small set of judgments that cannot be inferred from run history."""
         if process_adherence is not None:
             self.review_process_adherence = ProcessAdherence(process_adherence)
         if takeaway is not None:
@@ -181,7 +193,6 @@ class TradingSessionRun:
         self._touch()
 
     def conclude(self, outcome: str = "") -> None:
-        """Conclude this run without implying that the Trading Day is complete."""
         if self.status is TradingSessionRunStatus.CONCLUDED:
             return
         self.outcome = outcome.strip()
