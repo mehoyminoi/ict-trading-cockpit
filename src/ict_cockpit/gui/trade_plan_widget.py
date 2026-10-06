@@ -47,7 +47,8 @@ class TradePlanWidget(QWidget):
             trade_plan.process_blueprint
         )
         self.trading_day_shell_widget = TradingDayShellWidget(
-            trade_plan.process_blueprint
+            trade_plan.process_blueprint,
+            live_watch_policy=trade_plan.live_watch_policy,
         )
 
         self.trading_day_runtime_widget = self.trading_day_shell_widget.runtime
@@ -91,9 +92,6 @@ class TradePlanWidget(QWidget):
         self.stack.setCurrentIndex(row)
         process_active = self.selected_section_id == "process"
 
-        # These labels explain the Trade Plan while browsing it, but become
-        # redundant operating chrome once the user enters the executable
-        # Process. Collapse them to give the runtime the 1080p vertical budget.
         self.title_label.setVisible(not process_active)
         self.subtitle_label.setVisible(not process_active)
         self.operating_model_label.setVisible(not process_active)
