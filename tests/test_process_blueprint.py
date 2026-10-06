@@ -73,7 +73,7 @@ def test_process_blueprint_widget_selects_first_station() -> None:
 def test_default_trade_plan_owns_process_and_parallel_review_area() -> None:
     trade_plan = build_default_trade_plan()
 
-    assert trade_plan.revision == "Alpha 0.2"
+    assert trade_plan.revision == "Alpha 0.3"
     assert [section.id for section in trade_plan.sections] == [
         "foundation",
         "rules-safety",
