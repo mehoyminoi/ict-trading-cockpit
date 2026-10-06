@@ -133,8 +133,11 @@ class TradingDayRuntimeWidget(QWidget):
         layout.addWidget(self.title_label)
         layout.addWidget(self.summary_label)
         layout.addLayout(self.mode_rail)
-        layout.addWidget(self.mode_stack, 1)
+        # Premarket Thesis model/watch-point selection is station-critical work.
+        # Keep it above the Focus viewport so it cannot be hidden below the
+        # scroll boundary on compact displays.
         layout.addWidget(self.tda_watch_point_widget)
+        layout.addWidget(self.mode_stack, 1)
         layout.addWidget(self.transition_frame)
 
         if self.embedded_session_run:

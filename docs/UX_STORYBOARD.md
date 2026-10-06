@@ -2,14 +2,19 @@
 
 This document captures broad information hierarchy and flow decisions before detailed styling/layout work. It is intentionally a room-level contract rather than a pixel specification.
 
-## Viewport targets
+## Responsive window targets
 
-The cockpit must remain comfortable on both primary workstation classes:
+The cockpit is a **shared-pane desktop application**, not a full-screen application tied to a monitor resolution. The user's physical displays may be 2560 × 1080, 3440 × 1440, or other sizes, while TradingView and other tools occupy the same display.
 
-- **Compact:** 1920 × 1080
-- **Wide:** 3440 × 1440
+Responsive behavior therefore follows the **cockpit window's available geometry**, not the monitor's native resolution.
 
-The workflow, vocabulary, and decision hierarchy are identical on both. Wide layouts may expose more simultaneous context; compact layouts use progressive disclosure and tighter grouping rather than a different workflow.
+Representative window classes are testing references rather than hard breakpoints:
+
+- **Compact pane:** reduced-height / side-by-side use. Critical current-step decisions and actions must remain discoverable without relying on a hidden outer scrollbar.
+- **Standard pane:** approximately the current default 1120 × 760 working size, with the full operating hierarchy comfortable but still compact.
+- **Wide pane:** additional width/height is available. The cockpit may expose more simultaneous context, but the workflow and required decisions do not change.
+
+The exact pixel ranges may evolve from real use. The invariant is more important than the breakpoint: **shrinking the window may reflow or progressively disclose secondary context, but it must not hide required current-step controls in a way that makes a feature appear absent.**
 
 ## Global operating rule
 
@@ -18,6 +23,8 @@ The workflow, vocabulary, and decision hierarchy are identical on both. Wide lay
 The application may retain telemetry, evidence, transitions, and detailed history without demanding that the operator look at all of it during normal work.
 
 Primary controls should remain anchored and reachable. Mouse-wheel / mouse-button workflow navigation should not compete with ordinary page scrolling in operating surfaces designed around those inputs.
+
+A scrollbar is acceptable for genuinely secondary/detail content. It is not acceptable as the only way to discover a required current-step decision such as Models in Play, authorization gates, or the primary process action.
 
 ---
 
@@ -31,6 +38,7 @@ Work one analysis station at a time and deliberately certify completion.
 - Current station name/question.
 - Current station actions.
 - Observation/work area.
+- Any station-specific required decision surface (for example, **Models in Play / Watch Points** on Premarket Thesis).
 - Previous / Complete & Continue controls.
 - Process-level exit/advance controls.
 
@@ -40,12 +48,13 @@ Work one analysis station at a time and deliberately certify completion.
 - Telemetry.
 - Extended explanatory copy.
 
-### Compact
-- Bounded working surface where normal station work does not require vertical scrolling.
+### Compact pane
+- Bounded working surface where normal station work does not require vertical scrolling to discover required controls.
+- Station-specific required decision surfaces remain inside the primary Focus hierarchy.
 - Wheel remains reserved for station navigation.
-- Explanatory chrome collapsed while operating.
+- Explanatory chrome collapses before required controls are displaced.
 
-### Wide
+### Wide pane
 - Same focus hierarchy.
 - More observation/context space may remain visible.
 - Do not add permanent panels merely because width is available.
@@ -62,11 +71,11 @@ Act as the spatial index / overview of TDA station state.
 - Current station distinction.
 - Enough observation summary to recognize prior work.
 
-### Compact
+### Compact pane
 - Reflow/compact cards to fit the viewport rather than treating Deck like a long document.
 - Scrolling is UX debt to resolve when Deck receives its dedicated responsive-layout pass.
 
-### Wide
+### Wide pane
 - Show more/all cards simultaneously when possible.
 - Preserve the same deck grouping and spatial logic as Compact.
 
@@ -102,12 +111,13 @@ Live Watch should answer:
 - Detailed historical TDA text.
 - Explanatory text once the operator understands the room.
 
-### Compact
+### Compact pane
 - One primary dashboard.
 - Secondary evidence/details progressively disclosed.
 - Avoid routine scrolling for the core wait/watch loop.
+- Reflow columns vertically before hiding authorization/readiness controls.
 
-### Wide
+### Wide pane
 - TDA carry-forward, readiness, risk, and watch-point context may remain simultaneously visible.
 - Extra width is used for context, not for additional mandatory inputs.
 
