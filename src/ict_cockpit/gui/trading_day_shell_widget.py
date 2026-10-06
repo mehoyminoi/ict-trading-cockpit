@@ -16,7 +16,7 @@ from ict_cockpit.analysis.trading_day_session import TradingDaySession, TradingD
 from ict_cockpit.analysis.trading_session_run import RunEnvironment, TradingRun, TradingRunStatus
 from ict_cockpit.gui.trading_day_runtime_widget import TradingDayRuntimeWidget
 from ict_cockpit.process_blueprint import ProcessBlueprint
-from ict_cockpit.trade_plan import LiveWatchPolicyDefinition, PlaybookDefinition
+from ict_cockpit.trade_plan import AuthorizationGateDefinition, LiveWatchPolicyDefinition, PlaybookDefinition
 
 
 class TradingDayShellWidget(QWidget):
@@ -30,6 +30,7 @@ class TradingDayShellWidget(QWidget):
         blueprint: ProcessBlueprint,
         live_watch_policy: LiveWatchPolicyDefinition | None = None,
         playbooks: tuple[PlaybookDefinition, ...] = (),
+        authorization_gates: tuple[AuthorizationGateDefinition, ...] = (),
         *,
         run_environment: RunEnvironment = RunEnvironment.LIVE,
         trade_plan_revision: str = "",
@@ -38,6 +39,7 @@ class TradingDayShellWidget(QWidget):
         self.blueprint = blueprint
         self.live_watch_policy = live_watch_policy or LiveWatchPolicyDefinition()
         self.playbooks = tuple(playbooks)
+        self.authorization_gates = tuple(authorization_gates)
         self.run_environment = RunEnvironment(run_environment)
         self.trade_plan_revision = trade_plan_revision.strip()
         self.trading_day = TradingDay()
@@ -103,6 +105,8 @@ class TradingDayShellWidget(QWidget):
         self.runtime.live_watch_point_state_changed.connect(self._set_live_watch_point_state)
         self.runtime.live_candidate_entry_condition_changed.connect(self._set_candidate_entry_condition)
         self.runtime.live_candidate_watch_point_state_changed.connect(self._set_candidate_watch_point_state)
+        self.runtime.live_watch_widget.authorization_gate_state_changed.connect(self._set_authorization_gate)
+        self.runtime.live_watch_widget.candidate_authorization_gate_state_changed.connect(self._set_candidate_authorization_gate)
         self.runtime.post_market_interpretation_submitted.connect(self._update_interpretation_outcome)
         self.runtime.post_market_review_submitted.connect(self._update_post_market_review)
 
@@ -203,9 +207,8 @@ class TradingDayShellWidget(QWidget):
             tda_station_session_id=self.runtime.tda_station_runner_widget.session.id,
             environment=self.run_environment,
             trade_plan_revision=self.trade_plan_revision,
+            authorization_policy_snapshot=[gate.to_dict() for gate in self.authorization_gates],
         )
-        # The day-specific candidate is part of the real Trade Plan cockpit, while
-        # bare runtime tests without Playbooks keep the legacy/global policy path.
         if self.playbooks:
             run.ensure_day_specific_candidate()
         self.trading_day.activate_session_run(run)
@@ -225,8 +228,6 @@ class TradingDayShellWidget(QWidget):
         run = self.active_trading_run
         if run is None:
             return
-        # A run already governed by a prior published plan revision can finish,
-        # but it cannot silently adopt definitions from the currently loaded plan.
         if run.trade_plan_revision and self.trade_plan_revision and run.trade_plan_revision != self.trade_plan_revision:
             self.runtime.load_trading_run(run)
             return
@@ -238,17 +239,12 @@ class TradingDayShellWidget(QWidget):
         run.sync_playbook_candidates(snapshots)
         if self.playbooks:
             run.ensure_day_specific_candidate()
-        # New candidate architecture is authoritative; clear the v19 alias.
         run.selected_playbook_id = ""
         run.selected_playbook_revision = ""
         run.playbook_snapshot = {}
-        self.session_run_changed.emit(run)
-        self.runtime.load_trading_run(run)
-        self._update_view()
+        self._save_and_reload(run)
 
     def _legacy_select_playbook(self, playbook_id: str) -> None:
-        # Ignore compatibility emission when multiple models are selected. A sole
-        # selection can still support older tests/callers without changing the MO.
         selected = self.runtime.tda_watch_point_widget.selected_playbook_ids()
         if len(selected) == 1 and selected[0] == playbook_id:
             self._sync_models_in_play(selected)
@@ -263,6 +259,18 @@ class TradingDayShellWidget(QWidget):
         run = self.active_trading_run
         if run is not None:
             run.record_thesis_state(state, note)
+            self._save_and_reload(run)
+
+    def _set_authorization_gate(self, gate_id: str, state: str) -> None:
+        run = self.active_trading_run
+        if run is not None:
+            run.set_authorization_gate(gate_id, state)
+            self._save_and_reload(run)
+
+    def _set_candidate_authorization_gate(self, candidate_id: str, gate_id: str, state: str) -> None:
+        run = self.active_trading_run
+        if run is not None:
+            run.set_candidate_authorization_gate(candidate_id, gate_id, state)
             self._save_and_reload(run)
 
     def _set_live_entry_condition(self, criterion_id: str, satisfied: bool) -> None:
@@ -285,10 +293,9 @@ class TradingDayShellWidget(QWidget):
 
     def _set_candidate_entry_condition(self, candidate_id: str, criterion_id: str, satisfied: bool) -> None:
         run = self.active_trading_run
-        if run is None:
-            return
-        run.set_candidate_entry_condition(candidate_id, criterion_id, satisfied)
-        self._save_and_reload(run)
+        if run is not None:
+            run.set_candidate_entry_condition(candidate_id, criterion_id, satisfied)
+            self._save_and_reload(run)
 
     def _set_candidate_watch_point_state(self, candidate_id: str, watch_point_id: str, state: str) -> None:
         run = self.active_trading_run
@@ -299,7 +306,6 @@ class TradingDayShellWidget(QWidget):
             return
         run.set_candidate_watch_point_state(candidate_id, watch_point_id, state)
         if candidate.source_type == "Custom":
-            # Keep legacy manual-point state populated for old records/tests.
             run.set_watch_point_state(watch_point_id, state)
         self._save_and_reload(run)
 
@@ -317,11 +323,7 @@ class TradingDayShellWidget(QWidget):
     def _update_post_market_review(self, process_adherence: str, takeaway: str, film_night: bool) -> None:
         run = self.active_trading_run
         if run is not None:
-            run.update_post_market_review(
-                process_adherence=process_adherence,
-                takeaway=takeaway,
-                film_night=film_night,
-            )
+            run.update_post_market_review(process_adherence=process_adherence, takeaway=takeaway, film_night=film_night)
             self._save_and_reload(run)
 
     def _process_session_changed(self, process_session: TradingDaySession) -> None:
@@ -366,10 +368,7 @@ class TradingDayShellWidget(QWidget):
         self.trading_day = trading_day
         self.trading_runs = list(session_runs)
         self.active_trading_run = next(
-            (
-                run for run in self.trading_runs
-                if run.id == trading_day.active_session_run_id and run.status is TradingRunStatus.ACTIVE
-            ),
+            (run for run in self.trading_runs if run.id == trading_day.active_session_run_id and run.status is TradingRunStatus.ACTIVE),
             None,
         )
         self._sync_legacy_aliases()

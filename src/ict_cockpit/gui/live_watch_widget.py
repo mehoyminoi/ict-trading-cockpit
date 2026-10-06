@@ -15,6 +15,8 @@ from PySide6.QtWidgets import (
 
 from ict_cockpit.analysis.tda_station_session import TDAStationSession
 from ict_cockpit.analysis.trading_session_run import (
+    AuthorizationGateState,
+    AuthorizationStatus,
     RunEvidenceEntry,
     RunEvidenceKind,
     SetupCandidate,
@@ -35,6 +37,8 @@ class LiveWatchWidget(QWidget):
     watch_point_state_changed = Signal(str, str)
     candidate_entry_condition_changed = Signal(str, str, bool)
     candidate_watch_point_state_changed = Signal(str, str, str)
+    authorization_gate_state_changed = Signal(str, str)
+    candidate_authorization_gate_state_changed = Signal(str, str, str)
 
     def __init__(self, policy: LiveWatchPolicyDefinition | None = None) -> None:
         super().__init__()
@@ -44,11 +48,13 @@ class LiveWatchWidget(QWidget):
         self.watch_point_combos: dict[str, QComboBox] = {}
         self.candidate_entry_checkboxes: dict[tuple[str, str], QCheckBox] = {}
         self.candidate_watch_point_combos: dict[tuple[str, str], QComboBox] = {}
+        self.run_gate_combos: dict[str, QComboBox] = {}
+        self.candidate_gate_combos: dict[tuple[str, str], QComboBox] = {}
 
         self.heading = QLabel("Live Watch · Waiting & Watching")
         self.heading.setStyleSheet("font-size: 16px; font-weight: 600;")
         self.guidance = QLabel(
-            "Watch the market thesis and any setups that are becoming valid. Named models are reference scaffolding, not a commitment to force price into one model."
+            "Watch the market thesis and setups becoming valid. Authorization requires both setup-specific conditions and Trade Plan safety/risk gates."
         )
         self.guidance.setWordWrap(True)
 
@@ -66,6 +72,23 @@ class LiveWatchWidget(QWidget):
         tda_layout.addWidget(tda_heading)
         tda_layout.addWidget(self.tda_summary_label)
         tda_layout.addWidget(self.watch_points_list)
+
+        self.authorization_frame = QFrame()
+        self.authorization_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        authorization_layout = QVBoxLayout(self.authorization_frame)
+        authorization_layout.setContentsMargins(9, 7, 9, 7)
+        authorization_layout.setSpacing(4)
+        authorization_heading = QLabel("Trade Plan Authorization Gates")
+        authorization_heading.setStyleSheet("font-weight: 600;")
+        self.authorization_summary_label = QLabel("Authorization policy: Not configured")
+        self.authorization_summary_label.setWordWrap(True)
+        self.authorization_host = QWidget()
+        self.authorization_layout = QVBoxLayout(self.authorization_host)
+        self.authorization_layout.setContentsMargins(0, 0, 0, 0)
+        self.authorization_layout.setSpacing(3)
+        authorization_layout.addWidget(authorization_heading)
+        authorization_layout.addWidget(self.authorization_summary_label)
+        authorization_layout.addWidget(self.authorization_host)
 
         self.readiness_frame = QFrame()
         self.readiness_frame.setFrameShape(QFrame.Shape.StyledPanel)
@@ -94,7 +117,7 @@ class LiveWatchWidget(QWidget):
         self.risk_frame.setFrameShape(QFrame.Shape.StyledPanel)
         risk_layout = QVBoxLayout(self.risk_frame)
         risk_layout.setContentsMargins(9, 7, 9, 7)
-        risk_heading = QLabel("Trade Plan Risk Envelope")
+        risk_heading = QLabel("Risk Envelope")
         risk_heading.setStyleSheet("font-weight: 600;")
         self.risk_instrument_label = QLabel("Instrument / account context: inherited when configured")
         self.risk_stop_label = QLabel("Model stop rule: see setup candidate")
@@ -119,7 +142,6 @@ class LiveWatchWidget(QWidget):
         thesis_top.addStretch()
         thesis_top.addWidget(self.thesis_state_label)
         thesis_layout.addLayout(thesis_top)
-
         self.thesis_note_input = QLineEdit()
         self.thesis_note_input.setPlaceholderText("Reason for a meaningful thesis change (optional)")
         thesis_layout.addWidget(self.thesis_note_input)
@@ -144,8 +166,6 @@ class LiveWatchWidget(QWidget):
 
         self.evidence_list = QListWidget()
         self.evidence_list.hide()
-
-        # Backward-compatible attributes retained for old tests/callers.
         self.structured_watch_points_host = QWidget()
         self.structured_watch_points_layout = QVBoxLayout(self.structured_watch_points_host)
         self.structured_watch_points_host.hide()
@@ -155,7 +175,7 @@ class LiveWatchWidget(QWidget):
         dashboard.setHorizontalSpacing(8)
         dashboard.setVerticalSpacing(8)
         dashboard.addWidget(self.tda_frame, 0, 0, 2, 1)
-        dashboard.addWidget(self.readiness_frame, 0, 1)
+        dashboard.addWidget(self.authorization_frame, 0, 1)
         dashboard.addWidget(self.risk_frame, 1, 1)
         dashboard.setColumnStretch(0, 3)
         dashboard.setColumnStretch(1, 2)
@@ -165,7 +185,8 @@ class LiveWatchWidget(QWidget):
         layout.setSpacing(6)
         layout.addWidget(self.heading)
         layout.addWidget(self.guidance)
-        layout.addLayout(dashboard, 1)
+        layout.addLayout(dashboard)
+        layout.addWidget(self.readiness_frame, 1)
         layout.addWidget(self.thesis_frame)
         layout.addLayout(observation_row)
         layout.addWidget(self.evidence_list)
@@ -188,16 +209,12 @@ class LiveWatchWidget(QWidget):
         self.observation_input.clear()
         self.watch_points_list.clear()
         self.tda_summary_label.setText("No TDA context loaded")
+        self._clear_layout(self.authorization_layout)
+        self.authorization_summary_label.setText("Authorization policy: Not configured")
         self.load_state(ThesisState.NOT_SET, [], {}, {})
         self._render_base_policy({}, {})
 
-    def load_state(
-        self,
-        thesis_state: ThesisState | str,
-        evidence: list[RunEvidenceEntry],
-        entry_condition_states: dict[str, bool] | None = None,
-        watch_point_states: dict[str, WatchPointState] | None = None,
-    ) -> None:
+    def load_state(self, thesis_state, evidence, entry_condition_states=None, watch_point_states=None) -> None:
         thesis_state = ThesisState(thesis_state)
         self.thesis_state_label.setText(f"Current thesis: {thesis_state.value}")
         self.evidence_list.clear()
@@ -212,17 +229,7 @@ class LiveWatchWidget(QWidget):
         if not self.candidate_entry_checkboxes:
             self._render_base_policy(entry_condition_states or {}, watch_point_states or {})
 
-    def load_operating_context(
-        self,
-        thesis_state: ThesisState | str,
-        evidence: list[RunEvidenceEntry],
-        entry_condition_states: dict[str, bool],
-        watch_point_states: dict[str, WatchPointState],
-        tda_session: TDAStationSession | None,
-        blueprint: ProcessBlueprint,
-        playbook: PlaybookDefinition | None = None,
-    ) -> None:
-        """Compatibility path for pre-candidate callers."""
+    def load_operating_context(self, thesis_state, evidence, entry_condition_states, watch_point_states, tda_session, blueprint, playbook=None) -> None:
         self.load_state(thesis_state, evidence, entry_condition_states, watch_point_states)
         self._load_tda_context(tda_session, blueprint)
         if playbook is not None:
@@ -233,36 +240,60 @@ class LiveWatchWidget(QWidget):
                 source_revision=playbook.revision,
                 definition_snapshot=playbook.to_snapshot(),
                 entry_condition_states=entry_condition_states,
-                watch_point_states={
-                    key.removeprefix(f"playbook:{playbook.id}:"): value
-                    for key, value in watch_point_states.items()
-                    if key.startswith(f"playbook:{playbook.id}:")
-                },
             )
-            self._render_candidates([candidate], tda_session)
+            self._render_candidates([candidate], tda_session, None)
         else:
             self._render_base_policy(entry_condition_states, watch_point_states, tda_session)
 
-    def load_run_context(
-        self,
-        trading_run: TradingRun,
-        tda_session: TDAStationSession | None,
-        blueprint: ProcessBlueprint,
-    ) -> None:
+    def load_run_context(self, trading_run: TradingRun, tda_session: TDAStationSession | None, blueprint: ProcessBlueprint) -> None:
         self.candidate_entry_checkboxes = {}
         self.candidate_watch_point_combos = {}
         self.entry_checkboxes = {}
         self.watch_point_combos = {}
         self.load_state(trading_run.current_thesis_state, trading_run.evidence)
         self._load_tda_context(tda_session, blueprint)
+        self._render_authorization_gates(trading_run)
         if trading_run.setup_candidates:
-            self._render_candidates(trading_run.setup_candidates, tda_session)
+            self._render_candidates(trading_run.setup_candidates, tda_session, trading_run)
         else:
-            self._render_base_policy(
-                trading_run.entry_condition_states,
-                trading_run.watch_point_states,
-                tda_session,
+            self._render_base_policy(trading_run.entry_condition_states, trading_run.watch_point_states, tda_session)
+
+    def _render_authorization_gates(self, trading_run: TradingRun) -> None:
+        self._clear_layout(self.authorization_layout)
+        self.run_gate_combos = {}
+        gates = [item for item in trading_run.authorization_policy_snapshot if str(item.get("scope", "Run")) == "Run"]
+        if not trading_run.authorization_policy_snapshot:
+            self.authorization_summary_label.setText("Authorization policy: Not configured for this run")
+            return
+        pending = 0
+        blocked = 0
+        for gate in gates:
+            gate_id = str(gate.get("id", ""))
+            state = trading_run.authorization_gate_states.get(gate_id, AuthorizationGateState.PENDING)
+            if state is AuthorizationGateState.PENDING:
+                pending += 1
+            elif state is AuthorizationGateState.BLOCKED:
+                blocked += 1
+            row = QHBoxLayout()
+            label = QLabel(str(gate.get("name", gate_id)))
+            label.setWordWrap(True)
+            label.setToolTip(str(gate.get("description", "")))
+            combo = QComboBox()
+            combo.addItems([item.value for item in AuthorizationGateState])
+            combo.setCurrentText(state.value)
+            combo.currentTextChanged.connect(
+                lambda text, gid=gate_id: self.authorization_gate_state_changed.emit(gid, text)
             )
+            self.run_gate_combos[gate_id] = combo
+            row.addWidget(label, 1)
+            row.addWidget(combo)
+            self.authorization_layout.addLayout(row)
+        if blocked:
+            self.authorization_summary_label.setText(f"GLOBAL BLOCK · {blocked} Trade Plan gate(s) blocked")
+        elif pending:
+            self.authorization_summary_label.setText(f"Waiting · {pending} Trade Plan gate(s) still pending")
+        else:
+            self.authorization_summary_label.setText("Global Trade Plan gates clear")
 
     def _load_tda_context(self, tda_session: TDAStationSession | None, blueprint: ProcessBlueprint) -> None:
         self.watch_points_list.clear()
@@ -294,61 +325,87 @@ class LiveWatchWidget(QWidget):
                 compact = compact[:177] + "..."
             self.watch_points_list.addItem(f"○ {station_names.get(station_id, station_id)} · {compact}")
 
-    def _render_candidates(self, candidates: list[SetupCandidate], tda_session: TDAStationSession | None) -> None:
+    def _render_candidates(self, candidates: list[SetupCandidate], tda_session: TDAStationSession | None, trading_run: TradingRun | None) -> None:
         self._clear_layout(self.criteria_layout)
         self.candidate_entry_checkboxes = {}
         self.candidate_watch_point_combos = {}
+        self.candidate_gate_combos = {}
         self.entry_checkboxes = {}
         self.watch_point_combos = {}
 
         playbook_candidates = [item for item in candidates if item.source_type == "Playbook"]
         configured = [item for item in playbook_candidates if item.definition_snapshot.get("entry_criteria")]
         self.readiness_count_label.setText(f"{len(playbook_candidates)} reference model(s) in play")
-        self.readiness_required_label.setText("Authorization is evaluated per setup candidate")
-        self.readiness_status_label.setText(
-            "A setup can become ready without requiring every other model in play to agree. Trade Plan safety/risk rules remain global."
-        )
+        self.readiness_required_label.setText("Authorization evaluated independently per setup candidate")
+        self.readiness_status_label.setText("AUTHORIZED means the setup threshold and every applicable Trade Plan gate are clear.")
         self.risk_stop_label.setText("Model stop / risk guidance: shown per candidate")
         self.risk_status_label.setText(
             self.base_policy.risk_summary.strip()
-            or "Global account/instrument risk policy is not yet fully encoded; candidate model guidance never overrides plan-level limits."
+            or "Candidate risk must still clear the plan-owned risk gate; model guidance never overrides account-level limits."
         )
 
         for candidate in candidates:
             if candidate.source_type == "Custom" and not (tda_session and tda_session.watch_points):
                 continue
-            self.criteria_layout.addWidget(self._build_candidate_card(candidate, tda_session))
+            self.criteria_layout.addWidget(self._build_candidate_card(candidate, tda_session, trading_run))
 
         if len(configured) == 1:
             candidate = configured[0]
             for (candidate_id, criterion_id), checkbox in self.candidate_entry_checkboxes.items():
                 if candidate_id == candidate.id:
                     self.entry_checkboxes[criterion_id] = checkbox
-            snapshot = candidate.definition_snapshot
-            criteria = snapshot.get("entry_criteria", [])
+            criteria = candidate.definition_snapshot.get("entry_criteria", [])
             total = len(criteria)
-            required = snapshot.get("required_entry_count")
+            required = candidate.definition_snapshot.get("required_entry_count")
             satisfied = sum(candidate.entry_condition_states.get(str(item.get("id", "")), False) for item in criteria)
             self.readiness_count_label.setText(f"{satisfied} / {total} criteria currently met")
-            self.readiness_required_label.setText(f"Required for entry: {required} / {total}")
-            if required is not None and satisfied >= required:
-                self.readiness_status_label.setText("Readiness threshold satisfied by this setup candidate.")
+            self.readiness_required_label.setText(f"Required for setup: {required} / {total}")
 
-    def _build_candidate_card(self, candidate: SetupCandidate, tda_session: TDAStationSession | None) -> QFrame:
+    def _build_candidate_card(self, candidate: SetupCandidate, tda_session: TDAStationSession | None, trading_run: TradingRun | None) -> QFrame:
         frame = QFrame()
         frame.setFrameShape(QFrame.Shape.StyledPanel)
         layout = QVBoxLayout(frame)
         layout.setContentsMargins(7, 6, 7, 6)
         layout.setSpacing(3)
-        title = candidate.name
-        if candidate.source_type == "Playbook":
-            title += f" · {candidate.source_revision}"
+        title = candidate.name + (f" · {candidate.source_revision}" if candidate.source_type == "Playbook" else "")
         title_label = QLabel(title)
         title_label.setStyleSheet("font-weight: 600;")
         layout.addWidget(title_label)
 
+        if trading_run is not None:
+            result = trading_run.candidate_authorization(candidate.id)
+            status = QLabel(result.status.value.upper())
+            status.setStyleSheet("font-size: 15px; font-weight: 700;")
+            layout.addWidget(status)
+            if result.blockers:
+                blockers = QLabel("Blocked because:\n• " + "\n• ".join(result.blockers))
+                blockers.setWordWrap(True)
+                layout.addWidget(blockers)
+            elif result.detail:
+                detail = QLabel(result.detail)
+                detail.setWordWrap(True)
+                layout.addWidget(detail)
+
+            candidate_gates = [item for item in trading_run.authorization_policy_snapshot if str(item.get("scope", "Run")) == "Candidate"]
+            for gate in candidate_gates:
+                gate_id = str(gate.get("id", ""))
+                row = QHBoxLayout()
+                gate_label = QLabel(str(gate.get("name", gate_id)))
+                gate_label.setWordWrap(True)
+                gate_label.setToolTip(str(gate.get("description", "")))
+                combo = QComboBox()
+                combo.addItems([item.value for item in AuthorizationGateState])
+                combo.setCurrentText(candidate.authorization_gate_states.get(gate_id, AuthorizationGateState.PENDING).value)
+                combo.currentTextChanged.connect(
+                    lambda text, cid=candidate.id, gid=gate_id: self.candidate_authorization_gate_state_changed.emit(cid, gid, text)
+                )
+                self.candidate_gate_combos[(candidate.id, gate_id)] = combo
+                row.addWidget(gate_label, 1)
+                row.addWidget(combo)
+                layout.addLayout(row)
+
         if candidate.source_type == "Custom":
-            note = QLabel("Technician/day-specific setup · no named-model authorization threshold")
+            note = QLabel("Technician/day-specific setup · explicit authorization criteria can be added later without requiring a named model.")
             note.setWordWrap(True)
             layout.addWidget(note)
             for point in (tda_session.watch_points if tda_session else []):
@@ -360,7 +417,7 @@ class LiveWatchWidget(QWidget):
         required = snapshot.get("required_entry_count")
         if criteria:
             satisfied = sum(candidate.entry_condition_states.get(str(item.get("id", "")), False) for item in criteria)
-            layout.addWidget(QLabel(f"Entry readiness: {satisfied}/{len(criteria)} · required {required}/{len(criteria)}"))
+            layout.addWidget(QLabel(f"Setup readiness: {satisfied}/{len(criteria)} · required {required}/{len(criteria)}"))
             for item in criteria:
                 criterion_id = str(item.get("id", ""))
                 checkbox = QCheckBox(str(item.get("name", criterion_id)))
@@ -372,7 +429,7 @@ class LiveWatchWidget(QWidget):
                 self.candidate_entry_checkboxes[(candidate.id, criterion_id)] = checkbox
                 layout.addWidget(checkbox)
         else:
-            layout.addWidget(QLabel("Entry authorization threshold: not explicitly encoded for this model."))
+            layout.addWidget(QLabel("Setup authorization threshold: not explicitly encoded for this model."))
 
         watch_points = snapshot.get("watch_point_templates", [])
         if watch_points:
@@ -394,7 +451,7 @@ class LiveWatchWidget(QWidget):
             layout.addWidget(risk_label)
         return frame
 
-    def _add_candidate_watch_row(self, layout, candidate: SetupCandidate, watch_id: str, if_condition: str, then_action: str) -> None:
+    def _add_candidate_watch_row(self, layout, candidate, watch_id, if_condition, then_action) -> None:
         row = QHBoxLayout()
         label = QLabel(f"IF {if_condition} → THEN {then_action}")
         label.setWordWrap(True)
@@ -411,7 +468,7 @@ class LiveWatchWidget(QWidget):
         row.addWidget(combo)
         layout.addLayout(row)
 
-    def _render_base_policy(self, states: dict[str, bool], watch_states: dict[str, WatchPointState], tda_session: TDAStationSession | None = None) -> None:
+    def _render_base_policy(self, states, watch_states, tda_session=None) -> None:
         self._clear_layout(self.criteria_layout)
         self.entry_checkboxes = {}
         self.watch_point_combos = {}
@@ -419,7 +476,7 @@ class LiveWatchWidget(QWidget):
         if not policy.entry_criteria:
             self.readiness_count_label.setText("Entry criteria: Not configured")
             self.readiness_required_label.setText("Required for entry: Not configured")
-            self.readiness_status_label.setText("This Trade Plan revision does not define a global entry-readiness threshold.")
+            self.readiness_status_label.setText("This Trade Plan revision does not define a legacy/global entry-readiness threshold.")
         else:
             valid_ids = {criterion.id for criterion in policy.entry_criteria}
             satisfied = sum(states.get(item, False) for item in valid_ids)
@@ -439,7 +496,7 @@ class LiveWatchWidget(QWidget):
                 checkbox.toggled.connect(lambda checked, cid=criterion.id: self.entry_condition_changed.emit(cid, checked))
                 self.entry_checkboxes[criterion.id] = checkbox
                 self.criteria_layout.addWidget(checkbox)
-        self.risk_status_label.setText(policy.risk_summary.strip() or "Risk rules are not yet encoded in this Trade Plan revision.")
+        self.risk_status_label.setText(policy.risk_summary.strip() or "Risk rules are not yet encoded in this legacy policy path.")
         if tda_session is not None:
             for point in tda_session.watch_points:
                 row = QHBoxLayout()
@@ -453,11 +510,11 @@ class LiveWatchWidget(QWidget):
                 row.addWidget(combo)
                 self.criteria_layout.addLayout(row)
 
-    def _candidate_entry_toggled(self, candidate_id: str, criterion_id: str, checked: bool) -> None:
+    def _candidate_entry_toggled(self, candidate_id, criterion_id, checked) -> None:
         if not self._loading:
             self.candidate_entry_condition_changed.emit(candidate_id, criterion_id, checked)
 
-    def _candidate_watch_changed(self, candidate_id: str, watch_id: str, state_text: str) -> None:
+    def _candidate_watch_changed(self, candidate_id, watch_id, state_text) -> None:
         if not self._loading:
             self.candidate_watch_point_state_changed.emit(candidate_id, watch_id, WatchPointState(state_text).value)
 

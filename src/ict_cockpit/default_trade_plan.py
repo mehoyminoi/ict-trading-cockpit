@@ -1,5 +1,6 @@
 from ict_cockpit.default_process import build_default_process_blueprint
 from ict_cockpit.trade_plan import (
+    AuthorizationGateDefinition,
     EntryCriterionDefinition,
     PlaybookDefinition,
     TradePlanDefinition,
@@ -123,7 +124,7 @@ def build_default_trade_plan() -> TradePlanDefinition:
     return TradePlanDefinition(
         id="ict-trade-plan-alpha",
         name="ICT Trading Plan",
-        revision="Alpha 0.4",
+        revision="Alpha 0.5",
         sections=(
             TradePlanSectionDefinition(
                 id="foundation", name="Foundation",
@@ -153,4 +154,30 @@ def build_default_trade_plan() -> TradePlanDefinition:
         ),
         process_blueprint=build_default_process_blueprint(),
         playbooks=(_build_2022_mentorship_playbook(), _build_silver_bullet_playbook()),
+        authorization_gates=(
+            AuthorizationGateDefinition(
+                id="trading-day-permitted",
+                name="Trading day permitted",
+                description=(
+                    "Confirm that the current live/eval/funded day is not excluded by the Trade Plan no-trade-day rules: contract expiry, Monday red-folder news, Friday after 11:00 NY time, Wednesday-or-later NFP week, or FOMC. Paper/replay work may still be permitted by the plan."
+                ),
+                scope="Run",
+            ),
+            AuthorizationGateDefinition(
+                id="daily-capacity-available",
+                name="Trade / loss limits permit another entry",
+                description=(
+                    "Confirm the account has not reached the two-trades-per-day limit, two consecutive losing trades, or the applicable daily loss limit."
+                ),
+                scope="Run",
+            ),
+            AuthorizationGateDefinition(
+                id="candidate-risk-within-plan",
+                name="Candidate risk fits the active account rule",
+                description=(
+                    "Confirm this candidate's planned stop and position size fit the account-specific max per-trade risk and active risk-cycle sizing rule."
+                ),
+                scope="Candidate",
+            ),
+        ),
     )
