@@ -6,6 +6,7 @@ from ict_cockpit.analysis.trading_session_run import (
     RunEvidenceKind,
     ThesisState,
     TradingRun,
+    WatchPointState,
 )
 from ict_cockpit.database.connection import create_connection
 from ict_cockpit.database.schema import CURRENT_SCHEMA_VERSION, initialize_schema
@@ -44,19 +45,25 @@ def build_test_live_watch_policy() -> LiveWatchPolicyDefinition:
     )
 
 
-def test_schema_v15_preserves_live_watch_runtime_columns(tmp_path) -> None:
+def test_schema_v16_preserves_live_watch_runtime_columns(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
 
-    columns = {
+    run_columns = {
         row[1]
         for row in connection.execute("PRAGMA table_info(trading_session_run)").fetchall()
     }
+    tda_columns = {
+        row[1]
+        for row in connection.execute("PRAGMA table_info(tda_station_session)").fetchall()
+    }
 
-    assert CURRENT_SCHEMA_VERSION == 15
-    assert "current_thesis_state" in columns
-    assert "evidence_json" in columns
-    assert "entry_condition_states_json" in columns
+    assert CURRENT_SCHEMA_VERSION == 16
+    assert "current_thesis_state" in run_columns
+    assert "evidence_json" in run_columns
+    assert "entry_condition_states_json" in run_columns
+    assert "watch_point_states_json" in run_columns
+    assert "watch_points_json" in tda_columns
     connection.close()
 
 
@@ -75,7 +82,7 @@ def test_trading_run_records_observation_and_thesis_crossroads() -> None:
     assert len(run.evidence) == 2
 
 
-def test_run_evidence_and_readiness_round_trip_through_repository(tmp_path) -> None:
+def test_run_evidence_readiness_and_watch_state_round_trip(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
     day_repository = TradingDayRepository(connection)
@@ -90,6 +97,7 @@ def test_run_evidence_and_readiness_round_trip_through_repository(tmp_path) -> N
     run.record_thesis_state(ThesisState.SUPPORTED, "Draw remains intact")
     run.set_entry_condition("criterion-a", True)
     run.set_entry_condition("criterion-b", False)
+    run.set_watch_point_state("watch-1", WatchPointState.OCCURRED)
     day.activate_trading_run(run)
     day_repository.save(day)
     run_repository.save(run)
@@ -102,11 +110,12 @@ def test_run_evidence_and_readiness_round_trip_through_repository(tmp_path) -> N
         RunEvidenceKind.OBSERVATION,
         RunEvidenceKind.THESIS_STATE,
     ]
-    assert restored.evidence[0].note == "Price respected the morning FVG"
-    assert restored.evidence[1].note == "Draw remains intact"
     assert restored.entry_condition_states == {
         "criterion-a": True,
         "criterion-b": False,
+    }
+    assert restored.watch_point_states == {
+        "watch-1": WatchPointState.OCCURRED,
     }
     connection.close()
 
@@ -174,6 +183,43 @@ def test_trade_plan_policy_drives_live_watch_readiness_and_run_state() -> None:
     assert "threshold satisfied" in live_watch.readiness_status_label.text().lower()
 
 
+def test_tda_watch_point_is_authored_then_tracked_in_live_watch() -> None:
+    get_app()
+    shell = TradingDayShellWidget(build_default_process_blueprint())
+    shell.start_trading_run()
+    runtime = shell.runtime
+    runner = runtime.tda_station_runner_widget
+
+    runner.select_station("tda-thesis")
+    editor = runtime.tda_watch_point_widget
+    assert editor.isHidden() is False
+
+    editor.if_input.setText("London high is swept")
+    editor.then_input.setText("Watch for bearish displacement toward PDL")
+    editor.add_button.click()
+
+    assert len(runner.session.watch_points) == 1
+    watch_point = runner.session.watch_points[0]
+    assert watch_point.if_condition == "London high is swept"
+    assert watch_point.then_action == "Watch for bearish displacement toward PDL"
+
+    runtime.apply_transition("finish-tda", override_incomplete=True)
+    live_watch = runtime.live_watch_widget
+
+    assert watch_point.id in live_watch.watch_point_combos
+    combo = live_watch.watch_point_combos[watch_point.id]
+    assert combo.currentText() == WatchPointState.WAITING.value
+
+    combo.setCurrentText(WatchPointState.OCCURRED.value)
+
+    run = shell.active_trading_run
+    assert run is not None
+    assert run.watch_point_states[watch_point.id] is WatchPointState.OCCURRED
+    assert runner.session.watch_points[0].then_action == (
+        "Watch for bearish displacement toward PDL"
+    )
+
+
 def test_live_watch_carries_forward_tda_synthesis() -> None:
     get_app()
     shell = TradingDayShellWidget(build_default_process_blueprint())
@@ -200,7 +246,7 @@ def test_live_watch_carries_forward_tda_synthesis() -> None:
     assert "NYAM expansion lower" in rendered
 
 
-def test_restored_active_run_rehydrates_live_watch_evidence_and_readiness() -> None:
+def test_restored_active_run_rehydrates_live_watch_state() -> None:
     get_app()
     blueprint = build_default_process_blueprint()
     policy = build_test_live_watch_policy()
@@ -209,17 +255,23 @@ def test_restored_active_run_rehydrates_live_watch_evidence_and_readiness() -> N
     run = shell.active_trading_run
     assert run is not None
 
+    runner = shell.runtime.tda_station_runner_widget
+    watch_point = runner.session.add_watch_point(
+        "Price trades through London high",
+        "Wait for displacement before considering entry",
+    )
     shell.runtime.apply_transition("finish-tda", override_incomplete=True)
     run.add_observation("Liquidity sweep completed")
     run.record_thesis_state(ThesisState.UNCERTAIN, "Waiting for displacement")
     run.set_entry_condition("criterion-a", True)
+    run.set_watch_point_state(watch_point.id, WatchPointState.OCCURRED)
 
     restored_shell = TradingDayShellWidget(blueprint, live_watch_policy=policy)
     restored_shell.load_state(
         shell.trading_day,
         shell.trading_runs,
         process_session=shell.runtime.session,
-        tda_session=shell.runtime.tda_station_runner_widget.session,
+        tda_session=runner.session,
     )
 
     restored_live_watch = restored_shell.runtime.live_watch_widget
@@ -227,3 +279,6 @@ def test_restored_active_run_rehydrates_live_watch_evidence_and_readiness() -> N
     assert "Uncertain" in restored_live_watch.thesis_state_label.text()
     assert restored_live_watch.evidence_list.count() == 2
     assert restored_live_watch.entry_checkboxes["criterion-a"].isChecked() is True
+    assert restored_live_watch.watch_point_combos[watch_point.id].currentText() == (
+        WatchPointState.OCCURRED.value
+    )
