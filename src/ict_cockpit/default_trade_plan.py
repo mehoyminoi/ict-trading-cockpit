@@ -54,7 +54,7 @@ def _build_silver_bullet_playbook() -> PlaybookDefinition:
     return PlaybookDefinition(
         id="silver-bullet",
         name="Silver Bullet Model",
-        revision="Alpha 0.1",
+        revision="Alpha 0.2",
         purpose=(
             "ICT Silver Bullet execution model inside defined killzones, aligned with "
             "the active draw on liquidity and broader TDA context."
@@ -69,18 +69,21 @@ def _build_silver_bullet_playbook() -> PlaybookDefinition:
         watch_point_templates=(
             WatchPointTemplateDefinition(
                 id="qualifying-fvg",
-                if_condition="Price is inside an allowed Silver Bullet killzone",
-                then_action="Wait for an FVG created in the killzone and in the direction of the active draw on liquidity.",
+                if_condition="A killzone FVG forms in the direction of the active draw on liquidity",
+                then_action="Watch for price to retrace into the qualifying FVG.",
+                satisfies_criterion_ids=("fvg-direction",),
             ),
             WatchPointTemplateDefinition(
                 id="delivery-distance",
-                if_condition="A qualifying killzone FVG forms",
-                then_action="Verify more than 10 handles of expected delivery and watch for retracement into the FVG.",
+                if_condition="Expected delivery from the setup exceeds 10 handles",
+                then_action="Continue watching for the planned retracement and entry sequence.",
+                satisfies_criterion_ids=("delivery-distance",),
             ),
             WatchPointTemplateDefinition(
                 id="retracement-entry",
                 if_condition="Price retraces into the qualifying FVG",
                 then_action="Evaluate the planned Fib/FVG entry and stop rule before authorization.",
+                satisfies_criterion_ids=("fvg-retracement",),
             ),
         ),
         entry_criteria=(
@@ -117,96 +120,37 @@ def _build_silver_bullet_playbook() -> PlaybookDefinition:
 
 
 def build_default_trade_plan() -> TradePlanDefinition:
-    """Return the first alpha Trade Plan definition.
-
-    The definition is still code-seeded while the hierarchy is validated, but its
-    strategy content is declarative. A future no-code editor should create the same
-    PlaybookDefinition data and publish it only through an explicit Trade Plan
-    revision workflow.
-    """
-
     return TradePlanDefinition(
         id="ict-trade-plan-alpha",
         name="ICT Trading Plan",
-        revision="Alpha 0.3",
+        revision="Alpha 0.4",
         sections=(
             TradePlanSectionDefinition(
-                id="foundation",
-                name="Foundation",
-                purpose=(
-                    "Define who the trader is, what is being traded, why the "
-                    "system exists, and the conditions required to operate it well."
-                ),
-                topics=(
-                    "Objectives and motivation",
-                    "Markets, instruments, sessions, and timeframes",
-                    "Strengths, weaknesses, and soft-skill constraints",
-                    "Physical / mental readiness and pause conditions",
-                ),
+                id="foundation", name="Foundation",
+                purpose="Define who the trader is, what is being traded, why the system exists, and the conditions required to operate it well.",
+                topics=("Objectives and motivation", "Markets, instruments, sessions, and timeframes", "Strengths, weaknesses, and soft-skill constraints", "Physical / mental readiness and pause conditions"),
             ),
             TradePlanSectionDefinition(
-                id="rules-safety",
-                name="Rules / Safety",
-                purpose=(
-                    "Define the non-negotiable boundaries that protect capital, "
-                    "attention, and process integrity."
-                ),
-                topics=(
-                    "Account and per-trade risk",
-                    "Daily loss and trade-count limits",
-                    "No-trade days and news restrictions",
-                    "Entry authorization, exits, and lockout conditions",
-                ),
+                id="rules-safety", name="Rules / Safety",
+                purpose="Define the non-negotiable boundaries that protect capital, attention, and process integrity.",
+                topics=("Account and per-trade risk", "Daily loss and trade-count limits", "No-trade days and news restrictions", "Entry authorization, exits, and lockout conditions"),
             ),
             TradePlanSectionDefinition(
-                id="process",
-                name="Process",
-                purpose=(
-                    "Operate the current Trade Plan through the normal trading-day "
-                    "sequence of modes, TradingView decks, decision stations, and "
-                    "explicit if-then transitions."
-                ),
-                topics=(
-                    "Premarket / TDA",
-                    "Live Watch and thesis crossroads",
-                    "Entry / management flow",
-                    "Post-market outcome diagnosis and process review",
-                ),
+                id="process", name="Process",
+                purpose="Operate the current Trade Plan through the normal trading-day sequence of modes, TradingView decks, decision stations, and explicit if-then transitions.",
+                topics=("Premarket / TDA", "Live Watch and thesis crossroads", "Entry / management flow", "Post-market outcome diagnosis and process review"),
             ),
             TradePlanSectionDefinition(
-                id="playbooks",
-                name="Playbooks",
-                purpose=(
-                    "Define the valid models, their setup conditions, triggers, "
-                    "management rules, and examples."
-                ),
-                topics=(
-                    "2022 Mentorship model",
-                    "Silver Bullet",
-                    "Friday Asian Range / TGIF",
-                    "Future models unlocked through evidence and mastery",
-                ),
+                id="playbooks", name="Playbooks",
+                purpose="Define valid reference models and technician-built setups as revisioned compositions of price-action concepts.",
+                topics=("2022 Mentorship model", "Silver Bullet", "Friday Asian Range / TGIF", "Technician-built / evidence-derived models"),
             ),
             TradePlanSectionDefinition(
-                id="review-development",
-                name="Review / Development",
-                purpose=(
-                    "Improve the Trade Plan through deliberate study, evidence review, "
-                    "feedback, and controlled revision. This area is directly enterable "
-                    "and does not require completing the trading-day Process first."
-                ),
-                topics=(
-                    "Film Night / Lab study sessions",
-                    "Backtesting with an explicit study question",
-                    "Cross-trade and cross-day pattern review",
-                    "Feedback and friction review",
-                    "Revision proposals backed by evidence",
-                ),
+                id="review-development", name="Review / Development",
+                purpose="Improve the Trade Plan through deliberate study, evidence review, feedback, and controlled revision. This area is directly enterable and does not require completing the trading-day Process first.",
+                topics=("Film Night / Lab study sessions", "Backtesting with an explicit study question", "Cross-trade and cross-day pattern review", "Feedback and friction review", "Revision proposals backed by evidence"),
             ),
         ),
         process_blueprint=build_default_process_blueprint(),
-        playbooks=(
-            _build_2022_mentorship_playbook(),
-            _build_silver_bullet_playbook(),
-        ),
+        playbooks=(_build_2022_mentorship_playbook(), _build_silver_bullet_playbook()),
     )
