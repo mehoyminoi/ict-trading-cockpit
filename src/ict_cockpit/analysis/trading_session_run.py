@@ -70,6 +70,7 @@ class TradingSessionRun:
     outcome: str = ""
     current_thesis_state: ThesisState = ThesisState.NOT_SET
     evidence: list[RunEvidenceEntry] = field(default_factory=list)
+    entry_condition_states: dict[str, bool] = field(default_factory=dict)
     review_process_adherence: ProcessAdherence = ProcessAdherence.NOT_REVIEWED
     review_takeaway: str = ""
     review_film_night: bool = False
@@ -100,6 +101,11 @@ class TradingSessionRun:
             item if isinstance(item, RunEvidenceEntry) else RunEvidenceEntry(**item)
             for item in self.evidence
         ]
+        self.entry_condition_states = {
+            str(criterion_id).strip(): bool(state)
+            for criterion_id, state in self.entry_condition_states.items()
+            if str(criterion_id).strip()
+        }
 
         if not self.trading_day_id:
             raise ValueError("trading day id cannot be empty")
@@ -119,6 +125,14 @@ class TradingSessionRun:
         if not value:
             raise ValueError("trading run label cannot be empty")
         self.session_name = value
+
+    def set_entry_condition(self, criterion_id: str, satisfied: bool) -> None:
+        """Record current readiness for one Trade Plan-owned entry criterion."""
+        criterion_id = criterion_id.strip()
+        if not criterion_id:
+            raise ValueError("entry criterion id cannot be empty")
+        self.entry_condition_states[criterion_id] = bool(satisfied)
+        self._touch()
 
     def add_observation(self, note: str) -> RunEvidenceEntry:
         note = note.strip()
@@ -180,7 +194,5 @@ class TradingSessionRun:
         self.updated_at = datetime.now().astimezone().isoformat(timespec="seconds")
 
 
-# Preferred names going forward. Old names stay import-compatible while the
-# branch migrates callers and while schema-v12 data remains readable.
 TradingRun = TradingSessionRun
 TradingRunStatus = TradingSessionRunStatus
