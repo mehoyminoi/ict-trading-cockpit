@@ -42,6 +42,10 @@ class TradingSessionRunRepository:
             },
             sort_keys=True,
         )
+        playbook_snapshot_json = json.dumps(
+            session_run.playbook_snapshot,
+            sort_keys=True,
+        )
         with self.connection:
             self.connection.execute(
                 """
@@ -51,8 +55,10 @@ class TradingSessionRunRepository:
                     concluded_at, updated_at, current_thesis_state, evidence_json,
                     review_process_adherence, review_takeaway, review_film_night,
                     entry_condition_states_json, watch_point_states_json,
-                    run_environment, trade_plan_revision, review_interpretation_outcome
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    run_environment, trade_plan_revision, review_interpretation_outcome,
+                    selected_playbook_id, selected_playbook_revision,
+                    playbook_snapshot_json
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                     trading_day_id = excluded.trading_day_id,
                     session_name = excluded.session_name,
@@ -72,7 +78,10 @@ class TradingSessionRunRepository:
                     watch_point_states_json = excluded.watch_point_states_json,
                     run_environment = excluded.run_environment,
                     trade_plan_revision = excluded.trade_plan_revision,
-                    review_interpretation_outcome = excluded.review_interpretation_outcome
+                    review_interpretation_outcome = excluded.review_interpretation_outcome,
+                    selected_playbook_id = excluded.selected_playbook_id,
+                    selected_playbook_revision = excluded.selected_playbook_revision,
+                    playbook_snapshot_json = excluded.playbook_snapshot_json
                 """,
                 (
                     session_run.id,
@@ -95,6 +104,9 @@ class TradingSessionRunRepository:
                     session_run.environment.value,
                     session_run.trade_plan_revision,
                     session_run.review_interpretation_outcome.value,
+                    session_run.selected_playbook_id,
+                    session_run.selected_playbook_revision,
+                    playbook_snapshot_json,
                 ),
             )
 
@@ -106,7 +118,9 @@ class TradingSessionRunRepository:
                    concluded_at, updated_at, current_thesis_state, evidence_json,
                    review_process_adherence, review_takeaway, review_film_night,
                    entry_condition_states_json, watch_point_states_json,
-                   run_environment, trade_plan_revision, review_interpretation_outcome
+                   run_environment, trade_plan_revision, review_interpretation_outcome,
+                   selected_playbook_id, selected_playbook_revision,
+                   playbook_snapshot_json
             FROM trading_session_run
             WHERE id = ?
             """,
@@ -122,7 +136,9 @@ class TradingSessionRunRepository:
                    concluded_at, updated_at, current_thesis_state, evidence_json,
                    review_process_adherence, review_takeaway, review_film_night,
                    entry_condition_states_json, watch_point_states_json,
-                   run_environment, trade_plan_revision, review_interpretation_outcome
+                   run_environment, trade_plan_revision, review_interpretation_outcome,
+                   selected_playbook_id, selected_playbook_revision,
+                   playbook_snapshot_json
             FROM trading_session_run
             WHERE trading_day_id = ?
             ORDER BY started_at, rowid
@@ -167,4 +183,7 @@ class TradingSessionRunRepository:
             environment=RunEnvironment(row[17]),
             trade_plan_revision=row[18],
             review_interpretation_outcome=InterpretationOutcome(row[19]),
+            selected_playbook_id=row[20],
+            selected_playbook_revision=row[21],
+            playbook_snapshot=json.loads(row[22]),
         )
