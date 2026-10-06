@@ -28,6 +28,7 @@ class TradingSessionRunRepository:
                     "kind": item.kind.value,
                     "note": item.note,
                     "thesis_state": item.thesis_state.value,
+                    "market_time_context": item.market_time_context,
                     "created_at": item.created_at,
                 }
                 for item in session_run.evidence
@@ -165,6 +166,7 @@ class TradingSessionRunRepository:
                 kind=RunEvidenceKind(item["kind"]),
                 note=item.get("note", ""),
                 thesis_state=ThesisState(item.get("thesis_state", ThesisState.NOT_SET.value)),
+                market_time_context=dict(item.get("market_time_context", {}) or {}),
                 created_at=item["created_at"],
             )
             for item in json.loads(row[11])
