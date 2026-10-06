@@ -21,8 +21,6 @@ class TDAWatchPointWidget(QWidget):
     add_requested = Signal(str, str)
     remove_requested = Signal(str)
     models_in_play_changed = Signal(object)
-    # Compatibility signal for older tests/callers. It emits the sole selected
-    # playbook id, or an empty string when the selection is not singular.
     playbook_selected = Signal(str)
 
     def __init__(self, playbooks: tuple[PlaybookDefinition, ...] = ()) -> None:
@@ -169,7 +167,6 @@ class TDAWatchPointWidget(QWidget):
         selected = self.selected_playbook_ids()
         self.models_in_play_changed.emit(selected)
         self.playbook_selected.emit(selected[0] if len(selected) == 1 else "")
-        self.load_context(selected, [])
 
     def _add(self) -> None:
         if_condition = self.if_input.text().strip()
