@@ -13,7 +13,11 @@ from PySide6.QtWidgets import (
 
 from ict_cockpit.analysis.trading_day import TradingDay, TradingDayLifecycleStatus
 from ict_cockpit.analysis.trading_day_session import TradingDaySession, TradingDayStatus
-from ict_cockpit.analysis.trading_session_run import TradingRun, TradingRunStatus
+from ict_cockpit.analysis.trading_session_run import (
+    RunEnvironment,
+    TradingRun,
+    TradingRunStatus,
+)
 from ict_cockpit.gui.trading_day_runtime_widget import TradingDayRuntimeWidget
 from ict_cockpit.process_blueprint import ProcessBlueprint
 from ict_cockpit.trade_plan import LiveWatchPolicyDefinition
@@ -29,10 +33,15 @@ class TradingDayShellWidget(QWidget):
         self,
         blueprint: ProcessBlueprint,
         live_watch_policy: LiveWatchPolicyDefinition | None = None,
+        *,
+        run_environment: RunEnvironment = RunEnvironment.LIVE,
+        trade_plan_revision: str = "",
     ) -> None:
         super().__init__()
         self.blueprint = blueprint
         self.live_watch_policy = live_watch_policy or LiveWatchPolicyDefinition()
+        self.run_environment = RunEnvironment(run_environment)
+        self.trade_plan_revision = trade_plan_revision.strip()
         self.trading_day = TradingDay()
         self.trading_runs: list[TradingRun] = []
         self.active_trading_run: TradingRun | None = None
@@ -175,7 +184,12 @@ class TradingDayShellWidget(QWidget):
             return "You are here · Fresh Trading Day"
 
         mode = self.runtime.current_mode
-        text = f"{run.run_label} · {mode.name}"
+        environment = (
+            f" · {run.environment.value}"
+            if run.environment is not RunEnvironment.LIVE
+            else ""
+        )
+        text = f"{run.run_label}{environment} · {mode.name}"
         if mode.id == "tda":
             runner = self.runtime.tda_station_runner_widget
             text += (
@@ -210,6 +224,8 @@ class TradingDayShellWidget(QWidget):
             session_name=f"Trading Run {run_number}",
             process_session_id=self.runtime.session.id,
             tda_station_session_id=self.runtime.tda_station_runner_widget.session.id,
+            environment=self.run_environment,
+            trade_plan_revision=self.trade_plan_revision,
         )
         self.trading_day.activate_session_run(run)
         self.trading_runs.append(run)
@@ -365,8 +381,15 @@ class TradingDayShellWidget(QWidget):
         self.run_history.clear()
         for run in self.trading_runs:
             state = "▶ ACTIVE" if run.status is TradingRunStatus.ACTIVE else "✓ CONCLUDED"
+            environment = (
+                f" · {run.environment.value}"
+                if run.environment is not RunEnvironment.LIVE
+                else ""
+            )
             outcome = f" · {run.outcome}" if run.outcome else ""
-            self.run_history.addItem(f"{state} · {run.run_label}{outcome}")
+            self.run_history.addItem(
+                f"{state} · {run.run_label}{environment}{outcome}"
+            )
 
     def _sync_tda_nav(self) -> None:
         runner = self.runtime.tda_station_runner_widget
