@@ -78,6 +78,7 @@ class RunEvidenceEntry:
     kind: RunEvidenceKind
     note: str = ""
     thesis_state: ThesisState = ThesisState.NOT_SET
+    market_time_context: dict = field(default_factory=dict)
     id: str = field(default_factory=lambda: str(uuid4()))
     created_at: str = field(
         default_factory=lambda: datetime.now().astimezone().isoformat(timespec="seconds")
@@ -85,6 +86,7 @@ class RunEvidenceEntry:
 
     def __post_init__(self) -> None:
         self.note = self.note.strip()
+        self.market_time_context = dict(self.market_time_context or {})
         if isinstance(self.kind, str):
             self.kind = RunEvidenceKind(self.kind)
         if isinstance(self.thesis_state, str):
@@ -446,20 +448,40 @@ class TradingSessionRun:
         self.watch_point_states[watch_point_id.strip()] = WatchPointState(state)
         self._touch()
 
-    def add_observation(self, note: str) -> RunEvidenceEntry:
+    def add_observation(
+        self,
+        note: str,
+        *,
+        market_time_context: dict | None = None,
+    ) -> RunEvidenceEntry:
         note = note.strip()
         if not note:
             raise ValueError("observation cannot be empty")
-        entry = RunEvidenceEntry(kind=RunEvidenceKind.OBSERVATION, note=note)
+        entry = RunEvidenceEntry(
+            kind=RunEvidenceKind.OBSERVATION,
+            note=note,
+            market_time_context=dict(market_time_context or self.market_time_context),
+        )
         self.evidence.append(entry)
         self._touch()
         return entry
 
-    def record_thesis_state(self, state: ThesisState | str, note: str = "") -> RunEvidenceEntry:
+    def record_thesis_state(
+        self,
+        state: ThesisState | str,
+        note: str = "",
+        *,
+        market_time_context: dict | None = None,
+    ) -> RunEvidenceEntry:
         state = ThesisState(state)
         if state is ThesisState.NOT_SET:
             raise ValueError("an explicit thesis update must choose a thesis state")
-        entry = RunEvidenceEntry(kind=RunEvidenceKind.THESIS_STATE, note=note, thesis_state=state)
+        entry = RunEvidenceEntry(
+            kind=RunEvidenceKind.THESIS_STATE,
+            note=note,
+            thesis_state=state,
+            market_time_context=dict(market_time_context or self.market_time_context),
+        )
         self.current_thesis_state = state
         self.evidence.append(entry)
         self._touch()
