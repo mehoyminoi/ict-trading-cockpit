@@ -12,7 +12,11 @@ from PySide6.QtWidgets import (
 
 from ict_cockpit.gui.process_blueprint_widget import ProcessBlueprintWidget
 from ict_cockpit.gui.trading_day_shell_widget import TradingDayShellWidget
-from ict_cockpit.trade_plan import TradePlanDefinition, TradePlanSectionDefinition
+from ict_cockpit.trade_plan import (
+    PlaybookDefinition,
+    TradePlanDefinition,
+    TradePlanSectionDefinition,
+)
 
 
 class TradePlanWidget(QWidget):
@@ -49,6 +53,7 @@ class TradePlanWidget(QWidget):
         self.trading_day_shell_widget = TradingDayShellWidget(
             trade_plan.process_blueprint,
             live_watch_policy=trade_plan.live_watch_policy,
+            playbooks=trade_plan.playbooks,
             trade_plan_revision=trade_plan.revision,
         )
 
@@ -68,6 +73,8 @@ class TradePlanWidget(QWidget):
             self.section_list.addItem(QListWidgetItem(section.name))
             if section.id == "process":
                 page = self.process_tabs
+            elif section.id == "playbooks":
+                page = self._build_playbooks_page(section)
             else:
                 page = self._build_section_page(section)
             self.stack.addWidget(page)
@@ -134,6 +141,69 @@ class TradePlanWidget(QWidget):
 
         layout.addStretch()
         return page
+
+    def _build_playbooks_page(self, section: TradePlanSectionDefinition) -> QWidget:
+        page = QWidget()
+        layout = QVBoxLayout(page)
+
+        heading = QLabel(section.name)
+        heading.setStyleSheet("font-size: 16px; font-weight: 600;")
+        layout.addWidget(heading)
+
+        purpose = QLabel(section.purpose)
+        purpose.setWordWrap(True)
+        layout.addWidget(purpose)
+
+        note = QLabel(
+            "Playbooks are authoritative Trade Plan data. The current alpha renders them read-only; future in-app editing will create a draft/new Trade Plan revision rather than mutate a published revision."
+        )
+        note.setWordWrap(True)
+        note.setFrameShape(QFrame.Shape.StyledPanel)
+        note.setContentsMargins(10, 8, 10, 8)
+        layout.addWidget(note)
+
+        for playbook in self.trade_plan.playbooks:
+            layout.addWidget(self._build_playbook_card(playbook))
+
+        if not self.trade_plan.playbooks:
+            empty = QLabel("No structured Playbooks are defined in this Trade Plan revision.")
+            empty.setWordWrap(True)
+            layout.addWidget(empty)
+
+        layout.addStretch()
+        return page
+
+    def _build_playbook_card(self, playbook: PlaybookDefinition) -> QFrame:
+        card = QFrame()
+        card.setFrameShape(QFrame.Shape.StyledPanel)
+        layout = QVBoxLayout(card)
+        layout.setContentsMargins(10, 8, 10, 8)
+        layout.setSpacing(4)
+
+        state = "Available" if playbook.available else "Locked"
+        title = QLabel(f"{playbook.name} · {playbook.revision} · {state}")
+        title.setStyleSheet("font-weight: 600;")
+        layout.addWidget(title)
+
+        if playbook.purpose:
+            purpose = QLabel(playbook.purpose)
+            purpose.setWordWrap(True)
+            layout.addWidget(purpose)
+
+        sessions = ", ".join(playbook.sessions) if playbook.sessions else "Not specified"
+        session_label = QLabel(f"Sessions / windows: {sessions}")
+        session_label.setWordWrap(True)
+        layout.addWidget(session_label)
+
+        summary = QLabel(
+            f"{len(playbook.watch_point_templates)} inherited watch point(s) · "
+            f"{len(playbook.entry_criteria)} entry criterion/criteria · "
+            f"required threshold: {playbook.required_entry_count if playbook.required_entry_count is not None else 'Not configured'}"
+        )
+        summary.setWordWrap(True)
+        layout.addWidget(summary)
+
+        return card
 
     @property
     def selected_section_id(self) -> str:

@@ -13,28 +13,29 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ict_cockpit.analysis.trading_day_session import (
-    TradingDaySession,
-    TradingDayStatus,
-    TransitionOutcome,
-)
+from ict_cockpit.analysis.trading_day_session import TradingDaySession, TradingDayStatus, TransitionOutcome
 from ict_cockpit.analysis.trading_session_run import TradingRun
 from ict_cockpit.gui.live_watch_widget import LiveWatchWidget
 from ict_cockpit.gui.post_market_review_widget import PostMarketReviewWidget
 from ict_cockpit.gui.tda_station_runner_widget import TDAStationRunnerWidget
 from ict_cockpit.gui.tda_watch_point_widget import TDAWatchPointWidget
 from ict_cockpit.process_blueprint import ModeDefinition, ProcessBlueprint
-from ict_cockpit.trade_plan import LiveWatchPolicyDefinition
+from ict_cockpit.trade_plan import LiveWatchPolicyDefinition, PlaybookDefinition
 
 
 class TradingDayRuntimeWidget(QWidget):
     """Runtime shell for deliberate movement through process modes."""
 
     session_changed = Signal(TradingDaySession)
+    models_in_play_changed = Signal(object)
+    playbook_selected = Signal(str)  # compatibility
     live_observation_submitted = Signal(str)
     live_thesis_state_submitted = Signal(str, str)
     live_entry_condition_changed = Signal(str, bool)
     live_watch_point_state_changed = Signal(str, str)
+    live_candidate_entry_condition_changed = Signal(str, str, bool)
+    live_candidate_watch_point_state_changed = Signal(str, str, str)
+    post_market_interpretation_submitted = Signal(str)
     post_market_review_submitted = Signal(str, str, bool)
 
     def __init__(
@@ -43,10 +44,12 @@ class TradingDayRuntimeWidget(QWidget):
         *,
         embedded_session_run: bool = False,
         live_watch_policy: LiveWatchPolicyDefinition | None = None,
+        playbooks: tuple[PlaybookDefinition, ...] = (),
     ) -> None:
         super().__init__()
         self.blueprint = blueprint
         self.live_watch_policy = live_watch_policy or LiveWatchPolicyDefinition()
+        self.playbooks = tuple(playbooks)
         self.embedded_session_run = embedded_session_run
         self.modes = list(blueprint.modes)
         if not self.modes:
@@ -76,36 +79,25 @@ class TradingDayRuntimeWidget(QWidget):
         self.mode_pages: dict[str, QWidget] = {}
 
         self.tda_station_runner_widget = TDAStationRunnerWidget(blueprint)
-        self.tda_watch_point_widget = TDAWatchPointWidget()
+        self.tda_watch_point_widget = TDAWatchPointWidget(self.playbooks)
         self.tda_watch_point_widget.add_requested.connect(self._add_tda_watch_point)
-        self.tda_watch_point_widget.remove_requested.connect(
-            self._remove_tda_watch_point
-        )
-        self.tda_station_runner_widget.session_changed.connect(
-            lambda _session: self._refresh_tda_watch_point_editor()
-        )
-        self.tda_station_runner_widget.view_tabs.currentChanged.connect(
-            lambda _index: self._refresh_tda_watch_point_editor()
-        )
+        self.tda_watch_point_widget.remove_requested.connect(self._remove_tda_watch_point)
+        self.tda_watch_point_widget.models_in_play_changed.connect(self.models_in_play_changed.emit)
+        self.tda_watch_point_widget.playbook_selected.connect(self.playbook_selected.emit)
+        self.tda_station_runner_widget.session_changed.connect(lambda _session: self._refresh_tda_watch_point_editor())
+        self.tda_station_runner_widget.view_tabs.currentChanged.connect(lambda _index: self._refresh_tda_watch_point_editor())
 
         self.live_watch_widget = LiveWatchWidget(self.live_watch_policy)
-        self.live_watch_widget.observation_submitted.connect(
-            self.live_observation_submitted.emit
-        )
-        self.live_watch_widget.thesis_state_submitted.connect(
-            self.live_thesis_state_submitted.emit
-        )
-        self.live_watch_widget.entry_condition_changed.connect(
-            self.live_entry_condition_changed.emit
-        )
-        self.live_watch_widget.watch_point_state_changed.connect(
-            self.live_watch_point_state_changed.emit
-        )
+        self.live_watch_widget.observation_submitted.connect(self.live_observation_submitted.emit)
+        self.live_watch_widget.thesis_state_submitted.connect(self.live_thesis_state_submitted.emit)
+        self.live_watch_widget.entry_condition_changed.connect(self.live_entry_condition_changed.emit)
+        self.live_watch_widget.watch_point_state_changed.connect(self.live_watch_point_state_changed.emit)
+        self.live_watch_widget.candidate_entry_condition_changed.connect(self.live_candidate_entry_condition_changed.emit)
+        self.live_watch_widget.candidate_watch_point_state_changed.connect(self.live_candidate_watch_point_state_changed.emit)
 
         self.post_market_review_widget = PostMarketReviewWidget(blueprint)
-        self.post_market_review_widget.review_changed.connect(
-            self.post_market_review_submitted.emit
-        )
+        self.post_market_review_widget.interpretation_changed.connect(self.post_market_interpretation_submitted.emit)
+        self.post_market_review_widget.review_changed.connect(self.post_market_review_submitted.emit)
 
         for mode in self.modes:
             if mode.id == "tda":
@@ -127,11 +119,9 @@ class TradingDayRuntimeWidget(QWidget):
         transition_heading = QLabel("Process Actions")
         transition_heading.setStyleSheet("font-weight: 600;")
         transition_layout.addWidget(transition_heading)
-
         self.transition_note_input = QLineEdit()
         self.transition_note_input.setPlaceholderText("Decision note / reason (optional)")
         transition_layout.addWidget(self.transition_note_input)
-
         self.transition_buttons_layout = QHBoxLayout()
         self.transition_buttons_layout.setContentsMargins(0, 0, 0, 0)
         transition_layout.addLayout(self.transition_buttons_layout)
@@ -150,7 +140,6 @@ class TradingDayRuntimeWidget(QWidget):
         if self.embedded_session_run:
             self.title_label.hide()
             self.summary_label.hide()
-
         self._update_view()
 
     def _new_session(self) -> TradingDaySession:
@@ -174,29 +163,22 @@ class TradingDayRuntimeWidget(QWidget):
     @property
     def incomplete_tda_station_ids(self) -> list[str]:
         return [
-            observation.station_id
-            for observation in self.tda_station_runner_widget.session.observations
-            if not observation.completed
+            item.station_id
+            for item in self.tda_station_runner_widget.session.observations
+            if not item.completed
         ]
 
     def _touch(self) -> None:
-        self.session.updated_at = datetime.now().astimezone().isoformat(
-            timespec="seconds"
-        )
+        self.session.updated_at = datetime.now().astimezone().isoformat(timespec="seconds")
         self.session_changed.emit(self.session)
 
     def _touch_tda_session(self) -> None:
         runner = self.tda_station_runner_widget
-        runner.session.updated_at = datetime.now().astimezone().isoformat(
-            timespec="seconds"
-        )
+        runner.session.updated_at = datetime.now().astimezone().isoformat(timespec="seconds")
         runner.session_changed.emit(runner.session)
 
     def _add_tda_watch_point(self, if_condition: str, then_action: str) -> None:
-        self.tda_station_runner_widget.session.add_watch_point(
-            if_condition,
-            then_action,
-        )
+        self.tda_station_runner_widget.session.add_watch_point(if_condition, then_action)
         self._touch_tda_session()
         self._refresh_tda_watch_point_editor()
 
@@ -214,22 +196,21 @@ class TradingDayRuntimeWidget(QWidget):
         )
         self.tda_watch_point_widget.setVisible(visible)
         if visible:
-            self.tda_watch_point_widget.load_watch_points(runner.session.watch_points)
+            selected_ids = []
+            if self.trading_run is not None:
+                selected_ids = [
+                    item.source_id
+                    for item in self.trading_run.setup_candidates
+                    if item.source_type == "Playbook"
+                ]
+            self.tda_watch_point_widget.load_context(selected_ids, runner.session.watch_points)
 
-    def apply_transition(
-        self,
-        transition_id: str,
-        *,
-        reason: str = "",
-        override_incomplete: bool = False,
-    ) -> bool:
+    def apply_transition(self, transition_id: str, *, reason: str = "", override_incomplete: bool = False) -> bool:
         if self.session.status is TradingDayStatus.COMPLETE:
             return False
-
         transition = self.current_mode.transition_by_id(transition_id)
         if transition is None:
             return False
-
         if (
             self.session.current_mode_id == "tda"
             and transition.outcome == "advance"
@@ -246,20 +227,13 @@ class TradingDayRuntimeWidget(QWidget):
                 override_incomplete=override_incomplete,
             )
         elif transition.outcome == "return_to_analysis":
-            self.session.return_to_analysis(
-                transition.target_mode_id,
-                reason=reason,
-            )
+            self.session.return_to_analysis(transition.target_mode_id, reason=reason)
         elif transition.outcome == "stand_down":
-            self.session.stand_down(
-                transition.target_mode_id,
-                reason=reason,
-            )
+            self.session.stand_down(transition.target_mode_id, reason=reason)
         elif transition.outcome == "complete_day":
             self.session.complete_day(reason=reason)
         else:
             return False
-
         self.transition_note_input.clear()
         self._touch()
         self._update_view()
@@ -269,47 +243,33 @@ class TradingDayRuntimeWidget(QWidget):
         transition = self.current_mode.transition_by_id(transition_id)
         if transition is None:
             return
-
         reason = self.transition_note_input.text().strip()
         if (
             self.session.current_mode_id == "tda"
             and transition.outcome == "advance"
             and self.incomplete_tda_station_ids
         ):
-            missing_count = len(self.incomplete_tda_station_ids)
             message = QMessageBox(self)
             message.setIcon(QMessageBox.Icon.Warning)
             message.setWindowTitle("TDA is incomplete")
-            message.setText(f"{missing_count} TDA station(s) are still incomplete.")
+            message.setText(f"{len(self.incomplete_tda_station_ids)} TDA station(s) are still incomplete.")
             message.setInformativeText(
                 "Return to the missing work, or intentionally file the TDA incomplete and continue to Live Watch."
             )
-            return_button = message.addButton(
-                "Return to TDA", QMessageBox.ButtonRole.RejectRole
-            )
-            override_button = message.addButton(
-                "File Incomplete Anyway", QMessageBox.ButtonRole.AcceptRole
-            )
+            return_button = message.addButton("Return to TDA", QMessageBox.ButtonRole.RejectRole)
+            override_button = message.addButton("File Incomplete Anyway", QMessageBox.ButtonRole.AcceptRole)
             message.exec()
             if message.clickedButton() is not override_button:
                 if message.clickedButton() is return_button:
                     self._focus_first_incomplete_tda_station()
                 return
-            self.apply_transition(
-                transition_id,
-                reason=reason,
-                override_incomplete=True,
-            )
+            self.apply_transition(transition_id, reason=reason, override_incomplete=True)
             return
-
         self.apply_transition(transition_id, reason=reason)
 
     def _focus_first_incomplete_tda_station(self) -> None:
-        if not self.incomplete_tda_station_ids:
-            return
-        self.tda_station_runner_widget.open_station_from_deck(
-            self.incomplete_tda_station_ids[0]
-        )
+        if self.incomplete_tda_station_ids:
+            self.tda_station_runner_widget.open_station_from_deck(self.incomplete_tda_station_ids[0])
 
     def go_next_mode(self) -> None:
         for transition in self.current_mode.transitions:
@@ -328,20 +288,14 @@ class TradingDayRuntimeWidget(QWidget):
 
     def load_session(self, session: TradingDaySession) -> None:
         expected_ids = [mode.id for mode in self.modes]
-        if session.blueprint_revision != self.blueprint.revision:
-            return
-        if session.mode_ids != expected_ids:
-            return
-        self.session = session
-        self._update_view()
+        if session.blueprint_revision == self.blueprint.revision and session.mode_ids == expected_ids:
+            self.session = session
+            self._update_view()
 
     def load_trading_run(self, trading_run: TradingRun) -> None:
         self.trading_run = trading_run
-        self.live_watch_widget.load_operating_context(
-            trading_run.current_thesis_state,
-            trading_run.evidence,
-            trading_run.entry_condition_states,
-            trading_run.watch_point_states,
+        self.live_watch_widget.load_run_context(
+            trading_run,
             self.tda_station_runner_widget.session,
             self.blueprint,
         )
@@ -370,17 +324,13 @@ class TradingDayRuntimeWidget(QWidget):
         purpose = QLabel(mode.purpose)
         purpose.setWordWrap(True)
         layout.addWidget(purpose)
-        note = QLabel(
-            "Runtime shell only — this mode is visible so the full trading-day loop can be tested before its stations become executable."
-        )
+        note = QLabel("Runtime shell only — this mode is visible so the full trading-day loop can be tested before its stations become executable.")
         note.setWordWrap(True)
         note.setFrameShape(QFrame.Shape.StyledPanel)
         note.setContentsMargins(10, 8, 10, 8)
         layout.addWidget(note)
         for deck in mode.decks:
-            deck_label = QLabel(
-                f"{deck.name} · TradingView: {deck.tradingview_layout}"
-            )
+            deck_label = QLabel(f"{deck.name} · TradingView: {deck.tradingview_layout}")
             deck_label.setStyleSheet("font-weight: 600;")
             deck_label.setWordWrap(True)
             layout.addWidget(deck_label)
@@ -403,38 +353,23 @@ class TradingDayRuntimeWidget(QWidget):
     def _rebuild_transition_buttons(self) -> None:
         self._clear_transition_buttons()
         if self.session.status is TradingDayStatus.COMPLETE:
-            if self.embedded_session_run:
-                label = QLabel("✓ Trading Run process complete")
-                self.transition_buttons_layout.addWidget(label)
-                self.transition_buttons_layout.addStretch()
-                self.transition_note_input.setEnabled(False)
-                return
-
-            label = QLabel("✓ Trading day complete")
+            label = QLabel("✓ Trading Run process complete" if self.embedded_session_run else "✓ Trading day complete")
             self.transition_buttons_layout.addWidget(label)
             self.transition_buttons_layout.addStretch()
-            start_new_button = QPushButton("Start New Trading Day")
-            start_new_button.setToolTip(
-                "Create a fresh trading-day and TDA session. The completed day remains saved."
-            )
-            start_new_button.clicked.connect(self.start_new)
-            self.transition_buttons["start-new-day"] = start_new_button
-            self.transition_buttons_layout.addWidget(start_new_button)
             self.transition_note_input.setEnabled(False)
+            if not self.embedded_session_run:
+                start_new_button = QPushButton("Start New Trading Day")
+                start_new_button.clicked.connect(self.start_new)
+                self.transition_buttons["start-new-day"] = start_new_button
+                self.transition_buttons_layout.addWidget(start_new_button)
             return
 
         self.transition_note_input.setEnabled(True)
         for transition in self.current_mode.transitions:
-            button_name = transition.name
-            if self.embedded_session_run and transition.id == "complete-day":
-                button_name = "Conclude Trading Run"
+            button_name = "Conclude Trading Run" if self.embedded_session_run and transition.id == "complete-day" else transition.name
             button = QPushButton(button_name)
             button.setToolTip(transition.description)
-            button.clicked.connect(
-                lambda _checked=False, transition_id=transition.id: self.request_transition(
-                    transition_id
-                )
-            )
+            button.clicked.connect(lambda _checked=False, transition_id=transition.id: self.request_transition(transition_id))
             self.transition_buttons[transition.id] = button
             self.transition_buttons_layout.addWidget(button)
         self.transition_buttons_layout.addStretch()
@@ -446,11 +381,8 @@ class TradingDayRuntimeWidget(QWidget):
         self._refresh_tda_watch_point_editor()
 
         if current_mode.id == "live-watch" and self.trading_run is not None:
-            self.live_watch_widget.load_operating_context(
-                self.trading_run.current_thesis_state,
-                self.trading_run.evidence,
-                self.trading_run.entry_condition_states,
-                self.trading_run.watch_point_states,
+            self.live_watch_widget.load_run_context(
+                self.trading_run,
                 self.tda_station_runner_widget.session,
                 self.blueprint,
             )
@@ -461,16 +393,8 @@ class TradingDayRuntimeWidget(QWidget):
             )
 
         if self.session.status is TradingDayStatus.COMPLETE:
-            if self.embedded_session_run:
-                summary = (
-                    f"Trading Run process complete · Outcome: {self.session.day_outcome or 'Complete'} · "
-                    f"{len(self.session.transitions)} recorded transition(s)"
-                )
-            else:
-                summary = (
-                    f"Trading day complete · Outcome: {self.session.day_outcome or 'Complete'} · "
-                    f"{len(self.session.transitions)} recorded transition(s)"
-                )
+            subject = "Trading Run process" if self.embedded_session_run else "Trading day"
+            summary = f"{subject} complete · Outcome: {self.session.day_outcome or 'Complete'} · {len(self.session.transitions)} recorded transition(s)"
         else:
             summary = (
                 f"Current mode: {current_mode.name} · "
@@ -480,10 +404,7 @@ class TradingDayRuntimeWidget(QWidget):
         self.summary_label.setText(summary)
 
         for index, mode in enumerate(self.modes):
-            if (
-                mode.id == self.session.current_mode_id
-                and self.session.status is TradingDayStatus.ACTIVE
-            ):
+            if mode.id == self.session.current_mode_id and self.session.status is TradingDayStatus.ACTIVE:
                 state = "▶"
             elif mode.id in self.session.completed_mode_ids:
                 state = "✓"
@@ -492,5 +413,4 @@ class TradingDayRuntimeWidget(QWidget):
             else:
                 state = "○"
             self.mode_labels[mode.id].setText(f"{state} {mode.name}")
-
         self._rebuild_transition_buttons()

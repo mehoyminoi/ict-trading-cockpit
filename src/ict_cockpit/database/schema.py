@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 18
+CURRENT_SCHEMA_VERSION = 20
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -62,6 +62,12 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 17:
             _migrate_version_17_to_18(connection)
             version = 18
+        if version == 18:
+            _migrate_version_18_to_19(connection)
+            version = 19
+        if version == 19:
+            _migrate_version_19_to_20(connection)
+            version = 20
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -89,9 +95,7 @@ def _migrate_version_1_to_2(connection: sqlite3.Connection) -> None:
     columns = connection.execute("PRAGMA table_info(tda_analysis)").fetchall()
     column_names = {column[1] for column in columns}
     if "status" not in column_names:
-        connection.execute(
-            "ALTER TABLE tda_analysis ADD COLUMN status TEXT NOT NULL DEFAULT 'Draft'"
-        )
+        connection.execute("ALTER TABLE tda_analysis ADD COLUMN status TEXT NOT NULL DEFAULT 'Draft'")
     connection.execute("PRAGMA user_version = 2")
 
 
@@ -158,9 +162,7 @@ def _migrate_version_4_to_5(connection: sqlite3.Connection) -> None:
         )
         """
     )
-    connection.execute(
-        "CREATE INDEX idx_study_find_image_study_find_id ON study_find_image(study_find_id)"
-    )
+    connection.execute("CREATE INDEX idx_study_find_image_study_find_id ON study_find_image(study_find_id)")
     connection.execute("PRAGMA user_version = 5")
 
 
@@ -198,9 +200,7 @@ def _migrate_version_6_to_7(connection: sqlite3.Connection) -> None:
         )
         """
     )
-    connection.execute(
-        "CREATE INDEX idx_feedback_entry_created_at ON feedback_entry(created_at)"
-    )
+    connection.execute("CREATE INDEX idx_feedback_entry_created_at ON feedback_entry(created_at)")
     connection.execute("PRAGMA user_version = 7")
 
 
@@ -269,9 +269,7 @@ def _migrate_version_8_to_9(connection: sqlite3.Connection) -> None:
         )
         """
     )
-    connection.execute(
-        "CREATE INDEX idx_tda_station_session_updated_at ON tda_station_session(updated_at)"
-    )
+    connection.execute("CREATE INDEX idx_tda_station_session_updated_at ON tda_station_session(updated_at)")
     connection.execute("PRAGMA user_version = 9")
 
 
@@ -288,22 +286,14 @@ def _migrate_version_9_to_10(connection: sqlite3.Connection) -> None:
         )
         """
     )
-    connection.execute(
-        "CREATE INDEX idx_trading_day_session_updated_at ON trading_day_session(updated_at)"
-    )
+    connection.execute("CREATE INDEX idx_trading_day_session_updated_at ON trading_day_session(updated_at)")
     connection.execute("PRAGMA user_version = 10")
 
 
 def _migrate_version_10_to_11(connection: sqlite3.Connection) -> None:
-    connection.execute(
-        "ALTER TABLE trading_day_session ADD COLUMN status TEXT NOT NULL DEFAULT 'Active'"
-    )
-    connection.execute(
-        "ALTER TABLE trading_day_session ADD COLUMN day_outcome TEXT NOT NULL DEFAULT ''"
-    )
-    connection.execute(
-        "ALTER TABLE trading_day_session ADD COLUMN transitions_json TEXT NOT NULL DEFAULT '[]'"
-    )
+    connection.execute("ALTER TABLE trading_day_session ADD COLUMN status TEXT NOT NULL DEFAULT 'Active'")
+    connection.execute("ALTER TABLE trading_day_session ADD COLUMN day_outcome TEXT NOT NULL DEFAULT ''")
+    connection.execute("ALTER TABLE trading_day_session ADD COLUMN transitions_json TEXT NOT NULL DEFAULT '[]'")
     connection.execute("PRAGMA user_version = 11")
 
 
@@ -321,9 +311,7 @@ def _migrate_version_11_to_12(connection: sqlite3.Connection) -> None:
         )
         """
     )
-    connection.execute(
-        "CREATE INDEX idx_trading_day_updated_at ON trading_day(updated_at)"
-    )
+    connection.execute("CREATE INDEX idx_trading_day_updated_at ON trading_day(updated_at)")
     connection.execute(
         """
         CREATE TABLE trading_session_run (
@@ -342,64 +330,52 @@ def _migrate_version_11_to_12(connection: sqlite3.Connection) -> None:
         )
         """
     )
-    connection.execute(
-        "CREATE INDEX idx_trading_session_run_day ON trading_session_run(trading_day_id, started_at)"
-    )
+    connection.execute("CREATE INDEX idx_trading_session_run_day ON trading_session_run(trading_day_id, started_at)")
     connection.execute("PRAGMA user_version = 12")
 
 
 def _migrate_version_12_to_13(connection: sqlite3.Connection) -> None:
-    connection.execute(
-        "ALTER TABLE trading_session_run ADD COLUMN current_thesis_state TEXT NOT NULL DEFAULT 'Not Set'"
-    )
-    connection.execute(
-        "ALTER TABLE trading_session_run ADD COLUMN evidence_json TEXT NOT NULL DEFAULT '[]'"
-    )
+    connection.execute("ALTER TABLE trading_session_run ADD COLUMN current_thesis_state TEXT NOT NULL DEFAULT 'Not Set'")
+    connection.execute("ALTER TABLE trading_session_run ADD COLUMN evidence_json TEXT NOT NULL DEFAULT '[]'")
     connection.execute("PRAGMA user_version = 13")
 
 
 def _migrate_version_13_to_14(connection: sqlite3.Connection) -> None:
-    connection.execute(
-        "ALTER TABLE trading_session_run ADD COLUMN review_process_adherence TEXT NOT NULL DEFAULT 'Not Reviewed'"
-    )
-    connection.execute(
-        "ALTER TABLE trading_session_run ADD COLUMN review_takeaway TEXT NOT NULL DEFAULT ''"
-    )
-    connection.execute(
-        "ALTER TABLE trading_session_run ADD COLUMN review_film_night INTEGER NOT NULL DEFAULT 0"
-    )
+    connection.execute("ALTER TABLE trading_session_run ADD COLUMN review_process_adherence TEXT NOT NULL DEFAULT 'Not Reviewed'")
+    connection.execute("ALTER TABLE trading_session_run ADD COLUMN review_takeaway TEXT NOT NULL DEFAULT ''")
+    connection.execute("ALTER TABLE trading_session_run ADD COLUMN review_film_night INTEGER NOT NULL DEFAULT 0")
     connection.execute("PRAGMA user_version = 14")
 
 
 def _migrate_version_14_to_15(connection: sqlite3.Connection) -> None:
-    connection.execute(
-        "ALTER TABLE trading_session_run ADD COLUMN entry_condition_states_json TEXT NOT NULL DEFAULT '{}'"
-    )
+    connection.execute("ALTER TABLE trading_session_run ADD COLUMN entry_condition_states_json TEXT NOT NULL DEFAULT '{}'")
     connection.execute("PRAGMA user_version = 15")
 
 
 def _migrate_version_15_to_16(connection: sqlite3.Connection) -> None:
-    connection.execute(
-        "ALTER TABLE tda_station_session ADD COLUMN watch_points_json TEXT NOT NULL DEFAULT '[]'"
-    )
-    connection.execute(
-        "ALTER TABLE trading_session_run ADD COLUMN watch_point_states_json TEXT NOT NULL DEFAULT '{}'"
-    )
+    connection.execute("ALTER TABLE tda_station_session ADD COLUMN watch_points_json TEXT NOT NULL DEFAULT '[]'")
+    connection.execute("ALTER TABLE trading_session_run ADD COLUMN watch_point_states_json TEXT NOT NULL DEFAULT '{}'")
     connection.execute("PRAGMA user_version = 16")
 
 
 def _migrate_version_16_to_17(connection: sqlite3.Connection) -> None:
-    connection.execute(
-        "ALTER TABLE trading_session_run ADD COLUMN run_environment TEXT NOT NULL DEFAULT 'Live'"
-    )
-    connection.execute(
-        "ALTER TABLE trading_session_run ADD COLUMN trade_plan_revision TEXT NOT NULL DEFAULT ''"
-    )
+    connection.execute("ALTER TABLE trading_session_run ADD COLUMN run_environment TEXT NOT NULL DEFAULT 'Live'")
+    connection.execute("ALTER TABLE trading_session_run ADD COLUMN trade_plan_revision TEXT NOT NULL DEFAULT ''")
     connection.execute("PRAGMA user_version = 17")
 
 
 def _migrate_version_17_to_18(connection: sqlite3.Connection) -> None:
-    connection.execute(
-        "ALTER TABLE trading_session_run ADD COLUMN review_interpretation_outcome TEXT NOT NULL DEFAULT 'Not Reviewed'"
-    )
+    connection.execute("ALTER TABLE trading_session_run ADD COLUMN review_interpretation_outcome TEXT NOT NULL DEFAULT 'Not Reviewed'")
     connection.execute("PRAGMA user_version = 18")
+
+
+def _migrate_version_18_to_19(connection: sqlite3.Connection) -> None:
+    connection.execute("ALTER TABLE trading_session_run ADD COLUMN selected_playbook_id TEXT NOT NULL DEFAULT ''")
+    connection.execute("ALTER TABLE trading_session_run ADD COLUMN selected_playbook_revision TEXT NOT NULL DEFAULT ''")
+    connection.execute("ALTER TABLE trading_session_run ADD COLUMN playbook_snapshot_json TEXT NOT NULL DEFAULT '{}'")
+    connection.execute("PRAGMA user_version = 19")
+
+
+def _migrate_version_19_to_20(connection: sqlite3.Connection) -> None:
+    connection.execute("ALTER TABLE trading_session_run ADD COLUMN setup_candidates_json TEXT NOT NULL DEFAULT '[]'")
+    connection.execute("PRAGMA user_version = 20")
