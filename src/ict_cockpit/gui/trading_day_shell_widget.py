@@ -110,6 +110,9 @@ class TradingDayShellWidget(QWidget):
         self.runtime.live_watch_point_state_changed.connect(
             self._set_live_watch_point_state
         )
+        self.runtime.post_market_review_widget.interpretation_changed.connect(
+            self._update_interpretation_outcome
+        )
         self.runtime.post_market_review_submitted.connect(self._update_post_market_review)
 
         self.tda_nav_frame = QFrame()
@@ -287,6 +290,16 @@ class TradingDayShellWidget(QWidget):
         self.session_run_changed.emit(run)
         self.runtime.load_trading_run(run)
         self._update_view()
+
+    def _update_interpretation_outcome(self, interpretation_outcome: str) -> None:
+        run = self.active_trading_run
+        if run is None:
+            return
+        run.update_post_market_review(
+            interpretation_outcome=interpretation_outcome,
+        )
+        self.session_run_changed.emit(run)
+        self.runtime.load_trading_run(run)
 
     def _update_post_market_review(
         self,
