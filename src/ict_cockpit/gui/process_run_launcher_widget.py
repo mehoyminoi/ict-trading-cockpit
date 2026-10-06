@@ -74,12 +74,9 @@ class ProcessRunLauncherWidget(QWidget):
         self.market_time_edit.setCalendarPopup(True)
         now_ny = current_new_york_time()
         self.market_time_edit.setDateTime(
-            QDateTime(
-                now_ny.year,
-                now_ny.month,
-                now_ny.day,
-                now_ny.hour,
-                now_ny.minute,
+            QDateTime.fromString(
+                now_ny.strftime("%Y-%m-%d %H:%M"),
+                "yyyy-MM-dd HH:mm",
             )
         )
         market_time_row.addWidget(self.market_time_label)
