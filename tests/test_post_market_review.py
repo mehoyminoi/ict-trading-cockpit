@@ -31,7 +31,7 @@ def build_process_session() -> TradingDaySession:
     )
 
 
-def test_schema_v14_adds_post_market_review_columns(tmp_path) -> None:
+def test_schema_preserves_post_market_review_columns(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
 
@@ -40,7 +40,7 @@ def test_schema_v14_adds_post_market_review_columns(tmp_path) -> None:
         for row in connection.execute("PRAGMA table_info(trading_session_run)").fetchall()
     }
 
-    assert CURRENT_SCHEMA_VERSION == 14
+    assert CURRENT_SCHEMA_VERSION == 16
     assert "review_process_adherence" in columns
     assert "review_takeaway" in columns
     assert "review_film_night" in columns
