@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 12
+CURRENT_SCHEMA_VERSION = 13
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -44,6 +44,9 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 11:
             _migrate_version_11_to_12(connection)
             version = 12
+        if version == 12:
+            _migrate_version_12_to_13(connection)
+            version = 13
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -328,3 +331,13 @@ def _migrate_version_11_to_12(connection: sqlite3.Connection) -> None:
         "CREATE INDEX idx_trading_session_run_day ON trading_session_run(trading_day_id, started_at)"
     )
     connection.execute("PRAGMA user_version = 12")
+
+
+def _migrate_version_12_to_13(connection: sqlite3.Connection) -> None:
+    connection.execute(
+        "ALTER TABLE trading_session_run ADD COLUMN current_thesis_state TEXT NOT NULL DEFAULT 'Not Set'"
+    )
+    connection.execute(
+        "ALTER TABLE trading_session_run ADD COLUMN evidence_json TEXT NOT NULL DEFAULT '[]'"
+    )
+    connection.execute("PRAGMA user_version = 13")
