@@ -30,6 +30,21 @@ class ThesisState(str, Enum):
     UNCERTAIN = "Uncertain"
 
 
+class InterpretationOutcome(str, Enum):
+    """Post-run judgment of the initial market interpretation.
+
+    UNEXPLAINED_STUDY_NEEDED means the cause is not understood at the trader's
+    current level of price-action understanding. It is explicitly a study signal,
+    not a claim that the market behavior was random or unknowable.
+    """
+
+    NOT_REVIEWED = "Not Reviewed"
+    MATERIALLY_ACCURATE = "Materially Accurate / Remained Intact"
+    MISSED_CRITICAL_INFORMATION = "Changed — Critical Information Missed"
+    UNEXPLAINED_STUDY_NEEDED = "Changed — Unexplained / Study Needed"
+    EXOGENOUS_EVENT = "Changed — External / Exogenous Event"
+
+
 class WatchPointState(str, Enum):
     WAITING = "Waiting"
     OCCURRED = "Occurred"
@@ -88,6 +103,7 @@ class TradingSessionRun:
     evidence: list[RunEvidenceEntry] = field(default_factory=list)
     entry_condition_states: dict[str, bool] = field(default_factory=dict)
     watch_point_states: dict[str, WatchPointState] = field(default_factory=dict)
+    review_interpretation_outcome: InterpretationOutcome = InterpretationOutcome.NOT_REVIEWED
     review_process_adherence: ProcessAdherence = ProcessAdherence.NOT_REVIEWED
     review_takeaway: str = ""
     review_film_night: bool = False
@@ -115,6 +131,10 @@ class TradingSessionRun:
             self.status = TradingSessionRunStatus(self.status)
         if isinstance(self.current_thesis_state, str):
             self.current_thesis_state = ThesisState(self.current_thesis_state)
+        if isinstance(self.review_interpretation_outcome, str):
+            self.review_interpretation_outcome = InterpretationOutcome(
+                self.review_interpretation_outcome
+            )
         if isinstance(self.review_process_adherence, str):
             self.review_process_adherence = ProcessAdherence(self.review_process_adherence)
         self.evidence = [
@@ -200,10 +220,15 @@ class TradingSessionRun:
     def update_post_market_review(
         self,
         *,
+        interpretation_outcome: InterpretationOutcome | str | None = None,
         process_adherence: ProcessAdherence | str | None = None,
         takeaway: str | None = None,
         film_night: bool | None = None,
     ) -> None:
+        if interpretation_outcome is not None:
+            self.review_interpretation_outcome = InterpretationOutcome(
+                interpretation_outcome
+            )
         if process_adherence is not None:
             self.review_process_adherence = ProcessAdherence(process_adherence)
         if takeaway is not None:
