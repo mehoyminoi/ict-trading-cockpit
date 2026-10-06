@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
 
 from ict_cockpit.analysis.tda_station_session import TDAStationSession
 from ict_cockpit.analysis.trading_session_run import (
+    InterpretationOutcome,
     ProcessAdherence,
     RunEvidenceKind,
     TradingRun,
@@ -23,8 +24,9 @@ from ict_cockpit.process_blueprint import ProcessBlueprint
 
 
 class PostMarketReviewWidget(QWidget):
-    """Review market information first, then process judgment on a separate stage."""
+    """Review market interpretation first, then process on a separate stage."""
 
+    interpretation_changed = Signal(str)
     review_changed = Signal(str, str, bool)
 
     def __init__(self, blueprint: ProcessBlueprint) -> None:
@@ -102,6 +104,43 @@ class PostMarketReviewWidget(QWidget):
         compare_layout.addWidget(tda_frame, 1)
         compare_layout.addWidget(live_frame, 1)
         layout.addLayout(compare_layout)
+
+        interpretation_frame = QFrame()
+        interpretation_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        interpretation_layout = QVBoxLayout(interpretation_frame)
+        interpretation_layout.setContentsMargins(10, 8, 10, 8)
+        interpretation_heading = QLabel("Did the initial interpretation materially hold?")
+        interpretation_heading.setStyleSheet("font-weight: 600;")
+        interpretation_help = QLabel(
+            "Classify the market interpretation itself. This is separate from process adherence and P&L."
+        )
+        interpretation_help.setWordWrap(True)
+        interpretation_layout.addWidget(interpretation_heading)
+        interpretation_layout.addWidget(interpretation_help)
+
+        self.interpretation_group = QButtonGroup(self)
+        self.interpretation_group.setExclusive(True)
+        self.interpretation_buttons: dict[InterpretationOutcome, QPushButton] = {}
+        interpretation_buttons_layout = QHBoxLayout()
+        labels = {
+            InterpretationOutcome.MATERIALLY_ACCURATE: "Materially Accurate",
+            InterpretationOutcome.MISSED_CRITICAL_INFORMATION: "Changed · Missed Critical Info",
+            InterpretationOutcome.UNEXPLAINED_STUDY_NEEDED: "Changed · Unexplained / Study Needed",
+            InterpretationOutcome.EXOGENOUS_EVENT: "Changed · External / Exogenous",
+        }
+        for state, label in labels.items():
+            button = QPushButton(label)
+            button.setCheckable(True)
+            if state is InterpretationOutcome.UNEXPLAINED_STUDY_NEEDED:
+                button.setToolTip(
+                    "The cause is unknown at my current level of price-action understanding; this is a study signal, not a claim of randomness."
+                )
+            self.interpretation_group.addButton(button)
+            self.interpretation_buttons[state] = button
+            interpretation_buttons_layout.addWidget(button)
+        interpretation_layout.addLayout(interpretation_buttons_layout)
+        self.interpretation_group.buttonClicked.connect(self._emit_interpretation)
+        layout.addWidget(interpretation_frame)
 
         navigation = QHBoxLayout()
         navigation.addStretch()
@@ -210,6 +249,8 @@ class PostMarketReviewWidget(QWidget):
                     text = f"Observation\n{item.note}"
                 self.live_changes_list.addItem(text)
 
+            for state, button in self.interpretation_buttons.items():
+                button.setChecked(trading_run.review_interpretation_outcome is state)
             for state, button in self.adherence_buttons.items():
                 button.setChecked(trading_run.review_process_adherence is state)
             self.takeaway_input.setText(trading_run.review_takeaway)
@@ -223,6 +264,10 @@ class PostMarketReviewWidget(QWidget):
             self.run_summary_label.setText("No Trading Run loaded")
             self.tda_snapshot_list.clear()
             self.live_changes_list.clear()
+            self.interpretation_group.setExclusive(False)
+            for button in self.interpretation_buttons.values():
+                button.setChecked(False)
+            self.interpretation_group.setExclusive(True)
             self.adherence_group.setExclusive(False)
             for button in self.adherence_buttons.values():
                 button.setChecked(False)
@@ -233,11 +278,22 @@ class PostMarketReviewWidget(QWidget):
         finally:
             self._loading = False
 
+    def _selected_interpretation(self) -> InterpretationOutcome:
+        for state, button in self.interpretation_buttons.items():
+            if button.isChecked():
+                return state
+        return InterpretationOutcome.NOT_REVIEWED
+
     def _selected_adherence(self) -> ProcessAdherence:
         for state, button in self.adherence_buttons.items():
             if button.isChecked():
                 return state
         return ProcessAdherence.NOT_REVIEWED
+
+    def _emit_interpretation(self, *_args) -> None:
+        if self._loading:
+            return
+        self.interpretation_changed.emit(self._selected_interpretation().value)
 
     def _emit_review(self, *_args) -> None:
         if self._loading:
