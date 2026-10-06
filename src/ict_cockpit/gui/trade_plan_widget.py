@@ -49,6 +49,7 @@ class TradePlanWidget(QWidget):
         self.trading_day_shell_widget = TradingDayShellWidget(
             trade_plan.process_blueprint,
             live_watch_policy=trade_plan.live_watch_policy,
+            trade_plan_revision=trade_plan.revision,
         )
 
         self.trading_day_runtime_widget = self.trading_day_shell_widget.runtime
