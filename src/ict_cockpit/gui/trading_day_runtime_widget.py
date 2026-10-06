@@ -20,11 +20,11 @@ from ict_cockpit.analysis.trading_day_session import (
 )
 from ict_cockpit.analysis.trading_session_run import TradingRun
 from ict_cockpit.gui.live_watch_widget import LiveWatchWidget
+from ict_cockpit.gui.post_market_review_widget import PostMarketReviewWidget
 from ict_cockpit.gui.tda_station_runner_widget import TDAStationRunnerWidget
 from ict_cockpit.process_blueprint import (
     ModeDefinition,
     ProcessBlueprint,
-    TransitionDefinition,
 )
 
 
@@ -34,6 +34,7 @@ class TradingDayRuntimeWidget(QWidget):
     session_changed = Signal(TradingDaySession)
     live_observation_submitted = Signal(str)
     live_thesis_state_submitted = Signal(str, str)
+    post_market_review_submitted = Signal(str, str, bool)
 
     def __init__(
         self,
@@ -51,6 +52,7 @@ class TradingDayRuntimeWidget(QWidget):
             raise ValueError("blueprint must contain trading-day modes")
 
         self.session = self._new_session()
+        self.trading_run: TradingRun | None = None
 
         title = "Trading Run Process" if embedded_session_run else "Trading Day Session"
         self.title_label = QLabel(title)
@@ -78,12 +80,18 @@ class TradingDayRuntimeWidget(QWidget):
         self.live_watch_widget.thesis_state_submitted.connect(
             self.live_thesis_state_submitted.emit
         )
+        self.post_market_review_widget = PostMarketReviewWidget()
+        self.post_market_review_widget.review_changed.connect(
+            self.post_market_review_submitted.emit
+        )
 
         for mode in self.modes:
             if mode.id == "tda":
                 page = self.tda_station_runner_widget
             elif mode.id == "live-watch":
                 page = self.live_watch_widget
+            elif mode.id == "post-market":
+                page = self.post_market_review_widget
             else:
                 page = self._build_placeholder_mode_page(mode)
             self.mode_pages[mode.id] = page
@@ -273,16 +281,23 @@ class TradingDayRuntimeWidget(QWidget):
         self._update_view()
 
     def load_trading_run(self, trading_run: TradingRun) -> None:
-        """Refresh Live Watch from the Trading Run that owns its evidence."""
+        """Refresh process surfaces from the Trading Run that owns their evidence/review."""
+        self.trading_run = trading_run
         self.live_watch_widget.load_state(
             trading_run.current_thesis_state,
             trading_run.evidence,
+        )
+        self.post_market_review_widget.load_state(
+            trading_run,
+            self.session.transitions,
         )
 
     def start_new(self) -> None:
         """Begin a fresh process session and TDA station session."""
         self.tda_station_runner_widget.start_new()
         self.live_watch_widget.clear_state()
+        self.post_market_review_widget.clear_state()
+        self.trading_run = None
         self.session = self._new_session()
         self.transition_note_input.clear()
         self._touch()
@@ -374,6 +389,12 @@ class TradingDayRuntimeWidget(QWidget):
         current_index = self.session.current_mode_index
         current_mode = self.current_mode
         self.mode_stack.setCurrentWidget(self.mode_pages[current_mode.id])
+
+        if current_mode.id == "post-market" and self.trading_run is not None:
+            self.post_market_review_widget.load_state(
+                self.trading_run,
+                self.session.transitions,
+            )
 
         if self.session.status is TradingDayStatus.COMPLETE:
             if self.embedded_session_run:
