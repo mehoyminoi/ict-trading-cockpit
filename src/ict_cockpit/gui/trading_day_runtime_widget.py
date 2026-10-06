@@ -44,8 +44,6 @@ class TradingDayRuntimeWidget(QWidget):
     ) -> None:
         super().__init__()
         self.blueprint = blueprint
-        # Parameter name retained for compatibility; the embedded lifecycle is
-        # now a Trading Run rather than a market-session-specific run.
         self.embedded_session_run = embedded_session_run
         self.modes = list(blueprint.modes)
         if not self.modes:
@@ -61,11 +59,13 @@ class TradingDayRuntimeWidget(QWidget):
         self.summary_label.setWordWrap(True)
 
         self.mode_rail = QHBoxLayout()
+        self.mode_rail.setContentsMargins(0, 0, 0, 0)
+        self.mode_rail.setSpacing(5)
         self.mode_labels: dict[str, QLabel] = {}
         for mode in self.modes:
             label = QLabel()
             label.setFrameShape(QFrame.Shape.StyledPanel)
-            label.setContentsMargins(10, 8, 10, 8)
+            label.setContentsMargins(6, 4, 6, 4)
             self.mode_labels[mode.id] = label
             self.mode_rail.addWidget(label, 1)
 
@@ -100,26 +100,38 @@ class TradingDayRuntimeWidget(QWidget):
         self.transition_frame = QFrame()
         self.transition_frame.setFrameShape(QFrame.Shape.StyledPanel)
         transition_layout = QVBoxLayout(self.transition_frame)
-        transition_heading = QLabel("Available process transitions")
+        transition_layout.setContentsMargins(8, 5, 8, 5)
+        transition_layout.setSpacing(4)
+        transition_heading = QLabel("Process Actions")
         transition_heading.setStyleSheet("font-weight: 600;")
         transition_layout.addWidget(transition_heading)
 
         self.transition_note_input = QLineEdit()
         self.transition_note_input.setPlaceholderText(
-            "Decision note / reason (optional, but useful for later review)"
+            "Decision note / reason (optional)"
         )
         transition_layout.addWidget(self.transition_note_input)
 
         self.transition_buttons_layout = QHBoxLayout()
+        self.transition_buttons_layout.setContentsMargins(0, 0, 0, 0)
         transition_layout.addLayout(self.transition_buttons_layout)
         self.transition_buttons: dict[str, QPushButton] = {}
 
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(4, 4, 4, 4)
+        layout.setSpacing(5)
         layout.addWidget(self.title_label)
         layout.addWidget(self.summary_label)
         layout.addLayout(self.mode_rail)
         layout.addWidget(self.mode_stack, 1)
         layout.addWidget(self.transition_frame)
+
+        # The shell already provides active-run identity and resume context.
+        # Hiding duplicate headings in embedded mode recovers meaningful vertical
+        # space on 1080p displays without removing any information.
+        if self.embedded_session_run:
+            self.title_label.hide()
+            self.summary_label.hide()
 
         self._update_view()
 
@@ -160,7 +172,6 @@ class TradingDayRuntimeWidget(QWidget):
         reason: str = "",
         override_incomplete: bool = False,
     ) -> bool:
-        """Apply one transition declared by the current process mode."""
         if self.session.status is TradingDayStatus.COMPLETE:
             return False
 
@@ -218,19 +229,15 @@ class TradingDayRuntimeWidget(QWidget):
             message = QMessageBox(self)
             message.setIcon(QMessageBox.Icon.Warning)
             message.setWindowTitle("TDA is incomplete")
-            message.setText(
-                f"{missing_count} TDA station(s) are still incomplete."
-            )
+            message.setText(f"{missing_count} TDA station(s) are still incomplete.")
             message.setInformativeText(
                 "Return to the missing work, or intentionally file the TDA incomplete and continue to Live Watch."
             )
             return_button = message.addButton(
-                "Return to TDA",
-                QMessageBox.ButtonRole.RejectRole,
+                "Return to TDA", QMessageBox.ButtonRole.RejectRole
             )
             override_button = message.addButton(
-                "File Incomplete Anyway",
-                QMessageBox.ButtonRole.AcceptRole,
+                "File Incomplete Anyway", QMessageBox.ButtonRole.AcceptRole
             )
             message.exec()
             if message.clickedButton() is not override_button:
@@ -253,7 +260,6 @@ class TradingDayRuntimeWidget(QWidget):
             self.incomplete_tda_station_ids[0]
         )
 
-    # Backward-compatible helper while older tests/callers migrate to named transitions.
     def go_next_mode(self) -> None:
         for transition in self.current_mode.transitions:
             if transition.outcome == "advance":
@@ -264,8 +270,6 @@ class TradingDayRuntimeWidget(QWidget):
                 return
 
     def go_previous_mode(self) -> None:
-        # Generic backward navigation is intentionally no longer part of the UI.
-        # Legitimate returns are represented as explicit process transitions.
         if self.session.current_mode_id == "live-watch":
             transition = self.current_mode.transition_by_id("live-return-analysis")
             if transition is not None:
@@ -281,11 +285,12 @@ class TradingDayRuntimeWidget(QWidget):
         self._update_view()
 
     def load_trading_run(self, trading_run: TradingRun) -> None:
-        """Refresh process surfaces from the Trading Run that owns their evidence/review."""
         self.trading_run = trading_run
-        self.live_watch_widget.load_state(
+        self.live_watch_widget.load_operating_context(
             trading_run.current_thesis_state,
             trading_run.evidence,
+            self.tda_station_runner_widget.session,
+            self.blueprint,
         )
         self.post_market_review_widget.load_state(
             trading_run,
@@ -293,7 +298,6 @@ class TradingDayRuntimeWidget(QWidget):
         )
 
     def start_new(self) -> None:
-        """Begin a fresh process session and TDA station session."""
         self.tda_station_runner_widget.start_new()
         self.live_watch_widget.clear_state()
         self.post_market_review_widget.clear_state()
@@ -306,15 +310,12 @@ class TradingDayRuntimeWidget(QWidget):
     def _build_placeholder_mode_page(self, mode: ModeDefinition) -> QWidget:
         page = QWidget()
         layout = QVBoxLayout(page)
-
         heading = QLabel(mode.name)
         heading.setStyleSheet("font-size: 16px; font-weight: 600;")
         layout.addWidget(heading)
-
         purpose = QLabel(mode.purpose)
         purpose.setWordWrap(True)
         layout.addWidget(purpose)
-
         note = QLabel(
             "Runtime shell only — this mode is visible so the full trading-day loop can be tested before its stations become executable."
         )
@@ -322,19 +323,16 @@ class TradingDayRuntimeWidget(QWidget):
         note.setFrameShape(QFrame.Shape.StyledPanel)
         note.setContentsMargins(10, 8, 10, 8)
         layout.addWidget(note)
-
         for deck in mode.decks:
             deck_label = QLabel(f"{deck.name} · TradingView: {deck.tradingview_layout}")
             deck_label.setStyleSheet("font-weight: 600;")
             deck_label.setWordWrap(True)
             layout.addWidget(deck_label)
-
             for station in deck.stations:
                 station_label = QLabel(f"• {station.name} — {station.question}")
                 station_label.setWordWrap(True)
                 station_label.setContentsMargins(12, 2, 4, 2)
                 layout.addWidget(station_label)
-
         layout.addStretch()
         return page
 
@@ -390,7 +388,14 @@ class TradingDayRuntimeWidget(QWidget):
         current_mode = self.current_mode
         self.mode_stack.setCurrentWidget(self.mode_pages[current_mode.id])
 
-        if current_mode.id == "post-market" and self.trading_run is not None:
+        if current_mode.id == "live-watch" and self.trading_run is not None:
+            self.live_watch_widget.load_operating_context(
+                self.trading_run.current_thesis_state,
+                self.trading_run.evidence,
+                self.tda_station_runner_widget.session,
+                self.blueprint,
+            )
+        elif current_mode.id == "post-market" and self.trading_run is not None:
             self.post_market_review_widget.load_state(
                 self.trading_run,
                 self.tda_station_runner_widget.session,
@@ -417,13 +422,13 @@ class TradingDayRuntimeWidget(QWidget):
 
         for index, mode in enumerate(self.modes):
             if mode.id == self.session.current_mode_id and self.session.status is TradingDayStatus.ACTIVE:
-                state = "▶ ACTIVE"
+                state = "▶"
             elif mode.id in self.session.completed_mode_ids:
-                state = "✓ CONCLUDED"
+                state = "✓"
             elif index < current_index:
-                state = "↶ AVAILABLE BY PROCESS"
+                state = "↶"
             else:
-                state = "○ UPCOMING"
-            self.mode_labels[mode.id].setText(f"{state}\n{mode.name}")
+                state = "○"
+            self.mode_labels[mode.id].setText(f"{state} {mode.name}")
 
         self._rebuild_transition_buttons()
