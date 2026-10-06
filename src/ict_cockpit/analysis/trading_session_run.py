@@ -15,6 +15,37 @@ class TradingSessionRunStatus(str, Enum):
     CONCLUDED = "Concluded"
 
 
+class ThesisState(str, Enum):
+    NOT_SET = "Not Set"
+    SUPPORTED = "Supported"
+    WEAKENED = "Weakened"
+    INVALIDATED = "Invalidated"
+    UNCERTAIN = "Uncertain"
+
+
+class RunEvidenceKind(str, Enum):
+    OBSERVATION = "Observation"
+    THESIS_STATE = "Thesis State"
+
+
+@dataclass
+class RunEvidenceEntry:
+    kind: RunEvidenceKind
+    note: str = ""
+    thesis_state: ThesisState = ThesisState.NOT_SET
+    id: str = field(default_factory=lambda: str(uuid4()))
+    created_at: str = field(
+        default_factory=lambda: datetime.now().astimezone().isoformat(timespec="seconds")
+    )
+
+    def __post_init__(self) -> None:
+        self.note = self.note.strip()
+        if isinstance(self.kind, str):
+            self.kind = RunEvidenceKind(self.kind)
+        if isinstance(self.thesis_state, str):
+            self.thesis_state = ThesisState(self.thesis_state)
+
+
 @dataclass
 class TradingSessionRun:
     """One deliberate operating run inside a Trading Day.
@@ -30,6 +61,8 @@ class TradingSessionRun:
     tda_station_session_id: str = ""
     status: TradingSessionRunStatus = TradingSessionRunStatus.ACTIVE
     outcome: str = ""
+    current_thesis_state: ThesisState = ThesisState.NOT_SET
+    evidence: list[RunEvidenceEntry] = field(default_factory=list)
     id: str = field(default_factory=lambda: str(uuid4()))
     started_at: str = field(
         default_factory=lambda: datetime.now().astimezone().isoformat(timespec="seconds")
@@ -48,6 +81,12 @@ class TradingSessionRun:
         self.concluded_at = self.concluded_at.strip()
         if isinstance(self.status, str):
             self.status = TradingSessionRunStatus(self.status)
+        if isinstance(self.current_thesis_state, str):
+            self.current_thesis_state = ThesisState(self.current_thesis_state)
+        self.evidence = [
+            item if isinstance(item, RunEvidenceEntry) else RunEvidenceEntry(**item)
+            for item in self.evidence
+        ]
 
         if not self.trading_day_id:
             raise ValueError("trading day id cannot be empty")
@@ -68,6 +107,36 @@ class TradingSessionRun:
             raise ValueError("trading run label cannot be empty")
         self.session_name = value
 
+    def add_observation(self, note: str) -> RunEvidenceEntry:
+        note = note.strip()
+        if not note:
+            raise ValueError("observation cannot be empty")
+        entry = RunEvidenceEntry(
+            kind=RunEvidenceKind.OBSERVATION,
+            note=note,
+        )
+        self.evidence.append(entry)
+        self._touch()
+        return entry
+
+    def record_thesis_state(
+        self,
+        state: ThesisState | str,
+        note: str = "",
+    ) -> RunEvidenceEntry:
+        state = ThesisState(state)
+        if state is ThesisState.NOT_SET:
+            raise ValueError("an explicit thesis update must choose a thesis state")
+        entry = RunEvidenceEntry(
+            kind=RunEvidenceKind.THESIS_STATE,
+            note=note,
+            thesis_state=state,
+        )
+        self.current_thesis_state = state
+        self.evidence.append(entry)
+        self._touch()
+        return entry
+
     def conclude(self, outcome: str = "") -> None:
         """Conclude this run without implying that the Trading Day is complete."""
         if self.status is TradingSessionRunStatus.CONCLUDED:
@@ -77,6 +146,9 @@ class TradingSessionRun:
         now = datetime.now().astimezone().isoformat(timespec="seconds")
         self.concluded_at = now
         self.updated_at = now
+
+    def _touch(self) -> None:
+        self.updated_at = datetime.now().astimezone().isoformat(timespec="seconds")
 
 
 # Preferred names going forward. Old names stay import-compatible while the
