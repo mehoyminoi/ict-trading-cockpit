@@ -151,7 +151,7 @@ class PostMarketReviewWidget(QWidget):
                 return state
         return ProcessAdherence.NOT_REVIEWED
 
-    def _emit_review(self) -> None:
+    def _emit_review(self, *_args) -> None:
         if self._loading:
             return
         self.review_changed.emit(
