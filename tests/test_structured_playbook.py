@@ -1,3 +1,4 @@
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
 
 from ict_cockpit.analysis.trading_day import TradingDay
@@ -23,7 +24,7 @@ def get_app() -> QApplication:
 def test_default_trade_plan_exposes_declarative_playbooks() -> None:
     plan = build_default_trade_plan()
 
-    assert plan.revision == "Alpha 0.3"
+    assert plan.revision == "Alpha 0.4"
     assert [playbook.id for playbook in plan.playbooks] == [
         "2022-mentorship",
         "silver-bullet",
@@ -31,9 +32,13 @@ def test_default_trade_plan_exposes_declarative_playbooks() -> None:
 
     silver_bullet = plan.playbook_by_id("silver-bullet")
     assert silver_bullet is not None
+    assert silver_bullet.revision == "Alpha 0.2"
     assert silver_bullet.required_entry_count == 3
     assert len(silver_bullet.entry_criteria) == 3
     assert len(silver_bullet.watch_point_templates) == 3
+    assert silver_bullet.watch_point_templates[0].satisfies_criterion_ids == (
+        "fvg-direction",
+    )
     assert "79%" in silver_bullet.risk_summary
 
 
@@ -48,9 +53,12 @@ def test_playbook_snapshot_round_trip_is_data_only() -> None:
     assert restored == original
     assert isinstance(snapshot["entry_criteria"], list)
     assert isinstance(snapshot["watch_point_templates"], list)
+    assert snapshot["watch_point_templates"][0]["satisfies_criterion_ids"] == [
+        "fvg-direction"
+    ]
 
 
-def test_schema_v19_adds_playbook_provenance_columns(tmp_path) -> None:
+def test_schema_v20_adds_setup_candidate_storage(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
 
@@ -61,13 +69,14 @@ def test_schema_v19_adds_playbook_provenance_columns(tmp_path) -> None:
     version = connection.execute("PRAGMA user_version").fetchone()[0]
 
     assert version == CURRENT_SCHEMA_VERSION
+    assert "setup_candidates_json" in columns
+    # v19 provenance remains readable for migration/backward compatibility.
     assert "selected_playbook_id" in columns
-    assert "selected_playbook_revision" in columns
     assert "playbook_snapshot_json" in columns
     connection.close()
 
 
-def test_playbook_snapshot_round_trips_with_trading_run(tmp_path) -> None:
+def test_multiple_setup_candidates_round_trip_with_trading_run(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
     day_repository = TradingDayRepository(connection)
@@ -75,8 +84,9 @@ def test_playbook_snapshot_round_trips_with_trading_run(tmp_path) -> None:
     run_repository = TradingSessionRunRepository(connection)
 
     plan = build_default_trade_plan()
-    playbook = plan.playbook_by_id("silver-bullet")
-    assert playbook is not None
+    mentorship = plan.playbook_by_id("2022-mentorship")
+    silver = plan.playbook_by_id("silver-bullet")
+    assert mentorship is not None and silver is not None
 
     day = TradingDay(futures_day_label="2026-10-06")
     process_session = TradingDaySession(
@@ -91,7 +101,8 @@ def test_playbook_snapshot_round_trips_with_trading_run(tmp_path) -> None:
         process_session.id,
         trade_plan_revision=plan.revision,
     )
-    run.select_playbook(playbook.id, playbook.revision, playbook.to_snapshot())
+    run.ensure_day_specific_candidate()
+    run.sync_playbook_candidates([mentorship.to_snapshot(), silver.to_snapshot()])
     day.activate_trading_run(run)
     day_repository.save(day)
     run_repository.save(run)
@@ -99,13 +110,17 @@ def test_playbook_snapshot_round_trips_with_trading_run(tmp_path) -> None:
     restored = run_repository.get_by_id(run.id)
 
     assert restored is not None
-    assert restored.selected_playbook_id == "silver-bullet"
-    assert restored.selected_playbook_revision == playbook.revision
-    assert PlaybookDefinition.from_snapshot(restored.playbook_snapshot) == playbook
+    assert {item.source_id for item in restored.setup_candidates} == {
+        "day-specific",
+        "2022-mentorship",
+        "silver-bullet",
+    }
+    assert restored.playbook_candidate("silver-bullet") is not None
+    assert restored.playbook_candidate("silver-bullet").source_revision == "Alpha 0.2"
     connection.close()
 
 
-def test_tda_playbook_selection_inherits_watch_points_and_live_readiness() -> None:
+def test_tda_models_in_play_are_multi_select_and_live_readiness_is_per_candidate() -> None:
     get_app()
     plan = build_default_trade_plan()
     shell = TradingDayShellWidget(
@@ -121,14 +136,15 @@ def test_tda_playbook_selection_inherits_watch_points_and_live_readiness() -> No
     runner.select_station("tda-thesis")
     editor = shell.runtime.tda_watch_point_widget
 
-    silver_index = editor.playbook_combo.findData("silver-bullet")
-    assert silver_index >= 0
-    editor.playbook_combo.setCurrentIndex(silver_index)
+    for index in range(editor.models_list.count()):
+        item = editor.models_list.item(index)
+        if item.data(Qt.ItemDataRole.UserRole) in {"2022-mentorship", "silver-bullet"}:
+            item.setCheckState(Qt.CheckState.Checked)
 
-    assert run.selected_playbook_id == "silver-bullet"
-    assert run.selected_playbook_revision == "Alpha 0.1"
-    assert editor.inherited_list.count() == 3
-    assert "killzone" in editor.inherited_list.item(0).text().lower()
+    assert run.playbook_candidate("2022-mentorship") is not None
+    silver_candidate = run.playbook_candidate("silver-bullet")
+    assert silver_candidate is not None
+    assert len([item for item in run.setup_candidates if item.source_type == "Playbook"]) == 2
 
     editor.if_input.setText("PDH trades before the setup window")
     editor.then_input.setText("Return to analysis and reassess the primary draw")
@@ -138,14 +154,43 @@ def test_tda_playbook_selection_inherits_watch_points_and_live_readiness() -> No
     assert shell.runtime.apply_transition("finish-tda", override_incomplete=True) is True
     live = shell.runtime.live_watch_widget
 
-    assert len(live.entry_checkboxes) == 3
-    assert live.readiness_required_label.text() == "Required for entry: 3 / 3"
-    assert len(live.watch_point_combos) == 4
+    assert (silver_candidate.id, "fvg-direction") in live.candidate_entry_checkboxes
+    assert (silver_candidate.id, "qualifying-fvg") in live.candidate_watch_point_combos
+    assert runner.session.watch_points[0].id in live.watch_point_combos
 
-    inherited_id = "playbook:silver-bullet:qualifying-fvg"
-    assert inherited_id in live.watch_point_combos
-    live.watch_point_combos[inherited_id].setCurrentText(WatchPointState.OCCURRED.value)
-    assert run.watch_point_states[inherited_id] is WatchPointState.OCCURRED
+
+def test_occurred_playbook_watch_point_explicitly_satisfies_linked_criterion() -> None:
+    get_app()
+    plan = build_default_trade_plan()
+    shell = TradingDayShellWidget(
+        plan.process_blueprint,
+        playbooks=plan.playbooks,
+        trade_plan_revision=plan.revision,
+    )
+    shell.start_trading_run()
+    run = shell.active_trading_run
+    assert run is not None
+
+    runner = shell.runtime.tda_station_runner_widget
+    runner.select_station("tda-thesis")
+    editor = shell.runtime.tda_watch_point_widget
+    for index in range(editor.models_list.count()):
+        item = editor.models_list.item(index)
+        if item.data(Qt.ItemDataRole.UserRole) == "silver-bullet":
+            item.setCheckState(Qt.CheckState.Checked)
+            break
+
+    candidate = run.playbook_candidate("silver-bullet")
+    assert candidate is not None
+    shell.runtime.apply_transition("finish-tda", override_incomplete=True)
+    live = shell.runtime.live_watch_widget
+    combo = live.candidate_watch_point_combos[(candidate.id, "qualifying-fvg")]
+
+    combo.setCurrentText(WatchPointState.OCCURRED.value)
+
+    assert candidate.watch_point_states["qualifying-fvg"] is WatchPointState.OCCURRED
+    assert candidate.entry_condition_states["fvg-direction"] is True
+    assert live.candidate_entry_checkboxes[(candidate.id, "fvg-direction")].isChecked() is True
 
 
 def test_run_keeps_snapshot_when_current_definition_changes() -> None:
@@ -154,13 +199,15 @@ def test_run_keeps_snapshot_when_current_definition_changes() -> None:
     assert original is not None
 
     run = TradingRun("day-1", "Trading Run 1", "process-1")
-    run.select_playbook(original.id, original.revision, original.to_snapshot())
+    run.sync_playbook_candidates([original.to_snapshot()])
+    candidate = run.playbook_candidate(original.id)
+    assert candidate is not None
 
     changed_payload = original.to_snapshot()
     changed_payload["risk_summary"] = "A later revision changed this rule."
-    changed_payload["revision"] = "Alpha 0.2"
+    changed_payload["revision"] = "Alpha 0.3"
     changed = PlaybookDefinition.from_snapshot(changed_payload)
 
-    assert changed.revision == "Alpha 0.2"
-    assert run.selected_playbook_revision == "Alpha 0.1"
-    assert "79%" in run.playbook_snapshot["risk_summary"]
+    assert changed.revision == "Alpha 0.3"
+    assert candidate.source_revision == "Alpha 0.2"
+    assert "79%" in candidate.definition_snapshot["risk_summary"]
