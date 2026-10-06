@@ -62,6 +62,25 @@ def test_launcher_exposes_model_library_without_auto_selecting_models() -> None:
     assert editor.models_list.count() == len(plan.playbooks)
 
 
+def test_models_in_play_is_visible_before_tda_focus_content() -> None:
+    get_app()
+    plan = build_default_trade_plan()
+    widget = TradePlanWidget(plan)
+    launcher = widget.process_run_launcher_widget
+
+    launcher.environment_combo.setCurrentText(RunEnvironment.REPLAY.value)
+    assert launcher.begin_process_run() is True
+
+    runtime = widget.trading_day_runtime_widget
+    runner = runtime.tda_station_runner_widget
+    runner.select_station("tda-thesis")
+
+    editor = runtime.tda_watch_point_widget
+    assert editor.isHidden() is False
+    assert runtime.layout().indexOf(editor) < runtime.layout().indexOf(runtime.mode_stack)
+    assert editor.models_list.count() == len(plan.playbooks)
+
+
 def test_launcher_refuses_competing_active_process_run() -> None:
     get_app()
     widget = TradePlanWidget(build_default_trade_plan())
