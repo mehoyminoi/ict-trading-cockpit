@@ -16,6 +16,7 @@ from ict_cockpit.analysis.trading_day_session import TradingDaySession, TradingD
 from ict_cockpit.analysis.trading_session_run import TradingRun, TradingRunStatus
 from ict_cockpit.gui.trading_day_runtime_widget import TradingDayRuntimeWidget
 from ict_cockpit.process_blueprint import ProcessBlueprint
+from ict_cockpit.trade_plan import LiveWatchPolicyDefinition
 
 
 class TradingDayShellWidget(QWidget):
@@ -24,9 +25,14 @@ class TradingDayShellWidget(QWidget):
     trading_day_changed = Signal(object)
     session_run_changed = Signal(object)  # Backward-compatible signal name.
 
-    def __init__(self, blueprint: ProcessBlueprint) -> None:
+    def __init__(
+        self,
+        blueprint: ProcessBlueprint,
+        live_watch_policy: LiveWatchPolicyDefinition | None = None,
+    ) -> None:
         super().__init__()
         self.blueprint = blueprint
+        self.live_watch_policy = live_watch_policy or LiveWatchPolicyDefinition()
         self.trading_day = TradingDay()
         self.trading_runs: list[TradingRun] = []
         self.active_trading_run: TradingRun | None = None
@@ -78,9 +84,9 @@ class TradingDayShellWidget(QWidget):
         self.runtime = TradingDayRuntimeWidget(
             blueprint,
             embedded_session_run=True,
+            live_watch_policy=self.live_watch_policy,
         )
 
-        # Process transitions are persistent action chrome, not scroll content.
         self.runtime.layout().removeWidget(self.runtime.transition_frame)
         self.runtime.transition_frame.setParent(self)
         runtime_layout.addWidget(self.runtime)
@@ -91,10 +97,9 @@ class TradingDayShellWidget(QWidget):
         runner.view_tabs.currentChanged.connect(lambda _index: self._update_view())
         self.runtime.live_observation_submitted.connect(self._capture_live_observation)
         self.runtime.live_thesis_state_submitted.connect(self._record_live_thesis_state)
+        self.runtime.live_entry_condition_changed.connect(self._set_live_entry_condition)
         self.runtime.post_market_review_submitted.connect(self._update_post_market_review)
 
-        # TDA station navigation is also action chrome. Mirror it below the
-        # viewport so Previous / Complete & Continue never require scrolling.
         self.tda_nav_frame = QFrame()
         self.tda_nav_frame.setFrameShape(QFrame.Shape.StyledPanel)
         tda_nav_layout = QHBoxLayout(self.tda_nav_frame)
@@ -231,6 +236,20 @@ class TradingDayShellWidget(QWidget):
         if run is None:
             return
         run.record_thesis_state(state, note)
+        self.session_run_changed.emit(run)
+        self.runtime.load_trading_run(run)
+        self._update_view()
+
+    def _set_live_entry_condition(self, criterion_id: str, satisfied: bool) -> None:
+        run = self.active_trading_run
+        if run is None:
+            return
+        valid_ids = {
+            criterion.id for criterion in self.live_watch_policy.entry_criteria
+        }
+        if criterion_id not in valid_ids:
+            return
+        run.set_entry_condition(criterion_id, satisfied)
         self.session_run_changed.emit(run)
         self.runtime.load_trading_run(run)
         self._update_view()
@@ -372,9 +391,6 @@ class TradingDayShellWidget(QWidget):
         active = self.active_trading_run is not None
         self.runtime_scroll.setVisible(active)
         self.runtime.transition_frame.setVisible(active)
-
-        # During an active run the resume strip replaces duplicate shell title
-        # and status lines. Between runs, restore the fuller day summary.
         self.title_label.setVisible(not active)
         self.summary_label.setVisible(not active)
 
@@ -387,9 +403,6 @@ class TradingDayShellWidget(QWidget):
         self.tda_nav_frame.setVisible(tda_focus_active)
         self._sync_tda_nav()
 
-        # TDA Focus owns wheel navigation, so normal 1080p use must not present
-        # a competing vertical scroll action. Other modes may scroll if their
-        # content truly exceeds the viewport.
         self.runtime_scroll.setVerticalScrollBarPolicy(
             Qt.ScrollBarPolicy.ScrollBarAlwaysOff
             if tda_focus_active
