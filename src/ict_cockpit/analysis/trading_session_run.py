@@ -203,6 +203,7 @@ class TradingSessionRun:
     setup_candidates: list[SetupCandidate] = field(default_factory=list)
     authorization_policy_snapshot: list[dict] = field(default_factory=list)
     authorization_gate_states: dict[str, AuthorizationGateState] = field(default_factory=dict)
+    market_time_context: dict = field(default_factory=dict)
 
     selected_playbook_id: str = ""
     selected_playbook_revision: str = ""
@@ -233,6 +234,7 @@ class TradingSessionRun:
         self.selected_playbook_revision = self.selected_playbook_revision.strip()
         self.playbook_snapshot = dict(self.playbook_snapshot or {})
         self.authorization_policy_snapshot = [dict(item) for item in (self.authorization_policy_snapshot or [])]
+        self.market_time_context = dict(self.market_time_context or {})
         self.authorization_gate_states = {
             str(key).strip(): (
                 value if isinstance(value, AuthorizationGateState) else AuthorizationGateState(value)
