@@ -69,6 +69,26 @@ class ProcessRunLauncherWidget(QWidget):
         plan_row.addWidget(self.trade_plan_label, 1)
         frame_layout.addLayout(plan_row)
 
+        available_playbooks = [item for item in trading_day_shell.playbooks if item.available]
+        models_row = QHBoxLayout()
+        models_row.addWidget(QLabel("Reference models"))
+        self.models_label = QLabel(
+            f"{len(available_playbooks)} available from Trade Plan · selected during TDA"
+        )
+        self.models_label.setWordWrap(True)
+        models_row.addWidget(self.models_label, 1)
+        frame_layout.addLayout(models_row)
+
+        model_guidance = QLabel(
+            "Reference models are not auto-selected for Replay or Backtest runs. "
+            "During Premarket Thesis, use Models in Play to mark whichever models the analysis says may apply. "
+            "Selecting none is valid and leaves the technician/day-specific path available."
+        )
+        model_guidance.setWordWrap(True)
+        model_guidance.setFrameShape(QFrame.Shape.StyledPanel)
+        model_guidance.setContentsMargins(8, 6, 8, 6)
+        frame_layout.addWidget(model_guidance)
+
         self.begin_button = QPushButton("Begin Process Run")
         self.begin_button.clicked.connect(self.begin_process_run)
         frame_layout.addWidget(self.begin_button)
@@ -104,8 +124,12 @@ class ProcessRunLauncherWidget(QWidget):
             self.status_label.setText("The Process Run could not be started.")
             return False
 
+        available_count = len([item for item in shell.playbooks if item.available])
         self.status_label.setText(
-            f"Started {environment.value} · {run.run_label} · Trade Plan {run.trade_plan_revision or self.trade_plan_revision}."
+            f"Started {environment.value} · {run.run_label} · Trade Plan "
+            f"{run.trade_plan_revision or self.trade_plan_revision}. "
+            f"{available_count} reference model(s) are available; none are auto-selected. "
+            "Choose Models in Play during Premarket Thesis if the TDA says they apply."
         )
         if self.on_launched is not None:
             self.on_launched()
