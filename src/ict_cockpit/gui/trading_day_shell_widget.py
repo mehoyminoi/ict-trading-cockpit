@@ -338,6 +338,30 @@ class TradingDayShellWidget(QWidget):
             outcome = f" · {run.outcome}" if run.outcome else ""
             self.run_history.addItem(f"{state} · {run.run_label}{outcome}")
 
+    def _sync_tda_nav(self) -> None:
+        """Mirror TDA navigation from domain/session state, not hidden button state.
+
+        TDAStationRunnerWidget emits session_changed before its own visual refresh.
+        Reading the hidden runner buttons at that instant can therefore be one
+        station stale. The anchored controls derive directly from the session so
+        they are correct immediately after navigation.
+        """
+        runner = self.runtime.tda_station_runner_widget
+        index = runner.current_station_index
+        observation = runner.session.observation_for(runner.current_station_id)
+        last_index = len(runner.session.station_ids) - 1
+
+        self.tda_back_button.setEnabled(index > 0)
+        if observation.completed:
+            self.tda_next_button.setText("Station Complete")
+            self.tda_next_button.setEnabled(False)
+        elif index == last_index:
+            self.tda_next_button.setText("Mark Final Station Complete")
+            self.tda_next_button.setEnabled(True)
+        else:
+            self.tda_next_button.setText("Mark Station Complete & Continue →")
+            self.tda_next_button.setEnabled(True)
+
     def _update_view(self) -> None:
         self._refresh_history()
         day_complete = self.trading_day.status is TradingDayLifecycleStatus.COMPLETE
@@ -370,9 +394,7 @@ class TradingDayShellWidget(QWidget):
             and runner.view_tabs.currentWidget() is runner.focus_page
         )
         self.tda_nav_frame.setVisible(tda_focus_active)
-        self.tda_back_button.setEnabled(runner.back_button.isEnabled())
-        self.tda_next_button.setEnabled(runner.next_button.isEnabled())
-        self.tda_next_button.setText(runner.next_button.text())
+        self._sync_tda_nav()
 
         self.run_history_label.setVisible(not active)
         self.run_history.setVisible(not active)
