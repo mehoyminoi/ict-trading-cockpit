@@ -50,8 +50,6 @@ class TradingDayShellWidget(QWidget):
 
         self.run_history_label = QLabel("Trading Runs")
         self.run_history = QListWidget()
-        # The run list is context, not the working surface. Keep it compact so
-        # the active process owns the available vertical space.
         self.run_history.setMaximumHeight(72)
         self.run_history.setSizePolicy(
             QSizePolicy.Policy.Expanding,
@@ -86,23 +84,34 @@ class TradingDayShellWidget(QWidget):
         )
 
         # Process transitions are persistent action chrome, not scroll content.
-        # Keep them anchored below the viewport so the primary next action never
-        # disappears under the scrollbars on shorter displays.
         self.runtime.layout().removeWidget(self.runtime.transition_frame)
         self.runtime.transition_frame.setParent(self)
         runtime_layout.addWidget(self.runtime)
 
         self.runtime.session_changed.connect(self._process_session_changed)
-        self.runtime.tda_station_runner_widget.session_changed.connect(
-            lambda _session: self._update_view()
-        )
+        runner = self.runtime.tda_station_runner_widget
+        runner.session_changed.connect(lambda _session: self._update_view())
+        runner.view_tabs.currentChanged.connect(lambda _index: self._update_view())
         self.runtime.live_observation_submitted.connect(self._capture_live_observation)
         self.runtime.live_thesis_state_submitted.connect(self._record_live_thesis_state)
         self.runtime.post_market_review_submitted.connect(self._update_post_market_review)
 
-        # The executable process has grown taller than some displays. A scroll
-        # viewport keeps the working content responsive to monitor height while
-        # action controls remain fixed outside it.
+        # TDA station navigation is also action chrome. Mirror it below the
+        # viewport so Previous / Complete & Continue never require scrolling.
+        self.tda_nav_frame = QFrame()
+        self.tda_nav_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        tda_nav_layout = QHBoxLayout(self.tda_nav_frame)
+        tda_nav_layout.setContentsMargins(8, 6, 8, 6)
+        self.tda_back_button = QPushButton("← Previous Station")
+        self.tda_next_button = QPushButton("Mark Station Complete & Continue →")
+        self.tda_back_button.clicked.connect(runner.go_previous_station)
+        self.tda_next_button.clicked.connect(runner.complete_and_continue)
+        tda_nav_layout.addWidget(self.tda_back_button)
+        tda_nav_layout.addStretch()
+        tda_nav_layout.addWidget(self.tda_next_button)
+        runner.back_button.hide()
+        runner.next_button.hide()
+
         self.runtime_scroll = QScrollArea()
         self.runtime_scroll.setWidgetResizable(True)
         self.runtime_scroll.setFrameShape(QFrame.Shape.NoFrame)
@@ -125,6 +134,7 @@ class TradingDayShellWidget(QWidget):
         layout.addWidget(self.run_history)
         layout.addLayout(controls)
         layout.addWidget(self.runtime_scroll, 1)
+        layout.addWidget(self.tda_nav_frame)
         layout.addWidget(self.runtime.transition_frame)
 
         self._update_view()
@@ -174,7 +184,6 @@ class TradingDayShellWidget(QWidget):
         return text
 
     def ensure_primary_trading_run_started(self) -> bool:
-        """Start Trading Run 1 automatically when a fresh day enters Run Trading Day."""
         if self.trading_day.status is TradingDayLifecycleStatus.COMPLETE:
             return False
         if self.active_trading_run is not None:
@@ -208,8 +217,6 @@ class TradingDayShellWidget(QWidget):
         self._update_view()
         return True
 
-    # Compatibility helper for older tests/callers. The supplied market-session
-    # label is intentionally ignored: market sessions are context inside a run.
     def start_session_run(self, _session_name: str = "") -> bool:
         return self.start_trading_run()
 
@@ -280,7 +287,6 @@ class TradingDayShellWidget(QWidget):
         return True
 
     def start_new_trading_day(self) -> None:
-        """Begin the next day and immediately enter its normal Trading Run 1 flow."""
         if self.active_trading_run is not None:
             return
 
@@ -290,9 +296,6 @@ class TradingDayShellWidget(QWidget):
         self._sync_legacy_aliases()
         self.trading_day_changed.emit(self.trading_day)
         self._update_view()
-
-        # One Trading Run is the normal day. Starting a new day should feel the
-        # same as entering Run Trading Day on a fresh day: go directly to TDA.
         self.ensure_primary_trading_run_started()
 
     def load_state(
@@ -360,8 +363,17 @@ class TradingDayShellWidget(QWidget):
         self.runtime_scroll.setVisible(active)
         self.runtime.transition_frame.setVisible(active)
 
-        # Keep history available between runs and at day completion, but get it
-        # out of the way while the operator is actively working the process.
+        runner = self.runtime.tda_station_runner_widget
+        tda_focus_active = (
+            active
+            and self.runtime.current_mode.id == "tda"
+            and runner.view_tabs.currentWidget() is runner.focus_page
+        )
+        self.tda_nav_frame.setVisible(tda_focus_active)
+        self.tda_back_button.setEnabled(runner.back_button.isEnabled())
+        self.tda_next_button.setEnabled(runner.next_button.isEnabled())
+        self.tda_next_button.setText(runner.next_button.text())
+
         self.run_history_label.setVisible(not active)
         self.run_history.setVisible(not active)
 
