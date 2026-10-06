@@ -1,0 +1,305 @@
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import (
+    QButtonGroup,
+    QCheckBox,
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QListWidget,
+    QPushButton,
+    QStackedWidget,
+    QVBoxLayout,
+    QWidget,
+)
+
+from ict_cockpit.analysis.tda_station_session import TDAStationSession
+from ict_cockpit.analysis.trading_session_run import (
+    InterpretationOutcome,
+    ProcessAdherence,
+    RunEvidenceKind,
+    TradingRun,
+)
+from ict_cockpit.process_blueprint import ProcessBlueprint
+
+
+class PostMarketReviewWidget(QWidget):
+    """Review market interpretation first, then process on a separate stage."""
+
+    interpretation_changed = Signal(str)
+    review_changed = Signal(str, str, bool)
+
+    def __init__(self, blueprint: ProcessBlueprint) -> None:
+        super().__init__()
+        self._loading = False
+        self._station_names = {
+            station.id: station.name
+            for mode in blueprint.modes
+            for deck in mode.decks
+            for station in deck.stations
+        }
+
+        heading = QLabel("Post-Market Review")
+        heading.setStyleSheet("font-size: 16px; font-weight: 600;")
+        purpose = QLabel(
+            "Review what changed in the market first. Judge process separately afterward."
+        )
+        purpose.setWordWrap(True)
+
+        self.stage_label = QLabel()
+        self.stage_label.setStyleSheet("font-weight: 600;")
+
+        self.stage_stack = QStackedWidget()
+        self.market_review_page = self._build_market_review_page()
+        self.process_review_page = self._build_process_review_page()
+        self.stage_stack.addWidget(self.market_review_page)
+        self.stage_stack.addWidget(self.process_review_page)
+
+        layout = QVBoxLayout(self)
+        layout.addWidget(heading)
+        layout.addWidget(purpose)
+        layout.addWidget(self.stage_label)
+        layout.addWidget(self.stage_stack, 1)
+
+        self.show_market_review()
+
+    def _build_market_review_page(self) -> QWidget:
+        page = QWidget()
+        layout = QVBoxLayout(page)
+
+        self.run_summary_label = QLabel("No Trading Run loaded")
+        self.run_summary_label.setWordWrap(True)
+        self.run_summary_label.setFrameShape(QFrame.Shape.StyledPanel)
+        self.run_summary_label.setContentsMargins(10, 8, 10, 8)
+        layout.addWidget(self.run_summary_label)
+
+        compare_layout = QHBoxLayout()
+
+        tda_frame = QFrame()
+        tda_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        tda_layout = QVBoxLayout(tda_frame)
+        tda_heading = QLabel("TDA — what I expected")
+        tda_heading.setStyleSheet("font-weight: 600;")
+        tda_note = QLabel("Saved analysis carried into the Trading Run")
+        tda_note.setWordWrap(True)
+        self.tda_snapshot_list = QListWidget()
+        self.tda_snapshot_list.setMaximumHeight(240)
+        tda_layout.addWidget(tda_heading)
+        tda_layout.addWidget(tda_note)
+        tda_layout.addWidget(self.tda_snapshot_list)
+
+        live_frame = QFrame()
+        live_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        live_layout = QVBoxLayout(live_frame)
+        live_heading = QLabel("Live Watch — what changed")
+        live_heading.setStyleSheet("font-weight: 600;")
+        live_note = QLabel("Only observations and thesis changes are surfaced here")
+        live_note.setWordWrap(True)
+        self.live_changes_list = QListWidget()
+        self.live_changes_list.setMaximumHeight(240)
+        live_layout.addWidget(live_heading)
+        live_layout.addWidget(live_note)
+        live_layout.addWidget(self.live_changes_list)
+
+        compare_layout.addWidget(tda_frame, 1)
+        compare_layout.addWidget(live_frame, 1)
+        layout.addLayout(compare_layout)
+
+        interpretation_frame = QFrame()
+        interpretation_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        interpretation_layout = QVBoxLayout(interpretation_frame)
+        interpretation_layout.setContentsMargins(10, 8, 10, 8)
+        interpretation_heading = QLabel("Did the initial interpretation materially hold?")
+        interpretation_heading.setStyleSheet("font-weight: 600;")
+        interpretation_help = QLabel(
+            "Classify the market interpretation itself. This is separate from process adherence and P&L."
+        )
+        interpretation_help.setWordWrap(True)
+        interpretation_layout.addWidget(interpretation_heading)
+        interpretation_layout.addWidget(interpretation_help)
+
+        self.interpretation_group = QButtonGroup(self)
+        self.interpretation_group.setExclusive(True)
+        self.interpretation_buttons: dict[InterpretationOutcome, QPushButton] = {}
+        interpretation_buttons_layout = QHBoxLayout()
+        labels = {
+            InterpretationOutcome.MATERIALLY_ACCURATE: "Materially Accurate",
+            InterpretationOutcome.MISSED_CRITICAL_INFORMATION: "Changed · Missed Critical Info",
+            InterpretationOutcome.UNEXPLAINED_STUDY_NEEDED: "Changed · Unexplained / Study Needed",
+            InterpretationOutcome.EXOGENOUS_EVENT: "Changed · External / Exogenous",
+        }
+        for state, label in labels.items():
+            button = QPushButton(label)
+            button.setCheckable(True)
+            if state is InterpretationOutcome.UNEXPLAINED_STUDY_NEEDED:
+                button.setToolTip(
+                    "The cause is unknown at my current level of price-action understanding; this is a study signal, not a claim of randomness."
+                )
+            self.interpretation_group.addButton(button)
+            self.interpretation_buttons[state] = button
+            interpretation_buttons_layout.addWidget(button)
+        interpretation_layout.addLayout(interpretation_buttons_layout)
+        self.interpretation_group.buttonClicked.connect(self._emit_interpretation)
+        layout.addWidget(interpretation_frame)
+
+        navigation = QHBoxLayout()
+        navigation.addStretch()
+        self.to_process_review_button = QPushButton("Continue to Process Review →")
+        self.to_process_review_button.clicked.connect(self.show_process_review)
+        navigation.addWidget(self.to_process_review_button)
+        layout.addLayout(navigation)
+        layout.addStretch()
+        return page
+
+    def _build_process_review_page(self) -> QWidget:
+        page = QWidget()
+        layout = QVBoxLayout(page)
+
+        intro = QLabel(
+            "Now judge the process independently of whether the thesis or trade outcome was correct."
+        )
+        intro.setWordWrap(True)
+        intro.setFrameShape(QFrame.Shape.StyledPanel)
+        intro.setContentsMargins(10, 8, 10, 8)
+        layout.addWidget(intro)
+
+        adherence_heading = QLabel("Process adherence")
+        adherence_heading.setStyleSheet("font-weight: 600;")
+        layout.addWidget(adherence_heading)
+
+        self.adherence_group = QButtonGroup(self)
+        self.adherence_group.setExclusive(True)
+        self.adherence_buttons: dict[ProcessAdherence, QPushButton] = {}
+        adherence_layout = QHBoxLayout()
+        for state in (
+            ProcessAdherence.FOLLOWED,
+            ProcessAdherence.MIXED,
+            ProcessAdherence.DEVIATION,
+        ):
+            button = QPushButton(state.value)
+            button.setCheckable(True)
+            self.adherence_group.addButton(button)
+            self.adherence_buttons[state] = button
+            adherence_layout.addWidget(button)
+        adherence_layout.addStretch()
+        self.adherence_group.buttonClicked.connect(self._emit_review)
+        layout.addLayout(adherence_layout)
+
+        self.takeaway_input = QLineEdit()
+        self.takeaway_input.setPlaceholderText(
+            "Optional takeaway — what is worth carrying forward?"
+        )
+        self.takeaway_input.editingFinished.connect(self._emit_review)
+        layout.addWidget(self.takeaway_input)
+
+        self.film_night_checkbox = QCheckBox("Take this Trading Run to Film Night / Lab")
+        self.film_night_checkbox.toggled.connect(self._emit_review)
+        layout.addWidget(self.film_night_checkbox)
+
+        navigation = QHBoxLayout()
+        self.back_to_market_button = QPushButton("← Back to Market Review")
+        self.back_to_market_button.clicked.connect(self.show_market_review)
+        navigation.addWidget(self.back_to_market_button)
+        navigation.addStretch()
+        layout.addLayout(navigation)
+        layout.addStretch()
+        return page
+
+    def show_market_review(self) -> None:
+        self.stage_stack.setCurrentWidget(self.market_review_page)
+        self.stage_label.setText("1 of 2 · Market Review")
+
+    def show_process_review(self) -> None:
+        self.stage_stack.setCurrentWidget(self.process_review_page)
+        self.stage_label.setText("2 of 2 · Process Review")
+
+    def load_state(
+        self,
+        trading_run: TradingRun,
+        tda_session: TDAStationSession,
+    ) -> None:
+        self._loading = True
+        try:
+            outcome = trading_run.outcome or "In review"
+            self.run_summary_label.setText(
+                f"{trading_run.run_label} · Outcome: {outcome} · "
+                f"Current thesis: {trading_run.current_thesis_state.value}"
+            )
+
+            self.tda_snapshot_list.clear()
+            populated_tda = 0
+            for item in tda_session.observations:
+                if not item.observation:
+                    continue
+                name = self._station_names.get(item.station_id, item.station_id)
+                self.tda_snapshot_list.addItem(f"{name}\n{item.observation}")
+                populated_tda += 1
+            if populated_tda == 0:
+                self.tda_snapshot_list.addItem("No written TDA observations were recorded.")
+
+            self.live_changes_list.clear()
+            if not trading_run.evidence:
+                self.live_changes_list.addItem("No Live Watch observations or thesis changes were recorded.")
+            for item in trading_run.evidence:
+                if item.kind is RunEvidenceKind.THESIS_STATE:
+                    text = f"Thesis → {item.thesis_state.value}"
+                    if item.note:
+                        text += f"\n{item.note}"
+                else:
+                    text = f"Observation\n{item.note}"
+                self.live_changes_list.addItem(text)
+
+            for state, button in self.interpretation_buttons.items():
+                button.setChecked(trading_run.review_interpretation_outcome is state)
+            for state, button in self.adherence_buttons.items():
+                button.setChecked(trading_run.review_process_adherence is state)
+            self.takeaway_input.setText(trading_run.review_takeaway)
+            self.film_night_checkbox.setChecked(trading_run.review_film_night)
+        finally:
+            self._loading = False
+
+    def clear_state(self) -> None:
+        self._loading = True
+        try:
+            self.run_summary_label.setText("No Trading Run loaded")
+            self.tda_snapshot_list.clear()
+            self.live_changes_list.clear()
+            self.interpretation_group.setExclusive(False)
+            for button in self.interpretation_buttons.values():
+                button.setChecked(False)
+            self.interpretation_group.setExclusive(True)
+            self.adherence_group.setExclusive(False)
+            for button in self.adherence_buttons.values():
+                button.setChecked(False)
+            self.adherence_group.setExclusive(True)
+            self.takeaway_input.clear()
+            self.film_night_checkbox.setChecked(False)
+            self.show_market_review()
+        finally:
+            self._loading = False
+
+    def _selected_interpretation(self) -> InterpretationOutcome:
+        for state, button in self.interpretation_buttons.items():
+            if button.isChecked():
+                return state
+        return InterpretationOutcome.NOT_REVIEWED
+
+    def _selected_adherence(self) -> ProcessAdherence:
+        for state, button in self.adherence_buttons.items():
+            if button.isChecked():
+                return state
+        return ProcessAdherence.NOT_REVIEWED
+
+    def _emit_interpretation(self, *_args) -> None:
+        if self._loading:
+            return
+        self.interpretation_changed.emit(self._selected_interpretation().value)
+
+    def _emit_review(self, *_args) -> None:
+        if self._loading:
+            return
+        self.review_changed.emit(
+            self._selected_adherence().value,
+            self.takeaway_input.text().strip(),
+            self.film_night_checkbox.isChecked(),
+        )

@@ -1,8 +1,16 @@
+import json
 import sqlite3
 
 from ict_cockpit.analysis.trading_session_run import (
+    InterpretationOutcome,
+    ProcessAdherence,
+    RunEnvironment,
+    RunEvidenceEntry,
+    RunEvidenceKind,
+    ThesisState,
     TradingSessionRun,
     TradingSessionRunStatus,
+    WatchPointState,
 )
 
 
@@ -11,14 +19,40 @@ class TradingSessionRunRepository:
         self.connection = connection
 
     def save(self, session_run: TradingSessionRun) -> None:
+        evidence_json = json.dumps(
+            [
+                {
+                    "id": item.id,
+                    "kind": item.kind.value,
+                    "note": item.note,
+                    "thesis_state": item.thesis_state.value,
+                    "created_at": item.created_at,
+                }
+                for item in session_run.evidence
+            ]
+        )
+        entry_condition_states_json = json.dumps(
+            session_run.entry_condition_states,
+            sort_keys=True,
+        )
+        watch_point_states_json = json.dumps(
+            {
+                watch_point_id: state.value
+                for watch_point_id, state in session_run.watch_point_states.items()
+            },
+            sort_keys=True,
+        )
         with self.connection:
             self.connection.execute(
                 """
                 INSERT INTO trading_session_run (
                     id, trading_day_id, session_name, process_session_id,
                     tda_station_session_id, status, outcome, started_at,
-                    concluded_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    concluded_at, updated_at, current_thesis_state, evidence_json,
+                    review_process_adherence, review_takeaway, review_film_night,
+                    entry_condition_states_json, watch_point_states_json,
+                    run_environment, trade_plan_revision, review_interpretation_outcome
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                     trading_day_id = excluded.trading_day_id,
                     session_name = excluded.session_name,
@@ -28,7 +62,17 @@ class TradingSessionRunRepository:
                     outcome = excluded.outcome,
                     started_at = excluded.started_at,
                     concluded_at = excluded.concluded_at,
-                    updated_at = excluded.updated_at
+                    updated_at = excluded.updated_at,
+                    current_thesis_state = excluded.current_thesis_state,
+                    evidence_json = excluded.evidence_json,
+                    review_process_adherence = excluded.review_process_adherence,
+                    review_takeaway = excluded.review_takeaway,
+                    review_film_night = excluded.review_film_night,
+                    entry_condition_states_json = excluded.entry_condition_states_json,
+                    watch_point_states_json = excluded.watch_point_states_json,
+                    run_environment = excluded.run_environment,
+                    trade_plan_revision = excluded.trade_plan_revision,
+                    review_interpretation_outcome = excluded.review_interpretation_outcome
                 """,
                 (
                     session_run.id,
@@ -41,6 +85,16 @@ class TradingSessionRunRepository:
                     session_run.started_at,
                     session_run.concluded_at,
                     session_run.updated_at,
+                    session_run.current_thesis_state.value,
+                    evidence_json,
+                    session_run.review_process_adherence.value,
+                    session_run.review_takeaway,
+                    int(session_run.review_film_night),
+                    entry_condition_states_json,
+                    watch_point_states_json,
+                    session_run.environment.value,
+                    session_run.trade_plan_revision,
+                    session_run.review_interpretation_outcome.value,
                 ),
             )
 
@@ -49,7 +103,10 @@ class TradingSessionRunRepository:
             """
             SELECT id, trading_day_id, session_name, process_session_id,
                    tda_station_session_id, status, outcome, started_at,
-                   concluded_at, updated_at
+                   concluded_at, updated_at, current_thesis_state, evidence_json,
+                   review_process_adherence, review_takeaway, review_film_night,
+                   entry_condition_states_json, watch_point_states_json,
+                   run_environment, trade_plan_revision, review_interpretation_outcome
             FROM trading_session_run
             WHERE id = ?
             """,
@@ -62,7 +119,10 @@ class TradingSessionRunRepository:
             """
             SELECT id, trading_day_id, session_name, process_session_id,
                    tda_station_session_id, status, outcome, started_at,
-                   concluded_at, updated_at
+                   concluded_at, updated_at, current_thesis_state, evidence_json,
+                   review_process_adherence, review_takeaway, review_film_night,
+                   entry_condition_states_json, watch_point_states_json,
+                   run_environment, trade_plan_revision, review_interpretation_outcome
             FROM trading_session_run
             WHERE trading_day_id = ?
             ORDER BY started_at, rowid
@@ -73,6 +133,16 @@ class TradingSessionRunRepository:
 
     @staticmethod
     def _from_row(row) -> TradingSessionRun:
+        evidence = [
+            RunEvidenceEntry(
+                id=item["id"],
+                kind=RunEvidenceKind(item["kind"]),
+                note=item.get("note", ""),
+                thesis_state=ThesisState(item.get("thesis_state", ThesisState.NOT_SET.value)),
+                created_at=item["created_at"],
+            )
+            for item in json.loads(row[11])
+        ]
         return TradingSessionRun(
             id=row[0],
             trading_day_id=row[1],
@@ -84,4 +154,17 @@ class TradingSessionRunRepository:
             started_at=row[7],
             concluded_at=row[8],
             updated_at=row[9],
+            current_thesis_state=ThesisState(row[10]),
+            evidence=evidence,
+            review_process_adherence=ProcessAdherence(row[12]),
+            review_takeaway=row[13],
+            review_film_night=bool(row[14]),
+            entry_condition_states=json.loads(row[15]),
+            watch_point_states={
+                watch_point_id: WatchPointState(state)
+                for watch_point_id, state in json.loads(row[16]).items()
+            },
+            environment=RunEnvironment(row[17]),
+            trade_plan_revision=row[18],
+            review_interpretation_outcome=InterpretationOutcome(row[19]),
         )

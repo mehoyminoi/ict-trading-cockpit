@@ -47,11 +47,11 @@ class TradePlanWidget(QWidget):
             trade_plan.process_blueprint
         )
         self.trading_day_shell_widget = TradingDayShellWidget(
-            trade_plan.process_blueprint
+            trade_plan.process_blueprint,
+            live_watch_policy=trade_plan.live_watch_policy,
+            trade_plan_revision=trade_plan.revision,
         )
 
-        # Compatibility aliases while older callers/tests migrate to the new
-        # Trading Day -> Trading Run ownership model.
         self.trading_day_runtime_widget = self.trading_day_shell_widget.runtime
         self.tda_station_runner_widget = (
             self.trading_day_runtime_widget.tda_station_runner_widget
@@ -72,23 +72,43 @@ class TradePlanWidget(QWidget):
                 page = self._build_section_page(section)
             self.stack.addWidget(page)
 
-        self.section_list.currentRowChanged.connect(self.stack.setCurrentIndex)
+        self.section_list.currentRowChanged.connect(self._section_changed)
         self.section_list.setCurrentRow(0)
 
         body = QHBoxLayout()
+        body.setContentsMargins(0, 0, 0, 0)
+        body.setSpacing(6)
         body.addWidget(self.section_list)
         body.addWidget(self.stack, 1)
 
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(6, 6, 6, 6)
+        layout.setSpacing(5)
         layout.addWidget(self.title_label)
         layout.addWidget(self.subtitle_label)
         layout.addWidget(self.operating_model_label)
         layout.addLayout(body)
 
+    def _section_changed(self, row: int) -> None:
+        self.stack.setCurrentIndex(row)
+        process_active = self.selected_section_id == "process"
+
+        self.title_label.setVisible(not process_active)
+        self.subtitle_label.setVisible(not process_active)
+        self.operating_model_label.setVisible(not process_active)
+
     def _process_tab_changed(self, _index: int) -> None:
-        """Entering Run Trading Day is the normal Go action for Trading Run 1."""
         if self.process_tabs.currentWidget() is self.trading_day_shell_widget:
             self.trading_day_shell_widget.ensure_primary_trading_run_started()
+
+    def focus_runtime(self) -> None:
+        """Orient the UI directly to the persisted trading-day runtime."""
+        try:
+            process_row = self._section_ids.index("process")
+        except ValueError:
+            return
+        self.section_list.setCurrentRow(process_row)
+        self.process_tabs.setCurrentWidget(self.trading_day_shell_widget)
 
     def _build_section_page(self, section: TradePlanSectionDefinition) -> QWidget:
         page = QWidget()
