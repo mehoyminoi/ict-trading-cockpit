@@ -1,5 +1,6 @@
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
+    QCheckBox,
     QFrame,
     QGridLayout,
     QHBoxLayout,
@@ -18,22 +19,24 @@ from ict_cockpit.analysis.trading_session_run import (
     ThesisState,
 )
 from ict_cockpit.process_blueprint import ProcessBlueprint
+from ict_cockpit.trade_plan import LiveWatchPolicyDefinition
 
 
 class LiveWatchWidget(QWidget):
-    """Primary waiting-and-watching surface for an active Trading Run.
-
-    Live Watch should answer, at a glance: what did TDA establish, what am I
-    waiting for, how close is the setup to authorization, and what risk envelope
-    applies?  Evidence capture remains available but subordinate to operating
-    state.
-    """
+    """Primary waiting-and-watching surface for an active Trading Run."""
 
     observation_submitted = Signal(str)
     thesis_state_submitted = Signal(str, str)
+    entry_condition_changed = Signal(str, bool)
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        policy: LiveWatchPolicyDefinition | None = None,
+    ) -> None:
         super().__init__()
+        self.policy = policy or LiveWatchPolicyDefinition()
+        self._loading_readiness = False
+        self.entry_checkboxes: dict[str, QCheckBox] = {}
 
         self.heading = QLabel("Live Watch · Waiting & Watching")
         self.heading.setStyleSheet("font-size: 16px; font-weight: 600;")
@@ -42,9 +45,6 @@ class LiveWatchWidget(QWidget):
         )
         self.guidance.setWordWrap(True)
 
-        # ------------------------------------------------------------------
-        # TDA carry-forward / watch points
-        # ------------------------------------------------------------------
         self.tda_frame = QFrame()
         self.tda_frame.setFrameShape(QFrame.Shape.StyledPanel)
         tda_layout = QVBoxLayout(self.tda_frame)
@@ -60,12 +60,6 @@ class LiveWatchWidget(QWidget):
         tda_layout.addWidget(self.tda_summary_label)
         tda_layout.addWidget(self.watch_points_list)
 
-        # ------------------------------------------------------------------
-        # Entry readiness.  The alpha knows that the current Trade Plan expects
-        # eight confluence slots, but it does not yet encode their authoritative
-        # names or the required threshold.  Show that gap explicitly rather
-        # than converting an example into a trading rule.
-        # ------------------------------------------------------------------
         self.readiness_frame = QFrame()
         self.readiness_frame.setFrameShape(QFrame.Shape.StyledPanel)
         readiness_layout = QVBoxLayout(self.readiness_frame)
@@ -73,23 +67,23 @@ class LiveWatchWidget(QWidget):
         readiness_layout.setSpacing(4)
         readiness_heading = QLabel("Entry Readiness")
         readiness_heading.setStyleSheet("font-weight: 600;")
-        self.readiness_count_label = QLabel("0 / 8 confluences configured")
+        self.readiness_count_label = QLabel()
         self.readiness_count_label.setStyleSheet("font-size: 18px; font-weight: 600;")
-        self.readiness_required_label = QLabel("Required for entry: Not configured")
-        self.readiness_note_label = QLabel(
-            "The operating surface is ready for the eight Trade Plan conditions; their authoritative definitions still need to be encoded."
-        )
-        self.readiness_note_label.setWordWrap(True)
+        self.readiness_required_label = QLabel()
+        self.readiness_status_label = QLabel()
+        self.readiness_status_label.setWordWrap(True)
+        self.criteria_host = QWidget()
+        self.criteria_layout = QVBoxLayout(self.criteria_host)
+        self.criteria_layout.setContentsMargins(0, 0, 0, 0)
+        self.criteria_layout.setSpacing(2)
         readiness_layout.addWidget(readiness_heading)
         readiness_layout.addWidget(self.readiness_count_label)
         readiness_layout.addWidget(self.readiness_required_label)
-        readiness_layout.addWidget(self.readiness_note_label)
+        readiness_layout.addWidget(self.readiness_status_label)
+        readiness_layout.addWidget(self.criteria_host)
         readiness_layout.addStretch()
+        self._build_entry_criteria()
 
-        # ------------------------------------------------------------------
-        # Risk envelope.  Same principle: expose the decision slot now, but do
-        # not invent an instrument/account-specific stop allowance.
-        # ------------------------------------------------------------------
         self.risk_frame = QFrame()
         self.risk_frame.setFrameShape(QFrame.Shape.StyledPanel)
         risk_layout = QVBoxLayout(self.risk_frame)
@@ -97,21 +91,17 @@ class LiveWatchWidget(QWidget):
         risk_layout.setSpacing(4)
         risk_heading = QLabel("Risk Envelope")
         risk_heading.setStyleSheet("font-weight: 600;")
-        self.risk_instrument_label = QLabel("Instrument / account: Not configured")
+        self.risk_instrument_label = QLabel("Instrument / account context: inherited when configured")
         self.risk_stop_label = QLabel("Maximum permitted stop: Not configured")
-        self.risk_status_label = QLabel(
-            "Risk sizing will be derived from the active Trade Plan + account context, not re-entered here."
-        )
+        self.risk_status_label = QLabel()
         self.risk_status_label.setWordWrap(True)
         risk_layout.addWidget(risk_heading)
         risk_layout.addWidget(self.risk_instrument_label)
         risk_layout.addWidget(self.risk_stop_label)
         risk_layout.addWidget(self.risk_status_label)
         risk_layout.addStretch()
+        self._render_risk_policy()
 
-        # ------------------------------------------------------------------
-        # Thesis state is useful, but it is no longer the center of the room.
-        # ------------------------------------------------------------------
         self.thesis_frame = QFrame()
         self.thesis_frame.setFrameShape(QFrame.Shape.StyledPanel)
         thesis_layout = QVBoxLayout(self.thesis_frame)
@@ -120,7 +110,7 @@ class LiveWatchWidget(QWidget):
         thesis_top = QHBoxLayout()
         thesis_heading = QLabel("Thesis Crossroads")
         thesis_heading.setStyleSheet("font-weight: 600;")
-        self.thesis_state_label = QLabel("Current thesis state: Not Set")
+        self.thesis_state_label = QLabel("Current thesis: Not Set")
         thesis_top.addWidget(thesis_heading)
         thesis_top.addStretch()
         thesis_top.addWidget(self.thesis_state_label)
@@ -147,9 +137,6 @@ class LiveWatchWidget(QWidget):
         thesis_buttons.addStretch()
         thesis_layout.addLayout(thesis_buttons)
 
-        # Quiet evidence capture.  The full evidence list is intentionally kept
-        # populated for compatibility/telemetry but not rendered as a log in the
-        # normal operating room.
         self.observation_input = QLineEdit()
         self.observation_input.setPlaceholderText("Capture a material change or observation")
         self.capture_observation_button = QPushButton("Capture")
@@ -182,27 +169,59 @@ class LiveWatchWidget(QWidget):
         layout.addLayout(observation_row)
         layout.addWidget(self.evidence_list)
 
+    def _build_entry_criteria(self) -> None:
+        if not self.policy.entry_criteria:
+            self.readiness_count_label.setText("Entry criteria: Not configured")
+            self.readiness_required_label.setText("Required for entry: Not configured")
+            self.readiness_status_label.setText(
+                "This Trade Plan revision does not yet define entry-readiness criteria. Live Watch will not invent them."
+            )
+            return
+
+        for criterion in self.policy.entry_criteria:
+            checkbox = QCheckBox(criterion.name)
+            if criterion.description:
+                checkbox.setToolTip(criterion.description)
+            checkbox.toggled.connect(
+                lambda checked, criterion_id=criterion.id: self._entry_condition_toggled(
+                    criterion_id, checked
+                )
+            )
+            self.entry_checkboxes[criterion.id] = checkbox
+            self.criteria_layout.addWidget(checkbox)
+        self._render_readiness({})
+
+    def _render_risk_policy(self) -> None:
+        if self.policy.risk_summary.strip():
+            self.risk_status_label.setText(self.policy.risk_summary.strip())
+        else:
+            self.risk_status_label.setText(
+                "Risk rules are not yet encoded in this Trade Plan revision. Lower layers remain read-only with respect to trading policy."
+            )
+
     def clear_state(self) -> None:
         self.thesis_note_input.clear()
         self.observation_input.clear()
         self.watch_points_list.clear()
         self.tda_summary_label.setText("No TDA context loaded")
-        self.load_state(ThesisState.NOT_SET, [])
+        self.load_state(ThesisState.NOT_SET, [], {})
 
     def load_operating_context(
         self,
         thesis_state: ThesisState | str,
         evidence: list[RunEvidenceEntry],
+        entry_condition_states: dict[str, bool],
         tda_session: TDAStationSession | None,
         blueprint: ProcessBlueprint,
     ) -> None:
-        self.load_state(thesis_state, evidence)
+        self.load_state(thesis_state, evidence, entry_condition_states)
         self._load_tda_context(tda_session, blueprint)
 
     def load_state(
         self,
         thesis_state: ThesisState | str,
         evidence: list[RunEvidenceEntry],
+        entry_condition_states: dict[str, bool] | None = None,
     ) -> None:
         thesis_state = ThesisState(thesis_state)
         self.thesis_state_label.setText(f"Current thesis: {thesis_state.value}")
@@ -217,6 +236,36 @@ class LiveWatchWidget(QWidget):
             else:
                 text = f"{time_text} · {item.note}"
             self.evidence_list.addItem(text)
+        self._render_readiness(entry_condition_states or {})
+
+    def _render_readiness(self, states: dict[str, bool]) -> None:
+        if not self.policy.entry_criteria:
+            return
+
+        valid_ids = {criterion.id for criterion in self.policy.entry_criteria}
+        satisfied = sum(1 for criterion_id in valid_ids if states.get(criterion_id, False))
+        total = len(self.policy.entry_criteria)
+        required = self.policy.required_entry_count
+
+        self._loading_readiness = True
+        for criterion_id, checkbox in self.entry_checkboxes.items():
+            checkbox.setChecked(states.get(criterion_id, False))
+        self._loading_readiness = False
+
+        self.readiness_count_label.setText(f"{satisfied} / {total} criteria currently met")
+        self.readiness_required_label.setText(f"Required for entry: {required} / {total}")
+        if required is not None and satisfied >= required:
+            self.readiness_status_label.setText("Readiness threshold satisfied by the active Trade Plan.")
+        else:
+            remaining = (required or 0) - satisfied
+            self.readiness_status_label.setText(
+                f"Waiting · {max(remaining, 0)} additional criterion/criteria required."
+            )
+
+    def _entry_condition_toggled(self, criterion_id: str, checked: bool) -> None:
+        if self._loading_readiness:
+            return
+        self.entry_condition_changed.emit(criterion_id, checked)
 
     def _load_tda_context(
         self,
@@ -249,8 +298,6 @@ class LiveWatchWidget(QWidget):
             if observation:
                 populated.append((station_id, observation))
 
-        # If the synthesis stations are blank, surface other recorded TDA facts
-        # rather than making Live Watch feel disconnected from completed work.
         if not populated:
             populated = [
                 (item.station_id, item.observation.strip())
