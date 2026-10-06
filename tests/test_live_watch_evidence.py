@@ -111,6 +111,36 @@ def test_live_watch_capture_updates_active_trading_run() -> None:
     assert live_watch.observation_input.text() == ""
     assert "Supported" in live_watch.thesis_state_label.text()
     assert live_watch.evidence_list.count() == 2
+    assert live_watch.evidence_list.isHidden() is True
+
+
+def test_live_watch_carries_forward_tda_synthesis_and_exposes_operating_slots() -> None:
+    get_app()
+    shell = TradingDayShellWidget(build_default_process_blueprint())
+    shell.start_trading_run()
+    runner = shell.runtime.tda_station_runner_widget
+
+    runner.session.observation_for("tda-primary-draw").observation = "Previous Day Low"
+    runner.session.observation_for("tda-secondary-draw").observation = "London high if primary fails"
+    runner.session.observation_for("tda-thesis").observation = (
+        "Expect NYAM expansion lower after a buy-side liquidity sweep."
+    )
+
+    assert shell.runtime.apply_transition("finish-tda", override_incomplete=True) is True
+    live_watch = shell.runtime.live_watch_widget
+
+    rendered = "\n".join(
+        live_watch.watch_points_list.item(index).text()
+        for index in range(live_watch.watch_points_list.count())
+    )
+
+    assert "Primary Draw" in rendered
+    assert "Previous Day Low" in rendered
+    assert "Premarket Thesis" in rendered
+    assert "NYAM expansion lower" in rendered
+    assert live_watch.readiness_count_label.text() == "0 / 8 confluences configured"
+    assert "Not configured" in live_watch.readiness_required_label.text()
+    assert "Not configured" in live_watch.risk_stop_label.text()
 
 
 def test_restored_active_run_rehydrates_live_watch_evidence() -> None:
