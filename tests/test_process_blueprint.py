@@ -73,7 +73,7 @@ def test_process_blueprint_widget_selects_first_station() -> None:
 def test_default_trade_plan_owns_process_and_parallel_review_area() -> None:
     trade_plan = build_default_trade_plan()
 
-    assert trade_plan.revision == "Alpha 0.3"
+    assert trade_plan.revision == "Alpha 0.4"
     assert [section.id for section in trade_plan.sections] == [
         "foundation",
         "rules-safety",
@@ -97,10 +97,7 @@ def test_trade_plan_widget_exposes_process_and_review_as_peer_areas() -> None:
     get_app()
     widget = TradePlanWidget(build_default_trade_plan())
 
-    names = [
-        widget.section_list.item(index).text()
-        for index in range(widget.section_list.count())
-    ]
+    names = [widget.section_list.item(index).text() for index in range(widget.section_list.count())]
     assert names == [
         "Foundation",
         "Rules / Safety",
