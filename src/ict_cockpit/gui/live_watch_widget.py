@@ -1,6 +1,7 @@
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QCheckBox,
+    QComboBox,
     QFrame,
     QGridLayout,
     QHBoxLayout,
@@ -17,6 +18,7 @@ from ict_cockpit.analysis.trading_session_run import (
     RunEvidenceEntry,
     RunEvidenceKind,
     ThesisState,
+    WatchPointState,
 )
 from ict_cockpit.process_blueprint import ProcessBlueprint
 from ict_cockpit.trade_plan import LiveWatchPolicyDefinition
@@ -28,6 +30,7 @@ class LiveWatchWidget(QWidget):
     observation_submitted = Signal(str)
     thesis_state_submitted = Signal(str, str)
     entry_condition_changed = Signal(str, bool)
+    watch_point_state_changed = Signal(str, str)
 
     def __init__(
         self,
@@ -36,7 +39,9 @@ class LiveWatchWidget(QWidget):
         super().__init__()
         self.policy = policy or LiveWatchPolicyDefinition()
         self._loading_readiness = False
+        self._loading_watch_points = False
         self.entry_checkboxes: dict[str, QCheckBox] = {}
+        self.watch_point_combos: dict[str, QComboBox] = {}
 
         self.heading = QLabel("Live Watch · Waiting & Watching")
         self.heading.setStyleSheet("font-size: 16px; font-weight: 600;")
@@ -55,10 +60,21 @@ class LiveWatchWidget(QWidget):
         self.tda_summary_label = QLabel("No TDA context loaded")
         self.tda_summary_label.setWordWrap(True)
         self.watch_points_list = QListWidget()
-        self.watch_points_list.setMaximumHeight(145)
+        self.watch_points_list.setMaximumHeight(100)
         tda_layout.addWidget(tda_heading)
         tda_layout.addWidget(self.tda_summary_label)
         tda_layout.addWidget(self.watch_points_list)
+
+        structured_heading = QLabel("If / Then Watch Points")
+        structured_heading.setStyleSheet("font-weight: 600;")
+        tda_layout.addWidget(structured_heading)
+        self.structured_watch_points_host = QWidget()
+        self.structured_watch_points_layout = QVBoxLayout(
+            self.structured_watch_points_host
+        )
+        self.structured_watch_points_layout.setContentsMargins(0, 0, 0, 0)
+        self.structured_watch_points_layout.setSpacing(3)
+        tda_layout.addWidget(self.structured_watch_points_host)
 
         self.readiness_frame = QFrame()
         self.readiness_frame.setFrameShape(QFrame.Shape.StyledPanel)
@@ -91,7 +107,9 @@ class LiveWatchWidget(QWidget):
         risk_layout.setSpacing(4)
         risk_heading = QLabel("Risk Envelope")
         risk_heading.setStyleSheet("font-weight: 600;")
-        self.risk_instrument_label = QLabel("Instrument / account context: inherited when configured")
+        self.risk_instrument_label = QLabel(
+            "Instrument / account context: inherited when configured"
+        )
         self.risk_stop_label = QLabel("Maximum permitted stop: Not configured")
         self.risk_status_label = QLabel()
         self.risk_status_label.setWordWrap(True)
@@ -117,7 +135,9 @@ class LiveWatchWidget(QWidget):
         thesis_layout.addLayout(thesis_top)
 
         self.thesis_note_input = QLineEdit()
-        self.thesis_note_input.setPlaceholderText("Reason for a meaningful thesis change (optional)")
+        self.thesis_note_input.setPlaceholderText(
+            "Reason for a meaningful thesis change (optional)"
+        )
         thesis_layout.addWidget(self.thesis_note_input)
 
         thesis_buttons = QHBoxLayout()
@@ -130,7 +150,9 @@ class LiveWatchWidget(QWidget):
         ):
             button = QPushButton(state.value)
             button.clicked.connect(
-                lambda _checked=False, selected=state: self._submit_thesis_state(selected)
+                lambda _checked=False, selected=state: self._submit_thesis_state(
+                    selected
+                )
             )
             self.thesis_buttons[state] = button
             thesis_buttons.addWidget(button)
@@ -138,7 +160,9 @@ class LiveWatchWidget(QWidget):
         thesis_layout.addLayout(thesis_buttons)
 
         self.observation_input = QLineEdit()
-        self.observation_input.setPlaceholderText("Capture a material change or observation")
+        self.observation_input.setPlaceholderText(
+            "Capture a material change or observation"
+        )
         self.capture_observation_button = QPushButton("Capture")
         self.capture_observation_button.clicked.connect(self._submit_observation)
         self.observation_input.returnPressed.connect(self._submit_observation)
@@ -172,7 +196,9 @@ class LiveWatchWidget(QWidget):
     def _build_entry_criteria(self) -> None:
         if not self.policy.entry_criteria:
             self.readiness_count_label.setText("Entry criteria: Not configured")
-            self.readiness_required_label.setText("Required for entry: Not configured")
+            self.readiness_required_label.setText(
+                "Required for entry: Not configured"
+            )
             self.readiness_status_label.setText(
                 "This Trade Plan revision does not yet define entry-readiness criteria. Live Watch will not invent them."
             )
@@ -204,30 +230,42 @@ class LiveWatchWidget(QWidget):
         self.observation_input.clear()
         self.watch_points_list.clear()
         self.tda_summary_label.setText("No TDA context loaded")
-        self.load_state(ThesisState.NOT_SET, [], {})
+        self._render_structured_watch_points(None, {})
+        self.load_state(ThesisState.NOT_SET, [], {}, {})
 
     def load_operating_context(
         self,
         thesis_state: ThesisState | str,
         evidence: list[RunEvidenceEntry],
         entry_condition_states: dict[str, bool],
+        watch_point_states: dict[str, WatchPointState],
         tda_session: TDAStationSession | None,
         blueprint: ProcessBlueprint,
     ) -> None:
-        self.load_state(thesis_state, evidence, entry_condition_states)
-        self._load_tda_context(tda_session, blueprint)
+        self.load_state(
+            thesis_state,
+            evidence,
+            entry_condition_states,
+            watch_point_states,
+        )
+        self._load_tda_context(tda_session, blueprint, watch_point_states)
 
     def load_state(
         self,
         thesis_state: ThesisState | str,
         evidence: list[RunEvidenceEntry],
         entry_condition_states: dict[str, bool] | None = None,
+        watch_point_states: dict[str, WatchPointState] | None = None,
     ) -> None:
         thesis_state = ThesisState(thesis_state)
         self.thesis_state_label.setText(f"Current thesis: {thesis_state.value}")
         self.evidence_list.clear()
         for item in reversed(evidence[-12:]):
-            time_text = item.created_at[11:19] if len(item.created_at) >= 19 else item.created_at
+            time_text = (
+                item.created_at[11:19]
+                if len(item.created_at) >= 19
+                else item.created_at
+            )
             if item.kind is RunEvidenceKind.THESIS_STATE:
                 detail = item.thesis_state.value
                 if item.note:
@@ -237,13 +275,16 @@ class LiveWatchWidget(QWidget):
                 text = f"{time_text} · {item.note}"
             self.evidence_list.addItem(text)
         self._render_readiness(entry_condition_states or {})
+        self._apply_watch_point_states(watch_point_states or {})
 
     def _render_readiness(self, states: dict[str, bool]) -> None:
         if not self.policy.entry_criteria:
             return
 
         valid_ids = {criterion.id for criterion in self.policy.entry_criteria}
-        satisfied = sum(1 for criterion_id in valid_ids if states.get(criterion_id, False))
+        satisfied = sum(
+            1 for criterion_id in valid_ids if states.get(criterion_id, False)
+        )
         total = len(self.policy.entry_criteria)
         required = self.policy.required_entry_count
 
@@ -252,10 +293,16 @@ class LiveWatchWidget(QWidget):
             checkbox.setChecked(states.get(criterion_id, False))
         self._loading_readiness = False
 
-        self.readiness_count_label.setText(f"{satisfied} / {total} criteria currently met")
-        self.readiness_required_label.setText(f"Required for entry: {required} / {total}")
+        self.readiness_count_label.setText(
+            f"{satisfied} / {total} criteria currently met"
+        )
+        self.readiness_required_label.setText(
+            f"Required for entry: {required} / {total}"
+        )
         if required is not None and satisfied >= required:
-            self.readiness_status_label.setText("Readiness threshold satisfied by the active Trade Plan.")
+            self.readiness_status_label.setText(
+                "Readiness threshold satisfied by the active Trade Plan."
+            )
         else:
             remaining = (required or 0) - satisfied
             self.readiness_status_label.setText(
@@ -267,12 +314,92 @@ class LiveWatchWidget(QWidget):
             return
         self.entry_condition_changed.emit(criterion_id, checked)
 
+    def _clear_layout(self, layout) -> None:
+        while layout.count():
+            item = layout.takeAt(0)
+            child_layout = item.layout()
+            if child_layout is not None:
+                self._clear_layout(child_layout)
+                child_layout.deleteLater()
+            widget = item.widget()
+            if widget is not None:
+                widget.deleteLater()
+
+    def _render_structured_watch_points(
+        self,
+        tda_session: TDAStationSession | None,
+        states: dict[str, WatchPointState],
+    ) -> None:
+        self._clear_layout(self.structured_watch_points_layout)
+        self.watch_point_combos = {}
+
+        if tda_session is None or not tda_session.watch_points:
+            empty = QLabel("No structured If / Then watch points were filed in TDA.")
+            empty.setWordWrap(True)
+            self.structured_watch_points_layout.addWidget(empty)
+            return
+
+        self._loading_watch_points = True
+        for watch_point in tda_session.watch_points:
+            row = QHBoxLayout()
+            label = QLabel(
+                f"IF {watch_point.if_condition}  →  THEN {watch_point.then_action}"
+            )
+            label.setWordWrap(True)
+            combo = QComboBox()
+            combo.addItems([state.value for state in WatchPointState])
+            current_state = states.get(
+                watch_point.id,
+                WatchPointState.WAITING,
+            )
+            if not isinstance(current_state, WatchPointState):
+                current_state = WatchPointState(current_state)
+            combo.setCurrentText(current_state.value)
+            combo.currentTextChanged.connect(
+                lambda state_text, watch_point_id=watch_point.id: self._watch_point_state_changed(
+                    watch_point_id, state_text
+                )
+            )
+            self.watch_point_combos[watch_point.id] = combo
+            row.addWidget(label, 1)
+            row.addWidget(combo)
+            self.structured_watch_points_layout.addLayout(row)
+        self._loading_watch_points = False
+
+    def _apply_watch_point_states(
+        self,
+        states: dict[str, WatchPointState],
+    ) -> None:
+        if not self.watch_point_combos:
+            return
+        self._loading_watch_points = True
+        for watch_point_id, combo in self.watch_point_combos.items():
+            state = states.get(watch_point_id, WatchPointState.WAITING)
+            if not isinstance(state, WatchPointState):
+                state = WatchPointState(state)
+            combo.setCurrentText(state.value)
+        self._loading_watch_points = False
+
+    def _watch_point_state_changed(
+        self,
+        watch_point_id: str,
+        state_text: str,
+    ) -> None:
+        if self._loading_watch_points:
+            return
+        self.watch_point_state_changed.emit(
+            watch_point_id,
+            WatchPointState(state_text).value,
+        )
+
     def _load_tda_context(
         self,
         tda_session: TDAStationSession | None,
         blueprint: ProcessBlueprint,
+        watch_point_states: dict[str, WatchPointState],
     ) -> None:
         self.watch_points_list.clear()
+        self._render_structured_watch_points(tda_session, watch_point_states)
         if tda_session is None:
             self.tda_summary_label.setText("No saved TDA context available")
             return
@@ -294,7 +421,9 @@ class LiveWatchWidget(QWidget):
         for station_id in priority_ids:
             if station_id not in tda_session.station_ids:
                 continue
-            observation = tda_session.observation_for(station_id).observation.strip()
+            observation = tda_session.observation_for(
+                station_id
+            ).observation.strip()
             if observation:
                 populated.append((station_id, observation))
 
@@ -309,7 +438,7 @@ class LiveWatchWidget(QWidget):
             f"{tda_session.completed_count()}/{len(tda_session.station_ids)} TDA stations complete · key context carried forward"
         )
         if not populated:
-            self.watch_points_list.addItem("○ No explicit TDA watch points recorded yet")
+            self.watch_points_list.addItem("○ No TDA synthesis observations recorded")
             return
 
         for station_id, observation in populated:
