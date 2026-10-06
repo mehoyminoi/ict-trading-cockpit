@@ -51,6 +51,10 @@ class TradingSessionRunRepository:
             {gate_id: state.value for gate_id, state in session_run.authorization_gate_states.items()},
             sort_keys=True,
         )
+        market_time_context_json = json.dumps(
+            session_run.market_time_context,
+            sort_keys=True,
+        )
         with self.connection:
             self.connection.execute(
                 """
@@ -63,8 +67,9 @@ class TradingSessionRunRepository:
                     run_environment, trade_plan_revision, review_interpretation_outcome,
                     selected_playbook_id, selected_playbook_revision,
                     playbook_snapshot_json, setup_candidates_json,
-                    authorization_policy_snapshot_json, authorization_gate_states_json
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    authorization_policy_snapshot_json, authorization_gate_states_json,
+                    market_time_context_json
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                     trading_day_id = excluded.trading_day_id,
                     session_name = excluded.session_name,
@@ -90,7 +95,8 @@ class TradingSessionRunRepository:
                     playbook_snapshot_json = excluded.playbook_snapshot_json,
                     setup_candidates_json = excluded.setup_candidates_json,
                     authorization_policy_snapshot_json = excluded.authorization_policy_snapshot_json,
-                    authorization_gate_states_json = excluded.authorization_gate_states_json
+                    authorization_gate_states_json = excluded.authorization_gate_states_json,
+                    market_time_context_json = excluded.market_time_context_json
                 """,
                 (
                     session_run.id,
@@ -119,6 +125,7 @@ class TradingSessionRunRepository:
                     setup_candidates_json,
                     authorization_policy_snapshot_json,
                     authorization_gate_states_json,
+                    market_time_context_json,
                 ),
             )
 
@@ -144,7 +151,8 @@ class TradingSessionRunRepository:
                    run_environment, trade_plan_revision, review_interpretation_outcome,
                    selected_playbook_id, selected_playbook_revision,
                    playbook_snapshot_json, setup_candidates_json,
-                   authorization_policy_snapshot_json, authorization_gate_states_json
+                   authorization_policy_snapshot_json, authorization_gate_states_json,
+                   market_time_context_json
             FROM trading_session_run
             {where_clause}
         """
@@ -198,4 +206,5 @@ class TradingSessionRunRepository:
                 gate_id: AuthorizationGateState(state)
                 for gate_id, state in json.loads(row[25] or "{}").items()
             },
+            market_time_context=json.loads(row[26] or "{}"),
         )
