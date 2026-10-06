@@ -20,7 +20,10 @@ from ict_cockpit.analysis.trading_session_run import (
 )
 from ict_cockpit.gui.trading_day_runtime_widget import TradingDayRuntimeWidget
 from ict_cockpit.process_blueprint import ProcessBlueprint
-from ict_cockpit.trade_plan import LiveWatchPolicyDefinition
+from ict_cockpit.trade_plan import (
+    LiveWatchPolicyDefinition,
+    PlaybookDefinition,
+)
 
 
 class TradingDayShellWidget(QWidget):
@@ -33,6 +36,7 @@ class TradingDayShellWidget(QWidget):
         self,
         blueprint: ProcessBlueprint,
         live_watch_policy: LiveWatchPolicyDefinition | None = None,
+        playbooks: tuple[PlaybookDefinition, ...] = (),
         *,
         run_environment: RunEnvironment = RunEnvironment.LIVE,
         trade_plan_revision: str = "",
@@ -40,6 +44,7 @@ class TradingDayShellWidget(QWidget):
         super().__init__()
         self.blueprint = blueprint
         self.live_watch_policy = live_watch_policy or LiveWatchPolicyDefinition()
+        self.playbooks = tuple(playbooks)
         self.run_environment = RunEnvironment(run_environment)
         self.trade_plan_revision = trade_plan_revision.strip()
         self.trading_day = TradingDay()
@@ -94,6 +99,7 @@ class TradingDayShellWidget(QWidget):
             blueprint,
             embedded_session_run=True,
             live_watch_policy=self.live_watch_policy,
+            playbooks=self.playbooks,
         )
 
         self.runtime.layout().removeWidget(self.runtime.transition_frame)
@@ -101,6 +107,7 @@ class TradingDayShellWidget(QWidget):
         runtime_layout.addWidget(self.runtime)
 
         self.runtime.session_changed.connect(self._process_session_changed)
+        self.runtime.playbook_selected.connect(self._select_playbook)
         runner = self.runtime.tda_station_runner_widget
         runner.session_changed.connect(lambda _session: self._update_view())
         runner.view_tabs.currentChanged.connect(lambda _index: self._update_view())
@@ -110,7 +117,7 @@ class TradingDayShellWidget(QWidget):
         self.runtime.live_watch_point_state_changed.connect(
             self._set_live_watch_point_state
         )
-        self.runtime.post_market_review_widget.interpretation_changed.connect(
+        self.runtime.post_market_interpretation_submitted.connect(
             self._update_interpretation_outcome
         )
         self.runtime.post_market_review_submitted.connect(self._update_post_market_review)
@@ -166,6 +173,21 @@ class TradingDayShellWidget(QWidget):
         self.session_runs = self.trading_runs
         self.active_session_run = self.active_trading_run
 
+    def _playbook_by_id(self, playbook_id: str) -> PlaybookDefinition | None:
+        for playbook in self.playbooks:
+            if playbook.id == playbook_id:
+                return playbook
+        return None
+
+    def _selected_playbook(self) -> PlaybookDefinition | None:
+        run = self.active_trading_run
+        if run is None or not run.playbook_snapshot:
+            return None
+        try:
+            return PlaybookDefinition.from_snapshot(run.playbook_snapshot)
+        except (TypeError, ValueError):
+            return None
+
     def _current_tda_station_name(self) -> str:
         station_id = self.runtime.tda_station_runner_widget.current_station_id
         for mode in self.blueprint.modes:
@@ -192,7 +214,12 @@ class TradingDayShellWidget(QWidget):
             if run.environment is not RunEnvironment.LIVE
             else ""
         )
-        text = f"{run.run_label}{environment} · {mode.name}"
+        playbook = (
+            f" · {run.playbook_snapshot.get('name', run.selected_playbook_id)}"
+            if run.selected_playbook_id
+            else ""
+        )
+        text = f"{run.run_label}{environment} · {mode.name}{playbook}"
         if mode.id == "tda":
             runner = self.runtime.tda_station_runner_widget
             text += (
@@ -244,6 +271,27 @@ class TradingDayShellWidget(QWidget):
     def start_session_run(self, _session_name: str = "") -> bool:
         return self.start_trading_run()
 
+    def _select_playbook(self, playbook_id: str) -> None:
+        run = self.active_trading_run
+        if run is None:
+            return
+
+        if not playbook_id:
+            run.clear_playbook()
+        else:
+            playbook = self._playbook_by_id(playbook_id)
+            if playbook is None or not playbook.available:
+                return
+            run.select_playbook(
+                playbook.id,
+                playbook.revision,
+                playbook.to_snapshot(),
+            )
+
+        self.session_run_changed.emit(run)
+        self.runtime.load_trading_run(run)
+        self._update_view()
+
     def _capture_live_observation(self, note: str) -> None:
         run = self.active_trading_run
         if run is None:
@@ -264,11 +312,11 @@ class TradingDayShellWidget(QWidget):
 
     def _set_live_entry_condition(self, criterion_id: str, satisfied: bool) -> None:
         run = self.active_trading_run
+        playbook = self._selected_playbook()
         if run is None:
             return
-        valid_ids = {
-            criterion.id for criterion in self.live_watch_policy.entry_criteria
-        }
+        policy = playbook.live_watch_policy() if playbook else self.live_watch_policy
+        valid_ids = {criterion.id for criterion in policy.entry_criteria}
         if criterion_id not in valid_ids:
             return
         run.set_entry_condition(criterion_id, satisfied)
@@ -284,6 +332,12 @@ class TradingDayShellWidget(QWidget):
             watch_point.id
             for watch_point in self.runtime.tda_station_runner_widget.session.watch_points
         }
+        playbook = self._selected_playbook()
+        if playbook is not None:
+            valid_ids.update(
+                playbook.watch_point_runtime_id(template.id)
+                for template in playbook.watch_point_templates
+            )
         if watch_point_id not in valid_ids:
             return
         run.set_watch_point_state(watch_point_id, state)
@@ -399,9 +453,14 @@ class TradingDayShellWidget(QWidget):
                 if run.environment is not RunEnvironment.LIVE
                 else ""
             )
+            playbook = (
+                f" · {run.playbook_snapshot.get('name', run.selected_playbook_id)}"
+                if run.selected_playbook_id
+                else ""
+            )
             outcome = f" · {run.outcome}" if run.outcome else ""
             self.run_history.addItem(
-                f"{state} · {run.run_label}{environment}{outcome}"
+                f"{state} · {run.run_label}{environment}{playbook}{outcome}"
             )
 
     def _sync_tda_nav(self) -> None:
