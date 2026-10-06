@@ -90,6 +90,15 @@ class TradePlanWidget(QWidget):
         if self.process_tabs.currentWidget() is self.trading_day_shell_widget:
             self.trading_day_shell_widget.ensure_primary_trading_run_started()
 
+    def focus_runtime(self) -> None:
+        """Orient the UI directly to the persisted trading-day runtime."""
+        try:
+            process_row = self._section_ids.index("process")
+        except ValueError:
+            return
+        self.section_list.setCurrentRow(process_row)
+        self.process_tabs.setCurrentWidget(self.trading_day_shell_widget)
+
     def _build_section_page(self, section: TradePlanSectionDefinition) -> QWidget:
         page = QWidget()
         layout = QVBoxLayout(page)
