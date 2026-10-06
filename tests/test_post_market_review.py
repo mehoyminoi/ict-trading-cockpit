@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QApplication
 from ict_cockpit.analysis.trading_day import TradingDay
 from ict_cockpit.analysis.trading_day_session import TradingDaySession
 from ict_cockpit.analysis.trading_session_run import (
+    InterpretationOutcome,
     ProcessAdherence,
     ThesisState,
     TradingRun,
@@ -42,26 +43,38 @@ def test_schema_preserves_post_market_review_columns(tmp_path) -> None:
     version = connection.execute("PRAGMA user_version").fetchone()[0]
 
     assert version == CURRENT_SCHEMA_VERSION
+    assert "review_interpretation_outcome" in columns
     assert "review_process_adherence" in columns
     assert "review_takeaway" in columns
     assert "review_film_night" in columns
     connection.close()
 
 
-def test_trading_run_review_judgments_are_independent_of_market_outcome() -> None:
+def test_interpretation_and_process_judgments_remain_independent() -> None:
     run = TradingRun("day-1", "Trading Run 1", "process-1")
     run.record_thesis_state(ThesisState.INVALIDATED, "Morning thesis failed")
 
     run.update_post_market_review(
+        interpretation_outcome=InterpretationOutcome.MISSED_CRITICAL_INFORMATION,
         process_adherence=ProcessAdherence.FOLLOWED,
         takeaway="Invalidation was respected without forcing a replacement trade.",
         film_night=True,
     )
 
     assert run.current_thesis_state is ThesisState.INVALIDATED
+    assert run.review_interpretation_outcome is (
+        InterpretationOutcome.MISSED_CRITICAL_INFORMATION
+    )
     assert run.review_process_adherence is ProcessAdherence.FOLLOWED
     assert "Invalidation was respected" in run.review_takeaway
     assert run.review_film_night is True
+
+
+def test_unexplained_means_study_needed_not_randomness() -> None:
+    assert InterpretationOutcome.UNEXPLAINED_STUDY_NEEDED.value == (
+        "Changed — Unexplained / Study Needed"
+    )
+    assert "Study Needed" in InterpretationOutcome.UNEXPLAINED_STUDY_NEEDED.value
 
 
 def test_post_market_review_round_trips_through_repository(tmp_path) -> None:
@@ -76,6 +89,7 @@ def test_post_market_review_round_trips_through_repository(tmp_path) -> None:
     process_repository.save(process_session)
     run = TradingRun(day.id, "Trading Run 1", process_session.id)
     run.update_post_market_review(
+        interpretation_outcome=InterpretationOutcome.UNEXPLAINED_STUDY_NEEDED,
         process_adherence=ProcessAdherence.MIXED,
         takeaway="Entry patience was good; management became reactive.",
         film_night=True,
@@ -87,6 +101,9 @@ def test_post_market_review_round_trips_through_repository(tmp_path) -> None:
     restored = run_repository.get_by_id(run.id)
 
     assert restored is not None
+    assert restored.review_interpretation_outcome is (
+        InterpretationOutcome.UNEXPLAINED_STUDY_NEEDED
+    )
     assert restored.review_process_adherence is ProcessAdherence.MIXED
     assert restored.review_takeaway == "Entry patience was good; management became reactive."
     assert restored.review_film_night is True
@@ -126,6 +143,25 @@ def test_market_review_contrasts_tda_with_live_watch_without_process_click_log()
     assert not hasattr(review, "timeline_list")
 
 
+def test_market_review_records_interpretation_before_process_review() -> None:
+    get_app()
+    shell = TradingDayShellWidget(build_default_process_blueprint())
+    shell.start_trading_run()
+    run = shell.active_trading_run
+    assert run is not None
+
+    shell.runtime.apply_transition("tda-stand-down", reason="No valid setup developed")
+    review = shell.runtime.post_market_review_widget
+
+    assert review.stage_stack.currentWidget() is review.market_review_page
+    review.interpretation_buttons[
+        InterpretationOutcome.MATERIALLY_ACCURATE
+    ].click()
+
+    assert run.review_interpretation_outcome is InterpretationOutcome.MATERIALLY_ACCURATE
+    assert run.review_process_adherence is ProcessAdherence.NOT_REVIEWED
+
+
 def test_process_adherence_is_a_separate_review_stage() -> None:
     get_app()
     shell = TradingDayShellWidget(build_default_process_blueprint())
@@ -146,6 +182,7 @@ def test_process_adherence_is_a_separate_review_stage() -> None:
     review.takeaway_input.editingFinished.emit()
     review.film_night_checkbox.setChecked(True)
 
+    assert run.review_interpretation_outcome is InterpretationOutcome.NOT_REVIEWED
     assert run.review_process_adherence is ProcessAdherence.FOLLOWED
     assert run.review_takeaway == "No trade was the correct process outcome."
     assert run.review_film_night is True
@@ -167,6 +204,7 @@ def test_restored_post_market_run_rehydrates_both_review_stages() -> None:
     )
     shell.runtime.apply_transition("tda-stand-down", reason="No valid setup developed")
     run.update_post_market_review(
+        interpretation_outcome=InterpretationOutcome.EXOGENOUS_EVENT,
         process_adherence=ProcessAdherence.FOLLOWED,
         takeaway="No trade was the correct process outcome.",
         film_night=False,
@@ -185,6 +223,9 @@ def test_restored_post_market_run_rehydrates_both_review_stages() -> None:
     assert restored_shell.runtime.session.current_mode_id == "post-market"
     assert review.tda_snapshot_list.count() == 1
     assert "prior-day low" in review.tda_snapshot_list.item(0).text()
+    assert review.interpretation_buttons[
+        InterpretationOutcome.EXOGENOUS_EVENT
+    ].isChecked() is True
     assert review.adherence_buttons[ProcessAdherence.FOLLOWED].isChecked() is True
     assert review.takeaway_input.text() == "No trade was the correct process outcome."
     assert review.film_night_checkbox.isChecked() is False
