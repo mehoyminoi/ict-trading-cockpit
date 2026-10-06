@@ -24,17 +24,19 @@ from ict_cockpit.gui.post_market_review_widget import PostMarketReviewWidget
 from ict_cockpit.gui.tda_station_runner_widget import TDAStationRunnerWidget
 from ict_cockpit.gui.tda_watch_point_widget import TDAWatchPointWidget
 from ict_cockpit.process_blueprint import ModeDefinition, ProcessBlueprint
-from ict_cockpit.trade_plan import LiveWatchPolicyDefinition
+from ict_cockpit.trade_plan import LiveWatchPolicyDefinition, PlaybookDefinition
 
 
 class TradingDayRuntimeWidget(QWidget):
     """Runtime shell for deliberate movement through process modes."""
 
     session_changed = Signal(TradingDaySession)
+    playbook_selected = Signal(str)
     live_observation_submitted = Signal(str)
     live_thesis_state_submitted = Signal(str, str)
     live_entry_condition_changed = Signal(str, bool)
     live_watch_point_state_changed = Signal(str, str)
+    post_market_interpretation_submitted = Signal(str)
     post_market_review_submitted = Signal(str, str, bool)
 
     def __init__(
@@ -43,10 +45,12 @@ class TradingDayRuntimeWidget(QWidget):
         *,
         embedded_session_run: bool = False,
         live_watch_policy: LiveWatchPolicyDefinition | None = None,
+        playbooks: tuple[PlaybookDefinition, ...] = (),
     ) -> None:
         super().__init__()
         self.blueprint = blueprint
         self.live_watch_policy = live_watch_policy or LiveWatchPolicyDefinition()
+        self.playbooks = tuple(playbooks)
         self.embedded_session_run = embedded_session_run
         self.modes = list(blueprint.modes)
         if not self.modes:
@@ -76,10 +80,13 @@ class TradingDayRuntimeWidget(QWidget):
         self.mode_pages: dict[str, QWidget] = {}
 
         self.tda_station_runner_widget = TDAStationRunnerWidget(blueprint)
-        self.tda_watch_point_widget = TDAWatchPointWidget()
+        self.tda_watch_point_widget = TDAWatchPointWidget(self.playbooks)
         self.tda_watch_point_widget.add_requested.connect(self._add_tda_watch_point)
         self.tda_watch_point_widget.remove_requested.connect(
             self._remove_tda_watch_point
+        )
+        self.tda_watch_point_widget.playbook_selected.connect(
+            self.playbook_selected.emit
         )
         self.tda_station_runner_widget.session_changed.connect(
             lambda _session: self._refresh_tda_watch_point_editor()
@@ -103,6 +110,9 @@ class TradingDayRuntimeWidget(QWidget):
         )
 
         self.post_market_review_widget = PostMarketReviewWidget(blueprint)
+        self.post_market_review_widget.interpretation_changed.connect(
+            self.post_market_interpretation_submitted.emit
+        )
         self.post_market_review_widget.review_changed.connect(
             self.post_market_review_submitted.emit
         )
@@ -192,6 +202,15 @@ class TradingDayRuntimeWidget(QWidget):
         )
         runner.session_changed.emit(runner.session)
 
+    def _selected_playbook(self) -> PlaybookDefinition | None:
+        run = self.trading_run
+        if run is None or not run.playbook_snapshot:
+            return None
+        try:
+            return PlaybookDefinition.from_snapshot(run.playbook_snapshot)
+        except (TypeError, ValueError):
+            return None
+
     def _add_tda_watch_point(self, if_condition: str, then_action: str) -> None:
         self.tda_station_runner_widget.session.add_watch_point(
             if_condition,
@@ -214,7 +233,15 @@ class TradingDayRuntimeWidget(QWidget):
         )
         self.tda_watch_point_widget.setVisible(visible)
         if visible:
-            self.tda_watch_point_widget.load_watch_points(runner.session.watch_points)
+            selected_id = (
+                self.trading_run.selected_playbook_id
+                if self.trading_run is not None
+                else ""
+            )
+            self.tda_watch_point_widget.load_context(
+                selected_id,
+                runner.session.watch_points,
+            )
 
     def apply_transition(
         self,
@@ -337,6 +364,7 @@ class TradingDayRuntimeWidget(QWidget):
 
     def load_trading_run(self, trading_run: TradingRun) -> None:
         self.trading_run = trading_run
+        playbook = self._selected_playbook()
         self.live_watch_widget.load_operating_context(
             trading_run.current_thesis_state,
             trading_run.evidence,
@@ -344,6 +372,7 @@ class TradingDayRuntimeWidget(QWidget):
             trading_run.watch_point_states,
             self.tda_station_runner_widget.session,
             self.blueprint,
+            playbook,
         )
         self.post_market_review_widget.load_state(
             trading_run,
@@ -453,6 +482,7 @@ class TradingDayRuntimeWidget(QWidget):
                 self.trading_run.watch_point_states,
                 self.tda_station_runner_widget.session,
                 self.blueprint,
+                self._selected_playbook(),
             )
         elif current_mode.id == "post-market" and self.trading_run is not None:
             self.post_market_review_widget.load_state(
