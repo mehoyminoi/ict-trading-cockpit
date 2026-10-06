@@ -1,10 +1,11 @@
+import gc
 import os
 
 import pytest
 from PySide6.QtWidgets import QApplication
 
 
-# Keep a strong process-lifetime reference to the Qt application. Individual
+# Keep a strong session-lifetime reference to the Qt application. Individual
 # GUI tests historically call QApplication.instance() as needed, but relying on
 # temporary Python references becomes fragile as the suite creates and destroys
 # hundreds of PySide widgets/event filters.
@@ -26,5 +27,12 @@ def qt_application() -> QApplication:
 
     yield app
 
-    # Do not explicitly destroy QApplication here. Qt owns process-level native
-    # resources and teardown is safest when Python exits after the test session.
+    # Tear Qt down while Python classes/slots are still alive. Leaving the
+    # QApplication until interpreter shutdown can produce misleading slot
+    # lookup diagnostics after pytest has already reported success.
+    app.closeAllWindows()
+    app.processEvents()
+    app.quit()
+    app.processEvents()
+    _TEST_QAPP = None
+    gc.collect()
