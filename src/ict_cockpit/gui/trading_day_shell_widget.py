@@ -1,4 +1,4 @@
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -43,6 +43,11 @@ class TradingDayShellWidget(QWidget):
         self.summary_label = QLabel()
         self.summary_label.setWordWrap(True)
 
+        self.resume_context_label = QLabel()
+        self.resume_context_label.setWordWrap(True)
+        self.resume_context_label.setFrameShape(QFrame.Shape.StyledPanel)
+        self.resume_context_label.setContentsMargins(10, 6, 10, 6)
+
         self.run_history_label = QLabel("Trading Runs")
         self.run_history = QListWidget()
         # The run list is context, not the working surface. Keep it compact so
@@ -79,18 +84,31 @@ class TradingDayShellWidget(QWidget):
             blueprint,
             embedded_session_run=True,
         )
+
+        # Process transitions are persistent action chrome, not scroll content.
+        # Keep them anchored below the viewport so the primary next action never
+        # disappears under the scrollbars on shorter displays.
+        self.runtime.layout().removeWidget(self.runtime.transition_frame)
+        self.runtime.transition_frame.setParent(self)
         runtime_layout.addWidget(self.runtime)
+
         self.runtime.session_changed.connect(self._process_session_changed)
+        self.runtime.tda_station_runner_widget.session_changed.connect(
+            lambda _session: self._update_view()
+        )
         self.runtime.live_observation_submitted.connect(self._capture_live_observation)
         self.runtime.live_thesis_state_submitted.connect(self._record_live_thesis_state)
         self.runtime.post_market_review_submitted.connect(self._update_post_market_review)
 
         # The executable process has grown taller than some displays. A scroll
-        # viewport keeps the window responsive to monitor height without
-        # changing the runtime's internal navigation behavior.
+        # viewport keeps the working content responsive to monitor height while
+        # action controls remain fixed outside it.
         self.runtime_scroll = QScrollArea()
         self.runtime_scroll.setWidgetResizable(True)
         self.runtime_scroll.setFrameShape(QFrame.Shape.NoFrame)
+        self.runtime_scroll.setHorizontalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAlwaysOff
+        )
         self.runtime_scroll.setSizePolicy(
             QSizePolicy.Policy.Expanding,
             QSizePolicy.Policy.Expanding,
@@ -102,10 +120,12 @@ class TradingDayShellWidget(QWidget):
         layout.setSpacing(6)
         layout.addWidget(self.title_label)
         layout.addWidget(self.summary_label)
+        layout.addWidget(self.resume_context_label)
         layout.addWidget(self.run_history_label)
         layout.addWidget(self.run_history)
         layout.addLayout(controls)
         layout.addWidget(self.runtime_scroll, 1)
+        layout.addWidget(self.runtime.transition_frame)
 
         self._update_view()
 
@@ -118,6 +138,40 @@ class TradingDayShellWidget(QWidget):
     def _sync_legacy_aliases(self) -> None:
         self.session_runs = self.trading_runs
         self.active_session_run = self.active_trading_run
+
+    def _current_tda_station_name(self) -> str:
+        station_id = self.runtime.tda_station_runner_widget.current_station_id
+        for mode in self.blueprint.modes:
+            if mode.id != "tda":
+                continue
+            for deck in mode.decks:
+                for station in deck.stations:
+                    if station.id == station_id:
+                        return station.name
+        return station_id
+
+    def _resume_context_text(self) -> str:
+        run = self.active_trading_run
+        if run is None:
+            if self.trading_day.status is TradingDayLifecycleStatus.COMPLETE:
+                return "You are here · Trading Day complete"
+            if self.trading_runs:
+                return "You are here · Between Trading Runs"
+            return "You are here · Fresh Trading Day"
+
+        mode = self.runtime.current_mode
+        text = f"You are here · {run.run_label} · {mode.name}"
+        if mode.id == "tda":
+            runner = self.runtime.tda_station_runner_widget
+            text += (
+                f" · {self._current_tda_station_name()} · "
+                f"{runner.session.completed_count()}/{len(runner.session.station_ids)} stations complete"
+            )
+        elif mode.id == "live-watch":
+            text += f" · Thesis: {run.current_thesis_state.value}"
+        elif mode.id == "post-market":
+            text += " · Review in progress"
+        return text
 
     def ensure_primary_trading_run_started(self) -> bool:
         """Start Trading Run 1 automatically when a fresh day enters Run Trading Day."""
@@ -166,6 +220,7 @@ class TradingDayShellWidget(QWidget):
         run.add_observation(note)
         self.session_run_changed.emit(run)
         self.runtime.load_trading_run(run)
+        self._update_view()
 
     def _record_live_thesis_state(self, state: str, note: str) -> None:
         run = self.active_trading_run
@@ -174,6 +229,7 @@ class TradingDayShellWidget(QWidget):
         run.record_thesis_state(state, note)
         self.session_run_changed.emit(run)
         self.runtime.load_trading_run(run)
+        self._update_view()
 
     def _update_post_market_review(
         self,
@@ -199,6 +255,8 @@ class TradingDayShellWidget(QWidget):
             return
         if process_session.status is TradingDayStatus.COMPLETE:
             self._conclude_active_trading_run(process_session.day_outcome)
+            return
+        self._update_view()
 
     def _conclude_active_trading_run(self, outcome: str = "") -> None:
         run = self.active_trading_run
@@ -296,8 +354,11 @@ class TradingDayShellWidget(QWidget):
                 f"{len(self.trading_runs)} concluded run(s)"
             )
 
+        self.resume_context_label.setText(self._resume_context_text())
+
         active = self.active_trading_run is not None
         self.runtime_scroll.setVisible(active)
+        self.runtime.transition_frame.setVisible(active)
 
         # Keep history available between runs and at day completion, but get it
         # out of the way while the operator is actively working the process.
