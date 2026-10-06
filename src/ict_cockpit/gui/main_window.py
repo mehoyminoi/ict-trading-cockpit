@@ -65,7 +65,9 @@ class MainWindow(QMainWindow):
         )
 
         self.setWindowTitle(window_title())
-        self.resize(900, 650)
+        # Give the cockpit enough initial working room on a desktop without
+        # forcing maximized mode. The runtime remains scrollable on smaller displays.
+        self.resize(1120, 760)
 
         self.trade_plan = build_default_trade_plan()
         self.trade_plan_widget = TradePlanWidget(self.trade_plan)
@@ -244,6 +246,10 @@ class MainWindow(QMainWindow):
                 process_session=process_session,
                 tda_session=tda_session,
             )
+            # Data restoration is only half of persistence. Put the operator
+            # back at the runtime surface that owns the restored state.
+            self.tabs.setCurrentWidget(self.trade_plan_widget)
+            self.trade_plan_widget.focus_runtime()
             self.status_bar.showMessage("Restored active Trading Day", 3000)
         else:
             # Compatibility fallback for databases created before Session Runs
@@ -293,7 +299,7 @@ class MainWindow(QMainWindow):
     def save_trading_session_run(self, session_run) -> None:
         self.trading_session_run_repository.save(session_run)
         self.status_bar.showMessage(
-            f"{session_run.session_name} Session Run saved",
+            f"{session_run.session_name} Trading Run saved",
             1200,
         )
 
