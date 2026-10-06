@@ -22,6 +22,7 @@ from ict_cockpit.analysis.trading_session_run import TradingRun
 from ict_cockpit.gui.live_watch_widget import LiveWatchWidget
 from ict_cockpit.gui.post_market_review_widget import PostMarketReviewWidget
 from ict_cockpit.gui.tda_station_runner_widget import TDAStationRunnerWidget
+from ict_cockpit.gui.tda_watch_point_widget import TDAWatchPointWidget
 from ict_cockpit.process_blueprint import ModeDefinition, ProcessBlueprint
 from ict_cockpit.trade_plan import LiveWatchPolicyDefinition
 
@@ -33,6 +34,7 @@ class TradingDayRuntimeWidget(QWidget):
     live_observation_submitted = Signal(str)
     live_thesis_state_submitted = Signal(str, str)
     live_entry_condition_changed = Signal(str, bool)
+    live_watch_point_state_changed = Signal(str, str)
     post_market_review_submitted = Signal(str, str, bool)
 
     def __init__(
@@ -74,6 +76,18 @@ class TradingDayRuntimeWidget(QWidget):
         self.mode_pages: dict[str, QWidget] = {}
 
         self.tda_station_runner_widget = TDAStationRunnerWidget(blueprint)
+        self.tda_watch_point_widget = TDAWatchPointWidget()
+        self.tda_watch_point_widget.add_requested.connect(self._add_tda_watch_point)
+        self.tda_watch_point_widget.remove_requested.connect(
+            self._remove_tda_watch_point
+        )
+        self.tda_station_runner_widget.session_changed.connect(
+            lambda _session: self._refresh_tda_watch_point_editor()
+        )
+        self.tda_station_runner_widget.view_tabs.currentChanged.connect(
+            lambda _index: self._refresh_tda_watch_point_editor()
+        )
+
         self.live_watch_widget = LiveWatchWidget(self.live_watch_policy)
         self.live_watch_widget.observation_submitted.connect(
             self.live_observation_submitted.emit
@@ -84,6 +98,10 @@ class TradingDayRuntimeWidget(QWidget):
         self.live_watch_widget.entry_condition_changed.connect(
             self.live_entry_condition_changed.emit
         )
+        self.live_watch_widget.watch_point_state_changed.connect(
+            self.live_watch_point_state_changed.emit
+        )
+
         self.post_market_review_widget = PostMarketReviewWidget(blueprint)
         self.post_market_review_widget.review_changed.connect(
             self.post_market_review_submitted.emit
@@ -126,6 +144,7 @@ class TradingDayRuntimeWidget(QWidget):
         layout.addWidget(self.summary_label)
         layout.addLayout(self.mode_rail)
         layout.addWidget(self.mode_stack, 1)
+        layout.addWidget(self.tda_watch_point_widget)
         layout.addWidget(self.transition_frame)
 
         if self.embedded_session_run:
@@ -161,8 +180,41 @@ class TradingDayRuntimeWidget(QWidget):
         ]
 
     def _touch(self) -> None:
-        self.session.updated_at = datetime.now().astimezone().isoformat(timespec="seconds")
+        self.session.updated_at = datetime.now().astimezone().isoformat(
+            timespec="seconds"
+        )
         self.session_changed.emit(self.session)
+
+    def _touch_tda_session(self) -> None:
+        runner = self.tda_station_runner_widget
+        runner.session.updated_at = datetime.now().astimezone().isoformat(
+            timespec="seconds"
+        )
+        runner.session_changed.emit(runner.session)
+
+    def _add_tda_watch_point(self, if_condition: str, then_action: str) -> None:
+        self.tda_station_runner_widget.session.add_watch_point(
+            if_condition,
+            then_action,
+        )
+        self._touch_tda_session()
+        self._refresh_tda_watch_point_editor()
+
+    def _remove_tda_watch_point(self, watch_point_id: str) -> None:
+        if self.tda_station_runner_widget.session.remove_watch_point(watch_point_id):
+            self._touch_tda_session()
+            self._refresh_tda_watch_point_editor()
+
+    def _refresh_tda_watch_point_editor(self) -> None:
+        runner = self.tda_station_runner_widget
+        visible = (
+            self.session.current_mode_id == "tda"
+            and runner.current_station_id == "tda-thesis"
+            and runner.view_tabs.currentWidget() is runner.focus_page
+        )
+        self.tda_watch_point_widget.setVisible(visible)
+        if visible:
+            self.tda_watch_point_widget.load_watch_points(runner.session.watch_points)
 
     def apply_transition(
         self,
@@ -289,6 +341,7 @@ class TradingDayRuntimeWidget(QWidget):
             trading_run.current_thesis_state,
             trading_run.evidence,
             trading_run.entry_condition_states,
+            trading_run.watch_point_states,
             self.tda_station_runner_widget.session,
             self.blueprint,
         )
@@ -296,6 +349,7 @@ class TradingDayRuntimeWidget(QWidget):
             trading_run,
             self.tda_station_runner_widget.session,
         )
+        self._refresh_tda_watch_point_editor()
 
     def start_new(self) -> None:
         self.tda_station_runner_widget.start_new()
@@ -324,7 +378,9 @@ class TradingDayRuntimeWidget(QWidget):
         note.setContentsMargins(10, 8, 10, 8)
         layout.addWidget(note)
         for deck in mode.decks:
-            deck_label = QLabel(f"{deck.name} · TradingView: {deck.tradingview_layout}")
+            deck_label = QLabel(
+                f"{deck.name} · TradingView: {deck.tradingview_layout}"
+            )
             deck_label.setStyleSheet("font-weight: 600;")
             deck_label.setWordWrap(True)
             layout.addWidget(deck_label)
@@ -387,12 +443,14 @@ class TradingDayRuntimeWidget(QWidget):
         current_index = self.session.current_mode_index
         current_mode = self.current_mode
         self.mode_stack.setCurrentWidget(self.mode_pages[current_mode.id])
+        self._refresh_tda_watch_point_editor()
 
         if current_mode.id == "live-watch" and self.trading_run is not None:
             self.live_watch_widget.load_operating_context(
                 self.trading_run.current_thesis_state,
                 self.trading_run.evidence,
                 self.trading_run.entry_condition_states,
+                self.trading_run.watch_point_states,
                 self.tda_station_runner_widget.session,
                 self.blueprint,
             )
@@ -422,7 +480,10 @@ class TradingDayRuntimeWidget(QWidget):
         self.summary_label.setText(summary)
 
         for index, mode in enumerate(self.modes):
-            if mode.id == self.session.current_mode_id and self.session.status is TradingDayStatus.ACTIVE:
+            if (
+                mode.id == self.session.current_mode_id
+                and self.session.status is TradingDayStatus.ACTIVE
+            ):
                 state = "▶"
             elif mode.id in self.session.completed_mode_ids:
                 state = "✓"
