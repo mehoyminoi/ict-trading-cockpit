@@ -14,6 +14,7 @@ from ict_cockpit.database.trading_day_session_repository import TradingDaySessio
 from ict_cockpit.database.trading_session_run_repository import TradingSessionRunRepository
 from ict_cockpit.default_process import build_default_process_blueprint
 from ict_cockpit.gui.trading_day_shell_widget import TradingDayShellWidget
+from ict_cockpit.trade_plan import EntryCriterionDefinition, LiveWatchPolicyDefinition
 
 
 def get_app() -> QApplication:
@@ -31,7 +32,19 @@ def build_process_session() -> TradingDaySession:
     )
 
 
-def test_schema_v14_preserves_run_evidence_columns(tmp_path) -> None:
+def build_test_live_watch_policy() -> LiveWatchPolicyDefinition:
+    return LiveWatchPolicyDefinition(
+        entry_criteria=(
+            EntryCriterionDefinition("criterion-a", "Condition A"),
+            EntryCriterionDefinition("criterion-b", "Condition B"),
+            EntryCriterionDefinition("criterion-c", "Condition C"),
+        ),
+        required_entry_count=2,
+        risk_summary="Test risk rule inherited from Trade Plan.",
+    )
+
+
+def test_schema_v15_preserves_live_watch_runtime_columns(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
 
@@ -40,9 +53,10 @@ def test_schema_v14_preserves_run_evidence_columns(tmp_path) -> None:
         for row in connection.execute("PRAGMA table_info(trading_session_run)").fetchall()
     }
 
-    assert CURRENT_SCHEMA_VERSION == 14
+    assert CURRENT_SCHEMA_VERSION == 15
     assert "current_thesis_state" in columns
     assert "evidence_json" in columns
+    assert "entry_condition_states_json" in columns
     connection.close()
 
 
@@ -61,7 +75,7 @@ def test_trading_run_records_observation_and_thesis_crossroads() -> None:
     assert len(run.evidence) == 2
 
 
-def test_run_evidence_round_trips_through_repository(tmp_path) -> None:
+def test_run_evidence_and_readiness_round_trip_through_repository(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
     day_repository = TradingDayRepository(connection)
@@ -74,6 +88,8 @@ def test_run_evidence_round_trips_through_repository(tmp_path) -> None:
     run = TradingRun(day.id, "Trading Run 1", process_session.id)
     run.add_observation("Price respected the morning FVG")
     run.record_thesis_state(ThesisState.SUPPORTED, "Draw remains intact")
+    run.set_entry_condition("criterion-a", True)
+    run.set_entry_condition("criterion-b", False)
     day.activate_trading_run(run)
     day_repository.save(day)
     run_repository.save(run)
@@ -88,6 +104,10 @@ def test_run_evidence_round_trips_through_repository(tmp_path) -> None:
     ]
     assert restored.evidence[0].note == "Price respected the morning FVG"
     assert restored.evidence[1].note == "Draw remains intact"
+    assert restored.entry_condition_states == {
+        "criterion-a": True,
+        "criterion-b": False,
+    }
     connection.close()
 
 
@@ -114,7 +134,47 @@ def test_live_watch_capture_updates_active_trading_run() -> None:
     assert live_watch.evidence_list.isHidden() is True
 
 
-def test_live_watch_carries_forward_tda_synthesis_and_exposes_operating_slots() -> None:
+def test_unconfigured_trade_plan_does_not_invent_entry_threshold() -> None:
+    get_app()
+    shell = TradingDayShellWidget(build_default_process_blueprint())
+    shell.start_trading_run()
+    shell.runtime.apply_transition("finish-tda", override_incomplete=True)
+    live_watch = shell.runtime.live_watch_widget
+
+    assert live_watch.entry_checkboxes == {}
+    assert live_watch.readiness_count_label.text() == "Entry criteria: Not configured"
+    assert live_watch.readiness_required_label.text() == "Required for entry: Not configured"
+
+
+def test_trade_plan_policy_drives_live_watch_readiness_and_run_state() -> None:
+    get_app()
+    policy = build_test_live_watch_policy()
+    shell = TradingDayShellWidget(
+        build_default_process_blueprint(),
+        live_watch_policy=policy,
+    )
+    shell.start_trading_run()
+    run = shell.active_trading_run
+    assert run is not None
+    shell.runtime.apply_transition("finish-tda", override_incomplete=True)
+    live_watch = shell.runtime.live_watch_widget
+
+    assert live_watch.readiness_count_label.text() == "0 / 3 criteria currently met"
+    assert live_watch.readiness_required_label.text() == "Required for entry: 2 / 3"
+    assert "Test risk rule" in live_watch.risk_status_label.text()
+
+    live_watch.entry_checkboxes["criterion-a"].setChecked(True)
+    live_watch.entry_checkboxes["criterion-b"].setChecked(True)
+
+    assert run.entry_condition_states == {
+        "criterion-a": True,
+        "criterion-b": True,
+    }
+    assert live_watch.readiness_count_label.text() == "2 / 3 criteria currently met"
+    assert "threshold satisfied" in live_watch.readiness_status_label.text().lower()
+
+
+def test_live_watch_carries_forward_tda_synthesis() -> None:
     get_app()
     shell = TradingDayShellWidget(build_default_process_blueprint())
     shell.start_trading_run()
@@ -138,15 +198,13 @@ def test_live_watch_carries_forward_tda_synthesis_and_exposes_operating_slots() 
     assert "Previous Day Low" in rendered
     assert "Premarket Thesis" in rendered
     assert "NYAM expansion lower" in rendered
-    assert live_watch.readiness_count_label.text() == "0 / 8 confluences configured"
-    assert "Not configured" in live_watch.readiness_required_label.text()
-    assert "Not configured" in live_watch.risk_stop_label.text()
 
 
-def test_restored_active_run_rehydrates_live_watch_evidence() -> None:
+def test_restored_active_run_rehydrates_live_watch_evidence_and_readiness() -> None:
     get_app()
     blueprint = build_default_process_blueprint()
-    shell = TradingDayShellWidget(blueprint)
+    policy = build_test_live_watch_policy()
+    shell = TradingDayShellWidget(blueprint, live_watch_policy=policy)
     shell.start_trading_run()
     run = shell.active_trading_run
     assert run is not None
@@ -154,8 +212,9 @@ def test_restored_active_run_rehydrates_live_watch_evidence() -> None:
     shell.runtime.apply_transition("finish-tda", override_incomplete=True)
     run.add_observation("Liquidity sweep completed")
     run.record_thesis_state(ThesisState.UNCERTAIN, "Waiting for displacement")
+    run.set_entry_condition("criterion-a", True)
 
-    restored_shell = TradingDayShellWidget(blueprint)
+    restored_shell = TradingDayShellWidget(blueprint, live_watch_policy=policy)
     restored_shell.load_state(
         shell.trading_day,
         shell.trading_runs,
@@ -163,6 +222,8 @@ def test_restored_active_run_rehydrates_live_watch_evidence() -> None:
         tda_session=shell.runtime.tda_station_runner_widget.session,
     )
 
+    restored_live_watch = restored_shell.runtime.live_watch_widget
     assert restored_shell.runtime.session.current_mode_id == "live-watch"
-    assert "Uncertain" in restored_shell.runtime.live_watch_widget.thesis_state_label.text()
-    assert restored_shell.runtime.live_watch_widget.evidence_list.count() == 2
+    assert "Uncertain" in restored_live_watch.thesis_state_label.text()
+    assert restored_live_watch.evidence_list.count() == 2
+    assert restored_live_watch.entry_checkboxes["criterion-a"].isChecked() is True
