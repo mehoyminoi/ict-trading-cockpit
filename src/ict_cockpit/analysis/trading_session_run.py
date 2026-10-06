@@ -28,6 +28,13 @@ class RunEvidenceKind(str, Enum):
     THESIS_STATE = "Thesis State"
 
 
+class ProcessAdherence(str, Enum):
+    NOT_REVIEWED = "Not Reviewed"
+    FOLLOWED = "Followed"
+    MIXED = "Mixed"
+    DEVIATION = "Deviation"
+
+
 @dataclass
 class RunEvidenceEntry:
     kind: RunEvidenceKind
@@ -63,6 +70,9 @@ class TradingSessionRun:
     outcome: str = ""
     current_thesis_state: ThesisState = ThesisState.NOT_SET
     evidence: list[RunEvidenceEntry] = field(default_factory=list)
+    review_process_adherence: ProcessAdherence = ProcessAdherence.NOT_REVIEWED
+    review_takeaway: str = ""
+    review_film_night: bool = False
     id: str = field(default_factory=lambda: str(uuid4()))
     started_at: str = field(
         default_factory=lambda: datetime.now().astimezone().isoformat(timespec="seconds")
@@ -78,11 +88,14 @@ class TradingSessionRun:
         self.process_session_id = self.process_session_id.strip()
         self.tda_station_session_id = self.tda_station_session_id.strip()
         self.outcome = self.outcome.strip()
+        self.review_takeaway = self.review_takeaway.strip()
         self.concluded_at = self.concluded_at.strip()
         if isinstance(self.status, str):
             self.status = TradingSessionRunStatus(self.status)
         if isinstance(self.current_thesis_state, str):
             self.current_thesis_state = ThesisState(self.current_thesis_state)
+        if isinstance(self.review_process_adherence, str):
+            self.review_process_adherence = ProcessAdherence(self.review_process_adherence)
         self.evidence = [
             item if isinstance(item, RunEvidenceEntry) else RunEvidenceEntry(**item)
             for item in self.evidence
@@ -136,6 +149,22 @@ class TradingSessionRun:
         self.evidence.append(entry)
         self._touch()
         return entry
+
+    def update_post_market_review(
+        self,
+        *,
+        process_adherence: ProcessAdherence | str | None = None,
+        takeaway: str | None = None,
+        film_night: bool | None = None,
+    ) -> None:
+        """Persist the small set of judgments that cannot be inferred from run history."""
+        if process_adherence is not None:
+            self.review_process_adherence = ProcessAdherence(process_adherence)
+        if takeaway is not None:
+            self.review_takeaway = takeaway.strip()
+        if film_night is not None:
+            self.review_film_night = bool(film_night)
+        self._touch()
 
     def conclude(self, outcome: str = "") -> None:
         """Conclude this run without implying that the Trading Day is complete."""
