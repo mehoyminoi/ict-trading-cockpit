@@ -22,10 +22,8 @@ from ict_cockpit.analysis.trading_session_run import TradingRun
 from ict_cockpit.gui.live_watch_widget import LiveWatchWidget
 from ict_cockpit.gui.post_market_review_widget import PostMarketReviewWidget
 from ict_cockpit.gui.tda_station_runner_widget import TDAStationRunnerWidget
-from ict_cockpit.process_blueprint import (
-    ModeDefinition,
-    ProcessBlueprint,
-)
+from ict_cockpit.process_blueprint import ModeDefinition, ProcessBlueprint
+from ict_cockpit.trade_plan import LiveWatchPolicyDefinition
 
 
 class TradingDayRuntimeWidget(QWidget):
@@ -34,6 +32,7 @@ class TradingDayRuntimeWidget(QWidget):
     session_changed = Signal(TradingDaySession)
     live_observation_submitted = Signal(str)
     live_thesis_state_submitted = Signal(str, str)
+    live_entry_condition_changed = Signal(str, bool)
     post_market_review_submitted = Signal(str, str, bool)
 
     def __init__(
@@ -41,9 +40,11 @@ class TradingDayRuntimeWidget(QWidget):
         blueprint: ProcessBlueprint,
         *,
         embedded_session_run: bool = False,
+        live_watch_policy: LiveWatchPolicyDefinition | None = None,
     ) -> None:
         super().__init__()
         self.blueprint = blueprint
+        self.live_watch_policy = live_watch_policy or LiveWatchPolicyDefinition()
         self.embedded_session_run = embedded_session_run
         self.modes = list(blueprint.modes)
         if not self.modes:
@@ -73,12 +74,15 @@ class TradingDayRuntimeWidget(QWidget):
         self.mode_pages: dict[str, QWidget] = {}
 
         self.tda_station_runner_widget = TDAStationRunnerWidget(blueprint)
-        self.live_watch_widget = LiveWatchWidget()
+        self.live_watch_widget = LiveWatchWidget(self.live_watch_policy)
         self.live_watch_widget.observation_submitted.connect(
             self.live_observation_submitted.emit
         )
         self.live_watch_widget.thesis_state_submitted.connect(
             self.live_thesis_state_submitted.emit
+        )
+        self.live_watch_widget.entry_condition_changed.connect(
+            self.live_entry_condition_changed.emit
         )
         self.post_market_review_widget = PostMarketReviewWidget(blueprint)
         self.post_market_review_widget.review_changed.connect(
@@ -107,9 +111,7 @@ class TradingDayRuntimeWidget(QWidget):
         transition_layout.addWidget(transition_heading)
 
         self.transition_note_input = QLineEdit()
-        self.transition_note_input.setPlaceholderText(
-            "Decision note / reason (optional)"
-        )
+        self.transition_note_input.setPlaceholderText("Decision note / reason (optional)")
         transition_layout.addWidget(self.transition_note_input)
 
         self.transition_buttons_layout = QHBoxLayout()
@@ -126,9 +128,6 @@ class TradingDayRuntimeWidget(QWidget):
         layout.addWidget(self.mode_stack, 1)
         layout.addWidget(self.transition_frame)
 
-        # The shell already provides active-run identity and resume context.
-        # Hiding duplicate headings in embedded mode recovers meaningful vertical
-        # space on 1080p displays without removing any information.
         if self.embedded_session_run:
             self.title_label.hide()
             self.summary_label.hide()
@@ -289,6 +288,7 @@ class TradingDayRuntimeWidget(QWidget):
         self.live_watch_widget.load_operating_context(
             trading_run.current_thesis_state,
             trading_run.evidence,
+            trading_run.entry_condition_states,
             self.tda_station_runner_widget.session,
             self.blueprint,
         )
@@ -392,6 +392,7 @@ class TradingDayRuntimeWidget(QWidget):
             self.live_watch_widget.load_operating_context(
                 self.trading_run.current_thesis_state,
                 self.trading_run.evidence,
+                self.trading_run.entry_condition_states,
                 self.tda_station_runner_widget.session,
                 self.blueprint,
             )
