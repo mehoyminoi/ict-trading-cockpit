@@ -4,6 +4,7 @@ import sqlite3
 from ict_cockpit.analysis.tda_station_session import (
     TDAStationObservation,
     TDAStationSession,
+    TDAWatchPoint,
 )
 
 
@@ -12,7 +13,7 @@ class TDAStationSessionRepository:
         self.connection = connection
 
     def save(self, session: TDAStationSession) -> None:
-        payload = [
+        observations_payload = [
             {
                 "station_id": item.station_id,
                 "observation": item.observation,
@@ -21,25 +22,35 @@ class TDAStationSessionRepository:
             }
             for item in session.observations
         ]
+        watch_points_payload = [
+            {
+                "id": item.id,
+                "if_condition": item.if_condition,
+                "then_action": item.then_action,
+            }
+            for item in session.watch_points
+        ]
         with self.connection:
             self.connection.execute(
                 """
                 INSERT INTO tda_station_session (
                     id, blueprint_revision, current_station_id,
-                    observations_json, updated_at
-                ) VALUES (?, ?, ?, ?, ?)
+                    observations_json, updated_at, watch_points_json
+                ) VALUES (?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                     blueprint_revision = excluded.blueprint_revision,
                     current_station_id = excluded.current_station_id,
                     observations_json = excluded.observations_json,
-                    updated_at = excluded.updated_at
+                    updated_at = excluded.updated_at,
+                    watch_points_json = excluded.watch_points_json
                 """,
                 (
                     session.id,
                     session.blueprint_revision,
                     session.current_station_id,
-                    json.dumps(payload),
+                    json.dumps(observations_payload),
                     session.updated_at,
+                    json.dumps(watch_points_payload),
                 ),
             )
 
@@ -47,7 +58,7 @@ class TDAStationSessionRepository:
         row = self.connection.execute(
             """
             SELECT id, blueprint_revision, current_station_id,
-                   observations_json, updated_at
+                   observations_json, updated_at, watch_points_json
             FROM tda_station_session
             ORDER BY updated_at DESC, rowid DESC
             LIMIT 1
@@ -59,7 +70,7 @@ class TDAStationSessionRepository:
         row = self.connection.execute(
             """
             SELECT id, blueprint_revision, current_station_id,
-                   observations_json, updated_at
+                   observations_json, updated_at, watch_points_json
             FROM tda_station_session
             WHERE id = ?
             """,
@@ -69,7 +80,8 @@ class TDAStationSessionRepository:
 
     @staticmethod
     def _from_row(row) -> TDAStationSession:
-        payload = json.loads(row[3])
+        observations_payload = json.loads(row[3])
+        watch_points_payload = json.loads(row[5])
         return TDAStationSession(
             id=row[0],
             blueprint_revision=row[1],
@@ -81,7 +93,15 @@ class TDAStationSessionRepository:
                     completed=bool(item.get("completed", False)),
                     completed_actions=list(item.get("completed_actions", [])),
                 )
-                for item in payload
+                for item in observations_payload
+            ],
+            watch_points=[
+                TDAWatchPoint(
+                    id=item["id"],
+                    if_condition=item["if_condition"],
+                    then_action=item["then_action"],
+                )
+                for item in watch_points_payload
             ],
             updated_at=row[4],
         )
