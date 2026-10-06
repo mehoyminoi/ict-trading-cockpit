@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
 )
 
 from ict_cockpit.gui.process_blueprint_widget import ProcessBlueprintWidget
+from ict_cockpit.gui.process_run_launcher_widget import ProcessRunLauncherWidget
 from ict_cockpit.gui.trading_day_shell_widget import TradingDayShellWidget
 from ict_cockpit.trade_plan import (
     PlaybookDefinition,
@@ -68,6 +69,12 @@ class TradePlanWidget(QWidget):
         self.process_tabs.addTab(self.trading_day_shell_widget, "Run Trading Day")
         self.process_tabs.currentChanged.connect(self._process_tab_changed)
 
+        self.process_run_launcher_widget = ProcessRunLauncherWidget(
+            self.trading_day_shell_widget,
+            trade_plan_revision=trade_plan.revision,
+            on_launched=self.focus_runtime,
+        )
+
         self._section_ids: list[str] = []
         for section in trade_plan.sections:
             self._section_ids.append(section.id)
@@ -76,6 +83,8 @@ class TradePlanWidget(QWidget):
                 page = self.process_tabs
             elif section.id == "playbooks":
                 page = self._build_playbooks_page(section)
+            elif section.id == "review-development":
+                page = self._build_review_development_page(section)
             else:
                 page = self._build_section_page(section)
             self.stack.addWidget(page)
@@ -133,6 +142,36 @@ class TradePlanWidget(QWidget):
             label = QLabel(f"• {topic}")
             label.setWordWrap(True)
             layout.addWidget(label)
+        layout.addStretch()
+        return page
+
+    def _build_review_development_page(
+        self, section: TradePlanSectionDefinition
+    ) -> QWidget:
+        page = QWidget()
+        layout = QVBoxLayout(page)
+
+        heading = QLabel(section.name)
+        heading.setStyleSheet("font-size: 16px; font-weight: 600;")
+        layout.addWidget(heading)
+
+        purpose = QLabel(section.purpose)
+        purpose.setWordWrap(True)
+        layout.addWidget(purpose)
+
+        launcher_heading = QLabel("Lab / Replay")
+        launcher_heading.setStyleSheet("font-weight: 600;")
+        layout.addWidget(launcher_heading)
+        layout.addWidget(self.process_run_launcher_widget)
+
+        scope_heading = QLabel("Current scope")
+        scope_heading.setStyleSheet("font-weight: 600;")
+        layout.addWidget(scope_heading)
+        for topic in section.topics:
+            label = QLabel(f"• {topic}")
+            label.setWordWrap(True)
+            layout.addWidget(label)
+
         layout.addStretch()
         return page
 
