@@ -2,6 +2,7 @@ import json
 import sqlite3
 
 from ict_cockpit.analysis.trading_session_run import (
+    ProcessAdherence,
     RunEvidenceEntry,
     RunEvidenceKind,
     ThesisState,
@@ -33,8 +34,9 @@ class TradingSessionRunRepository:
                 INSERT INTO trading_session_run (
                     id, trading_day_id, session_name, process_session_id,
                     tda_station_session_id, status, outcome, started_at,
-                    concluded_at, updated_at, current_thesis_state, evidence_json
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    concluded_at, updated_at, current_thesis_state, evidence_json,
+                    review_process_adherence, review_takeaway, review_film_night
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                     trading_day_id = excluded.trading_day_id,
                     session_name = excluded.session_name,
@@ -46,7 +48,10 @@ class TradingSessionRunRepository:
                     concluded_at = excluded.concluded_at,
                     updated_at = excluded.updated_at,
                     current_thesis_state = excluded.current_thesis_state,
-                    evidence_json = excluded.evidence_json
+                    evidence_json = excluded.evidence_json,
+                    review_process_adherence = excluded.review_process_adherence,
+                    review_takeaway = excluded.review_takeaway,
+                    review_film_night = excluded.review_film_night
                 """,
                 (
                     session_run.id,
@@ -61,6 +66,9 @@ class TradingSessionRunRepository:
                     session_run.updated_at,
                     session_run.current_thesis_state.value,
                     evidence_json,
+                    session_run.review_process_adherence.value,
+                    session_run.review_takeaway,
+                    int(session_run.review_film_night),
                 ),
             )
 
@@ -69,7 +77,8 @@ class TradingSessionRunRepository:
             """
             SELECT id, trading_day_id, session_name, process_session_id,
                    tda_station_session_id, status, outcome, started_at,
-                   concluded_at, updated_at, current_thesis_state, evidence_json
+                   concluded_at, updated_at, current_thesis_state, evidence_json,
+                   review_process_adherence, review_takeaway, review_film_night
             FROM trading_session_run
             WHERE id = ?
             """,
@@ -82,7 +91,8 @@ class TradingSessionRunRepository:
             """
             SELECT id, trading_day_id, session_name, process_session_id,
                    tda_station_session_id, status, outcome, started_at,
-                   concluded_at, updated_at, current_thesis_state, evidence_json
+                   concluded_at, updated_at, current_thesis_state, evidence_json,
+                   review_process_adherence, review_takeaway, review_film_night
             FROM trading_session_run
             WHERE trading_day_id = ?
             ORDER BY started_at, rowid
@@ -116,4 +126,7 @@ class TradingSessionRunRepository:
             updated_at=row[9],
             current_thesis_state=ThesisState(row[10]),
             evidence=evidence,
+            review_process_adherence=ProcessAdherence(row[12]),
+            review_takeaway=row[13],
+            review_film_night=bool(row[14]),
         )
