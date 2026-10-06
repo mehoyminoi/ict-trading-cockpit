@@ -31,12 +31,7 @@ class ThesisState(str, Enum):
 
 
 class InterpretationOutcome(str, Enum):
-    """Post-run judgment of the initial market interpretation.
-
-    UNEXPLAINED_STUDY_NEEDED means the cause is not understood at the trader's
-    current level of price-action understanding. It is explicitly a study signal,
-    not a claim that the market behavior was random or unknowable.
-    """
+    """Post-run judgment of the initial market interpretation."""
 
     NOT_REVIEWED = "Not Reviewed"
     MATERIALLY_ACCURATE = "Materially Accurate / Remained Intact"
@@ -85,10 +80,9 @@ class RunEvidenceEntry:
 class TradingSessionRun:
     """One deliberate operating run inside a Trading Day.
 
-    A Trading Run is process-neutral with respect to Live vs Lab use. The same
-    TDA -> Watch -> Review workflow can be executed in live markets, replay,
-    historical backtesting, or forward testing. Environment and Trade Plan
-    revision are provenance, not alternate process definitions.
+    Environment, Trade Plan revision, and the selected Playbook snapshot are
+    provenance. The snapshot preserves the exact strategy rules that governed
+    this run even after a later Trade Plan revision changes them.
     """
 
     trading_day_id: str
@@ -97,6 +91,9 @@ class TradingSessionRun:
     tda_station_session_id: str = ""
     environment: RunEnvironment = RunEnvironment.LIVE
     trade_plan_revision: str = ""
+    selected_playbook_id: str = ""
+    selected_playbook_revision: str = ""
+    playbook_snapshot: dict = field(default_factory=dict)
     status: TradingSessionRunStatus = TradingSessionRunStatus.ACTIVE
     outcome: str = ""
     current_thesis_state: ThesisState = ThesisState.NOT_SET
@@ -122,6 +119,9 @@ class TradingSessionRun:
         self.process_session_id = self.process_session_id.strip()
         self.tda_station_session_id = self.tda_station_session_id.strip()
         self.trade_plan_revision = self.trade_plan_revision.strip()
+        self.selected_playbook_id = self.selected_playbook_id.strip()
+        self.selected_playbook_revision = self.selected_playbook_revision.strip()
+        self.playbook_snapshot = dict(self.playbook_snapshot or {})
         self.outcome = self.outcome.strip()
         self.review_takeaway = self.review_takeaway.strip()
         self.concluded_at = self.concluded_at.strip()
@@ -160,6 +160,10 @@ class TradingSessionRun:
             raise ValueError("trading run label cannot be empty")
         if not self.process_session_id:
             raise ValueError("process session id cannot be empty")
+        if self.selected_playbook_id and not self.selected_playbook_revision:
+            raise ValueError("selected playbook revision cannot be empty")
+        if self.selected_playbook_id and not self.playbook_snapshot:
+            raise ValueError("selected playbook requires a snapshot")
 
     @property
     def run_label(self) -> str:
@@ -171,6 +175,41 @@ class TradingSessionRun:
         if not value:
             raise ValueError("trading run label cannot be empty")
         self.session_name = value
+
+    def select_playbook(
+        self,
+        playbook_id: str,
+        playbook_revision: str,
+        snapshot: dict,
+    ) -> None:
+        playbook_id = playbook_id.strip()
+        playbook_revision = playbook_revision.strip()
+        snapshot = dict(snapshot or {})
+        if not playbook_id or not playbook_revision or not snapshot:
+            raise ValueError("playbook selection requires id, revision, and snapshot")
+
+        self.selected_playbook_id = playbook_id
+        self.selected_playbook_revision = playbook_revision
+        self.playbook_snapshot = snapshot
+        self.entry_condition_states = {}
+        self.watch_point_states = {
+            key: value
+            for key, value in self.watch_point_states.items()
+            if not key.startswith("playbook:")
+        }
+        self._touch()
+
+    def clear_playbook(self) -> None:
+        self.selected_playbook_id = ""
+        self.selected_playbook_revision = ""
+        self.playbook_snapshot = {}
+        self.entry_condition_states = {}
+        self.watch_point_states = {
+            key: value
+            for key, value in self.watch_point_states.items()
+            if not key.startswith("playbook:")
+        }
+        self._touch()
 
     def set_entry_condition(self, criterion_id: str, satisfied: bool) -> None:
         criterion_id = criterion_id.strip()
