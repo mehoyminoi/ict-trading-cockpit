@@ -39,8 +39,9 @@ def test_schema_preserves_post_market_review_columns(tmp_path) -> None:
         row[1]
         for row in connection.execute("PRAGMA table_info(trading_session_run)").fetchall()
     }
+    version = connection.execute("PRAGMA user_version").fetchone()[0]
 
-    assert CURRENT_SCHEMA_VERSION == 16
+    assert version == CURRENT_SCHEMA_VERSION
     assert "review_process_adherence" in columns
     assert "review_takeaway" in columns
     assert "review_film_night" in columns
