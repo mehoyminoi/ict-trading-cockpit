@@ -46,8 +46,9 @@ def test_schema_preserves_trading_day_and_run_storage(tmp_path) -> None:
             "SELECT name FROM sqlite_master WHERE type='table'"
         ).fetchall()
     }
+    version = connection.execute("PRAGMA user_version").fetchone()[0]
 
-    assert CURRENT_SCHEMA_VERSION == 16
+    assert version == CURRENT_SCHEMA_VERSION
     assert "trading_day" in names
     assert "trading_session_run" in names
     connection.close()
