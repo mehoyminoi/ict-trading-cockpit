@@ -278,6 +278,11 @@ class TradingDayShellWidget(QWidget):
         if self.trading_day.status is TradingDayLifecycleStatus.COMPLETE or self.active_trading_run is not None:
             return False
         self.runtime.start_new()
+        market_time_context = self._market_time_context_for_new_run()
+        if not self.trading_day.futures_day_label:
+            self.trading_day.futures_day_label = str(
+                market_time_context.get("futures_trading_day", "")
+            )
         run = TradingRun(
             trading_day_id=self.trading_day.id,
             session_name=f"Trading Run {len(self.trading_runs) + 1}",
@@ -286,7 +291,7 @@ class TradingDayShellWidget(QWidget):
             environment=self.run_environment,
             trade_plan_revision=self.trade_plan_revision,
             authorization_policy_snapshot=[gate.to_dict() for gate in self.authorization_gates],
-            market_time_context=self._market_time_context_for_new_run(),
+            market_time_context=market_time_context,
         )
         if self.playbooks:
             run.ensure_day_specific_candidate()
@@ -331,13 +336,21 @@ class TradingDayShellWidget(QWidget):
     def _capture_live_observation(self, note: str) -> None:
         run = self.active_trading_run
         if run is not None:
-            run.add_observation(note)
+            context = self._current_market_time_context()
+            run.market_time_context = dict(context)
+            run.add_observation(note, market_time_context=context)
             self._save_and_reload(run)
 
     def _record_live_thesis_state(self, state: str, note: str) -> None:
         run = self.active_trading_run
         if run is not None:
-            run.record_thesis_state(state, note)
+            context = self._current_market_time_context()
+            run.market_time_context = dict(context)
+            run.record_thesis_state(
+                state,
+                note,
+                market_time_context=context,
+            )
             self._save_and_reload(run)
 
     def _set_authorization_gate(self, gate_id: str, state: str) -> None:
