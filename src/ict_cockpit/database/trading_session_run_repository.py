@@ -2,6 +2,7 @@ import json
 import sqlite3
 
 from ict_cockpit.analysis.trading_session_run import (
+    AuthorizationGateState,
     InterpretationOutcome,
     ProcessAdherence,
     RunEnvironment,
@@ -42,6 +43,14 @@ class TradingSessionRunRepository:
             [candidate.to_dict() for candidate in session_run.setup_candidates],
             sort_keys=True,
         )
+        authorization_policy_snapshot_json = json.dumps(
+            session_run.authorization_policy_snapshot,
+            sort_keys=True,
+        )
+        authorization_gate_states_json = json.dumps(
+            {gate_id: state.value for gate_id, state in session_run.authorization_gate_states.items()},
+            sort_keys=True,
+        )
         with self.connection:
             self.connection.execute(
                 """
@@ -53,8 +62,9 @@ class TradingSessionRunRepository:
                     entry_condition_states_json, watch_point_states_json,
                     run_environment, trade_plan_revision, review_interpretation_outcome,
                     selected_playbook_id, selected_playbook_revision,
-                    playbook_snapshot_json, setup_candidates_json
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    playbook_snapshot_json, setup_candidates_json,
+                    authorization_policy_snapshot_json, authorization_gate_states_json
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                     trading_day_id = excluded.trading_day_id,
                     session_name = excluded.session_name,
@@ -78,7 +88,9 @@ class TradingSessionRunRepository:
                     selected_playbook_id = excluded.selected_playbook_id,
                     selected_playbook_revision = excluded.selected_playbook_revision,
                     playbook_snapshot_json = excluded.playbook_snapshot_json,
-                    setup_candidates_json = excluded.setup_candidates_json
+                    setup_candidates_json = excluded.setup_candidates_json,
+                    authorization_policy_snapshot_json = excluded.authorization_policy_snapshot_json,
+                    authorization_gate_states_json = excluded.authorization_gate_states_json
                 """,
                 (
                     session_run.id,
@@ -105,6 +117,8 @@ class TradingSessionRunRepository:
                     session_run.selected_playbook_revision,
                     playbook_snapshot_json,
                     setup_candidates_json,
+                    authorization_policy_snapshot_json,
+                    authorization_gate_states_json,
                 ),
             )
 
@@ -129,7 +143,8 @@ class TradingSessionRunRepository:
                    entry_condition_states_json, watch_point_states_json,
                    run_environment, trade_plan_revision, review_interpretation_outcome,
                    selected_playbook_id, selected_playbook_revision,
-                   playbook_snapshot_json, setup_candidates_json
+                   playbook_snapshot_json, setup_candidates_json,
+                   authorization_policy_snapshot_json, authorization_gate_states_json
             FROM trading_session_run
             {where_clause}
         """
@@ -178,4 +193,9 @@ class TradingSessionRunRepository:
             selected_playbook_revision=row[21],
             playbook_snapshot=json.loads(row[22]),
             setup_candidates=setup_candidates,
+            authorization_policy_snapshot=json.loads(row[24] or "[]"),
+            authorization_gate_states={
+                gate_id: AuthorizationGateState(state)
+                for gate_id, state in json.loads(row[25] or "{}").items()
+            },
         )
