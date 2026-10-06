@@ -128,7 +128,7 @@ def build_default_trade_plan() -> TradePlanDefinition:
     return TradePlanDefinition(
         id="ict-trade-plan-alpha",
         name="ICT Trading Plan",
-        revision="Alpha 0.2",
+        revision="Alpha 0.3",
         sections=(
             TradePlanSectionDefinition(
                 id="foundation",
