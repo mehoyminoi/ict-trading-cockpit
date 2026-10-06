@@ -83,6 +83,7 @@ class TradingDayShellWidget(QWidget):
         self.runtime.session_changed.connect(self._process_session_changed)
         self.runtime.live_observation_submitted.connect(self._capture_live_observation)
         self.runtime.live_thesis_state_submitted.connect(self._record_live_thesis_state)
+        self.runtime.post_market_review_submitted.connect(self._update_post_market_review)
 
         # The executable process has grown taller than some displays. A scroll
         # viewport keeps the window responsive to monitor height without
@@ -171,6 +172,23 @@ class TradingDayShellWidget(QWidget):
         if run is None:
             return
         run.record_thesis_state(state, note)
+        self.session_run_changed.emit(run)
+        self.runtime.load_trading_run(run)
+
+    def _update_post_market_review(
+        self,
+        process_adherence: str,
+        takeaway: str,
+        film_night: bool,
+    ) -> None:
+        run = self.active_trading_run
+        if run is None:
+            return
+        run.update_post_market_review(
+            process_adherence=process_adherence,
+            takeaway=takeaway,
+            film_night=film_night,
+        )
         self.session_run_changed.emit(run)
         self.runtime.load_trading_run(run)
 
