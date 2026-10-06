@@ -13,10 +13,7 @@ from PySide6.QtWidgets import (
 
 from ict_cockpit.analysis.trading_day import TradingDay, TradingDayLifecycleStatus
 from ict_cockpit.analysis.trading_day_session import TradingDaySession, TradingDayStatus
-from ict_cockpit.analysis.trading_session_run import (
-    TradingRun,
-    TradingRunStatus,
-)
+from ict_cockpit.analysis.trading_session_run import TradingRun, TradingRunStatus
 from ict_cockpit.gui.trading_day_runtime_widget import TradingDayRuntimeWidget
 from ict_cockpit.process_blueprint import ProcessBlueprint
 
@@ -34,7 +31,6 @@ class TradingDayShellWidget(QWidget):
         self.trading_runs: list[TradingRun] = []
         self.active_trading_run: TradingRun | None = None
 
-        # Backward-compatible aliases while callers migrate to Trading Run terms.
         self.session_runs = self.trading_runs
         self.active_session_run = self.active_trading_run
 
@@ -46,7 +42,7 @@ class TradingDayShellWidget(QWidget):
         self.resume_context_label = QLabel()
         self.resume_context_label.setWordWrap(True)
         self.resume_context_label.setFrameShape(QFrame.Shape.StyledPanel)
-        self.resume_context_label.setContentsMargins(10, 6, 10, 6)
+        self.resume_context_label.setContentsMargins(8, 4, 8, 4)
 
         self.run_history_label = QLabel("Trading Runs")
         self.run_history = QListWidget()
@@ -77,7 +73,8 @@ class TradingDayShellWidget(QWidget):
         self.runtime_frame = QFrame()
         self.runtime_frame.setFrameShape(QFrame.Shape.StyledPanel)
         runtime_layout = QVBoxLayout(self.runtime_frame)
-        runtime_layout.setContentsMargins(8, 8, 8, 8)
+        runtime_layout.setContentsMargins(4, 4, 4, 4)
+        runtime_layout.setSpacing(4)
         self.runtime = TradingDayRuntimeWidget(
             blueprint,
             embedded_session_run=True,
@@ -101,7 +98,7 @@ class TradingDayShellWidget(QWidget):
         self.tda_nav_frame = QFrame()
         self.tda_nav_frame.setFrameShape(QFrame.Shape.StyledPanel)
         tda_nav_layout = QHBoxLayout(self.tda_nav_frame)
-        tda_nav_layout.setContentsMargins(8, 6, 8, 6)
+        tda_nav_layout.setContentsMargins(8, 5, 8, 5)
         self.tda_back_button = QPushButton("← Previous Station")
         self.tda_next_button = QPushButton("Mark Station Complete & Continue →")
         self.tda_back_button.clicked.connect(runner.go_previous_station)
@@ -125,8 +122,8 @@ class TradingDayShellWidget(QWidget):
         self.runtime_scroll.setWidget(self.runtime_frame)
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(8, 8, 8, 8)
-        layout.setSpacing(6)
+        layout.setContentsMargins(6, 6, 6, 6)
+        layout.setSpacing(4)
         layout.addWidget(self.title_label)
         layout.addWidget(self.summary_label)
         layout.addWidget(self.resume_context_label)
@@ -170,12 +167,12 @@ class TradingDayShellWidget(QWidget):
             return "You are here · Fresh Trading Day"
 
         mode = self.runtime.current_mode
-        text = f"You are here · {run.run_label} · {mode.name}"
+        text = f"{run.run_label} · {mode.name}"
         if mode.id == "tda":
             runner = self.runtime.tda_station_runner_widget
             text += (
                 f" · {self._current_tda_station_name()} · "
-                f"{runner.session.completed_count()}/{len(runner.session.station_ids)} stations complete"
+                f"{runner.session.completed_count()}/{len(runner.session.station_ids)} complete"
             )
         elif mode.id == "live-watch":
             text += f" · Thesis: {run.current_thesis_state.value}"
@@ -289,7 +286,6 @@ class TradingDayShellWidget(QWidget):
     def start_new_trading_day(self) -> None:
         if self.active_trading_run is not None:
             return
-
         self.trading_day = TradingDay()
         self.trading_runs = []
         self.active_trading_run = None
@@ -331,21 +327,11 @@ class TradingDayShellWidget(QWidget):
     def _refresh_history(self) -> None:
         self.run_history.clear()
         for run in self.trading_runs:
-            if run.status is TradingRunStatus.ACTIVE:
-                state = "▶ ACTIVE"
-            else:
-                state = "✓ CONCLUDED"
+            state = "▶ ACTIVE" if run.status is TradingRunStatus.ACTIVE else "✓ CONCLUDED"
             outcome = f" · {run.outcome}" if run.outcome else ""
             self.run_history.addItem(f"{state} · {run.run_label}{outcome}")
 
     def _sync_tda_nav(self) -> None:
-        """Mirror TDA navigation from domain/session state, not hidden button state.
-
-        TDAStationRunnerWidget emits session_changed before its own visual refresh.
-        Reading the hidden runner buttons at that instant can therefore be one
-        station stale. The anchored controls derive directly from the session so
-        they are correct immediately after navigation.
-        """
         runner = self.runtime.tda_station_runner_widget
         index = runner.current_station_index
         observation = runner.session.observation_for(runner.current_station_id)
@@ -387,6 +373,11 @@ class TradingDayShellWidget(QWidget):
         self.runtime_scroll.setVisible(active)
         self.runtime.transition_frame.setVisible(active)
 
+        # During an active run the resume strip replaces duplicate shell title
+        # and status lines. Between runs, restore the fuller day summary.
+        self.title_label.setVisible(not active)
+        self.summary_label.setVisible(not active)
+
         runner = self.runtime.tda_station_runner_widget
         tda_focus_active = (
             active
@@ -395,6 +386,15 @@ class TradingDayShellWidget(QWidget):
         )
         self.tda_nav_frame.setVisible(tda_focus_active)
         self._sync_tda_nav()
+
+        # TDA Focus owns wheel navigation, so normal 1080p use must not present
+        # a competing vertical scroll action. Other modes may scroll if their
+        # content truly exceeds the viewport.
+        self.runtime_scroll.setVerticalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAlwaysOff
+            if tda_focus_active
+            else Qt.ScrollBarPolicy.ScrollBarAsNeeded
+        )
 
         self.run_history_label.setVisible(not active)
         self.run_history.setVisible(not active)
