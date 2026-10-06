@@ -23,7 +23,7 @@ class TradingDayShellWidget(QWidget):
     """Own one or more Trading Runs under a Trading Day."""
 
     trading_day_changed = Signal(object)
-    session_run_changed = Signal(object)  # Backward-compatible signal name.
+    session_run_changed = Signal(object)
 
     def __init__(
         self,
@@ -98,6 +98,9 @@ class TradingDayShellWidget(QWidget):
         self.runtime.live_observation_submitted.connect(self._capture_live_observation)
         self.runtime.live_thesis_state_submitted.connect(self._record_live_thesis_state)
         self.runtime.live_entry_condition_changed.connect(self._set_live_entry_condition)
+        self.runtime.live_watch_point_state_changed.connect(
+            self._set_live_watch_point_state
+        )
         self.runtime.post_market_review_submitted.connect(self._update_post_market_review)
 
         self.tda_nav_frame = QFrame()
@@ -250,6 +253,21 @@ class TradingDayShellWidget(QWidget):
         if criterion_id not in valid_ids:
             return
         run.set_entry_condition(criterion_id, satisfied)
+        self.session_run_changed.emit(run)
+        self.runtime.load_trading_run(run)
+        self._update_view()
+
+    def _set_live_watch_point_state(self, watch_point_id: str, state: str) -> None:
+        run = self.active_trading_run
+        if run is None:
+            return
+        valid_ids = {
+            watch_point.id
+            for watch_point in self.runtime.tda_station_runner_widget.session.watch_points
+        }
+        if watch_point_id not in valid_ids:
+            return
+        run.set_watch_point_state(watch_point_id, state)
         self.session_run_changed.emit(run)
         self.runtime.load_trading_run(run)
         self._update_view()
