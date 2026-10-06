@@ -92,12 +92,17 @@ def test_post_market_review_round_trips_through_repository(tmp_path) -> None:
     connection.close()
 
 
-def test_post_market_surface_reconstructs_run_and_updates_review() -> None:
+def test_market_review_contrasts_tda_with_live_watch_without_process_click_log() -> None:
     get_app()
     shell = TradingDayShellWidget(build_default_process_blueprint())
     shell.start_trading_run()
     run = shell.active_trading_run
     assert run is not None
+
+    tda_session = shell.runtime.tda_station_runner_widget.session
+    tda_session.observations[-1].observation = (
+        "Expect lower prices if NYAM rejects the morning premium array."
+    )
 
     shell.runtime.apply_transition("finish-tda", override_incomplete=True)
     run.add_observation("NYAM swept London high and displaced lower")
@@ -111,20 +116,44 @@ def test_post_market_surface_reconstructs_run_and_updates_review() -> None:
     assert shell.runtime.session.current_mode_id == "post-market"
 
     review = shell.runtime.post_market_review_widget
-    assert review.timeline_list.count() >= 4
+    assert review.stage_stack.currentWidget() is review.market_review_page
+    assert review.tda_snapshot_list.count() == 1
+    assert "Premarket Thesis" in review.tda_snapshot_list.item(0).text()
+    assert review.live_changes_list.count() == 2
+    assert "Supported" in review.live_changes_list.item(1).text()
     assert "Supported" in review.run_summary_label.text()
+    assert not hasattr(review, "timeline_list")
+
+
+def test_process_adherence_is_a_separate_review_stage() -> None:
+    get_app()
+    shell = TradingDayShellWidget(build_default_process_blueprint())
+    shell.start_trading_run()
+    run = shell.active_trading_run
+    assert run is not None
+
+    shell.runtime.apply_transition("tda-stand-down", reason="No valid setup developed")
+    review = shell.runtime.post_market_review_widget
+
+    assert review.stage_stack.currentWidget() is review.market_review_page
+    review.to_process_review_button.click()
+    assert review.stage_stack.currentWidget() is review.process_review_page
+    assert "2 of 2" in review.stage_label.text()
 
     review.adherence_buttons[ProcessAdherence.FOLLOWED].click()
-    review.takeaway_input.setText("Waited for the planned condition and respected the exit.")
+    review.takeaway_input.setText("No trade was the correct process outcome.")
     review.takeaway_input.editingFinished.emit()
     review.film_night_checkbox.setChecked(True)
 
     assert run.review_process_adherence is ProcessAdherence.FOLLOWED
-    assert run.review_takeaway == "Waited for the planned condition and respected the exit."
+    assert run.review_takeaway == "No trade was the correct process outcome."
     assert run.review_film_night is True
 
+    review.back_to_market_button.click()
+    assert review.stage_stack.currentWidget() is review.market_review_page
 
-def test_restored_post_market_run_rehydrates_review_surface() -> None:
+
+def test_restored_post_market_run_rehydrates_both_review_stages() -> None:
     get_app()
     blueprint = build_default_process_blueprint()
     shell = TradingDayShellWidget(blueprint)
@@ -132,6 +161,9 @@ def test_restored_post_market_run_rehydrates_review_surface() -> None:
     run = shell.active_trading_run
     assert run is not None
 
+    shell.runtime.tda_station_runner_widget.session.observations[-1].observation = (
+        "Primary draw is prior-day low."
+    )
     shell.runtime.apply_transition("tda-stand-down", reason="No valid setup developed")
     run.update_post_market_review(
         process_adherence=ProcessAdherence.FOLLOWED,
@@ -150,7 +182,8 @@ def test_restored_post_market_run_rehydrates_review_surface() -> None:
 
     review = restored_shell.runtime.post_market_review_widget
     assert restored_shell.runtime.session.current_mode_id == "post-market"
+    assert review.tda_snapshot_list.count() == 1
+    assert "prior-day low" in review.tda_snapshot_list.item(0).text()
     assert review.adherence_buttons[ProcessAdherence.FOLLOWED].isChecked() is True
     assert review.takeaway_input.text() == "No trade was the correct process outcome."
     assert review.film_night_checkbox.isChecked() is False
-    assert review.timeline_list.count() >= 1
