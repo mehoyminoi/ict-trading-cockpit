@@ -81,6 +81,8 @@ class TradingDayShellWidget(QWidget):
         )
         runtime_layout.addWidget(self.runtime)
         self.runtime.session_changed.connect(self._process_session_changed)
+        self.runtime.live_observation_submitted.connect(self._capture_live_observation)
+        self.runtime.live_thesis_state_submitted.connect(self._record_live_thesis_state)
 
         # The executable process has grown taller than some displays. A scroll
         # viewport keeps the window responsive to monitor height without
@@ -144,6 +146,7 @@ class TradingDayShellWidget(QWidget):
         self.trading_runs.append(run)
         self.active_trading_run = run
         self._sync_legacy_aliases()
+        self.runtime.load_trading_run(run)
 
         self.trading_day_changed.emit(self.trading_day)
         self.session_run_changed.emit(run)
@@ -154,6 +157,22 @@ class TradingDayShellWidget(QWidget):
     # label is intentionally ignored: market sessions are context inside a run.
     def start_session_run(self, _session_name: str = "") -> bool:
         return self.start_trading_run()
+
+    def _capture_live_observation(self, note: str) -> None:
+        run = self.active_trading_run
+        if run is None:
+            return
+        run.add_observation(note)
+        self.session_run_changed.emit(run)
+        self.runtime.load_trading_run(run)
+
+    def _record_live_thesis_state(self, state: str, note: str) -> None:
+        run = self.active_trading_run
+        if run is None:
+            return
+        run.record_thesis_state(state, note)
+        self.session_run_changed.emit(run)
+        self.runtime.load_trading_run(run)
 
     def _process_session_changed(self, process_session: TradingDaySession) -> None:
         if self.active_trading_run is None:
@@ -226,6 +245,7 @@ class TradingDayShellWidget(QWidget):
                 self.runtime.load_session(process_session)
             if tda_session is not None:
                 self.runtime.tda_station_runner_widget.load_session(tda_session)
+            self.runtime.load_trading_run(self.active_trading_run)
 
         self._update_view()
 
