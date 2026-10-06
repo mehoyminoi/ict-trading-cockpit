@@ -37,6 +37,31 @@ def test_replay_launcher_enters_same_process_runtime() -> None:
     assert "Replay" in shell.resume_context_label.text()
 
 
+def test_launcher_exposes_model_library_without_auto_selecting_models() -> None:
+    get_app()
+    plan = build_default_trade_plan()
+    widget = TradePlanWidget(plan)
+    launcher = widget.process_run_launcher_widget
+
+    available_count = len([item for item in plan.playbooks if item.available])
+    assert f"{available_count} available" in launcher.models_label.text()
+    assert "selected during TDA" in launcher.models_label.text()
+
+    launcher.environment_combo.setCurrentText(RunEnvironment.REPLAY.value)
+    assert launcher.begin_process_run() is True
+
+    run = widget.trading_day_shell_widget.active_trading_run
+    assert run is not None
+    assert [
+        item for item in run.setup_candidates if item.source_type == "Playbook"
+    ] == []
+    assert "none are auto-selected" in launcher.status_label.text()
+    assert "Premarket Thesis" in launcher.status_label.text()
+
+    editor = widget.trading_day_runtime_widget.tda_watch_point_widget
+    assert editor.models_list.count() == len(plan.playbooks)
+
+
 def test_launcher_refuses_competing_active_process_run() -> None:
     get_app()
     widget = TradePlanWidget(build_default_trade_plan())
