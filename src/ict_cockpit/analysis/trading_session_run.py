@@ -13,6 +13,15 @@ class TradingSessionRunStatus(str, Enum):
     CONCLUDED = "Concluded"
 
 
+class RunEnvironment(str, Enum):
+    """Where the same operating process is being practiced or executed."""
+
+    LIVE = "Live"
+    REPLAY = "Replay"
+    HISTORICAL_BACKTEST = "Historical Backtest"
+    FORWARD_TEST = "Forward Test"
+
+
 class ThesisState(str, Enum):
     NOT_SET = "Not Set"
     SUPPORTED = "Supported"
@@ -59,12 +68,20 @@ class RunEvidenceEntry:
 
 @dataclass
 class TradingSessionRun:
-    """One deliberate operating run inside a Trading Day."""
+    """One deliberate operating run inside a Trading Day.
+
+    A Trading Run is process-neutral with respect to Live vs Lab use. The same
+    TDA -> Watch -> Review workflow can be executed in live markets, replay,
+    historical backtesting, or forward testing. Environment and Trade Plan
+    revision are provenance, not alternate process definitions.
+    """
 
     trading_day_id: str
     session_name: str
     process_session_id: str
     tda_station_session_id: str = ""
+    environment: RunEnvironment = RunEnvironment.LIVE
+    trade_plan_revision: str = ""
     status: TradingSessionRunStatus = TradingSessionRunStatus.ACTIVE
     outcome: str = ""
     current_thesis_state: ThesisState = ThesisState.NOT_SET
@@ -88,9 +105,12 @@ class TradingSessionRun:
         self.session_name = self.session_name.strip()
         self.process_session_id = self.process_session_id.strip()
         self.tda_station_session_id = self.tda_station_session_id.strip()
+        self.trade_plan_revision = self.trade_plan_revision.strip()
         self.outcome = self.outcome.strip()
         self.review_takeaway = self.review_takeaway.strip()
         self.concluded_at = self.concluded_at.strip()
+        if isinstance(self.environment, str):
+            self.environment = RunEnvironment(self.environment)
         if isinstance(self.status, str):
             self.status = TradingSessionRunStatus(self.status)
         if isinstance(self.current_thesis_state, str):
