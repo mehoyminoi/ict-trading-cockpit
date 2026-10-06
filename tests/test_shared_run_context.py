@@ -21,7 +21,7 @@ def get_app() -> QApplication:
     return app
 
 
-def test_schema_v17_adds_run_provenance_columns(tmp_path) -> None:
+def test_schema_adds_run_provenance_columns(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
 
@@ -31,7 +31,7 @@ def test_schema_v17_adds_run_provenance_columns(tmp_path) -> None:
     }
     version = connection.execute("PRAGMA user_version").fetchone()[0]
 
-    assert version == CURRENT_SCHEMA_VERSION == 17
+    assert version == CURRENT_SCHEMA_VERSION
     assert "run_environment" in columns
     assert "trade_plan_revision" in columns
     connection.close()
