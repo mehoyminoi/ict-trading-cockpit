@@ -67,6 +67,10 @@ def test_run_environment_and_trade_plan_revision_round_trip(tmp_path) -> None:
             "session_quarter": "Q3",
         },
     )
+    run.add_observation(
+        "Historical observation",
+        market_time_context=run.market_time_context,
+    )
     day.activate_trading_run(run)
     day_repository.save(day)
     run_repository.save(run)
@@ -79,6 +83,9 @@ def test_run_environment_and_trade_plan_revision_round_trip(tmp_path) -> None:
     assert restored.market_time_context["timezone"] == "America/New_York"
     assert restored.market_time_context["session"] == "NYAM"
     assert restored.market_time_context["source"] == "Historical Reference"
+    assert restored.evidence[0].market_time_context["captured_at"] == (
+        "2026-09-15T10:15:00-04:00"
+    )
     connection.close()
 
 
