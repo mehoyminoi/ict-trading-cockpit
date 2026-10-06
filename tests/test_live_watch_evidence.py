@@ -45,7 +45,7 @@ def build_test_live_watch_policy() -> LiveWatchPolicyDefinition:
     )
 
 
-def test_schema_v16_preserves_live_watch_runtime_columns(tmp_path) -> None:
+def test_schema_preserves_live_watch_runtime_columns(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
 
@@ -57,8 +57,9 @@ def test_schema_v16_preserves_live_watch_runtime_columns(tmp_path) -> None:
         row[1]
         for row in connection.execute("PRAGMA table_info(tda_station_session)").fetchall()
     }
+    version = connection.execute("PRAGMA user_version").fetchone()[0]
 
-    assert CURRENT_SCHEMA_VERSION == 16
+    assert version == CURRENT_SCHEMA_VERSION
     assert "current_thesis_state" in run_columns
     assert "evidence_json" in run_columns
     assert "entry_condition_states_json" in run_columns
