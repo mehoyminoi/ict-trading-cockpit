@@ -29,6 +29,23 @@ def test_runtime_keeps_process_actions_outside_scroll_viewport() -> None:
     assert shell.runtime.transition_frame.isHidden() is False
 
 
+def test_tda_navigation_is_anchored_outside_scrolling_content() -> None:
+    get_app()
+    shell = TradingDayShellWidget(build_default_process_blueprint())
+    shell.start_trading_run()
+    runner = shell.runtime.tda_station_runner_widget
+
+    assert runner.back_button.isHidden() is True
+    assert runner.next_button.isHidden() is True
+    assert shell.tda_nav_frame.isHidden() is False
+    assert shell.tda_next_button.text() == runner.next_button.text()
+
+    shell.tda_next_button.click()
+
+    assert runner.current_station_index == 1
+    assert shell.tda_back_button.isEnabled() is True
+
+
 def test_resume_context_tracks_current_tda_station() -> None:
     get_app()
     shell = TradingDayShellWidget(build_default_process_blueprint())
