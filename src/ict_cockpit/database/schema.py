@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 14
+CURRENT_SCHEMA_VERSION = 15
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -50,6 +50,9 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 13:
             _migrate_version_13_to_14(connection)
             version = 14
+        if version == 14:
+            _migrate_version_14_to_15(connection)
+            version = 15
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -357,3 +360,10 @@ def _migrate_version_13_to_14(connection: sqlite3.Connection) -> None:
         "ALTER TABLE trading_session_run ADD COLUMN review_film_night INTEGER NOT NULL DEFAULT 0"
     )
     connection.execute("PRAGMA user_version = 14")
+
+
+def _migrate_version_14_to_15(connection: sqlite3.Connection) -> None:
+    connection.execute(
+        "ALTER TABLE trading_session_run ADD COLUMN entry_condition_states_json TEXT NOT NULL DEFAULT '{}'"
+    )
+    connection.execute("PRAGMA user_version = 15")
