@@ -68,3 +68,42 @@ class QuarterTheoryContext:
 
     def summary(self, *, include_na: bool = False) -> str:
         return qt_context_summary(self.phases, include_na=include_na)
+
+
+def apply_time_derived_qt_context(
+    qt_context: dict | None,
+    market_time_context: dict | None,
+) -> dict[str, str]:
+    """Apply only QT roles that are explicitly derivable from market time."""
+
+    result = normalize_qt_context(qt_context)
+    market = dict(market_time_context or {})
+    derived_month = str(market.get("calendar_month_phase", "")).strip()
+    if derived_month in {
+        QTPhase.ACCUMULATION.value,
+        QTPhase.MANIPULATION.value,
+        QTPhase.DISTRIBUTION.value,
+    }:
+        result["month"] = derived_month
+    return result
+
+
+def raw_quarter_stack(
+    market_time_context: dict | None,
+    *,
+    level_ids: tuple[str, ...] = ("day", "macro_90m"),
+) -> tuple[str, ...]:
+    """Return known factual raw quarter positions in a stable level order."""
+
+    market = dict(market_time_context or {})
+    raw = dict(market.get("raw_quarters", {}) or {})
+    return tuple(
+        str(raw.get(level_id, "")).strip()
+        for level_id in level_ids
+        if str(raw.get(level_id, "")).strip()
+    )
+
+
+def raw_quarter_stack_summary(market_time_context: dict | None) -> str:
+    stack = raw_quarter_stack(market_time_context)
+    return " / ".join(stack) if stack else "Not available"
