@@ -59,7 +59,6 @@ def test_competency_assessment_round_trips_separately_from_plan_definition(
 
     restored = repository.get(
         plan.id,
-        plan.revision,
         "htf-liquidity-recognition",
     )
 
@@ -67,7 +66,7 @@ def test_competency_assessment_round_trips_separately_from_plan_definition(
     assert restored.state is CompetencyState.UNDER_STUDY
     assert "HTF wicks" in restored.note
     assert restored.source == "Manual"
-    assert repository.list_for_plan(plan.id, plan.revision) == [restored]
+    assert repository.list_for_plan(plan.id) == [restored]
 
     connection.close()
 
