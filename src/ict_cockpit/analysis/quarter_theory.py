@@ -12,6 +12,17 @@ class QTPhase(str, Enum):
     DISTORTION = "Distortion"
 
 
+RAW_QT_STACK_LEVELS = (
+    ("cycle_16y", "16Y"),
+    ("quadrennial", "4Y"),
+    ("year", "Year"),
+    ("month", "Month"),
+    ("week", "Week"),
+    ("day", "Day"),
+    ("session", "Session"),
+)
+
+
 QT_LEVELS = (
     ("cycle_16y", "16Y"),
     ("quadrennial", "Quadrennial"),
@@ -91,7 +102,9 @@ def apply_time_derived_qt_context(
 def raw_quarter_stack(
     market_time_context: dict | None,
     *,
-    level_ids: tuple[str, ...] = ("day", "macro_90m"),
+    level_ids: tuple[str, ...] = tuple(
+        level_id for level_id, _label in RAW_QT_STACK_LEVELS
+    ),
 ) -> tuple[str, ...]:
     """Return known factual raw quarter positions in a stable level order."""
 
@@ -107,3 +120,24 @@ def raw_quarter_stack(
 def raw_quarter_stack_summary(market_time_context: dict | None) -> str:
     stack = raw_quarter_stack(market_time_context)
     return " / ".join(stack) if stack else "Not available"
+
+
+def raw_quarter_stack_detail(market_time_context: dict | None) -> str:
+    market = dict(market_time_context or {})
+    raw = dict(market.get("raw_quarters", {}) or {})
+    parts = [
+        f"{label} {str(raw.get(level_id, '')).strip()}"
+        for level_id, label in RAW_QT_STACK_LEVELS
+        if str(raw.get(level_id, "")).strip()
+    ]
+    return " · ".join(parts) if parts else "Not available"
+
+
+def raw_quarter_alignment(market_time_context: dict | None) -> dict[str, int]:
+    """Count repeated raw Q1-Q4 values across currently assigned stack levels."""
+
+    counts: dict[str, int] = {}
+    for value in raw_quarter_stack(market_time_context):
+        if value in {"Q1", "Q2", "Q3", "Q4"}:
+            counts[value] = counts.get(value, 0) + 1
+    return counts
