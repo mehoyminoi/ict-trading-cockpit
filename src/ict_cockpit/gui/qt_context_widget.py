@@ -13,6 +13,8 @@ from ict_cockpit.analysis.quarter_theory import (
     QTPhase,
     apply_time_derived_qt_context,
     normalize_qt_context,
+    raw_quarter_alignment,
+    raw_quarter_stack_detail,
     raw_quarter_stack_summary,
 )
 
@@ -127,8 +129,20 @@ class QTContextWidget(QFrame):
         self.market_time_label.setText(
             "Market-time context: " + (" · ".join(pieces) if pieces else "not available")
         )
+        compact = raw_quarter_stack_summary(market)
+        detail = raw_quarter_stack_detail(market)
+        alignment = raw_quarter_alignment(market)
+        strongest = max(alignment.items(), key=lambda item: item[1]) if alignment else None
+        alignment_text = (
+            f" · strongest {strongest[0]}×{strongest[1]}"
+            if strongest is not None and strongest[1] > 1
+            else ""
+        )
         self.raw_stack_label.setText(
-            "Raw quarter stack (known): " + raw_quarter_stack_summary(market)
+            "Raw quarter stack: "
+            + compact
+            + alignment_text
+            + ("\n" + detail if detail != "Not available" else "")
         )
 
     def clear_context(self) -> None:

@@ -9,6 +9,8 @@ from ict_cockpit.analysis.quarter_theory import (
     apply_time_derived_qt_context,
     normalize_qt_context,
     qt_context_summary,
+    raw_quarter_alignment,
+    raw_quarter_stack_detail,
     raw_quarter_stack_summary,
 )
 from ict_cockpit.analysis.trading_day import TradingDay
@@ -219,17 +221,26 @@ def test_time_derived_month_role_overrides_manual_month_for_new_context() -> Non
     assert context["week"] == "A"
 
 
-def test_raw_quarter_stack_summary_uses_only_known_positions() -> None:
-    summary = raw_quarter_stack_summary(
-        {
-            "raw_quarters": {
-                "day": "Q2",
-                "macro_90m": "Q2",
-            }
+def test_raw_quarter_stack_summary_uses_stable_higher_order_sequence() -> None:
+    market = {
+        "raw_quarters": {
+            "cycle_16y": "Q2",
+            "quadrennial": "Q2",
+            "year": "Q2",
+            "month": "Q2",
+            "week": "Q2",
+            "day": "Q3",
+            "session": "Q4",
         }
-    )
+    }
 
-    assert summary == "Q2 / Q2"
+    assert raw_quarter_stack_summary(market) == (
+        "Q2 / Q2 / Q2 / Q2 / Q2 / Q3 / Q4"
+    )
+    assert raw_quarter_stack_detail(market) == (
+        "16Y Q2 · 4Y Q2 · Year Q2 · Month Q2 · Week Q2 · Day Q3 · Session Q4"
+    )
+    assert raw_quarter_alignment(market)["Q2"] == 5
 
 
 def test_replay_run_auto_derives_month_amd_and_shows_raw_stack() -> None:
@@ -252,8 +263,13 @@ def test_replay_run_auto_derives_month_amd_and_shows_raw_stack() -> None:
     assert run.market_time_context["calendar_quarter"] == "Q3"
     assert run.market_time_context["calendar_quarter_month_index"] == 2
     assert run.market_time_context["raw_quarters"] == {
+        "cycle_16y": "Q4",
+        "quadrennial": "Q4",
+        "year": "Q3",
+        "month": "Q1",
+        "week": "Q4",
         "day": "Q3",
-        "macro_90m": "Q3",
+        "session": "Q3",
     }
 
     runner = shell.runtime.tda_station_runner_widget
@@ -263,7 +279,9 @@ def test_replay_run_auto_derives_month_amd_and_shows_raw_stack() -> None:
     assert editor.phase_combos["month"].currentText() == "M"
     assert editor.phase_combos["month"].isEnabled() is False
     assert "Q3 Month 2" in editor.market_time_label.text()
-    assert "Q3 / Q3" in editor.raw_stack_label.text()
+    assert "Q4 / Q4 / Q3 / Q1 / Q4 / Q3 / Q3" in editor.raw_stack_label.text()
+    assert "16Y Q4" in editor.raw_stack_label.text()
+    assert "Session Q3" in editor.raw_stack_label.text()
 
     assert shell.runtime.apply_transition(
         "finish-tda",
@@ -271,4 +289,5 @@ def test_replay_run_auto_derives_month_amd_and_shows_raw_stack() -> None:
     ) is True
     watch = shell.runtime.live_watch_widget
     assert "Month M" in watch.qt_summary_label.text()
-    assert "Q3 / Q3" in watch.raw_qt_stack_label.text()
+    assert "Q4 / Q4 / Q3 / Q1 / Q4 / Q3 / Q3" in watch.raw_qt_stack_label.text()
+    assert "16Y Q4" in watch.raw_qt_stack_label.text()

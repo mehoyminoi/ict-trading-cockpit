@@ -3,8 +3,12 @@ from datetime import datetime, timezone
 from ict_cockpit.analysis.market_time import (
     MARKET_TIMEZONE,
     build_market_time_context,
+    cycle_16y_quarter_for,
     futures_trading_day_for,
+    month_week_quarter_for,
+    quadrennial_year_quarter_for,
     temporal_relevance_for,
+    week_day_quarter_for,
 )
 
 
@@ -152,6 +156,46 @@ def test_market_time_context_exposes_known_raw_qt_stack() -> None:
     )
 
     assert context.raw_quarters == {
+        "cycle_16y": "Q4",
+        "quadrennial": "Q4",
+        "year": "Q4",
+        "month": "Q1",
+        "week": "Q2",
         "day": "Q3",
-        "macro_90m": "Q3",
+        "session": "Q3",
     }
+
+
+def test_higher_order_raw_qt_anchors_match_established_cycles() -> None:
+    q1 = datetime(2011, 6, 1, 10, 0, tzinfo=MARKET_TIMEZONE)
+    q4 = datetime(2026, 6, 1, 10, 0, tzinfo=MARKET_TIMEZONE)
+    next_cycle = datetime(2027, 6, 1, 10, 0, tzinfo=MARKET_TIMEZONE)
+
+    assert cycle_16y_quarter_for(q1) == "Q1"
+    assert quadrennial_year_quarter_for(q1) == "Q1"
+    assert cycle_16y_quarter_for(q4) == "Q4"
+    assert quadrennial_year_quarter_for(q4) == "Q4"
+    assert cycle_16y_quarter_for(next_cycle) == "Q1"
+    assert quadrennial_year_quarter_for(next_cycle) == "Q1"
+
+
+def test_monthly_raw_quarter_starts_on_first_monday_and_fifth_week_distorts() -> None:
+    before_first_monday = datetime(2026, 10, 2, 10, 0, tzinfo=MARKET_TIMEZONE)
+    week_1 = datetime(2026, 10, 5, 10, 0, tzinfo=MARKET_TIMEZONE)
+    week_4 = datetime(2026, 10, 26, 10, 0, tzinfo=MARKET_TIMEZONE)
+    week_5 = datetime(2026, 11, 30, 10, 0, tzinfo=MARKET_TIMEZONE)
+
+    assert month_week_quarter_for(before_first_monday) == ""
+    assert month_week_quarter_for(week_1) == "Q1"
+    assert month_week_quarter_for(week_4) == "Q4"
+    assert month_week_quarter_for(week_5) == "Distortion"
+
+
+def test_weekly_raw_quarter_uses_futures_trading_day() -> None:
+    monday_nyam = datetime(2026, 10, 5, 10, 0, tzinfo=MARKET_TIMEZONE)
+    monday_evening_asia = datetime(2026, 10, 5, 18, 15, tzinfo=MARKET_TIMEZONE)
+    friday = datetime(2026, 10, 9, 10, 0, tzinfo=MARKET_TIMEZONE)
+
+    assert week_day_quarter_for(monday_nyam) == "Q1"
+    assert week_day_quarter_for(monday_evening_asia) == "Q2"
+    assert week_day_quarter_for(friday) == ""
