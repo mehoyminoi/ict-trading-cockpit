@@ -250,10 +250,13 @@ class TradingDayShellWidget(QWidget):
             had_derived_qt = "calendar_month_phase" in run.market_time_context
             run.market_time_context = dict(context)
             if had_derived_qt:
-                run.qt_context = apply_time_derived_qt_context(
+                updated_qt = apply_time_derived_qt_context(
                     run.qt_context,
                     context,
                 )
+                if updated_qt != run.qt_context:
+                    run.set_qt_context(updated_qt)
+                    self.session_run_changed.emit(run)
             if self.runtime.current_mode.id == "live-watch":
                 self.runtime.live_watch_widget.load_run_context(
                     run,
