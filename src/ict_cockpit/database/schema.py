@@ -447,12 +447,12 @@ def _migrate_version_25_to_26(connection: sqlite3.Connection) -> None:
             note TEXT NOT NULL DEFAULT '',
             source TEXT NOT NULL DEFAULT 'Manual',
             updated_at TEXT NOT NULL,
-            PRIMARY KEY (trade_plan_id, trade_plan_revision, competency_id)
+            PRIMARY KEY (trade_plan_id, competency_id)
         )
         """
     )
     connection.execute(
         "CREATE INDEX idx_competency_assessment_plan "
-        "ON competency_assessment(trade_plan_id, trade_plan_revision)"
+        "ON competency_assessment(trade_plan_id, competency_id)"
     )
     connection.execute("PRAGMA user_version = 26")
