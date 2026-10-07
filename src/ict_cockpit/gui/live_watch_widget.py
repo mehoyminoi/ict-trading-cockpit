@@ -14,6 +14,11 @@ from PySide6.QtWidgets import (
 )
 
 from ict_cockpit.analysis.market_time import temporal_relevance_for
+from ict_cockpit.analysis.opportunity_synthesis import (
+    build_opportunity_situation_brief,
+    candidate_opportunity_line,
+    situation_brief_summary,
+)
 from ict_cockpit.analysis.quarter_theory import (
     qt_context_summary,
     raw_quarter_contextual_summary,
@@ -67,6 +72,21 @@ class LiveWatchWidget(QWidget):
             "Watch the market thesis and setups becoming valid. Authorization requires both setup-specific conditions and Trade Plan safety/risk gates."
         )
         self.guidance.setWordWrap(True)
+
+        self.situation_frame = QFrame()
+        self.situation_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        situation_layout = QVBoxLayout(self.situation_frame)
+        situation_layout.setContentsMargins(9, 7, 9, 7)
+        situation_layout.setSpacing(3)
+        situation_heading = QLabel("Opportunity Situation Brief")
+        situation_heading.setStyleSheet("font-weight: 600;")
+        self.situation_summary_label = QLabel("No active Trading Run context")
+        self.situation_summary_label.setWordWrap(True)
+        self.situation_candidates_label = QLabel("No setup candidates in play")
+        self.situation_candidates_label.setWordWrap(True)
+        situation_layout.addWidget(situation_heading)
+        situation_layout.addWidget(self.situation_summary_label)
+        situation_layout.addWidget(self.situation_candidates_label)
 
         self.tda_frame = QFrame()
         self.tda_frame.setFrameShape(QFrame.Shape.StyledPanel)
@@ -205,6 +225,7 @@ class LiveWatchWidget(QWidget):
         layout.setSpacing(6)
         layout.addWidget(self.heading)
         layout.addWidget(self.guidance)
+        layout.addWidget(self.situation_frame)
         layout.addLayout(dashboard)
         layout.addWidget(self.readiness_frame, 1)
         layout.addWidget(self.thesis_frame)
@@ -232,6 +253,8 @@ class LiveWatchWidget(QWidget):
         self.qt_summary_label.setText("QT / AMDX · No interpretation recorded")
         self.raw_qt_stack_label.setText("Raw QT stack · Not available")
         self.qt_stack_watch_label.setText("QT stack watch · No repeated raw-quarter alignment")
+        self.situation_summary_label.setText("No active Trading Run context")
+        self.situation_candidates_label.setText("No setup candidates in play")
         self._clear_layout(self.authorization_layout)
         self.authorization_summary_label.setText("Authorization policy: Not configured")
         self.load_state(ThesisState.NOT_SET, [], {}, {})
@@ -274,6 +297,22 @@ class LiveWatchWidget(QWidget):
         self.entry_checkboxes = {}
         self.watch_point_combos = {}
         self.load_state(trading_run.current_thesis_state, trading_run.evidence)
+        brief = build_opportunity_situation_brief(
+            trading_run,
+            tda_session,
+        )
+        self.situation_summary_label.setText(
+            situation_brief_summary(brief)
+        )
+        candidate_lines = [
+            candidate_opportunity_line(item)
+            for item in brief.candidates
+        ]
+        self.situation_candidates_label.setText(
+            "\n".join(candidate_lines)
+            if candidate_lines
+            else "No setup candidates in play"
+        )
         self.qt_summary_label.setText(
             "QT / AMDX · " + qt_context_summary(trading_run.qt_context)
         )
