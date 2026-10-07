@@ -185,7 +185,7 @@ def test_live_watch_renders_opportunity_situation_brief() -> None:
     )
 
     assert "NYAM" in widget.situation_summary_label.text()
-    assert "1 active" in widget.situation_summary_label.text()
+    assert "1 timed active" in widget.situation_summary_label.text()
     assert "Silver Bullet Model" in widget.situation_candidates_label.text()
     assert "DEVELOPING" in widget.situation_candidates_label.text()
     assert "BLOCKED" in widget.situation_candidates_label.text()
