@@ -16,6 +16,8 @@ from PySide6.QtWidgets import (
 from ict_cockpit.analysis.market_time import temporal_relevance_for
 from ict_cockpit.analysis.quarter_theory import (
     qt_context_summary,
+    raw_quarter_alignment,
+    raw_quarter_stack_detail,
     raw_quarter_stack_summary,
 )
 from ict_cockpit.analysis.tda_station_session import TDAStationSession
@@ -269,9 +271,20 @@ class LiveWatchWidget(QWidget):
         self.qt_summary_label.setText(
             "QT / AMDX · " + qt_context_summary(trading_run.qt_context)
         )
+        raw_summary = raw_quarter_stack_summary(trading_run.market_time_context)
+        raw_detail = raw_quarter_stack_detail(trading_run.market_time_context)
+        alignment = raw_quarter_alignment(trading_run.market_time_context)
+        strongest = max(alignment.items(), key=lambda item: item[1]) if alignment else None
+        alignment_text = (
+            f" · strongest {strongest[0]}×{strongest[1]}"
+            if strongest is not None and strongest[1] > 1
+            else ""
+        )
         self.raw_qt_stack_label.setText(
             "Raw QT stack · "
-            + raw_quarter_stack_summary(trading_run.market_time_context)
+            + raw_summary
+            + alignment_text
+            + ("\n" + raw_detail if raw_detail != "Not available" else "")
         )
         self._load_tda_context(tda_session, blueprint)
         self._render_authorization_gates(trading_run)
