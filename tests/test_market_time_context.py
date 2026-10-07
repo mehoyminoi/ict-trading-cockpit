@@ -125,3 +125,33 @@ def test_temporal_relevance_is_closed_after_last_model_window() -> None:
     )
 
     assert relevance["state"] == "Closed"
+
+
+def test_calendar_month_role_follows_quarter_po3_rule() -> None:
+    expected = {
+        1: ("Q1", 1, "A"),
+        2: ("Q1", 2, "M"),
+        3: ("Q1", 3, "D"),
+        7: ("Q3", 1, "A"),
+        8: ("Q3", 2, "M"),
+        9: ("Q3", 3, "D"),
+    }
+
+    for month, (quarter, index, phase) in expected.items():
+        context = build_market_time_context(
+            datetime(2026, month, 10, 10, 15, tzinfo=MARKET_TIMEZONE)
+        )
+        assert context.calendar_quarter == quarter
+        assert context.calendar_quarter_month_index == index
+        assert context.calendar_month_phase == phase
+
+
+def test_market_time_context_exposes_known_raw_qt_stack() -> None:
+    context = build_market_time_context(
+        datetime(2026, 10, 6, 9, 15, tzinfo=MARKET_TIMEZONE)
+    )
+
+    assert context.raw_quarters == {
+        "day": "Q3",
+        "macro_90m": "Q3",
+    }
