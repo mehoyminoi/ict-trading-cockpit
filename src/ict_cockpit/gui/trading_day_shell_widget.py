@@ -47,6 +47,7 @@ class TradingDayShellWidget(QWidget):
         self.run_environment = RunEnvironment(run_environment)
         self.trade_plan_revision = trade_plan_revision.strip()
         self.run_market_timestamp: datetime | None = None
+        self.run_study_context: dict = {}
         self.trading_day = TradingDay()
         self.trading_runs: list[TradingRun] = []
         self.active_trading_run: TradingRun | None = None
@@ -324,6 +325,11 @@ class TradingDayShellWidget(QWidget):
             authorization_policy_snapshot=[gate.to_dict() for gate in self.authorization_gates],
             market_time_context=market_time_context,
             qt_context=initial_qt_context,
+            study_context=(
+                dict(self.run_study_context)
+                if self.run_study_context
+                else None
+            ),
         )
         if self.playbooks:
             run.ensure_day_specific_candidate()
