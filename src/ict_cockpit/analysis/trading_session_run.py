@@ -4,6 +4,7 @@ from enum import Enum
 from uuid import uuid4
 
 from ict_cockpit.analysis.market_time import temporal_relevance_for
+from ict_cockpit.analysis.quarter_theory import normalize_qt_context
 
 
 MARKET_SESSION_NAMES = ("Asia", "London", "NYAM", "NYPM")
@@ -162,6 +163,10 @@ class SetupCandidate:
                 if criterion_id:
                     self.entry_condition_states[criterion_id] = satisfied
 
+    def set_qt_context(self, context: dict | None) -> None:
+        self.qt_context = normalize_qt_context(context)
+        self._touch()
+
     def set_authorization_gate(self, gate_id: str, state: AuthorizationGateState | str) -> None:
         gate_id = gate_id.strip()
         if not gate_id:
@@ -208,6 +213,7 @@ class TradingSessionRun:
     authorization_policy_snapshot: list[dict] = field(default_factory=list)
     authorization_gate_states: dict[str, AuthorizationGateState] = field(default_factory=dict)
     market_time_context: dict = field(default_factory=dict)
+    qt_context: dict[str, str] = field(default_factory=dict)
 
     selected_playbook_id: str = ""
     selected_playbook_revision: str = ""
@@ -239,6 +245,7 @@ class TradingSessionRun:
         self.playbook_snapshot = dict(self.playbook_snapshot or {})
         self.authorization_policy_snapshot = [dict(item) for item in (self.authorization_policy_snapshot or [])]
         self.market_time_context = dict(self.market_time_context or {})
+        self.qt_context = normalize_qt_context(self.qt_context)
         self.authorization_gate_states = {
             str(key).strip(): (
                 value if isinstance(value, AuthorizationGateState) else AuthorizationGateState(value)
