@@ -13,8 +13,10 @@ from ict_cockpit.analysis.quarter_theory import (
     QTPhase,
     apply_time_derived_qt_context,
     normalize_qt_context,
+    qt_interpretation_provenance,
     raw_quarter_alignment,
-    raw_quarter_stack_detail,
+    raw_quarter_contextual_summary,
+    raw_quarter_provenance_tooltip,
     raw_quarter_stack_summary,
 )
 
@@ -96,17 +98,23 @@ class QTContextWidget(QFrame):
             for level_id, combo in self.phase_combos.items():
                 combo.setCurrentText(context[level_id])
             derived_month = str(market.get("calendar_month_phase", "")).strip()
-            month_combo = self.phase_combos["month"]
-            month_combo.setEnabled(not bool(derived_month))
-            month_combo.setToolTip(
-                (
-                    "Derived from calendar-quarter month position: "
-                    + f"{market.get('calendar_quarter', '')} month "
-                    + f"{market.get('calendar_quarter_month_index', '')} = {derived_month}."
-                )
-                if derived_month
-                else ""
-            )
+            provenance = qt_interpretation_provenance(context, market)
+            for level_id, combo in self.phase_combos.items():
+                source = provenance.get(level_id, "Unknown")
+                if level_id == "month" and derived_month:
+                    combo.setEnabled(False)
+                    combo.setToolTip(
+                        "Derived from calendar-quarter month position: "
+                        + f"{market.get('calendar_quarter', '')} month "
+                        + f"{market.get('calendar_quarter_month_index', '')} = {derived_month}. "
+                        + "Source: Derived."
+                    )
+                else:
+                    combo.setEnabled(True)
+                    combo.setToolTip(
+                        f"AMDX interpretation source: {source}. "
+                        "Raw quarter identity is tracked separately."
+                    )
         finally:
             self._loading = False
 
@@ -130,7 +138,7 @@ class QTContextWidget(QFrame):
             "Market-time context: " + (" · ".join(pieces) if pieces else "not available")
         )
         compact = raw_quarter_stack_summary(market)
-        detail = raw_quarter_stack_detail(market)
+        contextual = raw_quarter_contextual_summary(market)
         alignment = raw_quarter_alignment(market)
         strongest = max(alignment.items(), key=lambda item: item[1]) if alignment else None
         alignment_text = (
@@ -142,7 +150,10 @@ class QTContextWidget(QFrame):
             "Raw quarter stack: "
             + compact
             + alignment_text
-            + ("\n" + detail if detail != "Not available" else "")
+            + ("\n" + contextual if contextual != "Not available" else "")
+        )
+        self.raw_stack_label.setToolTip(
+            raw_quarter_provenance_tooltip(market)
         )
 
     def clear_context(self) -> None:

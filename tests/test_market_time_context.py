@@ -199,3 +199,37 @@ def test_weekly_raw_quarter_uses_futures_trading_day() -> None:
     assert week_day_quarter_for(monday_nyam) == "Q1"
     assert week_day_quarter_for(monday_evening_asia) == "Q2"
     assert week_day_quarter_for(friday) == ""
+
+
+def test_raw_qt_layers_explain_parent_child_and_effective_interval() -> None:
+    context = build_market_time_context(
+        datetime(2026, 10, 6, 9, 15, tzinfo=MARKET_TIMEZONE)
+    )
+    layers = {item["id"]: item for item in context.raw_quarter_layers}
+
+    assert layers["cycle_16y"]["parent_label"] == "16Y Cycle 2011–2026"
+    assert layers["cycle_16y"]["active_child_label"] == "4-year block 2023–2026"
+    assert layers["cycle_16y"]["quarter"] == "Q4"
+    assert layers["cycle_16y"]["source"] == "Derived"
+
+    assert layers["quadrennial"]["parent_label"] == "Quadrennial 2023–2026"
+    assert layers["quadrennial"]["active_child_label"] == "Year 2026"
+    assert layers["quadrennial"]["quarter"] == "Q4"
+
+    assert layers["year"]["parent_label"] == "Calendar Year 2026"
+    assert layers["year"]["active_child_label"] == "Oct–Dec"
+    assert layers["year"]["quarter"] == "Q4"
+
+    assert layers["month"]["parent_label"] == "October 2026"
+    assert "Oct 5–11, 2026" in layers["month"]["active_child_label"]
+    assert layers["month"]["quarter"] == "Q1"
+
+    assert layers["week"]["active_child_label"] == "Tuesday 2026-10-06"
+    assert layers["week"]["effective_start"].startswith("2026-10-05T18:00")
+    assert layers["week"]["effective_end"].startswith("2026-10-06T18:00")
+
+    assert layers["day"]["parent_label"] == "Trading Day 2026-10-06"
+    assert layers["day"]["active_child_label"] == "NYAM"
+
+    assert layers["session"]["parent_label"] == "NYAM Session 06:00–12:00"
+    assert layers["session"]["active_child_label"] == "09:00–10:30"

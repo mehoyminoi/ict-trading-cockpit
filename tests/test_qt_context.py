@@ -9,7 +9,10 @@ from ict_cockpit.analysis.quarter_theory import (
     apply_time_derived_qt_context,
     normalize_qt_context,
     qt_context_summary,
+    qt_interpretation_provenance,
     raw_quarter_alignment,
+    raw_quarter_contextual_summary,
+    raw_quarter_provenance_tooltip,
     raw_quarter_stack_detail,
     raw_quarter_stack_summary,
 )
@@ -280,8 +283,9 @@ def test_replay_run_auto_derives_month_amd_and_shows_raw_stack() -> None:
     assert editor.phase_combos["month"].isEnabled() is False
     assert "Q3 Month 2" in editor.market_time_label.text()
     assert "Q4 / Q4 / Q3 / Q1 / Q4 / Q3 / Q3" in editor.raw_stack_label.text()
-    assert "16Y Q4" in editor.raw_stack_label.text()
-    assert "Session Q3" in editor.raw_stack_label.text()
+    assert "16Y (2023–2026) Q4" in editor.raw_stack_label.text()
+    assert "Session (09:00–10:30) Q3" in editor.raw_stack_label.text()
+    assert "Raw QT layer reference" in editor.raw_stack_label.toolTip()
 
     assert shell.runtime.apply_transition(
         "finish-tda",
@@ -290,4 +294,54 @@ def test_replay_run_auto_derives_month_amd_and_shows_raw_stack() -> None:
     watch = shell.runtime.live_watch_widget
     assert "Month M" in watch.qt_summary_label.text()
     assert "Q4 / Q4 / Q3 / Q1 / Q4 / Q3 / Q3" in watch.raw_qt_stack_label.text()
-    assert "16Y Q4" in watch.raw_qt_stack_label.text()
+    assert "16Y (2023–2026) Q4" in watch.raw_qt_stack_label.text()
+    assert "Raw QT layer reference" in watch.raw_qt_stack_label.toolTip()
+
+
+def test_qt_interpretation_provenance_distinguishes_derived_manual_and_missing() -> None:
+    provenance = qt_interpretation_provenance(
+        {
+            "month": "M",
+            "day": "D",
+        },
+        {
+            "calendar_month_phase": "M",
+        },
+    )
+
+    assert provenance["month"] == "Derived"
+    assert provenance["day"] == "Technician"
+    assert provenance["week"] == "Unknown"
+
+
+def test_contextual_raw_qt_summary_and_tooltip_explain_nomenclature() -> None:
+    get_app()
+    shell = build_shell()
+    shell.run_environment = RunEnvironment.REPLAY
+    shell.run_market_timestamp = datetime(
+        2026,
+        10,
+        6,
+        9,
+        15,
+        tzinfo=MARKET_TIMEZONE,
+    )
+    assert shell.start_trading_run() is True
+    run = shell.active_trading_run
+    assert run is not None
+
+    summary = raw_quarter_contextual_summary(run.market_time_context)
+    tooltip = raw_quarter_provenance_tooltip(run.market_time_context)
+
+    assert "16Y (2023–2026) Q4" in summary
+    assert "4Y (2026) Q4" in summary
+    assert "Year (Oct–Dec) Q4" in summary
+    assert "Month (Oct 5–11, 2026) Q1" in summary
+    assert "Week (Tuesday) Q2" in summary
+    assert "Day (NYAM) Q3" in summary
+    assert "Session (09:00–10:30) Q3" in summary
+
+    assert "16Y Cycle 2011–2026 → 4-year block 2023–2026 · Q4" in tooltip
+    assert "Quadrennial 2023–2026 → Year 2026 · Q4" in tooltip
+    assert "Trading Day 2026-10-06 → NYAM · Q3" in tooltip
+    assert "Derived" in tooltip
