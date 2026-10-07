@@ -14,9 +14,10 @@ from ict_cockpit.analysis.quarter_theory import (
     apply_time_derived_qt_context,
     normalize_qt_context,
     qt_interpretation_provenance,
-    raw_quarter_alignment,
     raw_quarter_contextual_summary,
     raw_quarter_provenance_tooltip,
+    raw_quarter_stack_relevance_summary,
+    raw_quarter_stack_relevance_tooltip,
     raw_quarter_stack_summary,
 )
 
@@ -47,11 +48,14 @@ class QTContextWidget(QFrame):
         self.market_time_label.setWordWrap(True)
         self.raw_stack_label = QLabel("Raw quarter stack: not available")
         self.raw_stack_label.setWordWrap(True)
+        self.stack_relevance_label = QLabel("QT stack watch: no repeated raw-quarter alignment")
+        self.stack_relevance_label.setWordWrap(True)
 
         layout.addWidget(heading)
         layout.addWidget(help_label)
         layout.addWidget(self.market_time_label)
         layout.addWidget(self.raw_stack_label)
+        layout.addWidget(self.stack_relevance_label)
 
         grid = QGridLayout()
         grid.setContentsMargins(0, 0, 0, 0)
@@ -139,21 +143,19 @@ class QTContextWidget(QFrame):
         )
         compact = raw_quarter_stack_summary(market)
         contextual = raw_quarter_contextual_summary(market)
-        alignment = raw_quarter_alignment(market)
-        strongest = max(alignment.items(), key=lambda item: item[1]) if alignment else None
-        alignment_text = (
-            f" · strongest {strongest[0]}×{strongest[1]}"
-            if strongest is not None and strongest[1] > 1
-            else ""
-        )
         self.raw_stack_label.setText(
             "Raw quarter stack: "
             + compact
-            + alignment_text
             + ("\n" + contextual if contextual != "Not available" else "")
         )
         self.raw_stack_label.setToolTip(
             raw_quarter_provenance_tooltip(market)
+        )
+        self.stack_relevance_label.setText(
+            "QT stack watch: " + raw_quarter_stack_relevance_summary(market)
+        )
+        self.stack_relevance_label.setToolTip(
+            raw_quarter_stack_relevance_tooltip(market)
         )
 
     def clear_context(self) -> None:

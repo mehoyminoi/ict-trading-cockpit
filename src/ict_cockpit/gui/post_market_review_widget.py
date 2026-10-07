@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
 from ict_cockpit.analysis.quarter_theory import (
     qt_context_summary,
     raw_quarter_contextual_summary,
+    raw_quarter_stack_relevance_summary,
     raw_quarter_stack_summary,
 )
 from ict_cockpit.analysis.tda_station_session import TDAStationSession
@@ -251,6 +252,12 @@ class PostMarketReviewWidget(QWidget):
                     )
                     if raw_detail != "Not available":
                         detail += "\n" + raw_detail
+                    detail += (
+                        "\nStack watch · "
+                        + raw_quarter_stack_relevance_summary(
+                            trading_run.market_time_context
+                        )
+                    )
                 self.tda_snapshot_list.addItem(detail)
                 populated_tda += 1
             for item in tda_session.observations:

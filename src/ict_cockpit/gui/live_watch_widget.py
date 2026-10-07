@@ -16,9 +16,10 @@ from PySide6.QtWidgets import (
 from ict_cockpit.analysis.market_time import temporal_relevance_for
 from ict_cockpit.analysis.quarter_theory import (
     qt_context_summary,
-    raw_quarter_alignment,
     raw_quarter_contextual_summary,
     raw_quarter_provenance_tooltip,
+    raw_quarter_stack_relevance_summary,
+    raw_quarter_stack_relevance_tooltip,
     raw_quarter_stack_summary,
 )
 from ict_cockpit.analysis.tda_station_session import TDAStationSession
@@ -81,12 +82,15 @@ class LiveWatchWidget(QWidget):
         self.qt_summary_label.setStyleSheet("font-weight: 600;")
         self.raw_qt_stack_label = QLabel("Raw QT stack · Not available")
         self.raw_qt_stack_label.setWordWrap(True)
+        self.qt_stack_watch_label = QLabel("QT stack watch · No repeated raw-quarter alignment")
+        self.qt_stack_watch_label.setWordWrap(True)
         self.watch_points_list = QListWidget()
         self.watch_points_list.setMaximumHeight(145)
         tda_layout.addWidget(tda_heading)
         tda_layout.addWidget(self.tda_summary_label)
         tda_layout.addWidget(self.qt_summary_label)
         tda_layout.addWidget(self.raw_qt_stack_label)
+        tda_layout.addWidget(self.qt_stack_watch_label)
         tda_layout.addWidget(self.watch_points_list)
 
         self.authorization_frame = QFrame()
@@ -227,6 +231,7 @@ class LiveWatchWidget(QWidget):
         self.tda_summary_label.setText("No TDA context loaded")
         self.qt_summary_label.setText("QT / AMDX · No interpretation recorded")
         self.raw_qt_stack_label.setText("Raw QT stack · Not available")
+        self.qt_stack_watch_label.setText("QT stack watch · No repeated raw-quarter alignment")
         self._clear_layout(self.authorization_layout)
         self.authorization_summary_label.setText("Authorization policy: Not configured")
         self.load_state(ThesisState.NOT_SET, [], {}, {})
@@ -274,21 +279,20 @@ class LiveWatchWidget(QWidget):
         )
         raw_summary = raw_quarter_stack_summary(trading_run.market_time_context)
         raw_detail = raw_quarter_contextual_summary(trading_run.market_time_context)
-        alignment = raw_quarter_alignment(trading_run.market_time_context)
-        strongest = max(alignment.items(), key=lambda item: item[1]) if alignment else None
-        alignment_text = (
-            f" · strongest {strongest[0]}×{strongest[1]}"
-            if strongest is not None and strongest[1] > 1
-            else ""
-        )
         self.raw_qt_stack_label.setText(
             "Raw QT stack · "
             + raw_summary
-            + alignment_text
             + ("\n" + raw_detail if raw_detail != "Not available" else "")
         )
         self.raw_qt_stack_label.setToolTip(
             raw_quarter_provenance_tooltip(trading_run.market_time_context)
+        )
+        self.qt_stack_watch_label.setText(
+            "QT stack watch · "
+            + raw_quarter_stack_relevance_summary(trading_run.market_time_context)
+        )
+        self.qt_stack_watch_label.setToolTip(
+            raw_quarter_stack_relevance_tooltip(trading_run.market_time_context)
         )
         self._load_tda_context(tda_session, blueprint)
         self._render_authorization_gates(trading_run)
