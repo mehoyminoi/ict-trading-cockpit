@@ -115,10 +115,13 @@ def test_study_context_round_trips_with_trading_run(tmp_path) -> None:
         mode_ids=[mode.id for mode in plan.process_blueprint.modes],
         current_mode_id="tda",
     )
+    competency = plan.competency_by_id("displacement-fvg-recognition")
+    assert competency is not None
     study = StudyRunContext(
         question="Does the setup become obvious before the entry?",
         hypothesis="The displacement leg should be recognizable in real time.",
         scope="Replay · NYAM only",
+        competency_focus=[competency.to_dict()],
     )
     study.record_outcome(
         StudyOutcome.REFINED,
@@ -147,6 +150,13 @@ def test_study_context_round_trips_with_trading_run(tmp_path) -> None:
     assert restored.study_context.question == study.question
     assert restored.study_context.hypothesis == study.hypothesis
     assert restored.study_context.scope == study.scope
+    assert restored.study_context.competency_focus == [
+        {
+            "id": "displacement-fvg-recognition",
+            "name": "Displacement and FVG recognition",
+            "category": "Price Action",
+        }
+    ]
     assert restored.study_context.outcome is StudyOutcome.REFINED
     assert restored.study_context.outcome_note.startswith(
         "I recognized displacement"
