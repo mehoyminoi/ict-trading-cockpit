@@ -72,6 +72,27 @@ def test_qt_context_object_supports_explicit_amdx_phases() -> None:
     )
 
 
+def test_trading_run_qt_mutator_updates_and_normalizes_context() -> None:
+    run = TradingRun(
+        trading_day_id="day-1",
+        session_name="Trading Run 1",
+        process_session_id="process-1",
+    )
+
+    run.set_qt_context(
+        {
+            "day": "M",
+            "session": "D",
+            "macro_90m": "X(R)",
+        }
+    )
+
+    assert run.qt_context["day"] == "M"
+    assert run.qt_context["session"] == "D"
+    assert run.qt_context["macro_90m"] == "X(R)"
+    assert run.qt_context["week"] == "N/A"
+
+
 def test_qt_context_round_trips_with_trading_run(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
