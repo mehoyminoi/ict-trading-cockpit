@@ -105,9 +105,10 @@ def test_schema_v23_adds_authorization_market_time_and_qt_storage(tmp_path) -> N
         for row in connection.execute("PRAGMA table_info(trading_session_run)").fetchall()
     }
     version = connection.execute("PRAGMA user_version").fetchone()[0]
-    assert version == CURRENT_SCHEMA_VERSION == 23
+    assert version == CURRENT_SCHEMA_VERSION == 24
     assert "setup_candidates_json" in columns
     assert "authorization_policy_snapshot_json" in columns
+    assert "study_context_json" in columns
     assert "authorization_gate_states_json" in columns
     assert "market_time_context_json" in columns
     assert "qt_context_json" in columns
