@@ -189,6 +189,10 @@ def test_multiple_setup_candidates_and_authorization_round_trip(tmp_path) -> Non
 def test_tda_models_in_play_are_multi_select_and_live_readiness_is_per_candidate() -> None:
     get_app()
     plan, shell = build_shell_with_plan()
+    shell.run_environment = RunEnvironment.REPLAY
+    shell.run_market_timestamp = datetime(
+        2026, 10, 6, 10, 15, tzinfo=MARKET_TIMEZONE
+    )
     shell.start_trading_run()
     run = shell.active_trading_run
     assert run is not None
@@ -209,16 +213,6 @@ def test_tda_models_in_play_are_multi_select_and_live_readiness_is_per_candidate
     editor.if_input.setText("PDH trades before the setup window")
     editor.then_input.setText("Return to analysis and reassess the primary draw")
     editor.add_button.click()
-    run.market_time_context = {
-        "timed_windows": [
-            {
-                "id": "nyam-silver-bullet",
-                "name": "NYAM Silver Bullet",
-                "state": "Active",
-                "minutes_until_start": 0,
-            }
-        ]
-    }
     assert shell.runtime.apply_transition("finish-tda", override_incomplete=True) is True
     live = shell.runtime.live_watch_widget
     assert (silver_candidate.id, "fvg-direction") in live.candidate_entry_checkboxes
@@ -230,20 +224,14 @@ def test_tda_models_in_play_are_multi_select_and_live_readiness_is_per_candidate
 def test_occurred_watch_point_updates_criterion_but_global_gates_still_block() -> None:
     get_app()
     _plan, shell = build_shell_with_plan()
+    shell.run_environment = RunEnvironment.REPLAY
+    shell.run_market_timestamp = datetime(
+        2026, 10, 6, 10, 15, tzinfo=MARKET_TIMEZONE
+    )
     shell.start_trading_run()
     run = shell.active_trading_run
     assert run is not None
     candidate = select_silver_bullet(shell)
-    run.market_time_context = {
-        "timed_windows": [
-            {
-                "id": "nyam-silver-bullet",
-                "name": "NYAM Silver Bullet",
-                "state": "Active",
-                "minutes_until_start": 0,
-            }
-        ]
-    }
     shell.runtime.apply_transition("finish-tda", override_incomplete=True)
     live = shell.runtime.live_watch_widget
 
