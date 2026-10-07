@@ -11,7 +11,9 @@ from PySide6.QtWidgets import (
 from ict_cockpit.analysis.quarter_theory import (
     QT_LEVELS,
     QTPhase,
+    apply_time_derived_qt_context,
     normalize_qt_context,
+    raw_quarter_stack_summary,
 )
 
 
@@ -39,10 +41,13 @@ class QTContextWidget(QFrame):
         help_label.setWordWrap(True)
         self.market_time_label = QLabel("Market-time context: not loaded")
         self.market_time_label.setWordWrap(True)
+        self.raw_stack_label = QLabel("Raw quarter stack: not available")
+        self.raw_stack_label.setWordWrap(True)
 
         layout.addWidget(heading)
         layout.addWidget(help_label)
         layout.addWidget(self.market_time_label)
+        layout.addWidget(self.raw_stack_label)
 
         grid = QGridLayout()
         grid.setContentsMargins(0, 0, 0, 0)
@@ -79,15 +84,30 @@ class QTContextWidget(QFrame):
         qt_context: dict | None,
         market_time_context: dict | None = None,
     ) -> None:
-        context = normalize_qt_context(qt_context)
+        market = dict(market_time_context or {})
+        context = apply_time_derived_qt_context(
+            qt_context,
+            market,
+        )
         self._loading = True
         try:
             for level_id, combo in self.phase_combos.items():
                 combo.setCurrentText(context[level_id])
+            derived_month = str(market.get("calendar_month_phase", "")).strip()
+            month_combo = self.phase_combos["month"]
+            month_combo.setEnabled(not bool(derived_month))
+            month_combo.setToolTip(
+                (
+                    "Derived from calendar-quarter month position: "
+                    + f"{market.get('calendar_quarter', '')} month "
+                    + f"{market.get('calendar_quarter_month_index', '')} = {derived_month}."
+                )
+                if derived_month
+                else ""
+            )
         finally:
             self._loading = False
 
-        market = dict(market_time_context or {})
         daily_q = str(market.get("daily_quarter", "")).strip()
         session_q = str(market.get("session_quarter", "")).strip()
         session = str(market.get("session", "")).strip()
@@ -98,8 +118,17 @@ class QTContextWidget(QFrame):
             pieces.append(session)
         if session_q:
             pieces.append(f"Session {session_q}")
+        derived_month = str(market.get("calendar_month_phase", "")).strip()
+        if derived_month:
+            pieces.append(
+                f"{market.get('calendar_quarter', '')} Month "
+                f"{market.get('calendar_quarter_month_index', '')} → {derived_month}"
+            )
         self.market_time_label.setText(
             "Market-time context: " + (" · ".join(pieces) if pieces else "not available")
+        )
+        self.raw_stack_label.setText(
+            "Raw quarter stack (known): " + raw_quarter_stack_summary(market)
         )
 
     def clear_context(self) -> None:
