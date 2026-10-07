@@ -102,6 +102,7 @@ class StudyRunContext:
     question: str
     hypothesis: str = ""
     scope: str = ""
+    competency_focus: list[dict] = field(default_factory=list)
     outcome: StudyOutcome = StudyOutcome.NOT_REVIEWED
     outcome_note: str = ""
     completed_at: str = ""
@@ -110,6 +111,23 @@ class StudyRunContext:
         self.question = self.question.strip()
         self.hypothesis = self.hypothesis.strip()
         self.scope = self.scope.strip()
+        normalized_focus = []
+        seen_ids = set()
+        for item in list(self.competency_focus or []):
+            source = dict(item or {})
+            competency_id = str(source.get("id", "")).strip()
+            if not competency_id or competency_id in seen_ids:
+                continue
+            normalized_focus.append(
+                {
+                    "id": competency_id,
+                    "name": str(source.get("name", competency_id)).strip()
+                    or competency_id,
+                    "category": str(source.get("category", "")).strip(),
+                }
+            )
+            seen_ids.add(competency_id)
+        self.competency_focus = normalized_focus
         self.outcome_note = self.outcome_note.strip()
         self.completed_at = self.completed_at.strip()
         if isinstance(self.outcome, str):
@@ -122,6 +140,9 @@ class StudyRunContext:
             "question": self.question,
             "hypothesis": self.hypothesis,
             "scope": self.scope,
+            "competency_focus": [
+                dict(item) for item in self.competency_focus
+            ],
             "outcome": self.outcome.value,
             "outcome_note": self.outcome_note,
             "completed_at": self.completed_at,
@@ -137,6 +158,10 @@ class StudyRunContext:
             question=question,
             hypothesis=str(source.get("hypothesis", "")),
             scope=str(source.get("scope", "")),
+            competency_focus=[
+                dict(item)
+                for item in list(source.get("competency_focus", []) or [])
+            ],
             outcome=str(source.get("outcome", StudyOutcome.NOT_REVIEWED.value)),
             outcome_note=str(source.get("outcome_note", "")),
             completed_at=str(source.get("completed_at", "")),
