@@ -97,7 +97,7 @@ def test_playbook_snapshot_round_trip_is_data_only() -> None:
     ]
 
 
-def test_schema_v22_adds_authorization_and_market_time_storage(tmp_path) -> None:
+def test_schema_v23_adds_authorization_market_time_and_qt_storage(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
     columns = {
@@ -105,11 +105,12 @@ def test_schema_v22_adds_authorization_and_market_time_storage(tmp_path) -> None
         for row in connection.execute("PRAGMA table_info(trading_session_run)").fetchall()
     }
     version = connection.execute("PRAGMA user_version").fetchone()[0]
-    assert version == CURRENT_SCHEMA_VERSION == 22
+    assert version == CURRENT_SCHEMA_VERSION == 23
     assert "setup_candidates_json" in columns
     assert "authorization_policy_snapshot_json" in columns
     assert "authorization_gate_states_json" in columns
     assert "market_time_context_json" in columns
+    assert "qt_context_json" in columns
     assert "selected_playbook_id" in columns
     connection.close()
 
