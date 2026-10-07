@@ -3,6 +3,8 @@ from datetime import datetime
 from enum import Enum
 from uuid import uuid4
 
+from ict_cockpit.analysis.market_time import temporal_relevance_for
+
 
 MARKET_SESSION_NAMES = ("Asia", "London", "NYAM", "NYPM")
 SESSION_NAMES = MARKET_SESSION_NAMES
@@ -372,6 +374,27 @@ class TradingSessionRun:
             )
 
         blockers: list[str] = []
+        timed_window_ids = list(
+            candidate.definition_snapshot.get("timed_window_ids", []) or []
+        )
+        if timed_window_ids:
+            temporal = temporal_relevance_for(
+                self.market_time_context,
+                timed_window_ids,
+            )
+            temporal_state = str(temporal.get("state", "Not Configured"))
+            if temporal_state == "Upcoming":
+                minutes = temporal.get("minutes_until_start")
+                window_name = str(temporal.get("window_name", "model window"))
+                blockers.append(
+                    f"Model time window: {window_name} upcoming"
+                    + (f" in {minutes}m" if minutes is not None else "")
+                )
+            elif temporal_state == "Closed":
+                blockers.append("Model time window: closed for the current market time")
+            elif temporal_state != "Active":
+                blockers.append("Model time window: temporal eligibility is not configured")
+
         for gate in self.authorization_policy_snapshot:
             gate_id = str(gate.get("id", "")).strip()
             name = str(gate.get("name", gate_id))
