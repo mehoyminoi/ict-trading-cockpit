@@ -58,6 +58,18 @@ def test_run_environment_and_trade_plan_revision_round_trip(tmp_path) -> None:
         process_session.id,
         environment=RunEnvironment.HISTORICAL_BACKTEST,
         trade_plan_revision="Alpha 0.2",
+        market_time_context={
+            "timezone": "America/New_York",
+            "source": "Historical Reference",
+            "captured_at": "2026-09-15T10:15:00-04:00",
+            "session": "NYAM",
+            "daily_quarter": "Q3",
+            "session_quarter": "Q3",
+        },
+    )
+    run.add_observation(
+        "Historical observation",
+        market_time_context=run.market_time_context,
     )
     day.activate_trading_run(run)
     day_repository.save(day)
@@ -68,6 +80,12 @@ def test_run_environment_and_trade_plan_revision_round_trip(tmp_path) -> None:
     assert restored is not None
     assert restored.environment is RunEnvironment.HISTORICAL_BACKTEST
     assert restored.trade_plan_revision == "Alpha 0.2"
+    assert restored.market_time_context["timezone"] == "America/New_York"
+    assert restored.market_time_context["session"] == "NYAM"
+    assert restored.market_time_context["source"] == "Historical Reference"
+    assert restored.evidence[0].market_time_context["captured_at"] == (
+        "2026-09-15T10:15:00-04:00"
+    )
     connection.close()
 
 

@@ -1,4 +1,6 @@
-from PySide6.QtCore import Qt, Signal
+from datetime import datetime
+
+from PySide6.QtCore import QTimer, Qt, Signal
 from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -11,6 +13,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from ict_cockpit.analysis.market_time import build_market_time_context, current_new_york_time
 from ict_cockpit.analysis.trading_day import TradingDay, TradingDayLifecycleStatus
 from ict_cockpit.analysis.trading_day_session import TradingDaySession, TradingDayStatus
 from ict_cockpit.analysis.trading_session_run import RunEnvironment, TradingRun, TradingRunStatus
@@ -42,6 +45,7 @@ class TradingDayShellWidget(QWidget):
         self.authorization_gates = tuple(authorization_gates)
         self.run_environment = RunEnvironment(run_environment)
         self.trade_plan_revision = trade_plan_revision.strip()
+        self.run_market_timestamp: datetime | None = None
         self.trading_day = TradingDay()
         self.trading_runs: list[TradingRun] = []
         self.active_trading_run: TradingRun | None = None
@@ -56,6 +60,10 @@ class TradingDayShellWidget(QWidget):
         self.resume_context_label.setWordWrap(True)
         self.resume_context_label.setFrameShape(QFrame.Shape.StyledPanel)
         self.resume_context_label.setContentsMargins(8, 4, 8, 4)
+        self.market_time_label = QLabel()
+        self.market_time_label.setWordWrap(True)
+        self.market_time_label.setFrameShape(QFrame.Shape.StyledPanel)
+        self.market_time_label.setContentsMargins(8, 4, 8, 4)
 
         self.run_history_label = QLabel("Trading Runs")
         self.run_history = QListWidget()
@@ -137,12 +145,17 @@ class TradingDayShellWidget(QWidget):
         layout.addWidget(self.title_label)
         layout.addWidget(self.summary_label)
         layout.addWidget(self.resume_context_label)
+        layout.addWidget(self.market_time_label)
         layout.addWidget(self.run_history_label)
         layout.addWidget(self.run_history)
         layout.addLayout(controls)
         layout.addWidget(self.runtime_scroll, 1)
         layout.addWidget(self.tda_nav_frame)
         layout.addWidget(self.runtime.transition_frame)
+        self.market_time_timer = QTimer(self)
+        self.market_time_timer.setInterval(30000)
+        self.market_time_timer.timeout.connect(self._refresh_market_time_display)
+        self.market_time_timer.start()
         self._update_view()
 
     @property
@@ -191,6 +204,71 @@ class TradingDayShellWidget(QWidget):
             text += " · Review in progress"
         return text
 
+    def _market_time_context_for_new_run(self) -> dict:
+        historical = self.run_environment in {
+            RunEnvironment.REPLAY,
+            RunEnvironment.HISTORICAL_BACKTEST,
+        }
+        if historical:
+            moment = self.run_market_timestamp or current_new_york_time()
+            source = "Historical Reference"
+        else:
+            moment = current_new_york_time()
+            source = "Live Clock"
+        return build_market_time_context(moment, source=source).to_dict()
+
+    def _current_market_time_context(self) -> dict:
+        run = self.active_trading_run
+        if run is None:
+            return build_market_time_context(
+                current_new_york_time(),
+                source="Live Clock",
+            ).to_dict()
+        if run.environment in {RunEnvironment.REPLAY, RunEnvironment.HISTORICAL_BACKTEST}:
+            return dict(run.market_time_context or {})
+        return build_market_time_context(
+            current_new_york_time(),
+            source="Live Clock",
+        ).to_dict()
+
+    def _refresh_market_time_display(self) -> None:
+        context = self._current_market_time_context()
+        if not context:
+            self.market_time_label.setText("Market time · Not configured")
+            return
+        captured = str(context.get("captured_at", ""))
+        clock = captured[11:16] if len(captured) >= 16 else captured
+        session = str(context.get("session", "Closed"))
+        daily_q = str(context.get("daily_quarter", ""))
+        session_q = str(context.get("session_quarter", ""))
+        quarter_text = " / ".join(item for item in (daily_q, session_q) if item)
+        active_ids = list(context.get("active_window_ids", []) or [])
+        windows = {
+            str(item.get("id", "")): item
+            for item in list(context.get("timed_windows", []) or [])
+        }
+        if active_ids:
+            window_text = " · ACTIVE: " + ", ".join(
+                str(windows.get(window_id, {}).get("name", window_id))
+                for window_id in active_ids
+            )
+        else:
+            next_id = str(context.get("next_window_id", ""))
+            next_item = windows.get(next_id, {})
+            if next_item:
+                minutes = next_item.get("minutes_until_start")
+                window_text = (
+                    f" · Next: {next_item.get('name', next_id)}"
+                    + (f" in {minutes}m" if minutes is not None else "")
+                )
+            else:
+                window_text = ""
+        quarter_suffix = f" · QT {quarter_text}" if quarter_text else ""
+        self.market_time_label.setText(
+            f"NY market time · {clock} ET · Trading Day {context.get('futures_trading_day', '')} "
+            f"· {session}{quarter_suffix}{window_text}"
+        )
+
     def ensure_primary_trading_run_started(self) -> bool:
         if self.trading_day.status is TradingDayLifecycleStatus.COMPLETE or self.active_trading_run is not None or self.trading_runs:
             return False
@@ -200,6 +278,11 @@ class TradingDayShellWidget(QWidget):
         if self.trading_day.status is TradingDayLifecycleStatus.COMPLETE or self.active_trading_run is not None:
             return False
         self.runtime.start_new()
+        market_time_context = self._market_time_context_for_new_run()
+        if not self.trading_day.futures_day_label:
+            self.trading_day.futures_day_label = str(
+                market_time_context.get("futures_trading_day", "")
+            )
         run = TradingRun(
             trading_day_id=self.trading_day.id,
             session_name=f"Trading Run {len(self.trading_runs) + 1}",
@@ -208,6 +291,7 @@ class TradingDayShellWidget(QWidget):
             environment=self.run_environment,
             trade_plan_revision=self.trade_plan_revision,
             authorization_policy_snapshot=[gate.to_dict() for gate in self.authorization_gates],
+            market_time_context=market_time_context,
         )
         if self.playbooks:
             run.ensure_day_specific_candidate()
@@ -252,13 +336,21 @@ class TradingDayShellWidget(QWidget):
     def _capture_live_observation(self, note: str) -> None:
         run = self.active_trading_run
         if run is not None:
-            run.add_observation(note)
+            context = self._current_market_time_context()
+            run.market_time_context = dict(context)
+            run.add_observation(note, market_time_context=context)
             self._save_and_reload(run)
 
     def _record_live_thesis_state(self, state: str, note: str) -> None:
         run = self.active_trading_run
         if run is not None:
-            run.record_thesis_state(state, note)
+            context = self._current_market_time_context()
+            run.market_time_context = dict(context)
+            run.record_thesis_state(
+                state,
+                note,
+                market_time_context=context,
+            )
             self._save_and_reload(run)
 
     def _set_authorization_gate(self, gate_id: str, state: str) -> None:
@@ -416,6 +508,7 @@ class TradingDayShellWidget(QWidget):
         else:
             self.summary_label.setText(f"Trading day active · No Trading Run active · {len(self.trading_runs)} concluded run(s)")
         self.resume_context_label.setText(self._resume_context_text())
+        self._refresh_market_time_display()
 
         active = self.active_trading_run is not None
         self.runtime_scroll.setVisible(active)

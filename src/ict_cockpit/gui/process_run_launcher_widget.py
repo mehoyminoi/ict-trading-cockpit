@@ -1,5 +1,9 @@
+from datetime import datetime
+
+from PySide6.QtCore import QDateTime
 from PySide6.QtWidgets import (
     QComboBox,
+    QDateTimeEdit,
     QFrame,
     QHBoxLayout,
     QLabel,
@@ -8,6 +12,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from ict_cockpit.analysis.market_time import MARKET_TIMEZONE, current_new_york_time
 from ict_cockpit.analysis.trading_session_run import RunEnvironment
 from ict_cockpit.gui.trading_day_shell_widget import TradingDayShellWidget
 
@@ -62,6 +67,25 @@ class ProcessRunLauncherWidget(QWidget):
         environment_row.addWidget(self.environment_combo, 1)
         frame_layout.addLayout(environment_row)
 
+        market_time_row = QHBoxLayout()
+        self.market_time_label = QLabel("Replay market time · New York")
+        self.market_time_edit = QDateTimeEdit()
+        self.market_time_edit.setDisplayFormat("yyyy-MM-dd HH:mm")
+        self.market_time_edit.setCalendarPopup(True)
+        now_ny = current_new_york_time()
+        self.market_time_edit.setDateTime(
+            QDateTime.fromString(
+                now_ny.strftime("%Y-%m-%d %H:%M"),
+                "yyyy-MM-dd HH:mm",
+            )
+        )
+        market_time_row.addWidget(self.market_time_label)
+        market_time_row.addWidget(self.market_time_edit, 1)
+        frame_layout.addLayout(market_time_row)
+        self.environment_combo.currentTextChanged.connect(
+            lambda _text: self._sync_market_time_input()
+        )
+
         plan_row = QHBoxLayout()
         plan_row.addWidget(QLabel("Trade Plan"))
         self.trade_plan_label = QLabel(self.trade_plan_revision or "Not identified")
@@ -102,6 +126,28 @@ class ProcessRunLauncherWidget(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(frame)
+        self._sync_market_time_input()
+
+    def _sync_market_time_input(self) -> None:
+        historical = self.selected_environment in {
+            RunEnvironment.REPLAY,
+            RunEnvironment.HISTORICAL_BACKTEST,
+        }
+        self.market_time_label.setVisible(historical)
+        self.market_time_edit.setVisible(historical)
+
+    def _selected_historical_market_time(self) -> datetime:
+        value = self.market_time_edit.dateTime()
+        date_value = value.date()
+        time_value = value.time()
+        return datetime(
+            date_value.year(),
+            date_value.month(),
+            date_value.day(),
+            time_value.hour(),
+            time_value.minute(),
+            tzinfo=MARKET_TIMEZONE,
+        )
 
     @property
     def selected_environment(self) -> RunEnvironment:
@@ -117,6 +163,13 @@ class ProcessRunLauncherWidget(QWidget):
 
         environment = self.selected_environment
         shell.run_environment = environment
+        if environment in {
+            RunEnvironment.REPLAY,
+            RunEnvironment.HISTORICAL_BACKTEST,
+        }:
+            shell.run_market_timestamp = self._selected_historical_market_time()
+        else:
+            shell.run_market_timestamp = None
         shell.start_new_trading_day()
 
         run = shell.active_trading_run
@@ -129,6 +182,7 @@ class ProcessRunLauncherWidget(QWidget):
             f"Started {environment.value} · {run.run_label} · Trade Plan "
             f"{run.trade_plan_revision or self.trade_plan_revision}. "
             f"{available_count} reference model(s) are available; none are auto-selected. "
+            f"Market time source: {run.market_time_context.get('source', 'Not configured')}. "
             "Choose Models in Play during Premarket Thesis if the TDA says they apply."
         )
         if self.on_launched is not None:

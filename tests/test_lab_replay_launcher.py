@@ -1,3 +1,4 @@
+from PySide6.QtCore import QDateTime
 from PySide6.QtWidgets import QApplication
 
 from ict_cockpit.analysis.trading_session_run import RunEnvironment
@@ -111,3 +112,26 @@ def test_live_environment_is_available_from_same_launcher() -> None:
     run = widget.trading_day_shell_widget.active_trading_run
     assert run is not None
     assert run.environment is RunEnvironment.LIVE
+
+
+def test_replay_launcher_stamps_explicit_new_york_market_time() -> None:
+    get_app()
+    plan = build_default_trade_plan()
+    widget = TradePlanWidget(plan)
+    launcher = widget.process_run_launcher_widget
+
+    launcher.environment_combo.setCurrentText(RunEnvironment.REPLAY.value)
+    launcher.market_time_edit.setDateTime(
+        QDateTime.fromString("2026-10-06 09:15", "yyyy-MM-dd HH:mm")
+    )
+    assert launcher.begin_process_run() is True
+
+    run = widget.trading_day_shell_widget.active_trading_run
+    assert run is not None
+    assert run.market_time_context["source"] == "Historical Reference"
+    assert run.market_time_context["captured_at"].startswith("2026-10-06T09:15")
+    assert run.market_time_context["session"] == "NYAM"
+    assert run.market_time_context["daily_quarter"] == "Q3"
+    assert run.market_time_context["session_quarter"] == "Q3"
+    assert run.market_time_context["next_window_id"] == "nyam-silver-bullet"
+    assert "09:15 ET" in widget.trading_day_shell_widget.market_time_label.text()
