@@ -44,6 +44,10 @@ class MarketTimeContext:
     session: str
     daily_quarter: str
     session_quarter: str
+    calendar_quarter: str
+    calendar_quarter_month_index: int
+    calendar_month_phase: str
+    raw_quarters: dict[str, str] = field(default_factory=dict)
     timed_windows: tuple[TimedWindowContext, ...] = field(default_factory=tuple)
     active_window_ids: tuple[str, ...] = field(default_factory=tuple)
     next_window_id: str = ""
@@ -59,6 +63,10 @@ class MarketTimeContext:
             "session": self.session,
             "daily_quarter": self.daily_quarter,
             "session_quarter": self.session_quarter,
+            "calendar_quarter": self.calendar_quarter,
+            "calendar_quarter_month_index": self.calendar_quarter_month_index,
+            "calendar_month_phase": self.calendar_month_phase,
+            "raw_quarters": dict(self.raw_quarters),
             "timed_windows": [item.to_dict() for item in self.timed_windows],
             "active_window_ids": list(self.active_window_ids),
             "next_window_id": self.next_window_id,
@@ -101,6 +109,23 @@ def as_new_york(moment: datetime) -> datetime:
 
 def current_new_york_time() -> datetime:
     return datetime.now(tz=MARKET_TIMEZONE)
+
+
+def calendar_quarter_for(moment: datetime) -> str:
+    local = as_new_york(moment)
+    return f"Q{((local.month - 1) // 3) + 1}"
+
+
+def calendar_quarter_month_index_for(moment: datetime) -> int:
+    local = as_new_york(moment)
+    return ((local.month - 1) % 3) + 1
+
+
+def calendar_month_phase_for(moment: datetime) -> str:
+    """Return the mentorship-group monthly PO3 role inside a calendar quarter."""
+
+    index = calendar_quarter_month_index_for(moment)
+    return {1: "A", 2: "M", 3: "D"}[index]
 
 
 def futures_trading_day_for(moment: datetime) -> date:
@@ -197,6 +222,8 @@ def build_market_time_context(
 ) -> MarketTimeContext:
     local = as_new_york(moment or current_new_york_time())
     session = session_for(local)
+    daily_quarter = _DAILY_QUARTERS.get(session, "")
+    session_quarter = session_quarter_for(local, session)
     windows, active_ids, next_window_id = _window_contexts(local)
     return MarketTimeContext(
         captured_at=local.isoformat(timespec="seconds"),
@@ -206,8 +233,15 @@ def build_market_time_context(
         market_open=market_is_open(local),
         weekday=local.strftime("%A"),
         session=session,
-        daily_quarter=_DAILY_QUARTERS.get(session, ""),
-        session_quarter=session_quarter_for(local, session),
+        daily_quarter=daily_quarter,
+        session_quarter=session_quarter,
+        calendar_quarter=calendar_quarter_for(local),
+        calendar_quarter_month_index=calendar_quarter_month_index_for(local),
+        calendar_month_phase=calendar_month_phase_for(local),
+        raw_quarters={
+            "day": daily_quarter,
+            "macro_90m": session_quarter,
+        },
         timed_windows=windows,
         active_window_ids=active_ids,
         next_window_id=next_window_id,
