@@ -227,7 +227,8 @@ def temporal_relevance_for(
 ) -> dict:
     """Summarize how a set of Trade Plan windows relates to the market clock.
 
-    The result is intentionally descriptive. It does not alter authorization.
+    The result is descriptive; callers decide whether temporal state is advisory
+    or an executable Trade Plan prerequisite.
     """
 
     ids = [str(item).strip() for item in window_ids if str(item).strip()]
