@@ -59,7 +59,7 @@ def select_silver_bullet(shell: TradingDayShellWidget):
 
 def test_default_trade_plan_exposes_declarative_playbooks() -> None:
     plan = build_default_trade_plan()
-    assert plan.revision == "Alpha 0.6"
+    assert plan.revision == "Alpha 0.7"
     assert [playbook.id for playbook in plan.playbooks] == ["2022-mentorship", "silver-bullet"]
     assert [gate.id for gate in plan.authorization_gates] == [
         "trading-day-permitted",
@@ -97,7 +97,7 @@ def test_playbook_snapshot_round_trip_is_data_only() -> None:
     ]
 
 
-def test_schema_v25_adds_run_purpose_storage(tmp_path) -> None:
+def test_schema_v26_adds_competency_assessment_storage(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
     columns = {
@@ -105,7 +105,7 @@ def test_schema_v25_adds_run_purpose_storage(tmp_path) -> None:
         for row in connection.execute("PRAGMA table_info(trading_session_run)").fetchall()
     }
     version = connection.execute("PRAGMA user_version").fetchone()[0]
-    assert version == CURRENT_SCHEMA_VERSION == 25
+    assert version == CURRENT_SCHEMA_VERSION == 26
     assert "setup_candidates_json" in columns
     assert "authorization_policy_snapshot_json" in columns
     assert "study_context_json" in columns
@@ -114,6 +114,21 @@ def test_schema_v25_adds_run_purpose_storage(tmp_path) -> None:
     assert "market_time_context_json" in columns
     assert "qt_context_json" in columns
     assert "selected_playbook_id" in columns
+    competency_columns = {
+        row[1]
+        for row in connection.execute(
+            "PRAGMA table_info(competency_assessment)"
+        ).fetchall()
+    }
+    assert {
+        "trade_plan_id",
+        "trade_plan_revision",
+        "competency_id",
+        "state",
+        "note",
+        "source",
+        "updated_at",
+    }.issubset(competency_columns)
     connection.close()
 
 
