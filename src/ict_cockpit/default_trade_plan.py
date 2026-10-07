@@ -55,12 +55,17 @@ def _build_silver_bullet_playbook() -> PlaybookDefinition:
     return PlaybookDefinition(
         id="silver-bullet",
         name="Silver Bullet Model",
-        revision="Alpha 0.2",
+        revision="Alpha 0.3",
         purpose=(
             "ICT Silver Bullet execution model inside defined killzones, aligned with "
             "the active draw on liquidity and broader TDA context."
         ),
         sessions=("London 03:00-04:00", "NYAM 10:00-11:00", "NYPM 14:00-15:00"),
+        timed_window_ids=(
+            "london-silver-bullet",
+            "nyam-silver-bullet",
+            "nypm-silver-bullet",
+        ),
         preparation=(
             "Complete AMDX/XAMD analysis and identify sessions/times that may correlate with the killzone.",
             "Review premium/discount and relevant premium SIBIs / discount BISIs.",
@@ -124,7 +129,7 @@ def build_default_trade_plan() -> TradePlanDefinition:
     return TradePlanDefinition(
         id="ict-trade-plan-alpha",
         name="ICT Trading Plan",
-        revision="Alpha 0.5",
+        revision="Alpha 0.6",
         sections=(
             TradePlanSectionDefinition(
                 id="foundation", name="Foundation",
