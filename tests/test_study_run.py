@@ -28,16 +28,31 @@ def get_app() -> QApplication:
     return app
 
 
-def test_replay_launcher_requires_explicit_study_question() -> None:
+def test_historical_backtest_requires_explicit_study_question() -> None:
+    get_app()
+    widget = TradePlanWidget(build_default_trade_plan())
+    launcher = widget.process_run_launcher_widget
+
+    launcher.environment_combo.setCurrentText(
+        RunEnvironment.HISTORICAL_BACKTEST.value
+    )
+
+    assert launcher.begin_process_run() is False
+    assert "study question" in launcher.status_label.text().lower()
+    assert widget.trading_day_shell_widget.active_trading_run is None
+
+
+def test_replay_can_launch_without_study_question() -> None:
     get_app()
     widget = TradePlanWidget(build_default_trade_plan())
     launcher = widget.process_run_launcher_widget
 
     launcher.environment_combo.setCurrentText(RunEnvironment.REPLAY.value)
 
-    assert launcher.begin_process_run() is False
-    assert "study question" in launcher.status_label.text().lower()
-    assert widget.trading_day_shell_widget.active_trading_run is None
+    assert launcher.begin_process_run() is True
+    run = widget.trading_day_shell_widget.active_trading_run
+    assert run is not None
+    assert run.study_context is None
 
 
 def test_replay_launcher_attaches_sparse_study_intent_to_run() -> None:
