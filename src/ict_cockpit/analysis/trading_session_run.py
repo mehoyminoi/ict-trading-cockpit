@@ -71,6 +71,7 @@ class ProcessAdherence(str, Enum):
 
 class StudyOutcome(str, Enum):
     NOT_REVIEWED = "Not Reviewed"
+    PRACTICE_COMPLETE = "Practice Complete"
     SUPPORTED = "Supported"
     REFINED = "Refined"
     REJECTED = "Rejected"
