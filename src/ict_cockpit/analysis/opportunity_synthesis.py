@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 
 from ict_cockpit.analysis.market_time import temporal_relevance_for
 from ict_cockpit.analysis.quarter_theory import raw_quarter_stack_relevance
+from ict_cockpit.analysis.tda_station_session import TDAStationSession
 from ict_cockpit.analysis.trading_session_run import (
     AuthorizationStatus,
     SetupCandidate,
@@ -38,6 +39,8 @@ class OpportunitySituationBrief:
     authorized_count: int
     active_count: int
     upcoming_count: int
+    tda_completed: int = 0
+    tda_total: int = 0
 
 
 def _temporal_detail(relevance: dict) -> str:
@@ -61,6 +64,7 @@ def _temporal_detail(relevance: dict) -> str:
 def synthesize_candidate(
     trading_run: TradingRun,
     candidate: SetupCandidate,
+    tda_session: TDAStationSession | None = None,
 ) -> CandidateOpportunityState:
     timed_window_ids = list(
         candidate.definition_snapshot.get("timed_window_ids", []) or []
@@ -82,6 +86,15 @@ def synthesize_candidate(
     watch_templates = list(
         candidate.definition_snapshot.get("watch_point_templates", []) or []
     )
+    if (
+        candidate.source_type == "Custom"
+        and tda_session is not None
+    ):
+        watch_templates = [
+            {"id": point.id}
+            for point in tda_session.watch_points
+        ]
+
     watch_points_occurred = sum(
         1
         for item in watch_templates
@@ -127,11 +140,23 @@ def synthesize_candidate(
 
 def build_opportunity_situation_brief(
     trading_run: TradingRun,
+    tda_session: TDAStationSession | None = None,
 ) -> OpportunitySituationBrief:
-    candidates = tuple(
-        synthesize_candidate(trading_run, candidate)
-        for candidate in trading_run.setup_candidates
-    )
+    included = []
+    for candidate in trading_run.setup_candidates:
+        if (
+            candidate.source_type == "Custom"
+            and not (tda_session and tda_session.watch_points)
+        ):
+            continue
+        included.append(
+            synthesize_candidate(
+                trading_run,
+                candidate,
+                tda_session,
+            )
+        )
+    candidates = tuple(included)
     return OpportunitySituationBrief(
         session=str(trading_run.market_time_context.get("session", "Closed")),
         daily_quarter=str(
@@ -155,6 +180,16 @@ def build_opportunity_situation_brief(
         ),
         upcoming_count=sum(
             1 for item in candidates if item.temporal_state == "Upcoming"
+        ),
+        tda_completed=(
+            tda_session.completed_count()
+            if tda_session is not None
+            else 0
+        ),
+        tda_total=(
+            len(tda_session.station_ids)
+            if tda_session is not None
+            else 0
         ),
     )
 
@@ -189,6 +224,8 @@ def situation_brief_summary(brief: OpportunitySituationBrief) -> str:
         if item
     )
     context = brief.session + (f" · QT {qt}" if qt else "")
+    if brief.tda_total:
+        context += f" · TDA {brief.tda_completed}/{brief.tda_total}"
     context += f" · Thesis {brief.thesis_state}"
 
     alignments = " · ".join(
