@@ -97,7 +97,7 @@ def test_playbook_snapshot_round_trip_is_data_only() -> None:
     ]
 
 
-def test_schema_v23_adds_authorization_market_time_and_qt_storage(tmp_path) -> None:
+def test_schema_v24_adds_study_context_storage(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
     columns = {
