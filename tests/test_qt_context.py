@@ -14,6 +14,9 @@ from ict_cockpit.analysis.quarter_theory import (
     raw_quarter_contextual_summary,
     raw_quarter_provenance_tooltip,
     raw_quarter_stack_detail,
+    raw_quarter_stack_relevance,
+    raw_quarter_stack_relevance_summary,
+    raw_quarter_stack_relevance_tooltip,
     raw_quarter_stack_summary,
 )
 from ict_cockpit.analysis.trading_day import TradingDay
@@ -246,6 +249,59 @@ def test_raw_quarter_stack_summary_uses_stable_higher_order_sequence() -> None:
     assert raw_quarter_alignment(market)["Q2"] == 5
 
 
+def test_raw_qt_stack_relevance_detects_five_layer_q2_alignment_without_meaning() -> None:
+    market = {
+        "raw_quarters": {
+            "cycle_16y": "Q2",
+            "quadrennial": "Q2",
+            "year": "Q2",
+            "month": "Q2",
+            "week": "Q2",
+            "day": "Q3",
+            "session": "Q4",
+        }
+    }
+
+    alignments = raw_quarter_stack_relevance(market)
+
+    assert len(alignments) == 1
+    assert alignments[0]["quarter"] == "Q2"
+    assert alignments[0]["count"] == 5
+    assert alignments[0]["level_labels"] == (
+        "16Y",
+        "4Y",
+        "Year",
+        "Month",
+        "Week",
+    )
+    assert alignments[0]["meaning"] == "Descriptive only"
+    assert raw_quarter_stack_relevance_summary(market) == (
+        "Q2×5 (16Y, 4Y, Year, Month, Week)"
+    )
+    tooltip = raw_quarter_stack_relevance_tooltip(market)
+    assert "Descriptive context only" in tooltip
+    assert "Q2 × 5: 16Y, 4Y, Year, Month, Week" in tooltip
+
+
+def test_raw_qt_stack_relevance_tolerates_missing_and_distortion_values() -> None:
+    market = {
+        "raw_quarters": {
+            "cycle_16y": "Q1",
+            "quadrennial": "Q2",
+            "year": "Q3",
+            "month": "Distortion",
+            "week": "",
+            "day": "Q4",
+            "session": "",
+        }
+    }
+
+    assert raw_quarter_stack_relevance(market) == ()
+    assert raw_quarter_stack_relevance_summary(market) == (
+        "No repeated raw-quarter alignment"
+    )
+
+
 def test_replay_run_auto_derives_month_amd_and_shows_raw_stack() -> None:
     get_app()
     shell = build_shell()
@@ -286,6 +342,9 @@ def test_replay_run_auto_derives_month_amd_and_shows_raw_stack() -> None:
     assert "16Y (2023–2026) Q4" in editor.raw_stack_label.text()
     assert "Session (09:00–10:30) Q3" in editor.raw_stack_label.text()
     assert "Raw QT layer reference" in editor.raw_stack_label.toolTip()
+    assert "Q3×3 (Year, Day, Session)" in editor.stack_relevance_label.text()
+    assert "Q4×3 (16Y, 4Y, Week)" in editor.stack_relevance_label.text()
+    assert "Descriptive context only" in editor.stack_relevance_label.toolTip()
 
     assert shell.runtime.apply_transition(
         "finish-tda",
@@ -296,6 +355,9 @@ def test_replay_run_auto_derives_month_amd_and_shows_raw_stack() -> None:
     assert "Q4 / Q4 / Q3 / Q1 / Q4 / Q3 / Q3" in watch.raw_qt_stack_label.text()
     assert "16Y (2023–2026) Q4" in watch.raw_qt_stack_label.text()
     assert "Raw QT layer reference" in watch.raw_qt_stack_label.toolTip()
+    assert "Q3×3 (Year, Day, Session)" in watch.qt_stack_watch_label.text()
+    assert "Q4×3 (16Y, 4Y, Week)" in watch.qt_stack_watch_label.text()
+    assert "Descriptive context only" in watch.qt_stack_watch_label.toolTip()
 
 
 def test_qt_interpretation_provenance_distinguishes_derived_manual_and_missing() -> None:
