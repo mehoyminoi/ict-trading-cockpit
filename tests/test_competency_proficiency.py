@@ -68,6 +68,24 @@ def test_competency_assessment_round_trips_separately_from_plan_definition(
     assert restored.source == "Manual"
     assert repository.list_for_plan(plan.id) == [restored]
 
+    newer = CompetencyAssessment(
+        trade_plan_id=plan.id,
+        trade_plan_revision="Alpha 0.8",
+        competency_id="htf-liquidity-recognition",
+        state=CompetencyState.REHEARSAL_NEEDED,
+        note="Component study passed; integration now needs rehearsal.",
+        source="Manual",
+    )
+    repository.save(newer)
+    carried = repository.get(
+        plan.id,
+        "htf-liquidity-recognition",
+    )
+    assert carried is not None
+    assert carried.trade_plan_revision == "Alpha 0.8"
+    assert carried.state is CompetencyState.REHEARSAL_NEEDED
+    assert len(repository.list_for_plan(plan.id)) == 1
+
     connection.close()
 
 
