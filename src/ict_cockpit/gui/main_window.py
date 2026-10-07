@@ -9,6 +9,9 @@ from PySide6.QtWidgets import (
 )
 
 from ict_cockpit.app_info import APP_VERSION, window_title
+from ict_cockpit.database.competency_assessment_repository import (
+    CompetencyAssessmentRepository,
+)
 from ict_cockpit.database.feedback_repository import FeedbackRepository
 from ict_cockpit.database.study_find_repository import StudyFindRepository
 from ict_cockpit.database.tda_repository import TDARepository
@@ -62,6 +65,11 @@ class MainWindow(QMainWindow):
         )
         self.trading_session_run_repository = TradingSessionRunRepository(
             study_find_repository.connection
+        )
+        self.competency_assessment_repository = (
+            CompetencyAssessmentRepository(
+                study_find_repository.connection
+            )
         )
 
         self.setWindowTitle(window_title())
