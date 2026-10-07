@@ -23,6 +23,25 @@ class RunEnvironment(str, Enum):
     FORWARD_TEST = "Forward Test"
 
 
+class RunPurpose(str, Enum):
+    STUDY = "Study"
+    REHEARSAL = "Rehearsal"
+    VALIDATION = "Validation"
+    EXECUTION = "Execution"
+
+
+def default_purpose_for_environment(
+    environment: RunEnvironment | str,
+) -> RunPurpose:
+    environment = RunEnvironment(environment)
+    return {
+        RunEnvironment.HISTORICAL_BACKTEST: RunPurpose.STUDY,
+        RunEnvironment.REPLAY: RunPurpose.REHEARSAL,
+        RunEnvironment.FORWARD_TEST: RunPurpose.VALIDATION,
+        RunEnvironment.LIVE: RunPurpose.EXECUTION,
+    }[environment]
+
+
 class ThesisState(str, Enum):
     NOT_SET = "Not Set"
     SUPPORTED = "Supported"
@@ -272,6 +291,7 @@ class TradingSessionRun:
     process_session_id: str
     tda_station_session_id: str = ""
     environment: RunEnvironment = RunEnvironment.LIVE
+    purpose: RunPurpose | None = None
     trade_plan_revision: str = ""
     setup_candidates: list[SetupCandidate] = field(default_factory=list)
     authorization_policy_snapshot: list[dict] = field(default_factory=list)
@@ -328,6 +348,10 @@ class TradingSessionRun:
         self.concluded_at = self.concluded_at.strip()
         if isinstance(self.environment, str):
             self.environment = RunEnvironment(self.environment)
+        if self.purpose is None or self.purpose == "":
+            self.purpose = default_purpose_for_environment(self.environment)
+        elif isinstance(self.purpose, str):
+            self.purpose = RunPurpose(self.purpose)
         if isinstance(self.status, str):
             self.status = TradingSessionRunStatus(self.status)
         if isinstance(self.current_thesis_state, str):

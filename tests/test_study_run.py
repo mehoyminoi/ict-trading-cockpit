@@ -4,6 +4,7 @@ from ict_cockpit.analysis.trading_day import TradingDay
 from ict_cockpit.analysis.trading_day_session import TradingDaySession
 from ict_cockpit.analysis.trading_session_run import (
     RunEnvironment,
+    RunPurpose,
     StudyOutcome,
     StudyRunContext,
     TradingRun,
@@ -28,16 +29,31 @@ def get_app() -> QApplication:
     return app
 
 
-def test_replay_launcher_requires_explicit_study_question() -> None:
+def test_historical_backtest_requires_explicit_study_question() -> None:
+    get_app()
+    widget = TradePlanWidget(build_default_trade_plan())
+    launcher = widget.process_run_launcher_widget
+
+    launcher.environment_combo.setCurrentText(
+        RunEnvironment.HISTORICAL_BACKTEST.value
+    )
+
+    assert launcher.begin_process_run() is False
+    assert "study question" in launcher.status_label.text().lower()
+    assert widget.trading_day_shell_widget.active_trading_run is None
+
+
+def test_replay_can_launch_without_study_question() -> None:
     get_app()
     widget = TradePlanWidget(build_default_trade_plan())
     launcher = widget.process_run_launcher_widget
 
     launcher.environment_combo.setCurrentText(RunEnvironment.REPLAY.value)
 
-    assert launcher.begin_process_run() is False
-    assert "study question" in launcher.status_label.text().lower()
-    assert widget.trading_day_shell_widget.active_trading_run is None
+    assert launcher.begin_process_run() is True
+    run = widget.trading_day_shell_widget.active_trading_run
+    assert run is not None
+    assert run.study_context is None
 
 
 def test_replay_launcher_attaches_sparse_study_intent_to_run() -> None:
@@ -61,6 +77,7 @@ def test_replay_launcher_attaches_sparse_study_intent_to_run() -> None:
     run = widget.trading_day_shell_widget.active_trading_run
     assert run is not None
     assert run.study_context is not None
+    assert run.purpose is RunPurpose.REHEARSAL
     assert run.study_context.question == (
         "Can I recognize the NYAM setup in real-time replay?"
     )
@@ -126,6 +143,7 @@ def test_study_context_round_trips_with_trading_run(tmp_path) -> None:
 
     assert restored is not None
     assert restored.study_context is not None
+    assert restored.purpose is RunPurpose.REHEARSAL
     assert restored.study_context.question == study.question
     assert restored.study_context.hypothesis == study.hypothesis
     assert restored.study_context.scope == study.scope

@@ -7,6 +7,7 @@ from ict_cockpit.analysis.trading_session_run import (
     ProcessAdherence,
     RunEnvironment,
     RunEvidenceEntry,
+    RunPurpose,
     RunEvidenceKind,
     SetupCandidate,
     StudyRunContext,
@@ -82,8 +83,9 @@ class TradingSessionRunRepository:
                     selected_playbook_id, selected_playbook_revision,
                     playbook_snapshot_json, setup_candidates_json,
                     authorization_policy_snapshot_json, authorization_gate_states_json,
-                    market_time_context_json, qt_context_json, study_context_json
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    market_time_context_json, qt_context_json, study_context_json,
+                    run_purpose
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                     trading_day_id = excluded.trading_day_id,
                     session_name = excluded.session_name,
@@ -112,7 +114,8 @@ class TradingSessionRunRepository:
                     authorization_gate_states_json = excluded.authorization_gate_states_json,
                     market_time_context_json = excluded.market_time_context_json,
                     qt_context_json = excluded.qt_context_json,
-                    study_context_json = excluded.study_context_json
+                    study_context_json = excluded.study_context_json,
+                    run_purpose = excluded.run_purpose
                 """,
                 (
                     session_run.id,
@@ -144,6 +147,7 @@ class TradingSessionRunRepository:
                     market_time_context_json,
                     qt_context_json,
                     study_context_json,
+                    session_run.purpose.value,
                 ),
             )
 
@@ -170,7 +174,8 @@ class TradingSessionRunRepository:
                    selected_playbook_id, selected_playbook_revision,
                    playbook_snapshot_json, setup_candidates_json,
                    authorization_policy_snapshot_json, authorization_gate_states_json,
-                   market_time_context_json, qt_context_json, study_context_json
+                   market_time_context_json, qt_context_json, study_context_json,
+                   run_purpose
             FROM trading_session_run
             {where_clause}
         """
@@ -229,5 +234,10 @@ class TradingSessionRunRepository:
             qt_context=json.loads(row[27] or "{}"),
             study_context=StudyRunContext.from_dict(
                 json.loads(row[28] or "{}")
+            ),
+            purpose=(
+                RunPurpose(row[29])
+                if row[29]
+                else None
             ),
         )
