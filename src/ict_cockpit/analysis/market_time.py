@@ -212,3 +212,71 @@ def build_market_time_context(
         active_window_ids=active_ids,
         next_window_id=next_window_id,
     )
+
+
+def timed_window_by_id(context: dict, window_id: str) -> dict:
+    for item in list(context.get("timed_windows", []) or []):
+        if str(item.get("id", "")) == window_id:
+            return dict(item)
+    return {}
+
+
+def temporal_relevance_for(
+    context: dict,
+    window_ids: tuple[str, ...] | list[str],
+) -> dict:
+    """Summarize how a set of Trade Plan windows relates to the market clock.
+
+    The result is descriptive; callers decide whether temporal state is advisory
+    or an executable Trade Plan prerequisite.
+    """
+
+    ids = [str(item).strip() for item in window_ids if str(item).strip()]
+    if not ids:
+        return {
+            "state": "Not Time-Bound",
+            "window_id": "",
+            "window_name": "",
+            "minutes_until_start": None,
+        }
+
+    windows = [timed_window_by_id(context, window_id) for window_id in ids]
+    windows = [item for item in windows if item]
+    if not windows:
+        return {
+            "state": "Not Configured",
+            "window_id": "",
+            "window_name": "",
+            "minutes_until_start": None,
+        }
+
+    active = next((item for item in windows if item.get("state") == "Active"), None)
+    if active is not None:
+        return {
+            "state": "Active",
+            "window_id": str(active.get("id", "")),
+            "window_name": str(active.get("name", "")),
+            "minutes_until_start": 0,
+        }
+
+    upcoming = [
+        item
+        for item in windows
+        if item.get("state") == "Upcoming"
+        and item.get("minutes_until_start") is not None
+    ]
+    if upcoming:
+        next_item = min(upcoming, key=lambda item: int(item["minutes_until_start"]))
+        return {
+            "state": "Upcoming",
+            "window_id": str(next_item.get("id", "")),
+            "window_name": str(next_item.get("name", "")),
+            "minutes_until_start": int(next_item["minutes_until_start"]),
+        }
+
+    return {
+        "state": "Closed",
+        "window_id": "",
+        "window_name": "",
+        "minutes_until_start": None,
+    }

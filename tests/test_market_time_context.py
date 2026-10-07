@@ -4,6 +4,7 @@ from ict_cockpit.analysis.market_time import (
     MARKET_TIMEZONE,
     build_market_time_context,
     futures_trading_day_for,
+    temporal_relevance_for,
 )
 
 
@@ -69,3 +70,58 @@ def test_weekend_context_is_explicitly_closed() -> None:
     assert context.session == "Closed"
     assert context.daily_quarter == ""
     assert context.session_quarter == ""
+
+
+def test_temporal_relevance_prefers_active_configured_window() -> None:
+    context = build_market_time_context(
+        datetime(2026, 10, 6, 10, 15, tzinfo=MARKET_TIMEZONE)
+    ).to_dict()
+
+    relevance = temporal_relevance_for(
+        context,
+        (
+            "london-silver-bullet",
+            "nyam-silver-bullet",
+            "nypm-silver-bullet",
+        ),
+    )
+
+    assert relevance["state"] == "Active"
+    assert relevance["window_id"] == "nyam-silver-bullet"
+    assert relevance["minutes_until_start"] == 0
+
+
+def test_temporal_relevance_uses_next_model_window_not_unrelated_window() -> None:
+    context = build_market_time_context(
+        datetime(2026, 10, 6, 11, 8, tzinfo=MARKET_TIMEZONE)
+    ).to_dict()
+
+    relevance = temporal_relevance_for(
+        context,
+        (
+            "london-silver-bullet",
+            "nyam-silver-bullet",
+            "nypm-silver-bullet",
+        ),
+    )
+
+    assert relevance["state"] == "Upcoming"
+    assert relevance["window_id"] == "nypm-silver-bullet"
+    assert relevance["minutes_until_start"] == 172
+
+
+def test_temporal_relevance_is_closed_after_last_model_window() -> None:
+    context = build_market_time_context(
+        datetime(2026, 10, 6, 15, 5, tzinfo=MARKET_TIMEZONE)
+    ).to_dict()
+
+    relevance = temporal_relevance_for(
+        context,
+        (
+            "london-silver-bullet",
+            "nyam-silver-bullet",
+            "nypm-silver-bullet",
+        ),
+    )
+
+    assert relevance["state"] == "Closed"

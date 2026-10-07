@@ -236,6 +236,22 @@ class TradingDayShellWidget(QWidget):
         if not context:
             self.market_time_label.setText("Market time · Not configured")
             return
+
+        run = self.active_trading_run
+        if (
+            run is not None
+            and run.environment in {
+                RunEnvironment.LIVE,
+                RunEnvironment.FORWARD_TEST,
+            }
+        ):
+            run.market_time_context = dict(context)
+            if self.runtime.current_mode.id == "live-watch":
+                self.runtime.live_watch_widget.load_run_context(
+                    run,
+                    self.runtime.tda_station_runner_widget.session,
+                    self.blueprint,
+                )
         captured = str(context.get("captured_at", ""))
         clock = captured[11:16] if len(captured) >= 16 else captured
         session = str(context.get("session", "Closed"))
