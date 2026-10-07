@@ -236,7 +236,7 @@ def situation_brief_summary(brief: OpportunitySituationBrief) -> str:
         context += f" · Stack {alignments}"
 
     context += (
-        f" · {brief.active_count} active"
+        f" · {brief.active_count} timed active"
         f" · {brief.upcoming_count} upcoming"
         f" · {brief.authorized_count} authorized"
     )
