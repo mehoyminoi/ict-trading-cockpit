@@ -141,3 +141,104 @@ def raw_quarter_alignment(market_time_context: dict | None) -> dict[str, int]:
         if value in {"Q1", "Q2", "Q3", "Q4"}:
             counts[value] = counts.get(value, 0) + 1
     return counts
+
+
+def raw_quarter_layer_contexts(
+    market_time_context: dict | None,
+) -> tuple[dict, ...]:
+    market = dict(market_time_context or {})
+    return tuple(
+        dict(item)
+        for item in list(market.get("raw_quarter_layers", []) or [])
+        if isinstance(item, dict)
+    )
+
+
+def raw_quarter_contextual_summary(
+    market_time_context: dict | None,
+) -> str:
+    """Compact raw stack with enough child identity to remove nomenclature ambiguity."""
+
+    layers = raw_quarter_layer_contexts(market_time_context)
+    if not layers:
+        return raw_quarter_stack_detail(market_time_context)
+
+    parts = []
+    for item in layers:
+        quarter = str(item.get("quarter", "")).strip()
+        if not quarter:
+            continue
+        short = str(item.get("short_label", item.get("id", ""))).strip()
+        child = str(item.get("active_child_label", "")).strip()
+
+        if item.get("id") == "cycle_16y":
+            compact_child = child.replace("4-year block ", "")
+        elif item.get("id") == "quadrennial":
+            compact_child = child.replace("Year ", "")
+        elif item.get("id") == "year":
+            compact_child = child
+        elif item.get("id") == "month":
+            compact_child = child.replace("Monday-week ", "").replace("Fifth ", "")
+        elif item.get("id") == "week":
+            compact_child = child.split(" ")[0] if child else ""
+        elif item.get("id") == "day":
+            compact_child = child
+        elif item.get("id") == "session":
+            compact_child = child
+        else:
+            compact_child = child
+
+        qualifier = f" ({compact_child})" if compact_child else ""
+        parts.append(f"{short}{qualifier} {quarter}")
+
+    return " · ".join(parts) if parts else "Not available"
+
+
+def raw_quarter_provenance_tooltip(
+    market_time_context: dict | None,
+) -> str:
+    layers = raw_quarter_layer_contexts(market_time_context)
+    if not layers:
+        return ""
+
+    lines = ["Raw QT layer reference"]
+    for item in layers:
+        quarter = str(item.get("quarter", "")).strip() or "Unassigned"
+        parent = str(item.get("parent_label", "")).strip()
+        child = str(item.get("active_child_label", "")).strip()
+        start = str(item.get("effective_start", "")).strip()
+        end = str(item.get("effective_end", "")).strip()
+        source = str(item.get("source", "Derived")).strip()
+
+        line = (
+            f"{item.get('short_label', item.get('id', 'Layer'))}: "
+            f"{parent} → {child} · {quarter}"
+        )
+        if start or end:
+            line += f" · {start or '?'} → {end or '?'}"
+        line += f" · {source}"
+        lines.append(line)
+
+    return "\n".join(lines)
+
+
+def qt_interpretation_provenance(
+    qt_context: dict | None,
+    market_time_context: dict | None,
+) -> dict[str, str]:
+    """Describe whether each AMDX interpretation is derived, entered, or missing."""
+
+    context = normalize_qt_context(qt_context)
+    market = dict(market_time_context or {})
+    derived_month = str(market.get("calendar_month_phase", "")).strip()
+
+    provenance: dict[str, str] = {}
+    for level_id, _label in QT_LEVELS:
+        value = context[level_id]
+        if level_id == "month" and derived_month and value == derived_month:
+            provenance[level_id] = "Derived"
+        elif value == QTPhase.NOT_APPLICABLE.value:
+            provenance[level_id] = "Unknown"
+        else:
+            provenance[level_id] = "Technician"
+    return provenance
