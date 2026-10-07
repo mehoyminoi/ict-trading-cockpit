@@ -25,9 +25,9 @@ class CompetencyAssessmentRepository:
                 ) VALUES (?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(
                     trade_plan_id,
-                    trade_plan_revision,
                     competency_id
                 ) DO UPDATE SET
+                    trade_plan_revision = excluded.trade_plan_revision,
                     state = excluded.state,
                     note = excluded.note,
                     source = excluded.source,
@@ -47,7 +47,6 @@ class CompetencyAssessmentRepository:
     def get(
         self,
         trade_plan_id: str,
-        trade_plan_revision: str,
         competency_id: str,
     ) -> CompetencyAssessment | None:
         row = self.connection.execute(
@@ -56,12 +55,10 @@ class CompetencyAssessmentRepository:
                    state, note, source, updated_at
             FROM competency_assessment
             WHERE trade_plan_id = ?
-              AND trade_plan_revision = ?
               AND competency_id = ?
             """,
             (
                 trade_plan_id,
-                trade_plan_revision,
                 competency_id,
             ),
         ).fetchone()
@@ -70,7 +67,6 @@ class CompetencyAssessmentRepository:
     def list_for_plan(
         self,
         trade_plan_id: str,
-        trade_plan_revision: str,
     ) -> list[CompetencyAssessment]:
         rows = self.connection.execute(
             """
@@ -78,13 +74,9 @@ class CompetencyAssessmentRepository:
                    state, note, source, updated_at
             FROM competency_assessment
             WHERE trade_plan_id = ?
-              AND trade_plan_revision = ?
             ORDER BY competency_id
             """,
-            (
-                trade_plan_id,
-                trade_plan_revision,
-            ),
+            (trade_plan_id,),
         ).fetchall()
         return [self._from_row(row) for row in rows]
 
