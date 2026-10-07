@@ -48,6 +48,7 @@ class MarketTimeContext:
     calendar_quarter_month_index: int
     calendar_month_phase: str
     raw_quarters: dict[str, str] = field(default_factory=dict)
+    raw_quarter_layers: tuple[dict, ...] = field(default_factory=tuple)
     timed_windows: tuple[TimedWindowContext, ...] = field(default_factory=tuple)
     active_window_ids: tuple[str, ...] = field(default_factory=tuple)
     next_window_id: str = ""
@@ -67,6 +68,7 @@ class MarketTimeContext:
             "calendar_quarter_month_index": self.calendar_quarter_month_index,
             "calendar_month_phase": self.calendar_month_phase,
             "raw_quarters": dict(self.raw_quarters),
+            "raw_quarter_layers": [dict(item) for item in self.raw_quarter_layers],
             "timed_windows": [item.to_dict() for item in self.timed_windows],
             "active_window_ids": list(self.active_window_ids),
             "next_window_id": self.next_window_id,
@@ -196,6 +198,185 @@ def raw_qt_quarters_for(
     }
 
 
+def _format_date_range(start: date, end: date) -> str:
+    if start.year == end.year:
+        if start.month == end.month:
+            return f"{start.strftime('%b')} {start.day}–{end.day}, {start.year}"
+        return f"{start.strftime('%b')} {start.day}–{end.strftime('%b')} {end.day}, {start.year}"
+    return f"{start.isoformat()}–{end.isoformat()}"
+
+
+def raw_qt_layer_contexts_for(
+    moment: datetime,
+    *,
+    session: str | None = None,
+) -> tuple[dict, ...]:
+    """Describe what each raw QT quarter refers to and its effective interval."""
+
+    local = as_new_york(moment)
+    trading_date = futures_trading_day_for(local)
+    active_session = session or session_for(local)
+    raw = raw_qt_quarters_for(local, session=active_session)
+
+    cycle_start_year = local.year - ((local.year - 2011) % 16)
+    block_start_year = local.year - ((local.year - 2011) % 4)
+
+    calendar_q = ((local.month - 1) // 3) + 1
+    quarter_start_month = (calendar_q - 1) * 3 + 1
+    quarter_start = date(local.year, quarter_start_month, 1)
+    if calendar_q == 4:
+        quarter_end = date(local.year, 12, 31)
+    else:
+        quarter_end = date(local.year, quarter_start_month + 3, 1) - timedelta(days=1)
+
+    first_day = trading_date.replace(day=1)
+    first_monday = first_day + timedelta(days=(7 - first_day.weekday()) % 7)
+    month_value = raw.get("month", "")
+    if month_value.startswith("Q"):
+        month_week_index = int(month_value[1])
+        month_child_start = first_monday + timedelta(days=7 * (month_week_index - 1))
+        month_child_end = month_child_start + timedelta(days=6)
+        month_child_label = f"Monday-week {_format_date_range(month_child_start, month_child_end)}"
+    elif month_value == "Distortion":
+        month_child_start = first_monday + timedelta(days=28)
+        month_child_end = month_child_start + timedelta(days=6)
+        month_child_label = f"Fifth Monday-week {_format_date_range(month_child_start, month_child_end)}"
+    else:
+        month_child_start = None
+        month_child_end = None
+        month_child_label = "Before first Monday-start week"
+
+    week_start = trading_date - timedelta(days=trading_date.weekday())
+    week_end = week_start + timedelta(days=4)
+
+    trading_day_start = datetime.combine(
+        trading_date - timedelta(days=1),
+        time(18, 0),
+        tzinfo=MARKET_TIMEZONE,
+    )
+    trading_day_end = datetime.combine(
+        trading_date,
+        time(18, 0),
+        tzinfo=MARKET_TIMEZONE,
+    )
+
+    session_bounds = next(
+        ((start, end) for name, start, end in _SESSION_BOUNDS if name == active_session),
+        None,
+    )
+    session_start_dt = None
+    session_end_dt = None
+    macro_start_dt = None
+    macro_end_dt = None
+    if session_bounds is not None:
+        start_minute, end_minute = session_bounds
+        session_date = local.date()
+        session_start_dt = datetime.combine(
+            session_date,
+            time(start_minute // 60, start_minute % 60),
+            tzinfo=MARKET_TIMEZONE,
+        )
+        session_end_hour = 0 if end_minute == 24 * 60 else end_minute // 60
+        session_end_date = session_date + (timedelta(days=1) if end_minute == 24 * 60 else timedelta())
+        session_end_dt = datetime.combine(
+            session_end_date,
+            time(session_end_hour, end_minute % 60),
+            tzinfo=MARKET_TIMEZONE,
+        )
+        session_q = raw.get("session", "")
+        if session_q.startswith("Q"):
+            macro_index = int(session_q[1]) - 1
+            macro_start_dt = session_start_dt + timedelta(minutes=90 * macro_index)
+            macro_end_dt = macro_start_dt + timedelta(minutes=90)
+
+    def layer(
+        level_id: str,
+        short_label: str,
+        parent_label: str,
+        child_label: str,
+        start_value,
+        end_value,
+    ) -> dict:
+        return {
+            "id": level_id,
+            "short_label": short_label,
+            "quarter": raw.get(level_id, ""),
+            "parent_label": parent_label,
+            "active_child_label": child_label,
+            "effective_start": start_value.isoformat() if start_value is not None else "",
+            "effective_end": end_value.isoformat() if end_value is not None else "",
+            "source": "Derived",
+        }
+
+    return (
+        layer(
+            "cycle_16y",
+            "16Y",
+            f"16Y Cycle {cycle_start_year}–{cycle_start_year + 15}",
+            f"4-year block {block_start_year}–{block_start_year + 3}",
+            date(block_start_year, 1, 1),
+            date(block_start_year + 3, 12, 31),
+        ),
+        layer(
+            "quadrennial",
+            "4Y",
+            f"Quadrennial {block_start_year}–{block_start_year + 3}",
+            f"Year {local.year}",
+            date(local.year, 1, 1),
+            date(local.year, 12, 31),
+        ),
+        layer(
+            "year",
+            "Year",
+            f"Calendar Year {local.year}",
+            f"{quarter_start.strftime('%b')}–{quarter_end.strftime('%b')}",
+            quarter_start,
+            quarter_end,
+        ),
+        layer(
+            "month",
+            "Month",
+            local.strftime("%B %Y"),
+            month_child_label,
+            month_child_start,
+            month_child_end,
+        ),
+        layer(
+            "week",
+            "Week",
+            f"Trading Week {_format_date_range(week_start, week_end)}",
+            f"{trading_date.strftime('%A')} {trading_date.isoformat()}",
+            trading_day_start,
+            trading_day_end,
+        ),
+        layer(
+            "day",
+            "Day",
+            f"Trading Day {trading_date.isoformat()}",
+            active_session or "Closed",
+            session_start_dt,
+            session_end_dt,
+        ),
+        layer(
+            "session",
+            "Session",
+            (
+                f"{active_session} Session "
+                f"{session_start_dt.strftime('%H:%M')}–{session_end_dt.strftime('%H:%M')}"
+                if session_start_dt is not None and session_end_dt is not None
+                else "Session unavailable"
+            ),
+            (
+                f"{macro_start_dt.strftime('%H:%M')}–{macro_end_dt.strftime('%H:%M')}"
+                if macro_start_dt is not None and macro_end_dt is not None
+                else "90m interval unavailable"
+            ),
+            macro_start_dt,
+            macro_end_dt,
+        ),
+    )
+
+
 def futures_trading_day_for(moment: datetime) -> date:
     """Apply the cockpit's 18:00 New York futures-day boundary."""
 
@@ -307,6 +488,10 @@ def build_market_time_context(
         calendar_quarter_month_index=calendar_quarter_month_index_for(local),
         calendar_month_phase=calendar_month_phase_for(local),
         raw_quarters=raw_qt_quarters_for(
+            local,
+            session=session,
+        ),
+        raw_quarter_layers=raw_qt_layer_contexts_for(
             local,
             session=session,
         ),
