@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from ict_cockpit.analysis.market_time import temporal_relevance_for
 from ict_cockpit.analysis.tda_station_session import TDAStationSession
 from ict_cockpit.analysis.trading_session_run import (
     AuthorizationGateState,
@@ -50,6 +51,7 @@ class LiveWatchWidget(QWidget):
         self.candidate_watch_point_combos: dict[tuple[str, str], QComboBox] = {}
         self.run_gate_combos: dict[str, QComboBox] = {}
         self.candidate_gate_combos: dict[tuple[str, str], QComboBox] = {}
+        self.candidate_temporal_relevance: dict[str, dict] = {}
 
         self.heading = QLabel("Live Watch · Waiting & Watching")
         self.heading.setStyleSheet("font-size: 16px; font-weight: 600;")
@@ -344,10 +346,50 @@ class LiveWatchWidget(QWidget):
             or "Candidate risk must still clear the plan-owned risk gate; model guidance never overrides account-level limits."
         )
 
+        self.candidate_temporal_relevance = {}
+        market_context = (
+            dict(trading_run.market_time_context or {})
+            if trading_run is not None
+            else {}
+        )
+        priority = {
+            "Active": 0,
+            "Upcoming": 1,
+            "Not Time-Bound": 2,
+            "Not Configured": 3,
+            "Closed": 4,
+        }
+
+        renderable = []
         for candidate in candidates:
-            if candidate.source_type == "Custom" and not (tda_session and tda_session.watch_points):
+            if candidate.source_type == "Custom" and not (
+                tda_session and tda_session.watch_points
+            ):
                 continue
-            self.criteria_layout.addWidget(self._build_candidate_card(candidate, tda_session, trading_run))
+            timed_window_ids = list(
+                candidate.definition_snapshot.get("timed_window_ids", []) or []
+            )
+            relevance = temporal_relevance_for(
+                market_context,
+                timed_window_ids,
+            )
+            self.candidate_temporal_relevance[candidate.id] = relevance
+            renderable.append((candidate, relevance))
+
+        renderable.sort(
+            key=lambda item: (
+                priority.get(str(item[1].get("state", "")), 9),
+                item[0].name,
+            )
+        )
+        for candidate, _relevance in renderable:
+            self.criteria_layout.addWidget(
+                self._build_candidate_card(
+                    candidate,
+                    tda_session,
+                    trading_run,
+                )
+            )
 
         if len(configured) == 1:
             candidate = configured[0]
@@ -371,6 +413,28 @@ class LiveWatchWidget(QWidget):
         title_label = QLabel(title)
         title_label.setStyleSheet("font-weight: 600;")
         layout.addWidget(title_label)
+
+        relevance = self.candidate_temporal_relevance.get(candidate.id, {})
+        relevance_state = str(relevance.get("state", "Not Time-Bound"))
+        if relevance_state != "Not Time-Bound":
+            window_name = str(relevance.get("window_name", ""))
+            minutes = relevance.get("minutes_until_start")
+            if relevance_state == "Active":
+                temporal_text = f"TIME · ACTIVE · {window_name}"
+            elif relevance_state == "Upcoming":
+                temporal_text = (
+                    f"TIME · UPCOMING · {window_name}"
+                    + (f" in {minutes}m" if minutes is not None else "")
+                )
+            elif relevance_state == "Closed":
+                temporal_text = "TIME · CLOSED · no configured model window remains today"
+            else:
+                temporal_text = "TIME · NOT CONFIGURED"
+            temporal_label = QLabel(temporal_text)
+            temporal_label.setWordWrap(True)
+            if relevance_state == "Active":
+                temporal_label.setStyleSheet("font-weight: 700;")
+            layout.addWidget(temporal_label)
 
         if trading_run is not None:
             result = trading_run.candidate_authorization(candidate.id)
@@ -403,6 +467,18 @@ class LiveWatchWidget(QWidget):
                 row.addWidget(gate_label, 1)
                 row.addWidget(combo)
                 layout.addLayout(row)
+
+        if (
+            candidate.source_type == "Playbook"
+            and relevance_state == "Closed"
+        ):
+            quiet = QLabel(
+                "This model is outside its configured entry windows for the current "
+                "market time. Detailed setup controls are quiet until a relevant window."
+            )
+            quiet.setWordWrap(True)
+            layout.addWidget(quiet)
+            return frame
 
         if candidate.source_type == "Custom":
             note = QLabel("Technician/day-specific setup · explicit authorization criteria can be added later without requiring a named model.")
