@@ -163,10 +163,6 @@ class SetupCandidate:
                 if criterion_id:
                     self.entry_condition_states[criterion_id] = satisfied
 
-    def set_qt_context(self, context: dict | None) -> None:
-        self.qt_context = normalize_qt_context(context)
-        self._touch()
-
     def set_authorization_gate(self, gate_id: str, state: AuthorizationGateState | str) -> None:
         gate_id = gate_id.strip()
         if not gate_id:
@@ -341,6 +337,10 @@ class TradingSessionRun:
             self.setup_candidates.append(candidate)
             self._touch()
         return candidate
+
+    def set_qt_context(self, context: dict | None) -> None:
+        self.qt_context = normalize_qt_context(context)
+        self._touch()
 
     def set_authorization_gate(self, gate_id: str, state: AuthorizationGateState | str) -> None:
         gate_id = gate_id.strip()
