@@ -150,6 +150,7 @@ class PlaybookDefinition:
     revision: str
     purpose: str = ""
     sessions: tuple[str, ...] = field(default_factory=tuple)
+    timed_window_ids: tuple[str, ...] = field(default_factory=tuple)
     preparation: tuple[str, ...] = field(default_factory=tuple)
     watch_point_templates: tuple[WatchPointTemplateDefinition, ...] = field(default_factory=tuple)
     entry_criteria: tuple[EntryCriterionDefinition, ...] = field(default_factory=tuple)
@@ -197,6 +198,7 @@ class PlaybookDefinition:
             "revision": self.revision,
             "purpose": self.purpose,
             "sessions": list(self.sessions),
+            "timed_window_ids": list(self.timed_window_ids),
             "preparation": list(self.preparation),
             "watch_point_templates": [item.to_dict() for item in self.watch_point_templates],
             "entry_criteria": [item.to_dict() for item in self.entry_criteria],
@@ -217,6 +219,9 @@ class PlaybookDefinition:
             revision=str(payload.get("revision", "")),
             purpose=str(payload.get("purpose", "")),
             sessions=tuple(str(item) for item in payload.get("sessions", [])),
+            timed_window_ids=tuple(
+                str(item) for item in payload.get("timed_window_ids", [])
+            ),
             preparation=tuple(str(item) for item in payload.get("preparation", [])),
             watch_point_templates=tuple(
                 WatchPointTemplateDefinition.from_dict(item)
