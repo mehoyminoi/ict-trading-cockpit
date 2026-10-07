@@ -1,14 +1,19 @@
+from datetime import datetime
+
 from PySide6.QtWidgets import QApplication
 
+from ict_cockpit.analysis.market_time import MARKET_TIMEZONE
 from ict_cockpit.analysis.quarter_theory import (
     QTPhase,
     QuarterTheoryContext,
+    apply_time_derived_qt_context,
     normalize_qt_context,
     qt_context_summary,
+    raw_quarter_stack_summary,
 )
 from ict_cockpit.analysis.trading_day import TradingDay
 from ict_cockpit.analysis.trading_day_session import TradingDaySession
-from ict_cockpit.analysis.trading_session_run import TradingRun
+from ict_cockpit.analysis.trading_session_run import RunEnvironment, TradingRun
 from ict_cockpit.database.connection import create_connection
 from ict_cockpit.database.schema import initialize_schema
 from ict_cockpit.database.trading_day_repository import TradingDayRepository
@@ -199,3 +204,71 @@ def test_post_market_review_surfaces_qt_context() -> None:
         and "Session D" in item
         for item in items
     )
+
+
+def test_time_derived_month_role_overrides_manual_month_for_new_context() -> None:
+    market = {
+        "calendar_month_phase": "M",
+    }
+    context = apply_time_derived_qt_context(
+        {"month": "D", "week": "A"},
+        market,
+    )
+
+    assert context["month"] == "M"
+    assert context["week"] == "A"
+
+
+def test_raw_quarter_stack_summary_uses_only_known_positions() -> None:
+    summary = raw_quarter_stack_summary(
+        {
+            "raw_quarters": {
+                "day": "Q2",
+                "macro_90m": "Q2",
+            }
+        }
+    )
+
+    assert summary == "Q2 / Q2"
+
+
+def test_replay_run_auto_derives_month_amd_and_shows_raw_stack() -> None:
+    get_app()
+    shell = build_shell()
+    shell.run_environment = RunEnvironment.REPLAY
+    shell.run_market_timestamp = datetime(
+        2026,
+        8,
+        6,
+        9,
+        15,
+        tzinfo=MARKET_TIMEZONE,
+    )
+
+    assert shell.start_trading_run() is True
+    run = shell.active_trading_run
+    assert run is not None
+    assert run.qt_context["month"] == "M"
+    assert run.market_time_context["calendar_quarter"] == "Q3"
+    assert run.market_time_context["calendar_quarter_month_index"] == 2
+    assert run.market_time_context["raw_quarters"] == {
+        "day": "Q3",
+        "macro_90m": "Q3",
+    }
+
+    runner = shell.runtime.tda_station_runner_widget
+    runner.select_station("tda-thesis")
+    editor = shell.runtime.qt_context_widget
+
+    assert editor.phase_combos["month"].currentText() == "M"
+    assert editor.phase_combos["month"].isEnabled() is False
+    assert "Q3 Month 2" in editor.market_time_label.text()
+    assert "Q3 / Q3" in editor.raw_stack_label.text()
+
+    assert shell.runtime.apply_transition(
+        "finish-tda",
+        override_incomplete=True,
+    ) is True
+    watch = shell.runtime.live_watch_widget
+    assert "Month M" in watch.qt_summary_label.text()
+    assert "Q3 / Q3" in watch.raw_qt_stack_label.text()

@@ -135,8 +135,13 @@ def test_market_review_contrasts_tda_with_live_watch_without_process_click_log()
 
     review = shell.runtime.post_market_review_widget
     assert review.stage_stack.currentWidget() is review.market_review_page
-    assert review.tda_snapshot_list.count() == 1
-    assert "Premarket Thesis" in review.tda_snapshot_list.item(0).text()
+    tda_items = [
+        review.tda_snapshot_list.item(index).text()
+        for index in range(review.tda_snapshot_list.count())
+    ]
+    assert len(tda_items) == 2
+    assert any("QT / AMDX Stack" in item and "Raw stack" in item for item in tda_items)
+    assert any("Premarket Thesis" in item for item in tda_items)
     assert review.live_changes_list.count() == 2
     assert "Supported" in review.live_changes_list.item(1).text()
     assert "Supported" in review.run_summary_label.text()
@@ -221,8 +226,13 @@ def test_restored_post_market_run_rehydrates_both_review_stages() -> None:
 
     review = restored_shell.runtime.post_market_review_widget
     assert restored_shell.runtime.session.current_mode_id == "post-market"
-    assert review.tda_snapshot_list.count() == 1
-    assert "prior-day low" in review.tda_snapshot_list.item(0).text()
+    tda_items = [
+        review.tda_snapshot_list.item(index).text()
+        for index in range(review.tda_snapshot_list.count())
+    ]
+    assert len(tda_items) == 2
+    assert any("QT / AMDX Stack" in item and "Raw stack" in item for item in tda_items)
+    assert any("prior-day low" in item for item in tda_items)
     assert review.interpretation_buttons[
         InterpretationOutcome.EXOGENOUS_EVENT
     ].isChecked() is True

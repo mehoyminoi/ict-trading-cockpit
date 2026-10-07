@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
 )
 
 from ict_cockpit.analysis.market_time import build_market_time_context, current_new_york_time
+from ict_cockpit.analysis.quarter_theory import apply_time_derived_qt_context
 from ict_cockpit.analysis.trading_day import TradingDay, TradingDayLifecycleStatus
 from ict_cockpit.analysis.trading_day_session import TradingDaySession, TradingDayStatus
 from ict_cockpit.analysis.trading_session_run import RunEnvironment, TradingRun, TradingRunStatus
@@ -246,7 +247,16 @@ class TradingDayShellWidget(QWidget):
                 RunEnvironment.FORWARD_TEST,
             }
         ):
+            had_derived_qt = "calendar_month_phase" in run.market_time_context
             run.market_time_context = dict(context)
+            if had_derived_qt:
+                updated_qt = apply_time_derived_qt_context(
+                    run.qt_context,
+                    context,
+                )
+                if updated_qt != run.qt_context:
+                    run.set_qt_context(updated_qt)
+                    self.session_run_changed.emit(run)
             if self.runtime.current_mode.id == "live-watch":
                 self.runtime.live_watch_widget.load_run_context(
                     run,
@@ -300,6 +310,10 @@ class TradingDayShellWidget(QWidget):
             self.trading_day.futures_day_label = str(
                 market_time_context.get("futures_trading_day", "")
             )
+        initial_qt_context = apply_time_derived_qt_context(
+            {},
+            market_time_context,
+        )
         run = TradingRun(
             trading_day_id=self.trading_day.id,
             session_name=f"Trading Run {len(self.trading_runs) + 1}",
@@ -309,6 +323,7 @@ class TradingDayShellWidget(QWidget):
             trade_plan_revision=self.trade_plan_revision,
             authorization_policy_snapshot=[gate.to_dict() for gate in self.authorization_gates],
             market_time_context=market_time_context,
+            qt_context=initial_qt_context,
         )
         if self.playbooks:
             run.ensure_day_specific_candidate()
