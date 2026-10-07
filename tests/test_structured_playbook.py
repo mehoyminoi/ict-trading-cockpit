@@ -1,11 +1,15 @@
+from datetime import datetime
+
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
 
+from ict_cockpit.analysis.market_time import MARKET_TIMEZONE
 from ict_cockpit.analysis.trading_day import TradingDay
 from ict_cockpit.analysis.trading_day_session import TradingDaySession
 from ict_cockpit.analysis.trading_session_run import (
     AuthorizationGateState,
     AuthorizationStatus,
+    RunEnvironment,
     TradingRun,
     WatchPointState,
 )
@@ -238,20 +242,19 @@ def test_occurred_watch_point_updates_criterion_but_global_gates_still_block() -
 def test_candidate_becomes_authorized_only_after_setup_and_plan_gates_clear() -> None:
     get_app()
     _plan, shell = build_shell_with_plan()
+    shell.run_environment = RunEnvironment.REPLAY
+    shell.run_market_timestamp = datetime(
+        2026,
+        10,
+        6,
+        10,
+        15,
+        tzinfo=MARKET_TIMEZONE,
+    )
     shell.start_trading_run()
     run = shell.active_trading_run
     assert run is not None
     candidate = select_silver_bullet(shell)
-    run.market_time_context = {
-        "timed_windows": [
-            {
-                "id": "nyam-silver-bullet",
-                "name": "NYAM Silver Bullet",
-                "state": "Active",
-                "minutes_until_start": 0,
-            }
-        ]
-    }
     shell.runtime.apply_transition("finish-tda", override_incomplete=True)
     live = shell.runtime.live_watch_widget
 
