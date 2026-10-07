@@ -297,7 +297,10 @@ class LiveWatchWidget(QWidget):
         self.entry_checkboxes = {}
         self.watch_point_combos = {}
         self.load_state(trading_run.current_thesis_state, trading_run.evidence)
-        brief = build_opportunity_situation_brief(trading_run)
+        brief = build_opportunity_situation_brief(
+            trading_run,
+            tda_session,
+        )
         self.situation_summary_label.setText(
             situation_brief_summary(brief)
         )
