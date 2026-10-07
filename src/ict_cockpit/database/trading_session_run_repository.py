@@ -56,6 +56,10 @@ class TradingSessionRunRepository:
             session_run.market_time_context,
             sort_keys=True,
         )
+        qt_context_json = json.dumps(
+            session_run.qt_context,
+            sort_keys=True,
+        )
         with self.connection:
             self.connection.execute(
                 """
@@ -69,8 +73,8 @@ class TradingSessionRunRepository:
                     selected_playbook_id, selected_playbook_revision,
                     playbook_snapshot_json, setup_candidates_json,
                     authorization_policy_snapshot_json, authorization_gate_states_json,
-                    market_time_context_json
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    market_time_context_json, qt_context_json
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                     trading_day_id = excluded.trading_day_id,
                     session_name = excluded.session_name,
@@ -97,7 +101,8 @@ class TradingSessionRunRepository:
                     setup_candidates_json = excluded.setup_candidates_json,
                     authorization_policy_snapshot_json = excluded.authorization_policy_snapshot_json,
                     authorization_gate_states_json = excluded.authorization_gate_states_json,
-                    market_time_context_json = excluded.market_time_context_json
+                    market_time_context_json = excluded.market_time_context_json,
+                    qt_context_json = excluded.qt_context_json
                 """,
                 (
                     session_run.id,
@@ -127,6 +132,7 @@ class TradingSessionRunRepository:
                     authorization_policy_snapshot_json,
                     authorization_gate_states_json,
                     market_time_context_json,
+                    qt_context_json,
                 ),
             )
 
@@ -153,7 +159,7 @@ class TradingSessionRunRepository:
                    selected_playbook_id, selected_playbook_revision,
                    playbook_snapshot_json, setup_candidates_json,
                    authorization_policy_snapshot_json, authorization_gate_states_json,
-                   market_time_context_json
+                   market_time_context_json, qt_context_json
             FROM trading_session_run
             {where_clause}
         """
@@ -209,4 +215,5 @@ class TradingSessionRunRepository:
                 for gate_id, state in json.loads(row[25] or "{}").items()
             },
             market_time_context=json.loads(row[26] or "{}"),
+            qt_context=json.loads(row[27] or "{}"),
         )

@@ -17,6 +17,7 @@ from ict_cockpit.analysis.trading_day_session import TradingDaySession, TradingD
 from ict_cockpit.analysis.trading_session_run import TradingRun
 from ict_cockpit.gui.live_watch_widget import LiveWatchWidget
 from ict_cockpit.gui.post_market_review_widget import PostMarketReviewWidget
+from ict_cockpit.gui.qt_context_widget import QTContextWidget
 from ict_cockpit.gui.tda_station_runner_widget import TDAStationRunnerWidget
 from ict_cockpit.gui.tda_watch_point_widget import TDAWatchPointWidget
 from ict_cockpit.process_blueprint import ModeDefinition, ProcessBlueprint
@@ -28,6 +29,7 @@ class TradingDayRuntimeWidget(QWidget):
 
     session_changed = Signal(TradingDaySession)
     models_in_play_changed = Signal(object)
+    qt_context_changed = Signal(object)
     playbook_selected = Signal(str)  # compatibility
     live_observation_submitted = Signal(str)
     live_thesis_state_submitted = Signal(str, str)
@@ -79,6 +81,8 @@ class TradingDayRuntimeWidget(QWidget):
         self.mode_pages: dict[str, QWidget] = {}
 
         self.tda_station_runner_widget = TDAStationRunnerWidget(blueprint)
+        self.qt_context_widget = QTContextWidget()
+        self.qt_context_widget.context_changed.connect(self.qt_context_changed.emit)
         self.tda_watch_point_widget = TDAWatchPointWidget(self.playbooks)
         self.tda_watch_point_widget.add_requested.connect(self._add_tda_watch_point)
         self.tda_watch_point_widget.remove_requested.connect(self._remove_tda_watch_point)
@@ -133,9 +137,10 @@ class TradingDayRuntimeWidget(QWidget):
         layout.addWidget(self.title_label)
         layout.addWidget(self.summary_label)
         layout.addLayout(self.mode_rail)
-        # Premarket Thesis model/watch-point selection is station-critical work.
-        # Keep it above the Focus viewport so it cannot be hidden below the
+        # Premarket Thesis QT/model/watch-point decisions are station-critical work.
+        # Keep them above the Focus viewport so they cannot be hidden below the
         # scroll boundary on compact displays.
+        layout.addWidget(self.qt_context_widget)
         layout.addWidget(self.tda_watch_point_widget)
         layout.addWidget(self.mode_stack, 1)
         layout.addWidget(self.transition_frame)
@@ -197,15 +202,24 @@ class TradingDayRuntimeWidget(QWidget):
             and runner.current_station_id == "tda-thesis"
             and runner.view_tabs.currentWidget() is runner.focus_page
         )
+        self.qt_context_widget.setVisible(visible)
         self.tda_watch_point_widget.setVisible(visible)
         if visible:
             selected_ids = []
+            qt_context = {}
+            market_time_context = {}
             if self.trading_run is not None:
                 selected_ids = [
                     item.source_id
                     for item in self.trading_run.setup_candidates
                     if item.source_type == "Playbook"
                 ]
+                qt_context = self.trading_run.qt_context
+                market_time_context = self.trading_run.market_time_context
+            self.qt_context_widget.load_context(
+                qt_context,
+                market_time_context,
+            )
             self.tda_watch_point_widget.load_context(selected_ids, runner.session.watch_points)
 
     def apply_transition(self, transition_id: str, *, reason: str = "", override_incomplete: bool = False) -> bool:
@@ -297,6 +311,10 @@ class TradingDayRuntimeWidget(QWidget):
 
     def load_trading_run(self, trading_run: TradingRun) -> None:
         self.trading_run = trading_run
+        self.qt_context_widget.load_context(
+            trading_run.qt_context,
+            trading_run.market_time_context,
+        )
         self.live_watch_widget.load_run_context(
             trading_run,
             self.tda_station_runner_widget.session,
@@ -310,6 +328,7 @@ class TradingDayRuntimeWidget(QWidget):
 
     def start_new(self) -> None:
         self.tda_station_runner_widget.start_new()
+        self.qt_context_widget.clear_context()
         self.live_watch_widget.clear_state()
         self.post_market_review_widget.clear_state()
         self.trading_run = None

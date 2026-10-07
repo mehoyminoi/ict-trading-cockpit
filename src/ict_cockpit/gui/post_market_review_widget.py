@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from ict_cockpit.analysis.quarter_theory import qt_context_summary
 from ict_cockpit.analysis.tda_station_session import TDAStationSession
 from ict_cockpit.analysis.trading_session_run import (
     InterpretationOutcome,
@@ -228,6 +229,12 @@ class PostMarketReviewWidget(QWidget):
 
             self.tda_snapshot_list.clear()
             populated_tda = 0
+            qt_summary = qt_context_summary(trading_run.qt_context)
+            if qt_summary != "No QT / AMDX interpretation recorded":
+                self.tda_snapshot_list.addItem(
+                    "QT / AMDX Stack\n" + qt_summary
+                )
+                populated_tda += 1
             for item in tda_session.observations:
                 if not item.observation:
                     continue

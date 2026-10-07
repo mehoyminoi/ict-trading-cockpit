@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
 )
 
 from ict_cockpit.analysis.market_time import temporal_relevance_for
+from ict_cockpit.analysis.quarter_theory import qt_context_summary
 from ict_cockpit.analysis.tda_station_session import TDAStationSession
 from ict_cockpit.analysis.trading_session_run import (
     AuthorizationGateState,
@@ -69,10 +70,14 @@ class LiveWatchWidget(QWidget):
         tda_heading.setStyleSheet("font-weight: 600;")
         self.tda_summary_label = QLabel("No TDA context loaded")
         self.tda_summary_label.setWordWrap(True)
+        self.qt_summary_label = QLabel("QT / AMDX · No interpretation recorded")
+        self.qt_summary_label.setWordWrap(True)
+        self.qt_summary_label.setStyleSheet("font-weight: 600;")
         self.watch_points_list = QListWidget()
         self.watch_points_list.setMaximumHeight(145)
         tda_layout.addWidget(tda_heading)
         tda_layout.addWidget(self.tda_summary_label)
+        tda_layout.addWidget(self.qt_summary_label)
         tda_layout.addWidget(self.watch_points_list)
 
         self.authorization_frame = QFrame()
@@ -211,6 +216,7 @@ class LiveWatchWidget(QWidget):
         self.observation_input.clear()
         self.watch_points_list.clear()
         self.tda_summary_label.setText("No TDA context loaded")
+        self.qt_summary_label.setText("QT / AMDX · No interpretation recorded")
         self._clear_layout(self.authorization_layout)
         self.authorization_summary_label.setText("Authorization policy: Not configured")
         self.load_state(ThesisState.NOT_SET, [], {}, {})
@@ -253,6 +259,9 @@ class LiveWatchWidget(QWidget):
         self.entry_checkboxes = {}
         self.watch_point_combos = {}
         self.load_state(trading_run.current_thesis_state, trading_run.evidence)
+        self.qt_summary_label.setText(
+            "QT / AMDX · " + qt_context_summary(trading_run.qt_context)
+        )
         self._load_tda_context(tda_session, blueprint)
         self._render_authorization_gates(trading_run)
         if trading_run.setup_candidates:

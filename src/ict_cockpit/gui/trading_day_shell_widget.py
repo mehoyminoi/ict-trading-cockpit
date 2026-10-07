@@ -103,6 +103,7 @@ class TradingDayShellWidget(QWidget):
 
         self.runtime.session_changed.connect(self._process_session_changed)
         self.runtime.models_in_play_changed.connect(self._sync_models_in_play)
+        self.runtime.qt_context_changed.connect(self._set_qt_context)
         self.runtime.playbook_selected.connect(self._legacy_select_playbook)
         runner = self.runtime.tda_station_runner_widget
         runner.session_changed.connect(lambda _session: self._update_view())
@@ -323,6 +324,13 @@ class TradingDayShellWidget(QWidget):
 
     def start_session_run(self, _session_name: str = "") -> bool:
         return self.start_trading_run()
+
+    def _set_qt_context(self, context) -> None:
+        run = self.active_trading_run
+        if run is None:
+            return
+        run.set_qt_context(dict(context or {}))
+        self._save_and_reload(run)
 
     def _sync_models_in_play(self, playbook_ids) -> None:
         run = self.active_trading_run
