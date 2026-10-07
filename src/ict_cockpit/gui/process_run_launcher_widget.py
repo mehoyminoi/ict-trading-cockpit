@@ -13,8 +13,14 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from ict_cockpit.analysis.environment_progression import (
+    evaluate_environment_eligibility,
+)
 from ict_cockpit.analysis.market_time import MARKET_TIMEZONE, current_new_york_time
-from ict_cockpit.analysis.trading_session_run import RunEnvironment
+from ict_cockpit.analysis.trading_session_run import (
+    RunEnvironment,
+    default_purpose_for_environment,
+)
 from ict_cockpit.gui.trading_day_shell_widget import TradingDayShellWidget
 
 
@@ -68,6 +74,16 @@ class ProcessRunLauncherWidget(QWidget):
         environment_row.addWidget(self.environment_combo, 1)
         frame_layout.addLayout(environment_row)
 
+        self.purpose_label = QLabel()
+        self.purpose_label.setWordWrap(True)
+        frame_layout.addWidget(self.purpose_label)
+
+        self.eligibility_label = QLabel()
+        self.eligibility_label.setWordWrap(True)
+        self.eligibility_label.setFrameShape(QFrame.Shape.StyledPanel)
+        self.eligibility_label.setContentsMargins(8, 6, 8, 6)
+        frame_layout.addWidget(self.eligibility_label)
+
         market_time_row = QHBoxLayout()
         self.market_time_label = QLabel("Replay market time · New York")
         self.market_time_edit = QDateTimeEdit()
@@ -84,7 +100,7 @@ class ProcessRunLauncherWidget(QWidget):
         market_time_row.addWidget(self.market_time_edit, 1)
         frame_layout.addLayout(market_time_row)
         self.environment_combo.currentTextChanged.connect(
-            lambda _text: self._sync_market_time_input()
+            lambda _text: self._sync_environment_ui()
         )
 
         self.study_frame = QFrame()
@@ -93,13 +109,13 @@ class ProcessRunLauncherWidget(QWidget):
         study_layout.setContentsMargins(8, 6, 8, 6)
         study_layout.setSpacing(4)
 
-        study_heading = QLabel("Study Intent")
-        study_heading.setStyleSheet("font-weight: 600;")
-        study_layout.addWidget(study_heading)
+        self.study_heading = QLabel("Run Intent")
+        self.study_heading.setStyleSheet("font-weight: 600;")
+        study_layout.addWidget(self.study_heading)
 
         self.study_question_input = QLineEdit()
         self.study_question_input.setPlaceholderText(
-            "Study question — what are you trying to learn or recognize?"
+            "Focus / question — what are you trying to learn, rehearse, or validate?"
         )
         study_layout.addWidget(self.study_question_input)
 
@@ -116,8 +132,8 @@ class ProcessRunLauncherWidget(QWidget):
         study_layout.addWidget(self.study_scope_input)
 
         study_note = QLabel(
-            "Replay / Historical Backtest runs require a study question. "
-            "Hypothesis and scope may remain blank for deliberate-practice sessions."
+            "Historical Backtest requires a focused study question. "
+            "Replay and Forward Test may carry optional intent without becoming Lab work."
         )
         study_note.setWordWrap(True)
         study_layout.addWidget(study_note)
@@ -163,16 +179,41 @@ class ProcessRunLauncherWidget(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(frame)
-        self._sync_market_time_input()
+        self._sync_environment_ui()
 
-    def _sync_market_time_input(self) -> None:
-        historical = self.selected_environment in {
+    def _sync_environment_ui(self) -> None:
+        environment = self.selected_environment
+        historical = environment in {
             RunEnvironment.REPLAY,
             RunEnvironment.HISTORICAL_BACKTEST,
         }
         self.market_time_label.setVisible(historical)
         self.market_time_edit.setVisible(historical)
-        self.study_frame.setVisible(historical)
+
+        intent_visible = environment is not RunEnvironment.LIVE
+        self.study_frame.setVisible(intent_visible)
+        self.study_heading.setText(
+            "Study Intent"
+            if environment is RunEnvironment.HISTORICAL_BACKTEST
+            else "Run Intent"
+        )
+
+        purpose = default_purpose_for_environment(environment)
+        self.purpose_label.setText(
+            f"Default purpose · {purpose.value}"
+        )
+
+        eligibility = evaluate_environment_eligibility(environment)
+        detail = (
+            f"Progression eligibility · {eligibility.status.value.upper()} · "
+            f"{eligibility.detail}"
+        )
+        if eligibility.recommended_environment is not None:
+            detail += (
+                f" Recommended lower rung: "
+                f"{eligibility.recommended_environment.value}."
+            )
+        self.eligibility_label.setText(detail)
 
     def _selected_historical_market_time(self) -> datetime:
         value = self.market_time_edit.dateTime()
@@ -201,24 +242,33 @@ class ProcessRunLauncherWidget(QWidget):
 
         environment = self.selected_environment
         shell.run_environment = environment
+        shell.run_purpose = default_purpose_for_environment(environment)
+
+        question = self.study_question_input.text().strip()
+        if (
+            environment is RunEnvironment.HISTORICAL_BACKTEST
+            and not question
+        ):
+            self.status_label.setText(
+                "Add a focused study question before starting Historical Backtest."
+            )
+            return False
+
         if environment in {
             RunEnvironment.REPLAY,
             RunEnvironment.HISTORICAL_BACKTEST,
         }:
-            question = self.study_question_input.text().strip()
-            if not question:
-                self.status_label.setText(
-                    "Add a study question before starting Replay / Historical Backtest."
-                )
-                return False
             shell.run_market_timestamp = self._selected_historical_market_time()
+        else:
+            shell.run_market_timestamp = None
+
+        if environment is not RunEnvironment.LIVE and question:
             shell.run_study_context = {
                 "question": question,
                 "hypothesis": self.study_hypothesis_input.text().strip(),
                 "scope": self.study_scope_input.text().strip(),
             }
         else:
-            shell.run_market_timestamp = None
             shell.run_study_context = {}
         shell.start_new_trading_day()
 
@@ -229,7 +279,7 @@ class ProcessRunLauncherWidget(QWidget):
 
         available_count = len([item for item in shell.playbooks if item.available])
         self.status_label.setText(
-            f"Started {environment.value} · {run.run_label} · Trade Plan "
+            f"Started {environment.value} · {run.purpose.value} · {run.run_label} · Trade Plan "
             f"{run.trade_plan_revision or self.trade_plan_revision}. "
             f"{available_count} reference model(s) are available; none are auto-selected. "
             f"Market time source: {run.market_time_context.get('source', 'Not configured')}. "
