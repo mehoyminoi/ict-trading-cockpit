@@ -128,6 +128,74 @@ def calendar_month_phase_for(moment: datetime) -> str:
     return {1: "A", 2: "M", 3: "D"}[index]
 
 
+def cycle_16y_quarter_for(moment: datetime) -> str:
+    """Return the active 4-year quarter inside the anchored 16-year cycle."""
+
+    local = as_new_york(moment)
+    quarter = ((local.year - 2011) % 16) // 4 + 1
+    return f"Q{quarter}"
+
+
+def quadrennial_year_quarter_for(moment: datetime) -> str:
+    """Return the active year quarter inside its four-year block."""
+
+    local = as_new_york(moment)
+    quarter = ((local.year - 2011) % 4) + 1
+    return f"Q{quarter}"
+
+
+def month_week_quarter_for(moment: datetime) -> str:
+    """Return Q1-Q4 for full Monday-start weeks; fifth week is Distortion.
+
+    Days before the first Monday of the futures trading-day month are left
+    unassigned rather than inferred.
+    """
+
+    trading_date = futures_trading_day_for(moment)
+    first_day = trading_date.replace(day=1)
+    days_to_monday = (7 - first_day.weekday()) % 7
+    first_monday = first_day + timedelta(days=days_to_monday)
+    if trading_date < first_monday:
+        return ""
+
+    week_index = ((trading_date - first_monday).days // 7) + 1
+    if 1 <= week_index <= 4:
+        return f"Q{week_index}"
+    return "Distortion"
+
+
+def week_day_quarter_for(moment: datetime) -> str:
+    """Return Mon-Thu Q1-Q4 using the futures trading-day date."""
+
+    trading_date = futures_trading_day_for(moment)
+    weekday = trading_date.weekday()
+    if 0 <= weekday <= 3:
+        return f"Q{weekday + 1}"
+    return ""
+
+
+def raw_qt_quarters_for(
+    moment: datetime,
+    *,
+    session: str | None = None,
+) -> dict[str, str]:
+    """Return factual raw nested QT positions without AMDX interpretation."""
+
+    local = as_new_york(moment)
+    active_session = session or session_for(local)
+    day_quarter = _DAILY_QUARTERS.get(active_session, "")
+    session_quarter = session_quarter_for(local, active_session)
+    return {
+        "cycle_16y": cycle_16y_quarter_for(local),
+        "quadrennial": quadrennial_year_quarter_for(local),
+        "year": calendar_quarter_for(local),
+        "month": month_week_quarter_for(local),
+        "week": week_day_quarter_for(local),
+        "day": day_quarter,
+        "session": session_quarter,
+    }
+
+
 def futures_trading_day_for(moment: datetime) -> date:
     """Apply the cockpit's 18:00 New York futures-day boundary."""
 
@@ -238,10 +306,10 @@ def build_market_time_context(
         calendar_quarter=calendar_quarter_for(local),
         calendar_quarter_month_index=calendar_quarter_month_index_for(local),
         calendar_month_phase=calendar_month_phase_for(local),
-        raw_quarters={
-            "day": daily_quarter,
-            "macro_90m": session_quarter,
-        },
+        raw_quarters=raw_qt_quarters_for(
+            local,
+            session=session,
+        ),
         timed_windows=windows,
         active_window_ids=active_ids,
         next_window_id=next_window_id,
