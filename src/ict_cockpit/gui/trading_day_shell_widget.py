@@ -120,6 +120,9 @@ class TradingDayShellWidget(QWidget):
         self.runtime.live_watch_widget.candidate_authorization_gate_state_changed.connect(self._set_candidate_authorization_gate)
         self.runtime.post_market_interpretation_submitted.connect(self._update_interpretation_outcome)
         self.runtime.post_market_review_submitted.connect(self._update_post_market_review)
+        self.runtime.post_market_study_review_submitted.connect(
+            self._update_study_review
+        )
 
         self.tda_nav_frame = QFrame()
         self.tda_nav_frame.setFrameShape(QFrame.Shape.StyledPanel)
@@ -461,6 +464,12 @@ class TradingDayShellWidget(QWidget):
         run = self.active_trading_run
         if run is not None:
             run.update_post_market_review(process_adherence=process_adherence, takeaway=takeaway, film_night=film_night)
+            self._save_and_reload(run)
+
+    def _update_study_review(self, outcome: str, note: str) -> None:
+        run = self.active_trading_run
+        if run is not None and run.study_context is not None:
+            run.record_study_outcome(outcome, note)
             self._save_and_reload(run)
 
     def _process_session_changed(self, process_session: TradingDaySession) -> None:
