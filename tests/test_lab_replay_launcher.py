@@ -125,6 +125,7 @@ def test_replay_launcher_stamps_explicit_new_york_market_time() -> None:
     launcher = widget.process_run_launcher_widget
 
     launcher.environment_combo.setCurrentText(RunEnvironment.REPLAY.value)
+    launcher.study_question_input.setText("Practice recognizing the active setup in replay")
     launcher.market_time_edit.setDateTime(
         QDateTime.fromString("2026-10-06 09:15", "yyyy-MM-dd HH:mm")
     )
