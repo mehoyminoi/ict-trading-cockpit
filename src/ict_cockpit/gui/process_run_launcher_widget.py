@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
     QLabel,
+    QLineEdit,
     QPushButton,
     QVBoxLayout,
     QWidget,
@@ -86,6 +87,42 @@ class ProcessRunLauncherWidget(QWidget):
             lambda _text: self._sync_market_time_input()
         )
 
+        self.study_frame = QFrame()
+        self.study_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        study_layout = QVBoxLayout(self.study_frame)
+        study_layout.setContentsMargins(8, 6, 8, 6)
+        study_layout.setSpacing(4)
+
+        study_heading = QLabel("Study Intent")
+        study_heading.setStyleSheet("font-weight: 600;")
+        study_layout.addWidget(study_heading)
+
+        self.study_question_input = QLineEdit()
+        self.study_question_input.setPlaceholderText(
+            "Study question — what are you trying to learn or recognize?"
+        )
+        study_layout.addWidget(self.study_question_input)
+
+        self.study_hypothesis_input = QLineEdit()
+        self.study_hypothesis_input.setPlaceholderText(
+            "Hypothesis (optional) — what do you expect to find?"
+        )
+        study_layout.addWidget(self.study_hypothesis_input)
+
+        self.study_scope_input = QLineEdit()
+        self.study_scope_input.setPlaceholderText(
+            "Scope (optional) — setup, session, dates, conditions, or practice focus"
+        )
+        study_layout.addWidget(self.study_scope_input)
+
+        study_note = QLabel(
+            "Replay / Historical Backtest runs require a study question. "
+            "Hypothesis and scope may remain blank for deliberate-practice sessions."
+        )
+        study_note.setWordWrap(True)
+        study_layout.addWidget(study_note)
+        frame_layout.addWidget(self.study_frame)
+
         plan_row = QHBoxLayout()
         plan_row.addWidget(QLabel("Trade Plan"))
         self.trade_plan_label = QLabel(self.trade_plan_revision or "Not identified")
@@ -135,6 +172,7 @@ class ProcessRunLauncherWidget(QWidget):
         }
         self.market_time_label.setVisible(historical)
         self.market_time_edit.setVisible(historical)
+        self.study_frame.setVisible(historical)
 
     def _selected_historical_market_time(self) -> datetime:
         value = self.market_time_edit.dateTime()
@@ -167,9 +205,21 @@ class ProcessRunLauncherWidget(QWidget):
             RunEnvironment.REPLAY,
             RunEnvironment.HISTORICAL_BACKTEST,
         }:
+            question = self.study_question_input.text().strip()
+            if not question:
+                self.status_label.setText(
+                    "Add a study question before starting Replay / Historical Backtest."
+                )
+                return False
             shell.run_market_timestamp = self._selected_historical_market_time()
+            shell.run_study_context = {
+                "question": question,
+                "hypothesis": self.study_hypothesis_input.text().strip(),
+                "scope": self.study_scope_input.text().strip(),
+            }
         else:
             shell.run_market_timestamp = None
+            shell.run_study_context = {}
         shell.start_new_trading_day()
 
         run = shell.active_trading_run
@@ -183,7 +233,12 @@ class ProcessRunLauncherWidget(QWidget):
             f"{run.trade_plan_revision or self.trade_plan_revision}. "
             f"{available_count} reference model(s) are available; none are auto-selected. "
             f"Market time source: {run.market_time_context.get('source', 'Not configured')}. "
-            "Choose Models in Play during Premarket Thesis if the TDA says they apply."
+            + (
+                f"Study: {run.study_context.question}. "
+                if run.study_context is not None
+                else ""
+            )
+            + "Choose Models in Play during Premarket Thesis if the TDA says they apply."
         )
         if self.on_launched is not None:
             self.on_launched()

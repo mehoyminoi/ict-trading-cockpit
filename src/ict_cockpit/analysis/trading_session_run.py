@@ -69,6 +69,74 @@ class ProcessAdherence(str, Enum):
     DEVIATION = "Deviation"
 
 
+class StudyOutcome(str, Enum):
+    NOT_REVIEWED = "Not Reviewed"
+    PRACTICE_COMPLETE = "Practice Complete"
+    SUPPORTED = "Supported"
+    REFINED = "Refined"
+    REJECTED = "Rejected"
+    INCONCLUSIVE = "Inconclusive"
+
+
+@dataclass
+class StudyRunContext:
+    question: str
+    hypothesis: str = ""
+    scope: str = ""
+    outcome: StudyOutcome = StudyOutcome.NOT_REVIEWED
+    outcome_note: str = ""
+    completed_at: str = ""
+
+    def __post_init__(self) -> None:
+        self.question = self.question.strip()
+        self.hypothesis = self.hypothesis.strip()
+        self.scope = self.scope.strip()
+        self.outcome_note = self.outcome_note.strip()
+        self.completed_at = self.completed_at.strip()
+        if isinstance(self.outcome, str):
+            self.outcome = StudyOutcome(self.outcome)
+        if not self.question:
+            raise ValueError("study question cannot be empty")
+
+    def to_dict(self) -> dict:
+        return {
+            "question": self.question,
+            "hypothesis": self.hypothesis,
+            "scope": self.scope,
+            "outcome": self.outcome.value,
+            "outcome_note": self.outcome_note,
+            "completed_at": self.completed_at,
+        }
+
+    @classmethod
+    def from_dict(cls, payload: dict | None) -> "StudyRunContext | None":
+        source = dict(payload or {})
+        question = str(source.get("question", "")).strip()
+        if not question:
+            return None
+        return cls(
+            question=question,
+            hypothesis=str(source.get("hypothesis", "")),
+            scope=str(source.get("scope", "")),
+            outcome=str(source.get("outcome", StudyOutcome.NOT_REVIEWED.value)),
+            outcome_note=str(source.get("outcome_note", "")),
+            completed_at=str(source.get("completed_at", "")),
+        )
+
+    def record_outcome(
+        self,
+        outcome: StudyOutcome | str,
+        note: str = "",
+    ) -> None:
+        self.outcome = StudyOutcome(outcome)
+        self.outcome_note = note.strip()
+        self.completed_at = (
+            ""
+            if self.outcome is StudyOutcome.NOT_REVIEWED
+            else datetime.now().astimezone().isoformat(timespec="seconds")
+        )
+
+
 @dataclass
 class AuthorizationResult:
     status: AuthorizationStatus
@@ -210,6 +278,7 @@ class TradingSessionRun:
     authorization_gate_states: dict[str, AuthorizationGateState] = field(default_factory=dict)
     market_time_context: dict = field(default_factory=dict)
     qt_context: dict[str, str] = field(default_factory=dict)
+    study_context: StudyRunContext | None = None
 
     selected_playbook_id: str = ""
     selected_playbook_revision: str = ""
@@ -242,6 +311,11 @@ class TradingSessionRun:
         self.authorization_policy_snapshot = [dict(item) for item in (self.authorization_policy_snapshot or [])]
         self.market_time_context = dict(self.market_time_context or {})
         self.qt_context = normalize_qt_context(self.qt_context)
+        if self.study_context is not None and not isinstance(
+            self.study_context,
+            StudyRunContext,
+        ):
+            self.study_context = StudyRunContext.from_dict(self.study_context)
         self.authorization_gate_states = {
             str(key).strip(): (
                 value if isinstance(value, AuthorizationGateState) else AuthorizationGateState(value)
@@ -340,6 +414,28 @@ class TradingSessionRun:
 
     def set_qt_context(self, context: dict | None) -> None:
         self.qt_context = normalize_qt_context(context)
+        self._touch()
+
+    def set_study_context(
+        self,
+        context: StudyRunContext | dict | None,
+    ) -> None:
+        if context is None:
+            self.study_context = None
+        elif isinstance(context, StudyRunContext):
+            self.study_context = context
+        else:
+            self.study_context = StudyRunContext.from_dict(context)
+        self._touch()
+
+    def record_study_outcome(
+        self,
+        outcome: StudyOutcome | str,
+        note: str = "",
+    ) -> None:
+        if self.study_context is None:
+            return
+        self.study_context.record_outcome(outcome, note)
         self._touch()
 
     def set_authorization_gate(self, gate_id: str, state: AuthorizationGateState | str) -> None:

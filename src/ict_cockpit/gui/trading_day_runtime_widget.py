@@ -39,6 +39,7 @@ class TradingDayRuntimeWidget(QWidget):
     live_candidate_watch_point_state_changed = Signal(str, str, str)
     post_market_interpretation_submitted = Signal(str)
     post_market_review_submitted = Signal(str, str, bool)
+    post_market_study_review_submitted = Signal(str, str)
 
     def __init__(
         self,
@@ -102,6 +103,9 @@ class TradingDayRuntimeWidget(QWidget):
         self.post_market_review_widget = PostMarketReviewWidget(blueprint)
         self.post_market_review_widget.interpretation_changed.connect(self.post_market_interpretation_submitted.emit)
         self.post_market_review_widget.review_changed.connect(self.post_market_review_submitted.emit)
+        self.post_market_review_widget.study_review_changed.connect(
+            self.post_market_study_review_submitted.emit
+        )
 
         for mode in self.modes:
             if mode.id == "tda":

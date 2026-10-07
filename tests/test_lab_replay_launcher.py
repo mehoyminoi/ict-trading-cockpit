@@ -20,6 +20,7 @@ def test_replay_launcher_enters_same_process_runtime() -> None:
     launcher = widget.process_run_launcher_widget
 
     launcher.environment_combo.setCurrentText(RunEnvironment.REPLAY.value)
+    launcher.study_question_input.setText("Practice recognizing the active setup in replay")
     assert launcher.begin_process_run() is True
 
     shell = widget.trading_day_shell_widget
@@ -49,6 +50,7 @@ def test_launcher_exposes_model_library_without_auto_selecting_models() -> None:
     assert "selected during TDA" in launcher.models_label.text()
 
     launcher.environment_combo.setCurrentText(RunEnvironment.REPLAY.value)
+    launcher.study_question_input.setText("Practice recognizing the active setup in replay")
     assert launcher.begin_process_run() is True
 
     run = widget.trading_day_shell_widget.active_trading_run
@@ -70,6 +72,7 @@ def test_models_in_play_is_visible_before_tda_focus_content() -> None:
     launcher = widget.process_run_launcher_widget
 
     launcher.environment_combo.setCurrentText(RunEnvironment.REPLAY.value)
+    launcher.study_question_input.setText("Practice recognizing the active setup in replay")
     assert launcher.begin_process_run() is True
 
     runtime = widget.trading_day_runtime_widget
@@ -89,6 +92,7 @@ def test_launcher_refuses_competing_active_process_run() -> None:
     launcher = widget.process_run_launcher_widget
 
     launcher.environment_combo.setCurrentText(RunEnvironment.REPLAY.value)
+    launcher.study_question_input.setText("Practice recognizing the active setup in replay")
     assert launcher.begin_process_run() is True
     first_run = shell.active_trading_run
     assert first_run is not None
@@ -121,6 +125,7 @@ def test_replay_launcher_stamps_explicit_new_york_market_time() -> None:
     launcher = widget.process_run_launcher_widget
 
     launcher.environment_combo.setCurrentText(RunEnvironment.REPLAY.value)
+    launcher.study_question_input.setText("Practice recognizing the active setup in replay")
     launcher.market_time_edit.setDateTime(
         QDateTime.fromString("2026-10-06 09:15", "yyyy-MM-dd HH:mm")
     )

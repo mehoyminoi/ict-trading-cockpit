@@ -2,6 +2,7 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QButtonGroup,
     QCheckBox,
+    QComboBox,
     QFrame,
     QHBoxLayout,
     QLabel,
@@ -24,6 +25,7 @@ from ict_cockpit.analysis.trading_session_run import (
     InterpretationOutcome,
     ProcessAdherence,
     RunEvidenceKind,
+    StudyOutcome,
     TradingRun,
 )
 from ict_cockpit.process_blueprint import ProcessBlueprint
@@ -34,6 +36,7 @@ class PostMarketReviewWidget(QWidget):
 
     interpretation_changed = Signal(str)
     review_changed = Signal(str, str, bool)
+    study_review_changed = Signal(str, str)
 
     def __init__(self, blueprint: ProcessBlueprint) -> None:
         super().__init__()
@@ -202,6 +205,49 @@ class PostMarketReviewWidget(QWidget):
         self.film_night_checkbox.toggled.connect(self._emit_review)
         layout.addWidget(self.film_night_checkbox)
 
+        self.study_review_frame = QFrame()
+        self.study_review_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        study_layout = QVBoxLayout(self.study_review_frame)
+        study_layout.setContentsMargins(10, 8, 10, 8)
+        study_layout.setSpacing(4)
+
+        study_heading = QLabel("Study Review")
+        study_heading.setStyleSheet("font-weight: 600;")
+        self.study_question_label = QLabel()
+        self.study_question_label.setWordWrap(True)
+        self.study_hypothesis_label = QLabel()
+        self.study_hypothesis_label.setWordWrap(True)
+        self.study_scope_label = QLabel()
+        self.study_scope_label.setWordWrap(True)
+
+        outcome_row = QHBoxLayout()
+        outcome_row.addWidget(QLabel("Study outcome"))
+        self.study_outcome_combo = QComboBox()
+        self.study_outcome_combo.addItems(
+            [item.value for item in StudyOutcome]
+        )
+        self.study_outcome_combo.currentTextChanged.connect(
+            self._emit_study_review
+        )
+        outcome_row.addWidget(self.study_outcome_combo, 1)
+
+        self.study_outcome_note_input = QLineEdit()
+        self.study_outcome_note_input.setPlaceholderText(
+            "What did this run teach you? (optional)"
+        )
+        self.study_outcome_note_input.editingFinished.connect(
+            self._emit_study_review
+        )
+
+        study_layout.addWidget(study_heading)
+        study_layout.addWidget(self.study_question_label)
+        study_layout.addWidget(self.study_hypothesis_label)
+        study_layout.addWidget(self.study_scope_label)
+        study_layout.addLayout(outcome_row)
+        study_layout.addWidget(self.study_outcome_note_input)
+        layout.addWidget(self.study_review_frame)
+        self.study_review_frame.hide()
+
         navigation = QHBoxLayout()
         self.back_to_market_button = QPushButton("← Back to Market Review")
         self.back_to_market_button.clicked.connect(self.show_market_review)
@@ -287,6 +333,26 @@ class PostMarketReviewWidget(QWidget):
                 button.setChecked(trading_run.review_process_adherence is state)
             self.takeaway_input.setText(trading_run.review_takeaway)
             self.film_night_checkbox.setChecked(trading_run.review_film_night)
+
+            study = trading_run.study_context
+            self.study_review_frame.setVisible(study is not None)
+            if study is not None:
+                self.study_question_label.setText(
+                    "Question · " + study.question
+                )
+                self.study_hypothesis_label.setText(
+                    "Hypothesis · "
+                    + (study.hypothesis or "Not specified")
+                )
+                self.study_scope_label.setText(
+                    "Scope · " + (study.scope or "Not specified")
+                )
+                self.study_outcome_combo.setCurrentText(
+                    study.outcome.value
+                )
+                self.study_outcome_note_input.setText(
+                    study.outcome_note
+                )
         finally:
             self._loading = False
 
@@ -306,6 +372,14 @@ class PostMarketReviewWidget(QWidget):
             self.adherence_group.setExclusive(True)
             self.takeaway_input.clear()
             self.film_night_checkbox.setChecked(False)
+            self.study_review_frame.hide()
+            self.study_question_label.clear()
+            self.study_hypothesis_label.clear()
+            self.study_scope_label.clear()
+            self.study_outcome_combo.setCurrentText(
+                StudyOutcome.NOT_REVIEWED.value
+            )
+            self.study_outcome_note_input.clear()
             self.show_market_review()
         finally:
             self._loading = False
@@ -334,4 +408,13 @@ class PostMarketReviewWidget(QWidget):
             self._selected_adherence().value,
             self.takeaway_input.text().strip(),
             self.film_night_checkbox.isChecked(),
+        )
+
+
+    def _emit_study_review(self, *_args) -> None:
+        if self._loading or self.study_review_frame.isHidden():
+            return
+        self.study_review_changed.emit(
+            self.study_outcome_combo.currentText(),
+            self.study_outcome_note_input.text().strip(),
         )
