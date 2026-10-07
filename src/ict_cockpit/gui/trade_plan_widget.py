@@ -72,6 +72,7 @@ class TradePlanWidget(QWidget):
         self.process_run_launcher_widget = ProcessRunLauncherWidget(
             self.trading_day_shell_widget,
             trade_plan_revision=trade_plan.revision,
+            competencies=trade_plan.competencies,
             on_launched=self.focus_runtime,
         )
 
@@ -158,6 +159,15 @@ class TradePlanWidget(QWidget):
         purpose = QLabel(section.purpose)
         purpose.setWordWrap(True)
         layout.addWidget(purpose)
+
+        competency_summary = QLabel(
+            f"Competency catalog · {len(self.trade_plan.competencies)} "
+            "plan-owned mechanic(s) available for targeted study."
+        )
+        competency_summary.setWordWrap(True)
+        competency_summary.setFrameShape(QFrame.Shape.StyledPanel)
+        competency_summary.setContentsMargins(8, 6, 8, 6)
+        layout.addWidget(competency_summary)
 
         launcher_heading = QLabel("Lab / Replay")
         launcher_heading.setStyleSheet("font-weight: 600;")
