@@ -160,7 +160,9 @@ def test_situation_brief_line_preserves_separate_dimensions() -> None:
     line = candidate_opportunity_line(brief.candidates[0])
     summary = situation_brief_summary(brief)
 
-    assert "ACTIVE · Silver Bullet Model · DEVELOPING" in line
+    assert "ACTIVE · NYAM Silver Bullet" in line
+    assert "Silver Bullet Model" in line
+    assert "DEVELOPING" in line
     assert "criteria 1/3 (required 3)" in line
     assert "BLOCKED" in line
     assert "NYAM" in summary
