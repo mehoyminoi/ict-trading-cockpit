@@ -166,15 +166,11 @@ def candidate_opportunity_line(item: CandidateOpportunityState) -> str:
 
     progress = ""
     if item.criteria_total:
-        required = (
-            f"/{item.criteria_required}"
-            if item.criteria_required is not None
-            else ""
-        )
         progress = (
             f" · criteria {item.criteria_satisfied}/{item.criteria_total}"
-            + (f" (need {item.criteria_required}{required if False else ''})" if False else "")
         )
+        if item.criteria_required is not None:
+            progress += f" (required {item.criteria_required})"
     if item.watch_points_total:
         progress += (
             f" · watch {item.watch_points_occurred}/{item.watch_points_total}"
