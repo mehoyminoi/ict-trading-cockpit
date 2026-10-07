@@ -242,3 +242,96 @@ def qt_interpretation_provenance(
         else:
             provenance[level_id] = "Technician"
     return provenance
+
+
+def raw_quarter_stack_relevance(
+    market_time_context: dict | None,
+    *,
+    min_count: int = 2,
+) -> tuple[dict, ...]:
+    """Describe repeated raw-quarter alignments without assigning significance.
+
+    A returned alignment is factual context only. Count, direction, probability,
+    ranking, and authorization meaning belong to future Trade Plan/evidence rules.
+    """
+
+    minimum = max(int(min_count), 2)
+    market = dict(market_time_context or {})
+    raw = dict(market.get("raw_quarters", {}) or {})
+    labels = dict(RAW_QT_STACK_LEVELS)
+
+    grouped: dict[str, list[str]] = {quarter: [] for quarter in ("Q1", "Q2", "Q3", "Q4")}
+    for level_id, _label in RAW_QT_STACK_LEVELS:
+        quarter = str(raw.get(level_id, "")).strip()
+        if quarter in grouped:
+            grouped[quarter].append(level_id)
+
+    alignments = []
+    for quarter in ("Q1", "Q2", "Q3", "Q4"):
+        level_ids = grouped[quarter]
+        if len(level_ids) < minimum:
+            continue
+        alignments.append(
+            {
+                "quarter": quarter,
+                "count": len(level_ids),
+                "level_ids": tuple(level_ids),
+                "level_labels": tuple(labels[level_id] for level_id in level_ids),
+                "kind": "Raw Quarter Alignment",
+                "meaning": "Descriptive only",
+            }
+        )
+
+    return tuple(
+        sorted(
+            alignments,
+            key=lambda item: (-int(item["count"]), str(item["quarter"])),
+        )
+    )
+
+
+def raw_quarter_stack_relevance_summary(
+    market_time_context: dict | None,
+    *,
+    min_count: int = 2,
+) -> str:
+    alignments = raw_quarter_stack_relevance(
+        market_time_context,
+        min_count=min_count,
+    )
+    if not alignments:
+        return "No repeated raw-quarter alignment"
+
+    parts = []
+    for item in alignments:
+        layers = ", ".join(item["level_labels"])
+        parts.append(
+            f"{item['quarter']}×{item['count']} ({layers})"
+        )
+    return " · ".join(parts)
+
+
+def raw_quarter_stack_relevance_tooltip(
+    market_time_context: dict | None,
+    *,
+    min_count: int = 2,
+) -> str:
+    alignments = raw_quarter_stack_relevance(
+        market_time_context,
+        min_count=min_count,
+    )
+    if not alignments:
+        return (
+            "No Q1–Q4 value currently repeats across two or more assigned raw QT layers."
+        )
+
+    lines = [
+        "Raw QT alignment reference",
+        "Descriptive context only — no directional, probability, ranking, or authorization meaning is assigned.",
+    ]
+    for item in alignments:
+        lines.append(
+            f"{item['quarter']} × {item['count']}: "
+            + ", ".join(item["level_labels"])
+        )
+    return "\n".join(lines)
