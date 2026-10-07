@@ -55,7 +55,7 @@ def select_silver_bullet(shell: TradingDayShellWidget):
 
 def test_default_trade_plan_exposes_declarative_playbooks() -> None:
     plan = build_default_trade_plan()
-    assert plan.revision == "Alpha 0.5"
+    assert plan.revision == "Alpha 0.6"
     assert [playbook.id for playbook in plan.playbooks] == ["2022-mentorship", "silver-bullet"]
     assert [gate.id for gate in plan.authorization_gates] == [
         "trading-day-permitted",
@@ -64,8 +64,13 @@ def test_default_trade_plan_exposes_declarative_playbooks() -> None:
     ]
     silver_bullet = plan.playbook_by_id("silver-bullet")
     assert silver_bullet is not None
-    assert silver_bullet.revision == "Alpha 0.2"
+    assert silver_bullet.revision == "Alpha 0.3"
     assert silver_bullet.required_entry_count == 3
+    assert silver_bullet.timed_window_ids == (
+        "london-silver-bullet",
+        "nyam-silver-bullet",
+        "nypm-silver-bullet",
+    )
     assert len(silver_bullet.entry_criteria) == 3
     assert silver_bullet.watch_point_templates[0].satisfies_criterion_ids == ("fvg-direction",)
     assert "79%" in silver_bullet.risk_summary
@@ -81,6 +86,11 @@ def test_playbook_snapshot_round_trip_is_data_only() -> None:
     assert isinstance(snapshot["entry_criteria"], list)
     assert isinstance(snapshot["watch_point_templates"], list)
     assert snapshot["watch_point_templates"][0]["satisfies_criterion_ids"] == ["fvg-direction"]
+    assert snapshot["timed_window_ids"] == [
+        "london-silver-bullet",
+        "nyam-silver-bullet",
+        "nypm-silver-bullet",
+    ]
 
 
 def test_schema_v22_adds_authorization_and_market_time_storage(tmp_path) -> None:
@@ -212,6 +222,16 @@ def test_candidate_becomes_authorized_only_after_setup_and_plan_gates_clear() ->
     run = shell.active_trading_run
     assert run is not None
     candidate = select_silver_bullet(shell)
+    run.market_time_context = {
+        "timed_windows": [
+            {
+                "id": "nyam-silver-bullet",
+                "name": "NYAM Silver Bullet",
+                "state": "Active",
+                "minutes_until_start": 0,
+            }
+        ]
+    }
     shell.runtime.apply_transition("finish-tda", override_incomplete=True)
     live = shell.runtime.live_watch_widget
 
@@ -252,16 +272,19 @@ def test_blocked_plan_gate_overrides_complete_setup() -> None:
 
 def test_run_keeps_snapshot_when_current_definition_changes() -> None:
     plan = build_default_trade_plan()
-    original = plan.playbook_by_id("silver-bullet")
-    assert original is not None
+    current = plan.playbook_by_id("silver-bullet")
+    assert current is not None
+    old_payload = current.to_snapshot()
+    old_payload["revision"] = "Alpha 0.2"
+    old_payload.pop("timed_window_ids", None)
+
     run = TradingRun("day-1", "Trading Run 1", "process-1")
-    run.sync_playbook_candidates([original.to_snapshot()])
-    candidate = run.playbook_candidate(original.id)
+    run.sync_playbook_candidates([old_payload])
+    candidate = run.playbook_candidate(current.id)
     assert candidate is not None
-    changed_payload = original.to_snapshot()
-    changed_payload["risk_summary"] = "A later revision changed this rule."
-    changed_payload["revision"] = "Alpha 0.3"
-    changed = PlaybookDefinition.from_snapshot(changed_payload)
-    assert changed.revision == "Alpha 0.3"
+
+    assert current.revision == "Alpha 0.3"
+    assert current.timed_window_ids
     assert candidate.source_revision == "Alpha 0.2"
+    assert "timed_window_ids" not in candidate.definition_snapshot
     assert "79%" in candidate.definition_snapshot["risk_summary"]
