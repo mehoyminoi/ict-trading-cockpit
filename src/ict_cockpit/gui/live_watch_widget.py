@@ -16,7 +16,6 @@ from PySide6.QtWidgets import (
 from ict_cockpit.analysis.market_time import temporal_relevance_for
 from ict_cockpit.analysis.quarter_theory import (
     qt_context_summary,
-    raw_quarter_alignment,
     raw_quarter_contextual_summary,
     raw_quarter_provenance_tooltip,
     raw_quarter_stack_relevance_summary,
