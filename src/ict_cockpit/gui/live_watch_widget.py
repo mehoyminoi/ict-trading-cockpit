@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from ict_cockpit.analysis.attention_cues import build_attention_cue
 from ict_cockpit.analysis.market_time import temporal_relevance_for
 from ict_cockpit.analysis.opportunity_synthesis import (
     build_opportunity_situation_brief,
@@ -80,11 +81,17 @@ class LiveWatchWidget(QWidget):
         situation_layout.setSpacing(3)
         situation_heading = QLabel("Opportunity Situation Brief")
         situation_heading.setStyleSheet("font-weight: 600;")
+        self.attention_cue_label = QLabel(
+            "QUIET · no configured timed opportunity needs immediate attention"
+        )
+        self.attention_cue_label.setWordWrap(True)
+        self.attention_cue_label.setStyleSheet("font-weight: 700;")
         self.situation_summary_label = QLabel("No active Trading Run context")
         self.situation_summary_label.setWordWrap(True)
         self.situation_candidates_label = QLabel("No setup candidates in play")
         self.situation_candidates_label.setWordWrap(True)
         situation_layout.addWidget(situation_heading)
+        situation_layout.addWidget(self.attention_cue_label)
         situation_layout.addWidget(self.situation_summary_label)
         situation_layout.addWidget(self.situation_candidates_label)
 
@@ -253,6 +260,11 @@ class LiveWatchWidget(QWidget):
         self.qt_summary_label.setText("QT / AMDX · No interpretation recorded")
         self.raw_qt_stack_label.setText("Raw QT stack · Not available")
         self.qt_stack_watch_label.setText("QT stack watch · No repeated raw-quarter alignment")
+        self.attention_cue_label.setText(
+            "QUIET · no configured timed opportunity needs immediate attention"
+        )
+        self.attention_cue_label.setToolTip("")
+        self.attention_cue_label.setProperty("attentionLevel", "quiet")
         self.situation_summary_label.setText("No active Trading Run context")
         self.situation_candidates_label.setText("No setup candidates in play")
         self._clear_layout(self.authorization_layout)
@@ -300,6 +312,13 @@ class LiveWatchWidget(QWidget):
         brief = build_opportunity_situation_brief(
             trading_run,
             tda_session,
+        )
+        cue = build_attention_cue(trading_run)
+        self.attention_cue_label.setText(cue.headline)
+        self.attention_cue_label.setToolTip(cue.detail)
+        self.attention_cue_label.setProperty(
+            "attentionLevel",
+            cue.style_key,
         )
         self.situation_summary_label.setText(
             situation_brief_summary(brief)
