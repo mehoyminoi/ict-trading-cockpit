@@ -196,7 +196,7 @@ def build_opportunity_situation_brief(
 
 def candidate_opportunity_line(item: CandidateOpportunityState) -> str:
     temporal = item.temporal_state.upper()
-    if item.temporal_state == "Upcoming" and item.temporal_detail:
+    if item.temporal_state in {"Active", "Upcoming"} and item.temporal_detail:
         temporal += " · " + item.temporal_detail
 
     progress = ""
