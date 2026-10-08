@@ -1202,6 +1202,53 @@ Revision control is cross-cutting architecture, not a standalone feature destina
 
 ---
 
+# 33A. Stable revision vs candidate revision
+
+Trade Plan revisioning protects a known-good system while allowing deliberate experimentation beside it.
+
+Example:
+
+```text
+rX — stable / trusted
+- profitable/successful operating baseline
+- exact models, competencies, rules, and process remain fixed
+- historical evidence keeps its original meaning
+
+        ↓ branch/evolve deliberately
+
+rY — candidate
+- add a model
+- add a competency
+- refine a rule
+- collect new Study/Rehearsal/Validation evidence
+- compare against rX before deciding whether rY should become trusted
+```
+
+The important rule is:
+
+> Development of rY must never rewrite what rX meant.
+
+That applies particularly to competency evidence.
+
+If a competency definition is identical in rX and rY, evidence from both revisions may remain meaningfully comparable.
+
+If the competency definition changes, older evidence remains valid evidence of performance against the **old definition**. It does not silently become evidence of the revised skill.
+
+If rY adds an entirely new competency, pre-rY records do not automatically count toward it. A future retrospective mapping tool may inspect old records, but any mapping must be explicit and preserve both original and retrospective provenance.
+
+This is why Trade Plan revision identity is not merely an audit field. It is part of the Cockpit's experimental method:
+
+```text
+What was the trusted system?
+What changed in the candidate?
+Which evidence belongs to which definition?
+Did the change actually improve the system?
+```
+
+Competency Synthesis should therefore preserve revision provenance while avoiding noisy warnings based only on whole-plan revision differences. A meaningful caution requires evidence that the competency definition itself changed.
+
+---
+
 # 34. Why historical truth matters
 
 Suppose Trade Plan Alpha 0.7 permits one interpretation and Alpha 0.8 changes it.
