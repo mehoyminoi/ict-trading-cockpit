@@ -149,6 +149,28 @@ Next action: run the full automated suite locally. If green, manually create/rev
 
 If accepted, the next decision is whether the first active consumption behavior should be a lightweight **Study this competency** route from evidence back into a pre-focused Lab launcher, or whether the evidence presentation needs refinement first.
 
+## Accepted upcoming documentation slice
+
+At the next convenient documentation checkpoint after the current competency-evidence review slice, create a human-readable `docs/SYSTEM_GUIDE.md`.
+
+Its purpose is to explain the Cockpit as a coherent system rather than as a backlog or implementation log. It should include:
+
+- canonical terminology and definitions,
+- subsystem purposes and ownership boundaries,
+- whole-system architecture diagrams,
+- daily operating-loop diagrams,
+- Study/Rehearsal/Validation/Execution progression loops,
+- competency Definition / State / Evidence relationships,
+- environment vs eligibility vs account-context distinctions,
+- Playbook / opportunity / authorization relationships,
+- revision/provenance concepts,
+- current paper-doll UI controls versus the underlying domain concepts,
+- examples showing how newly adopted concepts can be added to later Trade Plan revisions and begin accumulating new evidence.
+
+The guide should be maintained when terminology, ownership boundaries, or major system loops materially change. It should remain explanatory and must not supersede `PROJECT_REQUIREMENTS.md`, `DECISIONS.md`, `PROJECT_STATE.md`, or verified implementation.
+
+This is intentionally scheduled for the next convenient documentation opportunity rather than interrupting the current evidence-review validation slice.
+
 ## Continuity protocol
 
 For every substantial feature slice, update this file before the slice is considered complete.
