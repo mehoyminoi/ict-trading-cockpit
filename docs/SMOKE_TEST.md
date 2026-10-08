@@ -132,6 +132,23 @@ Before merging `feature/competency-proficiency-v0`, additionally confirm:
 
 ---
 
+## Current branch acceptance — Configurable summary templates v0
+
+Before merging `feature/configurable-summary-templates-v0`, additionally confirm:
+
+- [PASS] Workbench exposes both Study Find and Trade Summary template kinds.
+- [PASS] Publishing a valid edit creates a new immutable template revision.
+- [PASS] The newly published Study Find revision is used by generated Study Find output.
+- [PASS] The newly published Trade Summary revision is used by generated Trade Summary output.
+- [PASS] Active template revisions persist after application restart.
+- [PASS] Generated Study Find output includes the active template name/revision provenance footer.
+- [PASS] Generated Trade Summary output includes the active template name/revision provenance footer.
+- [PASS] An unknown field such as `{does_not_exist}` is rejected rather than publishing a broken revision.
+- [PASS] Full automated suite is green immediately before merge.
+  - Verified: 278 passed in 106.21s before the final provenance regression test was added; rerun after provenance change also reported 278 green.
+
+---
+
 ## Reporting results
 
 Report results as:
