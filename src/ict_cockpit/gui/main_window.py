@@ -12,6 +12,9 @@ from ict_cockpit.app_info import APP_VERSION, window_title
 from ict_cockpit.database.competency_assessment_repository import (
     CompetencyAssessmentRepository,
 )
+from ict_cockpit.database.competency_evidence_repository import (
+    CompetencyEvidenceRepository,
+)
 from ict_cockpit.database.feedback_repository import FeedbackRepository
 from ict_cockpit.database.study_find_repository import StudyFindRepository
 from ict_cockpit.database.summary_template_repository import (
@@ -76,6 +79,9 @@ class MainWindow(QMainWindow):
             CompetencyAssessmentRepository(
                 study_find_repository.connection
             )
+        )
+        self.competency_evidence_repository = CompetencyEvidenceRepository(
+            study_find_repository.connection
         )
         self.summary_template_repository = SummaryTemplateRepository(
             study_find_repository.connection
@@ -347,6 +353,10 @@ class MainWindow(QMainWindow):
 
     def save_trading_session_run(self, session_run) -> None:
         self.trading_session_run_repository.save(session_run)
+        self.competency_evidence_repository.replace_from_study_review(
+            trade_plan_id=self.trade_plan.id,
+            trading_run=session_run,
+        )
         self.status_bar.showMessage(
             f"{session_run.session_name} Trading Run saved",
             1200,
