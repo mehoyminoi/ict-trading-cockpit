@@ -1,6 +1,6 @@
 # Competency Synthesis Panel — v0 Design Candidate
 
-**Status:** Design candidate for operator review
+**Status:** Accepted for v0 implementation
 **Milestone:** B — Review / Development synthesis
 
 ## Purpose
@@ -119,11 +119,16 @@ The panel should make Trade Plan revision context visible enough to prevent acci
 v0 recommendation:
 
 - show the active/current Trade Plan revision for the competency definition,
-- retain per-evidence revision in record detail,
-- show a warning only if displayed evidence includes more than one Trade Plan revision,
-- do not automatically exclude older evidence yet.
+- retain per-evidence Trade Plan revision in record detail,
+- keep older-revision evidence visible rather than silently filtering or remapping it,
+- **do not warn merely because evidence spans multiple Trade Plan revisions**,
+- reserve a visible caution for the materially different case where the competency definition itself changed across those revisions.
 
-This preserves historical visibility without silently treating old and new definitions as equivalent.
+A whole Trade Plan revision can change for unrelated reasons while a competency definition remains identical. A generic mixed-revision warning would therefore be noisy and imprecise.
+
+The stronger future requirement is competency-definition-level provenance: the Cockpit should eventually be able to distinguish "same competency definition under different Trade Plan revisions" from "the competency meaning/criteria changed." Until that provenance exists, v0 should preserve revision detail without pretending it can make that distinction automatically.
+
+Historical evidence remains historically valid, but it must never be silently reinterpreted under a later changed competency definition.
 
 ## UI constraint
 
@@ -147,7 +152,7 @@ If accepted, implement only:
 - current Development Direction + note + linked-evidence count,
 - descriptive evidence coverage by purpose and outcome,
 - oldest/newest reviewed evidence timestamps,
-- mixed-Trade-Plan-revision warning when applicable,
+- per-evidence Trade Plan revision provenance without a generic mixed-revision warning,
 - explicit 'descriptive only' language,
 - reuse existing evidence history and Study routing.
 
@@ -166,7 +171,21 @@ Do not add:
 
 1. Does **Competency Synthesis** feel like the right name for this compact competency-level reading surface?
 2. Is evidence coverage by purpose/outcome useful without feeling like a scorecard?
-3. Should mixed Trade Plan revisions trigger a visible caution in v0?
-4. Is it correct to leave older-revision evidence visible rather than filtering it automatically?
+3. **Resolved:** mixed Trade Plan revisions alone do not trigger a warning; a future warning should depend on competency-definition change provenance.
+4. **Resolved:** older-revision evidence remains visible and is not silently reinterpreted or filtered.
 5. Should the panel show oldest/newest evidence dates, or is that unnecessary detail at this stage?
 6. Does the proposed compact/header-style presentation feel like the right response to the recent vertical-space problem?
+
+
+## Operator acceptance
+
+Accepted on 2026-10-08.
+
+Confirmed:
+
+- **Competency Synthesis** is an appropriate name.
+- Purpose/outcome coverage is useful when presented descriptively rather than as a score.
+- Older evidence should remain visible.
+- Generic mixed-Trade-Plan warnings are too coarse.
+- Historical evidence must not be silently reinterpreted when a competency definition changes.
+- Stable/proven Trade Plan revisions must remain protected while later candidate revisions are developed and evaluated.
