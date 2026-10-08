@@ -164,6 +164,24 @@ Before merging `feature/competency-evidence-v0`, additionally confirm:
 
 ---
 
+## Current branch acceptance — Competency evidence Review / Development v0
+
+Before merging `feature/competency-evidence-review-v0`, additionally confirm:
+
+- [PASS] Full automated test suite is green.
+  - Operator confirmed green on 2026-10-08.
+- [PASS] Trade Plan -> Review / Development shows the Competency Evidence panel.
+- [PASS] Newly reviewed focused competency evidence appears in the panel.
+- [PASS] Evidence detail shows understandable competency, environment/purpose, outcome, Trade Plan revision, question/scope, and review note context.
+- [PASS] All Competencies shows accumulated evidence across competencies.
+- [PASS] Filtering to one competency limits the records correctly.
+- [PASS] Summary counts are understandable.
+- [PASS] The panel reads as evidence/history rather than a scorecard and does not silently change proficiency or eligibility.
+- [PASS] Operator reports no current implementation/function concerns with this surface.
+
+
+---
+
 ## Reporting results
 
 Report results as:

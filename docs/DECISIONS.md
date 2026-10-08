@@ -164,3 +164,44 @@ Re-reviewing the same run+competency updates/replaces that evidence rather than 
 **Rationale:** the project needs trustworthy observations before it can justify proficiency scoring, state transitions, or progression rules.
 
 **Consequence / deferred behavior:** evidence creation does not automatically change `CompetencyState`, proficiency, eligibility, or Evidence Maturity. Those interpretations remain later work.
+
+
+## 2026-10-08 — Human-readable system guide will accompany canonical project docs
+
+**Status:** Accepted
+
+Create `docs/SYSTEM_GUIDE.md` at the next convenient documentation checkpoint.
+
+Its role is explanatory: give the operator a coherent mental model of the Cockpit using definitions, system-purpose descriptions, architecture diagrams, operating loops, learning/progression loops, sub-loop flowcharts, source-of-truth relationships, and examples of current paper-doll controls versus the underlying domain model.
+
+The guide should help prevent accidental scope drift caused by imprecise terminology as the architecture grows.
+
+A key example it should explain is competency extensibility:
+
+- competency definitions are Trade Plan-owned and revisioned,
+- a newly adopted ICT concept can become a new competency in a later Trade Plan revision,
+- from that revision forward the shared competency catalog can expose it to Study/Rehearsal/Validation focus and evidence capture,
+- historical records are not silently retrofitted unless an explicit migration/mapping rule is created,
+- evidence and derived metrics may later support progression decisions, but the Cockpit must not invent readiness rules merely because a competency exists.
+
+**Rationale:** the full architecture is now large enough that requirements, state, decisions, and evolution documents are individually correct but do not provide a single human-readable conceptual map.
+
+**Consequence:** `SYSTEM_GUIDE.md` will be maintained when terminology, subsystem relationships, ownership boundaries, or major system loops materially change. It will remain explanatory and will not replace canonical requirements, decisions, current state, or implementation.
+
+
+## 2026-10-08 — Competency evidence is surfaced before it is scored
+
+**Status:** Accepted
+
+Review / Development should first present accumulated competency evidence as human-legible history before the Cockpit attempts to derive proficiency, Evidence Maturity, or eligibility conclusions.
+
+The accepted v0 surface supports:
+
+- all-competency evidence review,
+- filtering by plan-owned competency,
+- compact counts by environment purpose and reviewed outcome,
+- detailed provenance for an individual evidence record.
+
+**Rationale:** the operator should be able to inspect and challenge the underlying observations before later aggregation or progression rules are trusted.
+
+**Consequence / deferred behavior:** evidence counts and outcomes are descriptive. They do not yet constitute a score, competency-state transition, Evidence Maturity judgment, or progression decision.

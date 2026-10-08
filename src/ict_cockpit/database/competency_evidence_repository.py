@@ -130,6 +130,22 @@ class CompetencyEvidenceRepository:
         ).fetchall()
         return [self._from_row(row) for row in rows]
 
+    def list_for_plan(self, trade_plan_id: str) -> list[CompetencyEvidence]:
+        rows = self.connection.execute(
+            """
+            SELECT id, trade_plan_id, trade_plan_revision, competency_id,
+                   competency_name, competency_category, trading_run_id,
+                   run_environment, run_purpose, study_outcome, note,
+                   study_question, study_hypothesis, study_scope,
+                   market_time_context_json, qt_context_json, source, recorded_at
+            FROM competency_evidence
+            WHERE trade_plan_id = ?
+            ORDER BY recorded_at DESC, id
+            """,
+            (trade_plan_id,),
+        ).fetchall()
+        return [self._from_row(row) for row in rows]
+
     def list_for_run(self, trading_run_id: str) -> list[CompetencyEvidence]:
         rows = self.connection.execute(
             """

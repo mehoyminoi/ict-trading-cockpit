@@ -10,6 +10,12 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from ict_cockpit.database.competency_evidence_repository import (
+    CompetencyEvidenceRepository,
+)
+from ict_cockpit.gui.competency_evidence_review_widget import (
+    CompetencyEvidenceReviewWidget,
+)
 from ict_cockpit.gui.process_blueprint_widget import ProcessBlueprintWidget
 from ict_cockpit.gui.process_run_launcher_widget import ProcessRunLauncherWidget
 from ict_cockpit.gui.trading_day_shell_widget import TradingDayShellWidget
@@ -23,9 +29,15 @@ from ict_cockpit.trade_plan import (
 class TradePlanWidget(QWidget):
     """Alpha shell for the trading system and its executable process."""
 
-    def __init__(self, trade_plan: TradePlanDefinition) -> None:
+    def __init__(
+        self,
+        trade_plan: TradePlanDefinition,
+        competency_evidence_repository: CompetencyEvidenceRepository | None = None,
+    ) -> None:
         super().__init__()
         self.trade_plan = trade_plan
+        self.competency_evidence_repository = competency_evidence_repository
+        self.competency_evidence_review_widget = None
 
         self.title_label = QLabel(f"{trade_plan.name} — {trade_plan.revision}")
         self.title_label.setStyleSheet("font-size: 18px; font-weight: 600;")
@@ -109,6 +121,11 @@ class TradePlanWidget(QWidget):
 
     def _section_changed(self, row: int) -> None:
         self.stack.setCurrentIndex(row)
+        if (
+            self.selected_section_id == "review-development"
+            and self.competency_evidence_review_widget is not None
+        ):
+            self.competency_evidence_review_widget.refresh()
         process_active = self.selected_section_id == "process"
         self.title_label.setVisible(not process_active)
         self.subtitle_label.setVisible(not process_active)
@@ -168,6 +185,13 @@ class TradePlanWidget(QWidget):
         competency_summary.setFrameShape(QFrame.Shape.StyledPanel)
         competency_summary.setContentsMargins(8, 6, 8, 6)
         layout.addWidget(competency_summary)
+
+        if self.competency_evidence_repository is not None:
+            self.competency_evidence_review_widget = CompetencyEvidenceReviewWidget(
+                self.trade_plan,
+                self.competency_evidence_repository,
+            )
+            layout.addWidget(self.competency_evidence_review_widget)
 
         launcher_heading = QLabel("Lab / Replay")
         launcher_heading.setStyleSheet("font-weight: 600;")

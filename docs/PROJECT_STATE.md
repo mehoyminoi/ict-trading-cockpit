@@ -6,15 +6,15 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `feature/competency-evidence-v0`
-- **Main baseline:** `c243074c4a204ca1e91fa84e15b2844442747c58` — PR #29 merged roadmap reconciliation / hardened handoff
+- **Active branch:** `feature/competency-evidence-review-v0`
+- **Main baseline:** `c190b037dd994d21e01b260328c41c1787f1eaea` — PR #30 merged competency evidence substrate v0
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Milestone A — competency evidence loop v0
+- **Current slice:** Milestone A — competency evidence Review / Development surface v0
 - **Schema:** v28
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** full v28 competency-evidence suite green on 2026-10-08 (exact count not separately recorded)
-- **Manual smoke test:** competency evidence v0 acceptance PASS — focused Historical Backtest / Study review completed normally with no visible workflow regression.
+- **Manual smoke test:** competency evidence Review / Development v0 acceptance PASS — evidence panel, details, all-competency view, filtering, summary counts, and non-scorecard semantics manually verified.
 
 ## Current completed slice — Competency / Proficiency substrate v0
 
@@ -127,29 +127,48 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-Milestone A — competency evidence v0 is **acceptance-complete and ready for PR/merge**.
+Milestone A — competency evidence Review / Development v0 is **acceptance-complete and ready for PR/merge**.
 
 Accepted behavior:
 
-- first-class `CompetencyEvidence` remains separate from competency definition and mutable competency state,
-- schema v28 persists one evidence record per reviewed Trading Run + focused competency,
-- evidence preserves run/environment/purpose, Trade Plan revision, study question/hypothesis/scope/outcome/note, competency identity, market-time context, and QT context,
-- re-review replaces the current run+competency evidence rather than duplicating one observation,
-- evidence is materialized through the existing Study Review save path,
-- retrieval exists by Trading Run and by competency,
-- no score, automatic competency-state mutation, promotion/demotion, eligibility change, weighting, or Evidence Maturity threshold has been introduced,
+- Review / Development surfaces accumulated competency evidence in a read-only human-legible panel,
+- evidence can be viewed across all competencies or filtered to one plan-owned competency,
+- compact counts summarize environment purpose and reviewed outcome without asserting proficiency,
+- selected evidence preserves useful context such as Trade Plan revision, Study question/hypothesis/scope, review note, and Trading Run identity,
+- entering Review / Development refreshes the evidence view,
+- no competency score, automatic state change, eligibility decision, or maturity threshold is introduced,
 - full automated suite is green,
-- operator manual acceptance passed.
+- operator manual acceptance passed with no current implementation/function concerns.
 
 Next action:
 
-1. inspect branch diff,
-2. open PR for `feature/competency-evidence-v0`,
-3. merge only this accepted evidence substrate,
-4. sync `main`,
-5. start the next Milestone A slice from the accepted evidence model rather than adding scoring prematurely.
+1. inspect the branch diff,
+2. open and merge the accepted Review / Development evidence slice,
+3. sync `main`,
+4. use the now-convenient documentation checkpoint to create `docs/SYSTEM_GUIDE.md`,
+5. after the guide is reviewed, return to Milestone A and decide the first active evidence-consumption behavior (likely a lightweight route from a competency/evidence view back into targeted Study, still without automatic proficiency interpretation).
 
-The likely next design question is how Review / Development should **surface and consume** accumulated evidence without yet converting it into automatic state/progression decisions.
+## Accepted upcoming documentation slice
+
+At the next convenient documentation checkpoint after the current competency-evidence review slice, create a human-readable `docs/SYSTEM_GUIDE.md`.
+
+Its purpose is to explain the Cockpit as a coherent system rather than as a backlog or implementation log. It should include:
+
+- canonical terminology and definitions,
+- subsystem purposes and ownership boundaries,
+- whole-system architecture diagrams,
+- daily operating-loop diagrams,
+- Study/Rehearsal/Validation/Execution progression loops,
+- competency Definition / State / Evidence relationships,
+- environment vs eligibility vs account-context distinctions,
+- Playbook / opportunity / authorization relationships,
+- revision/provenance concepts,
+- current paper-doll UI controls versus the underlying domain concepts,
+- examples showing how newly adopted concepts can be added to later Trade Plan revisions and begin accumulating new evidence.
+
+The guide should be maintained when terminology, ownership boundaries, or major system loops materially change. It should remain explanatory and must not supersede `PROJECT_REQUIREMENTS.md`, `DECISIONS.md`, `PROJECT_STATE.md`, or verified implementation.
+
+This is intentionally scheduled for the next convenient documentation opportunity rather than interrupting the current evidence-review validation slice.
 
 ## Continuity protocol
 
