@@ -170,14 +170,7 @@ class CompetencyEvidenceReviewWidget(QWidget):
 
         if not evidence:
             self.study_this_button.setEnabled(bool(competency_id))
-            label = (
-                self.competency_combo.currentText()
-                if competency_id
-                else "the current Trade Plan"
-            )
-            self.summary_label.setText(
-                f"No reviewed competency evidence recorded for {label}."
-            )
+            self._render_synthesis_summary([], competency_id)
             self.evidence_list.addItem("No evidence yet")
             self.evidence_list.item(0).setData(256, "")
             self.detail_label.setText(
@@ -187,18 +180,7 @@ class CompetencyEvidenceReviewWidget(QWidget):
             self._refresh_development_editor()
             return
 
-        outcomes = Counter(item.study_outcome for item in evidence)
-        environments = Counter(item.run_purpose for item in evidence)
-        outcome_text = " · ".join(
-            f"{name}: {count}" for name, count in sorted(outcomes.items())
-        )
-        environment_text = " · ".join(
-            f"{name}: {count}" for name, count in sorted(environments.items())
-        )
-        self.summary_label.setText(
-            f"{len(evidence)} evidence record(s) · {environment_text}\n"
-            f"Reviewed outcomes · {outcome_text}"
-        )
+        self._render_synthesis_summary(evidence, competency_id)
 
         for item in evidence:
             recorded = self._format_recorded_at(item.recorded_at)
@@ -215,6 +197,108 @@ class CompetencyEvidenceReviewWidget(QWidget):
         self.evidence_list.setCurrentRow(0)
         self.study_this_button.setEnabled(True)
         self._refresh_development_editor()
+
+    def _render_synthesis_summary(
+        self,
+        evidence,
+        competency_id: str,
+    ) -> None:
+        if not competency_id:
+            if not evidence:
+                self.summary_label.setText(
+                    "No reviewed competency evidence recorded for the current Trade Plan."
+                )
+                return
+            outcomes = Counter(item.study_outcome for item in evidence)
+            environments = Counter(item.run_purpose for item in evidence)
+            outcome_text = " · ".join(
+                f"{name}: {count}" for name, count in sorted(outcomes.items())
+            )
+            environment_text = " · ".join(
+                f"{name}: {count}" for name, count in sorted(environments.items())
+            )
+            self.summary_label.setText(
+                f"{len(evidence)} evidence record(s) · {environment_text}\n"
+                f"Reviewed outcomes · {outcome_text}"
+            )
+            return
+
+        competency = next(
+            (
+                item
+                for item in self.trade_plan.competencies
+                if item.id == competency_id
+            ),
+            None,
+        )
+        competency_name = competency.name if competency is not None else competency_id
+        competency_category = competency.category if competency is not None else ""
+
+        current_direction = None
+        if self.development_direction_repository is not None:
+            current_direction = self.development_direction_repository.get(
+                self.trade_plan.id,
+                competency_id,
+            )
+
+        direction_text = (
+            current_direction.direction.value
+            if current_direction is not None
+            else "Not recorded"
+        )
+        linked_count = (
+            len(current_direction.supporting_evidence_ids)
+            if current_direction is not None
+            else 0
+        )
+
+        if not evidence:
+            self.summary_label.setText(
+                f"Competency Synthesis · {competency_name}"
+                + (f" · {competency_category}" if competency_category else "")
+                + f" · Trade Plan {self.trade_plan.revision}\n"
+                f"Development Direction · {direction_text} · "
+                f"supporting evidence: {linked_count}\n"
+                "Evidence coverage · no reviewed evidence recorded\n"
+                "Descriptive coverage only · no proficiency, Evidence Maturity, "
+                "or eligibility conclusion is inferred."
+            )
+            return
+
+        outcomes = Counter(item.study_outcome for item in evidence)
+        purposes = Counter(item.run_purpose for item in evidence)
+        purpose_text = " · ".join(
+            f"{name}: {count}" for name, count in sorted(purposes.items())
+        )
+        outcome_text = " · ".join(
+            f"{name}: {count}" for name, count in sorted(outcomes.items())
+        )
+
+        parsed_times = []
+        for item in evidence:
+            try:
+                parsed_times.append(datetime.fromisoformat(item.recorded_at))
+            except (TypeError, ValueError):
+                continue
+        if parsed_times:
+            oldest = min(parsed_times).strftime("%Y-%m-%d")
+            newest = max(parsed_times).strftime("%Y-%m-%d")
+            range_text = f"{oldest} -> {newest}"
+        else:
+            range_text = "Unknown"
+
+        self.summary_label.setText(
+            f"Competency Synthesis · {competency_name}"
+            + (f" · {competency_category}" if competency_category else "")
+            + f" · Trade Plan {self.trade_plan.revision}\n"
+            f"Development Direction · {direction_text} · "
+            f"supporting evidence: {linked_count}\n"
+            f"Evidence coverage · {len(evidence)} reviewed · {purpose_text}\n"
+            f"Reviewed outcomes · {outcome_text}\n"
+            f"Evidence range · {range_text}\n"
+            "Descriptive coverage only · no proficiency, Evidence Maturity, "
+            "or eligibility conclusion is inferred."
+        )
 
     def _selection_changed(self) -> None:
         self._render_selected()
@@ -361,6 +445,12 @@ class CompetencyEvidenceReviewWidget(QWidget):
             supporting_evidence_ids=supporting_evidence_ids,
         )
         self.development_direction_repository.save(item)
+        competency_id_for_summary = self._selected_competency_id()
+        if competency_id_for_summary:
+            self._render_synthesis_summary(
+                list(self._evidence_by_id.values()),
+                competency_id_for_summary,
+            )
         linked_count = len(item.supporting_evidence_ids)
         self.current_direction_label.setText(
             f"Current · {item.direction.value}"
