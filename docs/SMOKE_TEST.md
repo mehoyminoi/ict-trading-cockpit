@@ -149,6 +149,21 @@ Before merging `feature/configurable-summary-templates-v0`, additionally confirm
 
 ---
 
+## Current branch acceptance — Competency evidence v0
+
+Before merging `feature/competency-evidence-v0`, additionally confirm:
+
+- [PASS] Full automated test suite is green.
+  - Operator confirmed full suite green on 2026-10-08.
+- [PASS] A focused Historical Backtest / Study run with competency focus still follows the normal Review workflow without visible regression.
+  - Operator manually verified the flow on 2026-10-08.
+- [PASS] Competency evidence is created through the existing Study Review path rather than requiring a second scoring form.
+- [PASS] No proficiency percentage, automatic competency-state change, promotion/demotion, eligibility change, or evidence-maturity threshold appears in the operator workflow.
+- [PASS] Schema migration to v28 does not prevent normal application startup/use in the tested workflow.
+
+
+---
+
 ## Reporting results
 
 Report results as:
