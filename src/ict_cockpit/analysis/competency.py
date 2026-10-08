@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
+from uuid import uuid4
 
 
 class CompetencyState(str, Enum):
@@ -53,3 +54,66 @@ class CompetencyAssessment:
         self.updated_at = datetime.now().astimezone().isoformat(
             timespec="seconds"
         )
+
+@dataclass
+class CompetencyEvidence:
+    """One human-legible evidence record tied to a plan-owned competency."""
+
+    trade_plan_id: str
+    trade_plan_revision: str
+    competency_id: str
+    competency_name: str
+    competency_category: str
+    trading_run_id: str
+    run_environment: str
+    run_purpose: str
+    study_outcome: str
+    note: str = ""
+    study_question: str = ""
+    study_hypothesis: str = ""
+    study_scope: str = ""
+    market_time_context: dict = None
+    qt_context: dict = None
+    source: str = "Study Review"
+    recorded_at: str = ""
+    id: str = ""
+
+    def __post_init__(self) -> None:
+        self.trade_plan_id = self.trade_plan_id.strip()
+        self.trade_plan_revision = self.trade_plan_revision.strip()
+        self.competency_id = self.competency_id.strip()
+        self.competency_name = self.competency_name.strip() or self.competency_id
+        self.competency_category = self.competency_category.strip()
+        self.trading_run_id = self.trading_run_id.strip()
+        self.run_environment = self.run_environment.strip()
+        self.run_purpose = self.run_purpose.strip()
+        self.study_outcome = self.study_outcome.strip()
+        self.note = self.note.strip()
+        self.study_question = self.study_question.strip()
+        self.study_hypothesis = self.study_hypothesis.strip()
+        self.study_scope = self.study_scope.strip()
+        self.market_time_context = dict(self.market_time_context or {})
+        self.qt_context = dict(self.qt_context or {})
+        self.source = self.source.strip() or "Study Review"
+        self.recorded_at = self.recorded_at.strip()
+        self.id = self.id.strip() or str(uuid4())
+
+        if not self.trade_plan_id:
+            raise ValueError("trade plan id cannot be empty")
+        if not self.trade_plan_revision:
+            raise ValueError("trade plan revision cannot be empty")
+        if not self.competency_id:
+            raise ValueError("competency id cannot be empty")
+        if not self.trading_run_id:
+            raise ValueError("trading run id cannot be empty")
+        if not self.run_environment:
+            raise ValueError("run environment cannot be empty")
+        if not self.run_purpose:
+            raise ValueError("run purpose cannot be empty")
+        if not self.study_outcome:
+            raise ValueError("study outcome cannot be empty")
+        if not self.recorded_at:
+            self.recorded_at = datetime.now().astimezone().isoformat(
+                timespec="seconds"
+            )
+
