@@ -143,6 +143,10 @@ class TradePlanWidget(QWidget):
         self.section_list.setCurrentRow(process_row)
         self.process_tabs.setCurrentWidget(self.trading_day_shell_widget)
 
+    def _prepare_targeted_study(self, competency_id: str) -> None:
+        if self.process_run_launcher_widget.prepare_targeted_study(competency_id):
+            self.process_run_launcher_widget.study_question_input.setFocus()
+
     def _build_section_page(self, section: TradePlanSectionDefinition) -> QWidget:
         page = QWidget()
         layout = QVBoxLayout(page)
@@ -190,6 +194,9 @@ class TradePlanWidget(QWidget):
             self.competency_evidence_review_widget = CompetencyEvidenceReviewWidget(
                 self.trade_plan,
                 self.competency_evidence_repository,
+            )
+            self.competency_evidence_review_widget.study_competency_requested.connect(
+                self._prepare_targeted_study
             )
             layout.addWidget(self.competency_evidence_review_widget)
 
