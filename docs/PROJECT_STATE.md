@@ -14,7 +14,7 @@ This is the starting point for a new development chat or developer handoff. Git 
 - **Schema:** v28
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** full v28 competency-evidence suite green on 2026-10-08 (exact count not separately recorded)
-- **Manual smoke test:** competency evidence Review / Development v0 acceptance PASS — evidence panel, details, all-competency view, filtering, summary counts, and non-scorecard semantics manually verified.
+- **Manual smoke test:** evidence-to-targeted-Study routing v0 acceptance PASS — staging semantics, question-first path, Begin Process Run handoff, and progression gate behavior manually verified.
 
 ## Current completed slice — Competency / Proficiency substrate v0
 
@@ -127,37 +127,32 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-Milestone A continues on `feature/competency-study-routing-v0`.
+Milestone A's evidence-to-targeted-Study routing slice is **acceptance-complete and ready for PR/merge**.
 
-This slice adds the first **active consumption** behavior for competency evidence without introducing automatic interpretation.
+Accepted behavior:
 
-Implemented for validation:
+- **Study this competency** is an intent-staging action, not a second run-entry mechanism,
+- it prepares Historical Backtest / Study in the shared launcher,
+- the selected competency becomes the sole deliberate focus,
+- an existing Study question is preserved,
+- a missing Study question is still required,
+- **Begin Process Run** remains the explicit run-creation action,
+- progression eligibility continues to gate higher environments and guide downward,
+- no score, competency-state transition, Evidence Maturity conclusion, or eligibility promotion is inferred.
 
-- Review / Development evidence panel now exposes an explicit **Study this competency** action,
-- the action can use either the selected evidence record's competency or the currently filtered competency,
-- selecting the action prepares the shared Process Run launcher for **Historical Backtest / Study**,
-- the selected competency becomes the sole competency focus,
-- any previously checked competency focus is cleared,
-- the Study question remains blank and must still be authored by the technician,
-- the action does **not** automatically launch a run,
-- the existing Historical Backtest requirement for an explicit Study question remains intact,
-- no competency state, score, eligibility, progression, or Evidence Maturity change is inferred,
-- no schema or Trade Plan revision change.
+This closes the first complete operator-facing competency-evidence loop:
 
-The intended semantic is:
+`focus competency -> deliberate run -> reviewed evidence -> inspect evidence -> route back to targeted Study`
 
-`human-reviewed evidence -> technician chooses competency -> prepare targeted Study -> technician defines question -> normal shared runtime`
+Next action:
 
-Manual testing exposed a guidance defect: if the technician wrote the Study question first and then clicked **Study this competency**, the routing worked but the status message incorrectly said to define the question, making the prepared run appear blocked.
+1. inspect branch diff,
+2. open and merge this accepted routing slice,
+3. sync `main`,
+4. mark Milestone A's first trustworthy competency-evidence loop complete,
+5. begin Milestone B — Review / Development synthesis with a design/inventory slice before adding automatic weakness interpretation.
 
-The fix now supports both valid interaction orders:
-
-- choose **Study this competency** first -> define the question -> **Begin Process Run**, or
-- define the question first -> choose **Study this competency** -> **Begin Process Run**.
-
-The routing action preserves an existing question. If a question is already present, the status explicitly says the Study is ready and points to **Begin Process Run**. If the question is blank, it explicitly asks for the question and then **Begin Process Run**.
-
-Next action: rerun the automated suite and manually retest the question-first path that exposed the issue.
+The first Milestone B design question is how the operator should explicitly identify a recurring weakness or development need across evidence **without** abusing Study Outcome as a hidden proficiency score.
 
 ## System guide maintenance
 
