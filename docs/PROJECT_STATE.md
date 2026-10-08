@@ -11,8 +11,8 @@ This is the starting point for a new development chat or developer handoff. Git 
 - **Current slice:** developer smoke-test runner v0
 - **Schema:** v26
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** **268 passed in 108.65s**
-- **Manual smoke test:** complete; all current acceptance items PASS after resolving the Replay/Forward competency-provenance defect.
+- **Verified full test result:** **272 passed** (268 prior baseline + 4 smoke-test document unit tests; user confirmed full suite green)
+- **Manual smoke test:** smoke-test runner v0 acceptance PASS — load/edit/save/reopen works, and Git diff showed only the intended selected change.
 
 ## Current completed slice — Competency / Proficiency substrate v0
 
@@ -89,9 +89,9 @@ See `docs/SMOKE_TEST.md` for the completed acceptance record and repeatable chec
 
 ## Current task
 
-PR #26 is merged. The active isolated slice is the developer smoke-test runner v0.
+The developer smoke-test runner v0 is acceptance-complete and ready for PR/merge.
 
-Implemented on this branch:
+Implemented and manually verified on this branch:
 
 - Markdown round-trip model for status-bearing smoke-test validation items,
 - PySide6 runner with PASS / FAIL / QUESTION / NOT TESTED controls,
@@ -100,17 +100,16 @@ Implemented on this branch:
 - live acceptance summary,
 - save-back to the existing Markdown source of truth,
 - parser/round-trip unit tests,
-- developer usage documentation.
+- developer usage documentation,
+- existing checklist loads correctly,
+- a selected status/comment edit survives restart,
+- Git diff shows only the intended selected change,
+- working tree was restored clean after the deliberate edit,
+- full automated suite is green.
 
-Next:
+After merge, establish the new main baseline and return to the next roadmap slice based on observed workflow friction. Do not expand the smoke-test runner with additional features until repeated use justifies them.
 
-1. run the full automated suite locally,
-2. launch `python tools/smoke_test_runner.py`,
-3. verify the existing `docs/SMOKE_TEST.md` loads without wording/data loss,
-4. change one status/comment, save, inspect the Git diff, then restore or deliberately retain the test edit,
-5. report any UI/workflow friction before preparing this small utility slice for merge.
-
-The runner is a convenience layer over Markdown, not a second acceptance-data format.
+The runner remains a convenience layer over Markdown, not a second acceptance-data format.
 
 ## Continuity protocol
 
