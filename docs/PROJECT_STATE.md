@@ -6,11 +6,11 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active feature branch:** `feature/configurable-summary-templates-v0`
-- **Main baseline:** `e778674a48337a772976ee5268aff785f5869877` — handoff synchronized after PR #27
+- **Active branch:** `docs/roadmap-reconciliation-2026-10`
+- **Main baseline:** `c9df4713b9f11558f6b94f5abfbc10e26a0cc1e2` — PR #28 merged configurable/versioned summary templates v0
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** configurable/versioned summary templates v0
+- **Current slice:** project requirements / roadmap reconciliation
 - **Schema:** v27
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** **278 passed**
@@ -115,26 +115,26 @@ The runner remains a convenience layer over Markdown, not a second acceptance-da
 
 ## Current task
 
-The configurable/versioned summary templates v0 slice is acceptance-complete and ready for PR/merge.
+Product feature development is intentionally paused for the roadmap reconciliation milestone.
 
-Implemented and verified:
+A first reconciled `docs/PROJECT_REQUIREMENTS.md` draft now combines:
 
-- versioned `SummaryTemplateDefinition` domain model,
-- schema v27 immutable template revisions plus active template pointers,
-- seeded default Trade Summary and Study Find templates preserving existing output,
-- repository support for publishing new immutable revisions,
-- template-field validation,
-- minimal Workbench editor for publishing revisions,
-- Study Find and Trade Summary resolve the active persisted template,
-- active template labels on both summary surfaces,
-- generated/copyable output includes non-editable template name/revision provenance,
-- invalid template fields are rejected before publication,
-- active revisions persist across restart,
-- full automated suite is 278 green.
+- the early Living Requirements & Roadmap,
+- current repository architecture and completed features,
+- durable decisions in `DECISIONS.md`,
+- accepted prior-chat decisions about Trading Day/Trading Run semantics, Watch, environment progression, opportunity/authorization architecture, QT/AMDX, evidence maturity, workspace interaction, news integration, execution safety, and multi-device constraints.
 
-After merge, pause product feature development for a dedicated project requirements / roadmap reconciliation milestone. Reconcile the early living roadmap, current repository architecture, durable decisions, and prior-chat decisions before selecting the next larger implementation milestone.
+The draft replaces the old feature-priority queue with outcome-oriented milestones:
 
-Deferred from this slice: exposing Trade Plan revision as an available summary-template field. It is desirable provenance but requires adding Trade Plan revision to the summary context first.
+A. Coherent process/revision architecture  
+B. Harden the whole operator loop  
+C. Evidence/adherence/process analytics substrate  
+D. Structured QT/AMDX and economic context  
+E. Execution-safety simulation  
+F. NinjaTrader execution integration  
+G. Shared/multi-device operation
+
+Next action: review this reconciled requirements draft for omissions, conflicts, and priority errors before merging it or starting Milestone A. No product code should be added on this documentation branch.
 
 ## Continuity protocol
 
