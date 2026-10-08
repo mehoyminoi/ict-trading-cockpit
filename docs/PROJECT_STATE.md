@@ -6,14 +6,14 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `docs/roadmap-reconciliation-2026-10`
-- **Main baseline:** `c9df4713b9f11558f6b94f5abfbc10e26a0cc1e2` — PR #28 merged configurable/versioned summary templates v0
+- **Active branch:** `feature/competency-evidence-v0`
+- **Main baseline:** `c243074c4a204ca1e91fa84e15b2844442747c58` — PR #29 merged roadmap reconciliation / hardened handoff
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** project requirements / roadmap reconciliation
-- **Schema:** v27
+- **Current slice:** Milestone A — competency evidence loop v0
+- **Schema:** v28
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** **278 passed**
+- **Last verified full test result:** **278 passed** on the v27 baseline; v28 competency-evidence branch awaiting local validation
 - **Manual smoke test:** configurable summary templates v0 acceptance PASS — both template kinds publish/use new revisions, persistence survives restart, generated outputs show template provenance, and invalid fields are rejected.
 
 ## Current completed slice — Competency / Proficiency substrate v0
@@ -127,34 +127,33 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-The roadmap reconciliation and handoff-hardening milestone is **accepted**.
+Milestone A has started on `feature/competency-evidence-v0`.
 
-The accepted milestone order is:
+The first vertical slice intentionally reuses the existing Study Review rather than introducing a new scoring UI.
 
-A. **Competency evidence loop**  
-B. **Review / Development synthesis**  
-C. **Evidence Maturity and progression governance**  
-D. **Continuous operator-loop hardening** (parallel/supporting)  
-E. **Context maturity: QT/AMDX, news, and distortions**  
-F. **Execution-safety simulation**  
-G. **NinjaTrader execution integration**  
-H. **Shared / multi-device operation**
+Implemented for validation:
 
-The current architectural frontier is:
+- new first-class `CompetencyEvidence` record separate from competency definition and mutable competency state,
+- schema v28 `competency_evidence` storage,
+- one evidence row per reviewed Trading Run + focused competency,
+- evidence snapshots Trade Plan revision, environment/purpose, Study question/hypothesis/scope/outcome/note, competency name/category, market-time context, and QT context,
+- evidence identity remains stable for the same run + competency,
+- re-review replaces the current run evidence instead of accumulating duplicate rows,
+- MainWindow synchronization automatically materializes reviewed Study/Rehearsal/Validation competency focus into evidence when the Trading Run is saved,
+- retrieval by run and by competency,
+- regression tests for schema, the Study Review -> persisted evidence path, and re-review behavior.
 
-`targeted Study -> competency evidence -> Replay integration -> Forward validation -> progression/eligibility -> Live Execution`
+Deliberately **not** included:
 
-Revision/provenance remains a cross-cutting requirement rather than a standalone first milestone.
+- competency scores,
+- automatic competency-state changes,
+- promotion/demotion,
+- eligibility changes,
+- evidence weighting,
+- evidence-maturity thresholds,
+- a new evidence dashboard.
 
-Next action:
-
-1. finalize this documentation branch,
-2. inspect the final diff,
-3. open and merge the reconciliation PR,
-4. sync `main`,
-5. begin Milestone A with a small competency-evidence design/inventory slice.
-
-Do not resume older Film Night, responsive-gallery, broad Live-Watch, hardware, or integration feature queues unless real use makes one blocking.
+Next action: run the full automated suite locally. If green, manually exercise one focused Historical Backtest/Study review and confirm no visible workflow regression. Then inspect the evidence model before deciding whether this minimal evidence shape is accepted or needs adjustment.
 
 ## Continuity protocol
 
