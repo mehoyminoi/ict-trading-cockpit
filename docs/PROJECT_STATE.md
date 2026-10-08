@@ -6,11 +6,11 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `feature/competency-evidence-v0`
-- **Main baseline:** `c243074c4a204ca1e91fa84e15b2844442747c58` — PR #29 merged roadmap reconciliation / hardened handoff
+- **Active branch:** `feature/competency-evidence-review-v0`
+- **Main baseline:** `c190b037dd994d21e01b260328c41c1787f1eaea` — PR #30 merged competency evidence substrate v0
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Milestone A — competency evidence loop v0
+- **Current slice:** Milestone A — competency evidence Review / Development surface v0
 - **Schema:** v28
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** full v28 competency-evidence suite green on 2026-10-08 (exact count not separately recorded)
@@ -127,29 +127,27 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-Milestone A — competency evidence v0 is **acceptance-complete and ready for PR/merge**.
+Milestone A continues on `feature/competency-evidence-review-v0`.
 
-Accepted behavior:
+This slice tests whether the evidence substrate is useful when surfaced in the existing **Trade Plan -> Review / Development** area, without adding scores or automatic interpretation.
 
-- first-class `CompetencyEvidence` remains separate from competency definition and mutable competency state,
-- schema v28 persists one evidence record per reviewed Trading Run + focused competency,
-- evidence preserves run/environment/purpose, Trade Plan revision, study question/hypothesis/scope/outcome/note, competency identity, market-time context, and QT context,
-- re-review replaces the current run+competency evidence rather than duplicating one observation,
-- evidence is materialized through the existing Study Review save path,
-- retrieval exists by Trading Run and by competency,
-- no score, automatic competency-state mutation, promotion/demotion, eligibility change, weighting, or Evidence Maturity threshold has been introduced,
-- full automated suite is green,
-- operator manual acceptance passed.
+Implemented for validation:
 
-Next action:
+- read-only Competency Evidence panel in Review / Development,
+- All Competencies view plus filtering by plan-owned competency,
+- compact counts by environment purpose and reviewed Study outcome,
+- evidence rows showing time, competency, purpose, and outcome,
+- selected-evidence detail with Trade Plan revision, study question/hypothesis/scope, review note, and Trading Run identity,
+- automatic refresh when Review / Development is entered,
+- plan-level evidence retrieval in the repository,
+- no schema change; remains v28,
+- no automatic competency-state, proficiency, or eligibility behavior.
 
-1. inspect branch diff,
-2. open PR for `feature/competency-evidence-v0`,
-3. merge only this accepted evidence substrate,
-4. sync `main`,
-5. start the next Milestone A slice from the accepted evidence model rather than adding scoring prematurely.
+This is intentionally a **human-legibility / usefulness test**, not an analytics dashboard.
 
-The likely next design question is how Review / Development should **surface and consume** accumulated evidence without yet converting it into automatic state/progression decisions.
+Next action: run the full automated suite locally. If green, manually create/review at least one focused Study or Replay run, open Trade Plan -> Review / Development, and judge whether the evidence panel makes the accumulated evidence understandable without feeling like a scorecard or adding workflow friction.
+
+If accepted, the next decision is whether the first active consumption behavior should be a lightweight **Study this competency** route from evidence back into a pre-focused Lab launcher, or whether the evidence presentation needs refinement first.
 
 ## Continuity protocol
 
