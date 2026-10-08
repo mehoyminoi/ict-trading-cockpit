@@ -132,8 +132,13 @@ class StudyRunContext:
         self.completed_at = self.completed_at.strip()
         if isinstance(self.outcome, str):
             self.outcome = StudyOutcome(self.outcome)
-        if not self.question:
-            raise ValueError("study question cannot be empty")
+        if not (
+            self.question
+            or self.hypothesis
+            or self.scope
+            or self.competency_focus
+        ):
+            raise ValueError("study context cannot be empty")
 
     def to_dict(self) -> dict:
         return {
@@ -152,16 +157,19 @@ class StudyRunContext:
     def from_dict(cls, payload: dict | None) -> "StudyRunContext | None":
         source = dict(payload or {})
         question = str(source.get("question", "")).strip()
-        if not question:
+        hypothesis = str(source.get("hypothesis", "")).strip()
+        scope = str(source.get("scope", "")).strip()
+        competency_focus = [
+            dict(item)
+            for item in list(source.get("competency_focus", []) or [])
+        ]
+        if not (question or hypothesis or scope or competency_focus):
             return None
         return cls(
             question=question,
-            hypothesis=str(source.get("hypothesis", "")),
-            scope=str(source.get("scope", "")),
-            competency_focus=[
-                dict(item)
-                for item in list(source.get("competency_focus", []) or [])
-            ],
+            hypothesis=hypothesis,
+            scope=scope,
+            competency_focus=competency_focus,
             outcome=str(source.get("outcome", StudyOutcome.NOT_REVIEWED.value)),
             outcome_note=str(source.get("outcome_note", "")),
             completed_at=str(source.get("completed_at", "")),
