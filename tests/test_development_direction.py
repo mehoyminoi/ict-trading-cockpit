@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QScrollArea
 
 from ict_cockpit.analysis.competency import (
     CompetencyDevelopmentDirection,
@@ -193,5 +193,97 @@ def test_development_direction_can_link_selected_evidence(tmp_path) -> None:
     assert saved is not None
     assert saved.direction is DevelopmentDirection.STUDY
     assert saved.supporting_evidence_ids == [evidence.id]
-    assert "selected evidence linked" in widget.development_status_label.text()
+    assert "selected evidence is linked" in widget.development_status_label.text()
+    assert "supporting evidence: 1" in widget.current_direction_label.text()
+    assert widget.link_selected_evidence_checkbox.isChecked() is True
+    assert "Selected evidence link · linked" == (
+        widget.selected_evidence_link_label.text()
+    )
+
+    widget.refresh()
+    assert widget.link_selected_evidence_checkbox.isChecked() is True
+    assert "Selected evidence link · linked" == (
+        widget.selected_evidence_link_label.text()
+    )
+    connection.close()
+
+
+def test_review_development_page_is_scrollable(tmp_path) -> None:
+    get_app()
+    connection = create_connection(tmp_path / "test.db")
+    initialize_schema(connection)
+    window = MainWindow(
+        TDARepository(connection),
+        StudyFindRepository(connection),
+    )
+
+    trade_plan_widget = window.trade_plan_widget
+    review_row = trade_plan_widget._section_ids.index("review-development")
+    review_page = trade_plan_widget.stack.widget(review_row)
+
+    assert isinstance(review_page, QScrollArea)
+    assert review_page.widgetResizable() is True
+    connection.close()
+
+
+def test_development_direction_link_state_survives_widget_recreation(
+    tmp_path,
+) -> None:
+    get_app()
+    db_path = tmp_path / "test.db"
+    connection = create_connection(db_path)
+    initialize_schema(connection)
+    window = MainWindow(
+        TDARepository(connection),
+        StudyFindRepository(connection),
+    )
+
+    launcher = window.trade_plan_widget.process_run_launcher_widget
+    launcher.environment_combo.setCurrentText("Historical Backtest")
+    launcher.study_question_input.setText("Can I identify session context?")
+    launcher.competency_checkboxes["time-session-awareness"].setChecked(True)
+    assert launcher.begin_process_run() is True
+
+    shell = window.trade_plan_widget.trading_day_shell_widget
+    run = shell.active_trading_run
+    assert run is not None
+    review = shell.runtime.post_market_review_widget
+    review.load_state(
+        run,
+        shell.runtime.tda_station_runner_widget.session,
+    )
+    review.study_outcome_combo.setCurrentText("Practice Complete")
+
+    window.trade_plan_widget.section_list.setCurrentRow(4)
+    widget = window.trade_plan_widget.competency_evidence_review_widget
+    assert widget is not None
+    evidence = widget._selected_evidence()
+    assert evidence is not None
+
+    widget.direction_combo.setCurrentText(DevelopmentDirection.STUDY.value)
+    widget.link_selected_evidence_checkbox.setChecked(True)
+    widget.save_direction_button.click()
+    connection.close()
+
+    connection = create_connection(db_path)
+    initialize_schema(connection)
+    restored = MainWindow(
+        TDARepository(connection),
+        StudyFindRepository(connection),
+    )
+    restored.trade_plan_widget.section_list.setCurrentRow(4)
+    restored_widget = (
+        restored.trade_plan_widget.competency_evidence_review_widget
+    )
+    assert restored_widget is not None
+    restored_evidence = restored_widget._selected_evidence()
+    assert restored_evidence is not None
+    assert restored_evidence.id == evidence.id
+    assert restored_widget.link_selected_evidence_checkbox.isChecked() is True
+    assert restored_widget.selected_evidence_link_label.text() == (
+        "Selected evidence link · linked"
+    )
+    assert "supporting evidence: 1" in (
+        restored_widget.current_direction_label.text()
+    )
     connection.close()
