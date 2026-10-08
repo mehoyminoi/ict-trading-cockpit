@@ -127,29 +127,34 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-Product feature development remains intentionally paused.
+The recovery, handoff hardening, and **final roadmap reconciliation pass are complete as a candidate**. Product code remains paused.
 
-The immediate task is **handoff hardening + final roadmap reconciliation** based on the recovered conversation history.
+The reconciled requirements now follow the recovered current frontier rather than the old feature queue.
 
-Completed in this documentation slice:
+The proposed milestone order is:
 
-- added `docs/PROJECT_EVOLUTION.md` to preserve the chronological architecture story,
-- added `docs/DECISION_AUDIT.md` to record CURRENT / IMPLEMENTED / REFINED / SUPERSEDED / DEFERRED / OPEN status,
-- upgraded `docs/HANDOFF.md` with mandatory read order, precedence rules, current-frontier requirements, a handoff-freeze protocol, and a detailed next-chat startup prompt,
-- recovered the important priority shift from Live/Film-Night expansion toward Study/Lab, competency evidence, and progression,
-- recorded that the older per-market-session Session Run hierarchy was an intermediate model and is not the current default,
-- kept the existing `PROJECT_REQUIREMENTS.md` roadmap draft provisional while this audit is completed.
+A. **Competency evidence loop**  
+B. **Review / Development synthesis**  
+C. **Evidence Maturity and progression governance**  
+D. **Continuous operator-loop hardening** (parallel/supporting)  
+E. **Context maturity: QT/AMDX, news, and distortions**  
+F. **Execution-safety simulation**  
+G. **NinjaTrader execution integration**  
+H. **Shared / multi-device operation**
 
-Next actions:
+The previous roadmap framing that put abstract process/revision architecture first has been removed. Revision/provenance remains a cross-cutting requirement that each evidence/learning slice must preserve.
 
-1. review the new handoff/evolution/audit package for omissions,
-2. reconcile `PROJECT_REQUIREMENTS.md` against the audit rather than the early roadmap,
-3. update durable decisions/supersession entries as needed,
-4. verify the documentation branch diff,
-5. merge the documentation-only reconciliation checkpoint,
-6. only then choose the next product slice from the recovered current frontier.
+The old per-market-session Session Run default, near-term Film Night/gallery work, broad Live-Watch expansion, and other historical priority queues are explicitly prevented from silently regaining priority.
 
-Do not start another convenience feature merely because it appears next in an older roadmap.
+**Next action:** operator performs one final confirmation of the reconciled package. Do not merge this branch and do not start product implementation until that confirmation is received.
+
+After confirmation:
+
+1. record the reconciled roadmap/current frontier as accepted durable project direction,
+2. inspect the final documentation diff,
+3. create/merge the documentation reconciliation PR,
+4. sync local `main`,
+5. begin Milestone A with a small competency-evidence design/inventory slice.
 
 ## Continuity protocol
 
