@@ -6,9 +6,9 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active feature branch:** `feature/competency-proficiency-v0`
-- **Current branch acceptance baseline:** `7d4795e` — `Record competency proficiency smoke test results`
-- **Latest behavioral regression-test commit:** `bf8fe24` — `Test competency-only Replay and Forward provenance`
+- **Active feature branch:** `chore/smoke-test-runner-v0`
+- **Merged competency baseline:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26 merged to `main`
+- **Current slice:** developer smoke-test runner v0
 - **Schema:** v26
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** **268 passed in 108.65s**
@@ -89,16 +89,28 @@ See `docs/SMOKE_TEST.md` for the completed acceptance record and repeatable chec
 
 ## Current task
 
-The Competency / Proficiency v0 slice is acceptance-complete on its feature branch and is ready for PR/merge review.
+PR #26 is merged. The active isolated slice is the developer smoke-test runner v0.
 
-After merge:
+Implemented on this branch:
 
-1. establish the merged main-branch baseline,
-2. create the next isolated development slice,
-3. implement the small developer smoke-test runner discussed during acceptance,
-4. then return to roadmap work based on observed workflow friction.
+- Markdown round-trip model for status-bearing smoke-test validation items,
+- PySide6 runner with PASS / FAIL / QUESTION / NOT TESTED controls,
+- per-item comments/evidence,
+- previous/next and next-unresolved navigation,
+- live acceptance summary,
+- save-back to the existing Markdown source of truth,
+- parser/round-trip unit tests,
+- developer usage documentation.
 
-Do not add proficiency thresholds/readiness scoring as part of the completed v0 slice.
+Next:
+
+1. run the full automated suite locally,
+2. launch `python tools/smoke_test_runner.py`,
+3. verify the existing `docs/SMOKE_TEST.md` loads without wording/data loss,
+4. change one status/comment, save, inspect the Git diff, then restore or deliberately retain the test edit,
+5. report any UI/workflow friction before preparing this small utility slice for merge.
+
+The runner is a convenience layer over Markdown, not a second acceptance-data format.
 
 ## Continuity protocol
 
