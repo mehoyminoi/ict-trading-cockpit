@@ -200,6 +200,60 @@ Before merging `feature/competency-study-routing-v0`, additionally confirm:
 
 ---
 
+## Current branch acceptance — Development Direction v0
+
+Before merging `feature/development-direction-v0`, use this section as the primary manual checklist.
+
+### A. Review / Development layout
+
+- [NOT TESTED] Open **Trade Plan -> Review / Development** at the normal desktop window size.
+  - Expected: the application window remains usable on-screen rather than growing taller than the display.
+  - Expected: Review / Development has its own vertical scrollbar when the full content does not fit.
+  - Expected: the lower **Lab / Replay** launcher and its **Competency focus** area remain reachable by scrolling and are not compressed to an unusable height.
+  - Originally failed during Development Direction testing: the page's combined content made the window too tall and compressed the lower launcher/focus area.
+  - Fix pending manual verification: Review / Development is now a scrollable page and the evidence list is capped more compactly.
+
+### B. Save a Development Direction
+
+- [PASS] Select one competency in the **Competency Evidence** filter.
+- [PASS] In **Development Direction**, choose a direction and enter a distinctive synthesis note.
+- [PASS] Click **Save Development Direction**.
+  - Expected immediately under the editor:
+    - `Current · <direction> · <note> ...`
+    - a supporting-evidence count or `no supporting evidence linked`
+    - a save-status message explicitly stating that no Competency State or eligibility change was made.
+- [PASS] Navigate away and return, then restart the application.
+  - Operator verified on 2026-10-08 that the Development Direction and synthesis note persist.
+
+### C. Supporting-evidence link
+
+- [NOT TESTED] Select a specific evidence row in the evidence list.
+- [NOT TESTED] Check **Link the selected evidence record as supporting evidence** and save the Development Direction.
+  - Expected immediately:
+    - `Current ... · supporting evidence: 1` (or a higher count if other records were already linked),
+    - `Selected evidence link · linked`,
+    - the checkbox remains checked while that linked evidence row is selected.
+- [NOT TESTED] Navigate away and return.
+  - Expected: when the same linked evidence row is selected, the checkbox is checked and `Selected evidence link · linked` is shown.
+- [NOT TESTED] Restart the application and return to the same competency/evidence record.
+  - Expected: the supporting-evidence count still appears and the checkbox/link-status reflect the persisted link for that selected record.
+- [NOT TESTED] Select a different evidence row for the same competency.
+  - Expected: the checkbox reflects *that selected record's* link state. It may be unchecked even though the Development Direction still reports one or more other supporting-evidence links.
+- [NOT TESTED] Uncheck the checkbox for a linked selected record and save.
+  - Expected: that selected evidence ID is removed from the Development Direction while unrelated supporting-evidence links remain intact.
+
+**Clarification from the first manual pass:** the supporting-evidence ID was persisted in v29 storage, but the original UI did not restore/display the checkbox state or persistent link summary after refresh/restart. That made a persisted link look lost and could also make a later save accidentally remove it. The UI/persistence handling has been corrected; the checks above verify the visible behavior and the stored relationship together.
+
+### D. Guardrails
+
+- [NOT TESTED] Saving/changing a Development Direction does not change the competency's broader Competency State.
+- [NOT TESTED] Saving/changing a Development Direction does not promote eligibility or create an Evidence Maturity conclusion.
+- [NOT TESTED] No Development Direction is inferred automatically from a Study Outcome.
+- [NOT TESTED] Full automated suite is green immediately before merge.
+
+
+---
+
 ## Reporting results
 
 Report results as:
