@@ -187,3 +187,21 @@ A key example it should explain is competency extensibility:
 **Rationale:** the full architecture is now large enough that requirements, state, decisions, and evolution documents are individually correct but do not provide a single human-readable conceptual map.
 
 **Consequence:** `SYSTEM_GUIDE.md` will be maintained when terminology, subsystem relationships, ownership boundaries, or major system loops materially change. It will remain explanatory and will not replace canonical requirements, decisions, current state, or implementation.
+
+
+## 2026-10-08 — Competency evidence is surfaced before it is scored
+
+**Status:** Accepted
+
+Review / Development should first present accumulated competency evidence as human-legible history before the Cockpit attempts to derive proficiency, Evidence Maturity, or eligibility conclusions.
+
+The accepted v0 surface supports:
+
+- all-competency evidence review,
+- filtering by plan-owned competency,
+- compact counts by environment purpose and reviewed outcome,
+- detailed provenance for an individual evidence record.
+
+**Rationale:** the operator should be able to inspect and challenge the underlying observations before later aggregation or progression rules are trusted.
+
+**Consequence / deferred behavior:** evidence counts and outcomes are descriptive. They do not yet constitute a score, competency-state transition, Evidence Maturity judgment, or progression decision.
