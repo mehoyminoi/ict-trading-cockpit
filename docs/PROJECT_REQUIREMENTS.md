@@ -1,8 +1,8 @@
 # ICT Trading Cockpit — Product Requirements & Milestone Roadmap
 
-**Status:** Final reconciliation candidate — awaiting operator confirmation  
+**Status:** Accepted reconciled product requirements and milestone roadmap  
 **Reconciled:** 2026-10-08  
-**Role:** Canonical current product requirements and milestone roadmap once this documentation branch is accepted and merged.
+**Role:** Canonical current product requirements and milestone roadmap.
 
 Companion documents:
 
