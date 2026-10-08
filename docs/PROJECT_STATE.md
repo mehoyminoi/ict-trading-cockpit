@@ -1,16 +1,16 @@
 # ICT Trading Cockpit — Current Project State
 
-**Last handoff update:** 2026-10-07
+**Last handoff update:** 2026-10-08
 
 This is the starting point for a new development chat or developer handoff. Git remains the source of truth for code; this file records the verified project checkpoint and the reasoning context needed to continue without reconstructing chat history.
 
 ## Repository state
 
-- **Active feature branch:** `feature/configurable-summary-templates-v0`
-- **Main baseline:** `e778674a48337a772976ee5268aff785f5869877` — handoff synchronized after PR #27
+- **Active branch:** `docs/roadmap-reconciliation-2026-10`
+- **Main baseline:** `c9df4713b9f11558f6b94f5abfbc10e26a0cc1e2` — PR #28 merged configurable/versioned summary templates v0
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** configurable/versioned summary templates v0
+- **Current slice:** project requirements / roadmap reconciliation
 - **Schema:** v27
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** **278 passed**
@@ -113,28 +113,48 @@ See `docs/SMOKE_TEST.md` for the completed acceptance record and repeatable chec
 
 The runner remains a convenience layer over Markdown, not a second acceptance-data format.
 
+## Current architectural frontier
+
+The recovered development trajectory is now explicit:
+
+`targeted Study -> competency evidence -> Replay integration -> Forward validation -> progression/eligibility -> Live Execution`
+
+Competency / Proficiency v0 is complete. The project had already deliberately shifted away from additional Live-Watch embellishment toward the Study/Lab learning and progression loop.
+
+Review / Development synthesis and an Evidence Maturity Profile remain important future consumers/governors, but they should be built only after the competency-evidence substrate is trustworthy.
+
+Older Film Night, responsive-gallery, visual-polish, broad TradingView-integration, hardware-controller, and Live-Watch enhancement discussions are downstream ideas unless actual use makes one blocking.
+
 ## Current task
 
-The configurable/versioned summary templates v0 slice is acceptance-complete and ready for PR/merge.
+The roadmap reconciliation and handoff-hardening milestone is **accepted**.
 
-Implemented and verified:
+The accepted milestone order is:
 
-- versioned `SummaryTemplateDefinition` domain model,
-- schema v27 immutable template revisions plus active template pointers,
-- seeded default Trade Summary and Study Find templates preserving existing output,
-- repository support for publishing new immutable revisions,
-- template-field validation,
-- minimal Workbench editor for publishing revisions,
-- Study Find and Trade Summary resolve the active persisted template,
-- active template labels on both summary surfaces,
-- generated/copyable output includes non-editable template name/revision provenance,
-- invalid template fields are rejected before publication,
-- active revisions persist across restart,
-- full automated suite is 278 green.
+A. **Competency evidence loop**  
+B. **Review / Development synthesis**  
+C. **Evidence Maturity and progression governance**  
+D. **Continuous operator-loop hardening** (parallel/supporting)  
+E. **Context maturity: QT/AMDX, news, and distortions**  
+F. **Execution-safety simulation**  
+G. **NinjaTrader execution integration**  
+H. **Shared / multi-device operation**
 
-After merge, pause product feature development for a dedicated project requirements / roadmap reconciliation milestone. Reconcile the early living roadmap, current repository architecture, durable decisions, and prior-chat decisions before selecting the next larger implementation milestone.
+The current architectural frontier is:
 
-Deferred from this slice: exposing Trade Plan revision as an available summary-template field. It is desirable provenance but requires adding Trade Plan revision to the summary context first.
+`targeted Study -> competency evidence -> Replay integration -> Forward validation -> progression/eligibility -> Live Execution`
+
+Revision/provenance remains a cross-cutting requirement rather than a standalone first milestone.
+
+Next action:
+
+1. finalize this documentation branch,
+2. inspect the final diff,
+3. open and merge the reconciliation PR,
+4. sync `main`,
+5. begin Milestone A with a small competency-evidence design/inventory slice.
+
+Do not resume older Film Night, responsive-gallery, broad Live-Watch, hardware, or integration feature queues unless real use makes one blocking.
 
 ## Continuity protocol
 
