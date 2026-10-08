@@ -6,9 +6,10 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active feature branch:** `chore/smoke-test-runner-v0`
-- **Merged competency baseline:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26 merged to `main`
-- **Current slice:** developer smoke-test runner v0
+- **Current branch:** `main`
+- **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
+- **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
+- **Current slice:** none open; ready to select the next roadmap slice
 - **Schema:** v26
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** **272 passed** (268 prior baseline + 4 smoke-test document unit tests; user confirmed full suite green)
@@ -87,29 +88,35 @@ Current operator checks completed on 2026-10-07:
 
 See `docs/SMOKE_TEST.md` for the completed acceptance record and repeatable checklist.
 
-## Current task
+## Recently completed
 
-The developer smoke-test runner v0 is acceptance-complete and ready for PR/merge.
+### Competency / Proficiency substrate v0 — merged via PR #26
 
-Implemented and manually verified on this branch:
+- plan-owned competency definitions,
+- mutable competency/profile persistence kept separate from definitions,
+- Study / Replay / Forward competency-focus provenance,
+- competency focus preserved into Review and restart persistence,
+- deterministic Replay context for time-aware tests,
+- manual smoke-test acceptance complete.
 
-- Markdown round-trip model for status-bearing smoke-test validation items,
-- PySide6 runner with PASS / FAIL / QUESTION / NOT TESTED controls,
+### Developer smoke-test runner v0 — merged via PR #27
+
+- PySide6 runner for `docs/SMOKE_TEST.md`,
+- PASS / FAIL / QUESTION / NOT TESTED controls,
 - per-item comments/evidence,
 - previous/next and next-unresolved navigation,
 - live acceptance summary,
-- save-back to the existing Markdown source of truth,
-- parser/round-trip unit tests,
-- developer usage documentation,
-- existing checklist loads correctly,
-- a selected status/comment edit survives restart,
-- Git diff shows only the intended selected change,
-- working tree was restored clean after the deliberate edit,
-- full automated suite is green.
-
-After merge, establish the new main baseline and return to the next roadmap slice based on observed workflow friction. Do not expand the smoke-test runner with additional features until repeated use justifies them.
+- save-back to Markdown,
+- Markdown round-trip unit tests,
+- manually verified that edits persist and only intended Markdown changes appear in Git diff.
 
 The runner remains a convenience layer over Markdown, not a second acceptance-data format.
+
+## Current task
+
+No feature branch is open. Start the next isolated roadmap slice from current `main` after selecting the highest-value item based on observed workflow friction and the established roadmap.
+
+Do not expand the smoke-test runner unless repeated use exposes concrete friction. Do not introduce competency thresholds/readiness scoring until evidence rules justify them.
 
 ## Continuity protocol
 
