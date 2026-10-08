@@ -6,11 +6,12 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Current branch:** `main`
+- **Active feature branch:** `feature/configurable-summary-templates-v0`
+- **Main baseline:** `e778674a48337a772976ee5268aff785f5869877` — handoff synchronized after PR #27
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** none open; ready to select the next roadmap slice
-- **Schema:** v26
+- **Current slice:** configurable/versioned summary templates v0
+- **Schema:** v27
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** **272 passed** (268 prior baseline + 4 smoke-test document unit tests; user confirmed full suite green)
 - **Manual smoke test:** smoke-test runner v0 acceptance PASS — load/edit/save/reopen works, and Git diff showed only the intended selected change.
@@ -114,9 +115,29 @@ The runner remains a convenience layer over Markdown, not a second acceptance-da
 
 ## Current task
 
-No feature branch is open. Start the next isolated roadmap slice from current `main` after selecting the highest-value item based on observed workflow friction and the established roadmap.
+The active slice is configurable/versioned summary templates v0, chosen because Study Find and Trade Summary already have generated text, quick copy, and chart attachments while the template bodies remain hardcoded.
 
-Do not expand the smoke-test runner unless repeated use exposes concrete friction. Do not introduce competency thresholds/readiness scoring until evidence rules justify them.
+Implemented so far:
+
+- versioned `SummaryTemplateDefinition` domain model,
+- schema v27 storage for immutable template revisions plus an active template pointer per summary kind,
+- seeded default Trade Summary and Study Find templates preserving current output,
+- repository support for publishing a new immutable revision,
+- template-field validation,
+- a minimal Workbench editor that publishes revisions,
+- Study Find and Trade Summary generation now resolve the active persisted template,
+- active template revision labels on both summary surfaces,
+- regression/unit coverage for schema, seeding, revision history, validation, and Workbench-to-Study-Find generation.
+
+Next:
+
+1. run the full automated suite locally,
+2. correct any migration/UI regressions,
+3. manually verify Workbench publication for both Study Find and Trade Summary,
+4. confirm previous template revisions remain in storage and current summaries use the new active revision,
+5. complete the branch smoke test before PR/merge.
+
+Do not turn this slice into a general Workbench redesign. The Workbench surface exists here only because configuration/revision needs now justify a dedicated design surface.
 
 ## Continuity protocol
 
