@@ -73,6 +73,23 @@ Trade Plan definitions, Playbooks, process/workflow definitions, management/risk
 
 A published authoritative revision must not be silently mutated after use.
 
+### 2.5A Stable vs candidate Trade Plan revisions
+
+A proven/stable Trade Plan revision must be protectable as a trusted operating baseline while later candidate revisions are developed beside it.
+
+Required behavior and future architecture:
+
+- a published stable revision remains immutable,
+- candidate revision development does not mutate the stable revision,
+- runs and evidence retain the exact Trade Plan revision that governed them,
+- competency evidence must preserve enough definition provenance to distinguish unchanged definitions from materially revised definitions,
+- newly added competencies begin collecting evidence from the revision that defines them,
+- historical records must not silently be reclassified under a later competency meaning,
+- retrospective mapping of historical records is an explicit provenance-bearing analytical act,
+- future comparison between stable and candidate revisions should support evaluating whether added models, competencies, or rules actually improved the system.
+
+Revisioning therefore protects both **historical truth** and **experimental isolation**. A successful `rX` can remain trusted while `rY` is studied, rehearsed, validated, accepted, or rejected.
+
 ### 2.6 Low-friction operation
 
 During active market work, the Cockpit should reduce interaction cost rather than create another journaling burden.
