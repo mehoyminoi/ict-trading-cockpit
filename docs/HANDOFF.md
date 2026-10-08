@@ -43,7 +43,7 @@ Then provide fresh terminal output when local state may be ahead of GitHub.
 ## Before ending a development slice
 
 1. Run the full automated test suite.
-2. Run the relevant manual acceptance checks in `docs/SMOKE_TEST.md` for substantial branches or workflow/schema/risk/time changes.
+2. Run the relevant manual acceptance checks in `docs/SMOKE_TEST.md` for substantial branches or workflow/schema/risk/time changes. The developer utility `python tools/smoke_test_runner.py` may be used to record statuses/comments while keeping Markdown as the source of truth.
 3. Record the exact automated and manual results.
 4. Confirm the schema and Trade Plan revision.
 5. Update `PROJECT_STATE.md`.
