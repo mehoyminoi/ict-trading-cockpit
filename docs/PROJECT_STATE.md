@@ -1,6 +1,6 @@
 # ICT Trading Cockpit — Current Project State
 
-**Last handoff update:** 2026-10-07
+**Last handoff update:** 2026-10-08
 
 This is the starting point for a new development chat or developer handoff. Git remains the source of truth for code; this file records the verified project checkpoint and the reasoning context needed to continue without reconstructing chat history.
 
@@ -113,28 +113,43 @@ See `docs/SMOKE_TEST.md` for the completed acceptance record and repeatable chec
 
 The runner remains a convenience layer over Markdown, not a second acceptance-data format.
 
+## Current architectural frontier
+
+The recovered development trajectory is now explicit:
+
+`targeted Study -> competency evidence -> Replay integration -> Forward validation -> progression/eligibility -> Live Execution`
+
+Competency / Proficiency v0 is complete. The project had already deliberately shifted away from additional Live-Watch embellishment toward the Study/Lab learning and progression loop.
+
+Review / Development synthesis and an Evidence Maturity Profile remain important future consumers/governors, but they should be built only after the competency-evidence substrate is trustworthy.
+
+Older Film Night, responsive-gallery, visual-polish, broad TradingView-integration, hardware-controller, and Live-Watch enhancement discussions are downstream ideas unless actual use makes one blocking.
+
 ## Current task
 
-Product feature development is intentionally paused for the roadmap reconciliation milestone.
+Product feature development remains intentionally paused.
 
-A first reconciled `docs/PROJECT_REQUIREMENTS.md` draft now combines:
+The immediate task is **handoff hardening + final roadmap reconciliation** based on the recovered conversation history.
 
-- the early Living Requirements & Roadmap,
-- current repository architecture and completed features,
-- durable decisions in `DECISIONS.md`,
-- accepted prior-chat decisions about Trading Day/Trading Run semantics, Watch, environment progression, opportunity/authorization architecture, QT/AMDX, evidence maturity, workspace interaction, news integration, execution safety, and multi-device constraints.
+Completed in this documentation slice:
 
-The draft replaces the old feature-priority queue with outcome-oriented milestones:
+- added `docs/PROJECT_EVOLUTION.md` to preserve the chronological architecture story,
+- added `docs/DECISION_AUDIT.md` to record CURRENT / IMPLEMENTED / REFINED / SUPERSEDED / DEFERRED / OPEN status,
+- upgraded `docs/HANDOFF.md` with mandatory read order, precedence rules, current-frontier requirements, a handoff-freeze protocol, and a detailed next-chat startup prompt,
+- recovered the important priority shift from Live/Film-Night expansion toward Study/Lab, competency evidence, and progression,
+- recorded that the older per-market-session Session Run hierarchy was an intermediate model and is not the current default,
+- kept the existing `PROJECT_REQUIREMENTS.md` roadmap draft provisional while this audit is completed.
 
-A. Coherent process/revision architecture  
-B. Harden the whole operator loop  
-C. Evidence/adherence/process analytics substrate  
-D. Structured QT/AMDX and economic context  
-E. Execution-safety simulation  
-F. NinjaTrader execution integration  
-G. Shared/multi-device operation
+Next actions:
 
-Next action: review this reconciled requirements draft for omissions, conflicts, and priority errors before merging it or starting Milestone A. No product code should be added on this documentation branch.
+1. review the new handoff/evolution/audit package for omissions,
+2. reconcile `PROJECT_REQUIREMENTS.md` against the audit rather than the early roadmap,
+3. update durable decisions/supersession entries as needed,
+4. verify the documentation branch diff,
+5. merge the documentation-only reconciliation checkpoint,
+6. only then choose the next product slice from the recovered current frontier.
+
+Do not start another convenience feature merely because it appears next in an older roadmap.
 
 ## Continuity protocol
 
