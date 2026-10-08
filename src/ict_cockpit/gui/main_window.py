@@ -14,6 +14,9 @@ from ict_cockpit.database.competency_assessment_repository import (
 )
 from ict_cockpit.database.feedback_repository import FeedbackRepository
 from ict_cockpit.database.study_find_repository import StudyFindRepository
+from ict_cockpit.database.summary_template_repository import (
+    SummaryTemplateRepository,
+)
 from ict_cockpit.database.tda_repository import TDARepository
 from ict_cockpit.database.tda_station_session_repository import (
     TDAStationSessionRepository,
@@ -30,6 +33,9 @@ from ict_cockpit.default_trade_plan import build_default_trade_plan
 from ict_cockpit.gui.feedback_dialog import FeedbackDialog
 from ict_cockpit.gui.study_find_review_widget import StudyFindReviewWidget
 from ict_cockpit.gui.study_find_widget import StudyFindWidget
+from ict_cockpit.gui.summary_template_workbench_widget import (
+    SummaryTemplateWorkbenchWidget,
+)
 from ict_cockpit.gui.tda_workflow import TDAWorkflowWidget
 from ict_cockpit.gui.trade_plan_widget import TradePlanWidget
 from ict_cockpit.gui.trade_summary_widget import TradeSummaryWidget
@@ -71,6 +77,10 @@ class MainWindow(QMainWindow):
                 study_find_repository.connection
             )
         )
+        self.summary_template_repository = SummaryTemplateRepository(
+            study_find_repository.connection
+        )
+        self.summary_template_repository.ensure_defaults()
 
         self.setWindowTitle(window_title())
         # Give the cockpit enough initial working room on a desktop without
@@ -87,10 +97,22 @@ class MainWindow(QMainWindow):
         )
 
         self.tda_workflow = TDAWorkflowWidget()
-        self.study_find_widget = StudyFindWidget()
-        self.trade_summary_widget = TradeSummaryWidget()
+        self.study_find_widget = StudyFindWidget(
+            self.summary_template_repository
+        )
+        self.trade_summary_widget = TradeSummaryWidget(
+            self.summary_template_repository
+        )
         self.study_find_review_widget = StudyFindReviewWidget(
             self.study_find_repository
+        )
+        self.summary_template_workbench_widget = (
+            SummaryTemplateWorkbenchWidget(
+                self.summary_template_repository
+            )
+        )
+        self.summary_template_workbench_widget.template_published.connect(
+            self._summary_template_published
         )
 
         self.tabs = QTabWidget()
@@ -99,6 +121,10 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(self.study_find_widget, "Study Find")
         self.tabs.addTab(self.trade_summary_widget, "Trade Summary")
         self.tabs.addTab(self.study_find_review_widget, "Study Review")
+        self.tabs.addTab(
+            self.summary_template_workbench_widget,
+            "Workbench",
+        )
         self.setCentralWidget(self.tabs)
 
         self.status_bar = QStatusBar()
@@ -154,6 +180,14 @@ class MainWindow(QMainWindow):
 
         self._restore_drafts()
 
+    def _summary_template_published(self, _kind: str) -> None:
+        self.study_find_widget.refresh_summary_template_label()
+        self.trade_summary_widget.refresh_summary_template_label()
+        self.status_bar.showMessage(
+            "Summary template revision published",
+            3000,
+        )
+
     def _configure_feedback_actions(self) -> None:
         feedback_menu = self.menuBar().addMenu("Feedback")
 
@@ -195,6 +229,13 @@ class MainWindow(QMainWindow):
             if 0 <= row < len(self.study_find_review_widget.study_finds):
                 study_find = self.study_find_review_widget.study_finds[row]
                 return tab_name, study_find.id
+
+        if current_widget is self.summary_template_workbench_widget:
+            template = self.summary_template_workbench_widget.active_template
+            if template is not None:
+                return tab_name, (
+                    f"{template.template_id}@r{template.revision}"
+                )
 
         return tab_name or "Unknown", ""
 
