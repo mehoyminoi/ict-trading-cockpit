@@ -341,7 +341,7 @@ class PostMarketReviewWidget(QWidget):
             self.study_review_frame.setVisible(study is not None)
             if study is not None:
                 self.study_question_label.setText(
-                    "Question · " + study.question
+                    "Question · " + (study.question or "Not specified")
                 )
                 self.study_hypothesis_label.setText(
                     "Hypothesis · "
