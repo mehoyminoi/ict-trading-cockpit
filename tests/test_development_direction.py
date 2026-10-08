@@ -195,6 +195,15 @@ def test_development_direction_can_link_selected_evidence(tmp_path) -> None:
     assert saved.supporting_evidence_ids == [evidence.id]
     assert "selected evidence is linked" in widget.development_status_label.text()
     assert "supporting evidence: 1" in widget.current_direction_label.text()
+    synthesis = widget.summary_label.text()
+    assert "Competency Synthesis · Draw on liquidity" in synthesis
+    assert "Development Direction · Study · supporting evidence: 1" in synthesis
+    assert "Evidence coverage · 1 reviewed · Study: 1" in synthesis
+    assert "Reviewed outcomes · Refined: 1" in synthesis
+    assert "Evidence range · " in synthesis
+    assert "Descriptive coverage only" in synthesis
+    assert "Evidence Maturity" in synthesis
+    assert "eligibility conclusion is inferred" in synthesis
     assert widget.link_selected_evidence_checkbox.isChecked() is True
     assert "Selected evidence link · linked" == (
         widget.selected_evidence_link_label.text()
@@ -286,4 +295,34 @@ def test_development_direction_link_state_survives_widget_recreation(
     assert "supporting evidence: 1" in (
         restored_widget.current_direction_label.text()
     )
+    connection.close()
+
+
+def test_competency_synthesis_without_evidence_is_descriptive(tmp_path) -> None:
+    get_app()
+    connection = create_connection(tmp_path / "test.db")
+    initialize_schema(connection)
+    window = MainWindow(
+        TDARepository(connection),
+        StudyFindRepository(connection),
+    )
+
+    window.trade_plan_widget.section_list.setCurrentRow(4)
+    widget = window.trade_plan_widget.competency_evidence_review_widget
+    assert widget is not None
+
+    competency_id = "premium-discount-context"
+    index = widget.competency_combo.findData(competency_id)
+    assert index >= 0
+    widget.competency_combo.setCurrentIndex(index)
+
+    synthesis = widget.summary_label.text()
+    assert "Competency Synthesis · Premium / discount context" in synthesis
+    assert f"Trade Plan {window.trade_plan.revision}" in synthesis
+    assert "Development Direction · Not recorded" in synthesis
+    assert "Evidence coverage · no reviewed evidence recorded" in synthesis
+    assert "Descriptive coverage only" in synthesis
+    assert "proficiency" in synthesis
+    assert "Evidence Maturity" in synthesis
+    assert "eligibility conclusion is inferred" in synthesis
     connection.close()
