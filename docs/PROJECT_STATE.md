@@ -127,11 +127,9 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-The recovery, handoff hardening, and **final roadmap reconciliation pass are complete as a candidate**. Product code remains paused.
+The roadmap reconciliation and handoff-hardening milestone is **accepted**.
 
-The reconciled requirements now follow the recovered current frontier rather than the old feature queue.
-
-The proposed milestone order is:
+The accepted milestone order is:
 
 A. **Competency evidence loop**  
 B. **Review / Development synthesis**  
@@ -142,19 +140,21 @@ F. **Execution-safety simulation**
 G. **NinjaTrader execution integration**  
 H. **Shared / multi-device operation**
 
-The previous roadmap framing that put abstract process/revision architecture first has been removed. Revision/provenance remains a cross-cutting requirement that each evidence/learning slice must preserve.
+The current architectural frontier is:
 
-The old per-market-session Session Run default, near-term Film Night/gallery work, broad Live-Watch expansion, and other historical priority queues are explicitly prevented from silently regaining priority.
+`targeted Study -> competency evidence -> Replay integration -> Forward validation -> progression/eligibility -> Live Execution`
 
-**Next action:** operator performs one final confirmation of the reconciled package. Do not merge this branch and do not start product implementation until that confirmation is received.
+Revision/provenance remains a cross-cutting requirement rather than a standalone first milestone.
 
-After confirmation:
+Next action:
 
-1. record the reconciled roadmap/current frontier as accepted durable project direction,
-2. inspect the final documentation diff,
-3. create/merge the documentation reconciliation PR,
-4. sync local `main`,
+1. finalize this documentation branch,
+2. inspect the final diff,
+3. open and merge the reconciliation PR,
+4. sync `main`,
 5. begin Milestone A with a small competency-evidence design/inventory slice.
+
+Do not resume older Film Night, responsive-gallery, broad Live-Watch, hardware, or integration feature queues unless real use makes one blocking.
 
 ## Continuity protocol
 
