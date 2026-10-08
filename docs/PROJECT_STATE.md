@@ -6,12 +6,12 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `design/review-development-synthesis-v0`
-- **Main baseline:** `cb1e505c850c791eb80d3f5de7b3cc5a44b43754` — PR #33 merged evidence-to-targeted-Study routing v0
+- **Active branch:** `feature/development-direction-v0`
+- **Main baseline:** `3951f5bfaf4232c7456b68d74f114ef2ae9640d2` — PR #34 merged Review / Development synthesis v0 design
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Milestone B design — Review / Development synthesis v0
-- **Schema:** v28
+- **Current slice:** Milestone B — Development Direction v0
+- **Schema:** v29
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** full v28 competency-evidence suite green on 2026-10-08 (exact count not separately recorded)
 - **Manual smoke test:** evidence-to-targeted-Study routing v0 acceptance PASS — staging semantics, question-first path, Begin Process Run handoff, and progression gate behavior manually verified.
@@ -127,31 +127,36 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-Milestone A's first trustworthy competency-evidence loop is complete:
+Milestone B implementation has started on `feature/development-direction-v0`.
 
-`competency focus -> deliberate run -> reviewed evidence -> inspect evidence -> route back to targeted Study`
+Implemented for validation:
 
-The project is now entering **Milestone B — Review / Development synthesis**.
+- new `DevelopmentDirection` enum with the five accepted directions,
+- new `CompetencyDevelopmentDirection` domain record,
+- schema v29 `competency_development_direction` storage,
+- one current mutable Development Direction per Trade Plan + competency,
+- optional operator synthesis note,
+- optional supporting evidence IDs,
+- created/updated timestamps and Trade Plan revision provenance,
+- Review / Development editor integrated into the existing competency-evidence panel,
+- current direction display and persistence,
+- optional linking of the selected evidence record,
+- explicit confirmation that saving a direction does not change Competency State or eligibility,
+- System Guide updated with the new synthesis layer.
 
-A design candidate is recorded in `docs/REVIEW_DEVELOPMENT_SYNTHESIS.md`.
+The slice deliberately does **not**:
 
-The proposed next concept is **Development Direction**: an explicit human-reviewed statement of what deliberate work should happen next for a competency, based on reviewed evidence.
+- infer a Development Direction from Study Outcome,
+- detect recurring weakness automatically,
+- mutate Competency State,
+- calculate Evidence Maturity,
+- alter progression/eligibility,
+- add direction-history records,
+- activate Rehearsal/Validation routing.
 
-Candidate directions:
+Schema moves from v28 to **v29**. Trade Plan remains **Alpha 0.7** because Development Direction is mutable technician/review state rather than plan-owned definition data.
 
-- Study
-- Rehearsal
-- Validation
-- Monitor / Gather Evidence
-- No Active Focus
-
-The design intentionally keeps Development Direction separate from Study Outcome, Competency State, Evidence Maturity, and Eligibility.
-
-No runtime/schema/Trade Plan changes are on this design branch.
-
-The operator approved `docs/REVIEW_DEVELOPMENT_SYNTHESIS.md` on 2026-10-08, including its distinctions, nuances, and guardrails.
-
-Next action: merge this accepted design checkpoint, then implement the smallest v0 Development Direction vertical slice.
+Next action: run the full automated suite locally **before launching the application**, because this branch migrates the normal database from v28 to v29. If green, manually verify Development Direction save/reload and the optional selected-evidence link.
 
 ## System guide maintenance
 
