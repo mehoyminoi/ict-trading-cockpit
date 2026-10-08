@@ -280,7 +280,6 @@ class ProcessRunLauncherWidget(QWidget):
         for item in self.competency_checkboxes.values():
             item.setChecked(False)
         checkbox.setChecked(True)
-        self.study_question_input.setFocus()
         competency = next(
             (
                 item
@@ -290,10 +289,19 @@ class ProcessRunLauncherWidget(QWidget):
             None,
         )
         label = competency.name if competency is not None else competency_id
-        self.status_label.setText(
-            f"Targeted Study prepared for {label}. "
-            "Define the study question before beginning the run."
-        )
+        question = self.study_question_input.text().strip()
+        if question:
+            self.status_label.setText(
+                f"Targeted Study prepared for {label}. "
+                "Study question is set; click Begin Process Run to start."
+            )
+            self.begin_button.setFocus()
+        else:
+            self.status_label.setText(
+                f"Targeted Study prepared for {label}. "
+                "Define the study question, then click Begin Process Run."
+            )
+            self.study_question_input.setFocus()
         return True
 
     def begin_process_run(self) -> bool:
