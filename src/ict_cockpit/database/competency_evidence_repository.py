@@ -56,6 +56,7 @@ class CompetencyEvidenceRepository:
                     market_time_context=trading_run.market_time_context,
                     qt_context=trading_run.qt_context,
                     recorded_at=study.completed_at,
+                    id=f"{run_id}:{str(item.get('id', '')).strip()}",
                 )
                 for item in study.competency_focus
                 if str(item.get("id", "")).strip()
