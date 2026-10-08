@@ -293,7 +293,7 @@ class CompetencyEvidenceReviewWidget(QWidget):
             + f" · Trade Plan {self.trade_plan.revision}\n"
             f"Development Direction · {direction_text} · "
             f"supporting evidence: {linked_count}\n"
-            f"Evidence coverage · {len(evidence)} reviewed · {purpose_text}\n"
+            f"Evidence coverage · {len(evidence)} evidence record(s) · {purpose_text}\n"
             f"Reviewed outcomes · {outcome_text}\n"
             f"Evidence range · {range_text}\n"
             "Descriptive coverage only · no proficiency, Evidence Maturity, "
