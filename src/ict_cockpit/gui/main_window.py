@@ -12,6 +12,9 @@ from ict_cockpit.app_info import APP_VERSION, window_title
 from ict_cockpit.database.competency_assessment_repository import (
     CompetencyAssessmentRepository,
 )
+from ict_cockpit.database.competency_development_direction_repository import (
+    CompetencyDevelopmentDirectionRepository,
+)
 from ict_cockpit.database.competency_evidence_repository import (
     CompetencyEvidenceRepository,
 )
@@ -83,6 +86,11 @@ class MainWindow(QMainWindow):
         self.competency_evidence_repository = CompetencyEvidenceRepository(
             study_find_repository.connection
         )
+        self.competency_development_direction_repository = (
+            CompetencyDevelopmentDirectionRepository(
+                study_find_repository.connection
+            )
+        )
         self.summary_template_repository = SummaryTemplateRepository(
             study_find_repository.connection
         )
@@ -97,6 +105,9 @@ class MainWindow(QMainWindow):
         self.trade_plan_widget = TradePlanWidget(
             self.trade_plan,
             competency_evidence_repository=self.competency_evidence_repository,
+            competency_development_direction_repository=(
+                self.competency_development_direction_repository
+            ),
         )
         # Backward-compatible references retained while Process Map tests and
         # callers transition to the Trade Plan parent model.
