@@ -1,3 +1,9 @@
+from ict_cockpit.summary.template_definition import (
+    SummaryTemplateDefinition,
+    SummaryTemplateKind,
+)
+
+
 TRADE_SUMMARY_V1 = """Date: {date} Trade #{trade_number}
 Asset: {asset}
 Source: {trade_source}
@@ -46,3 +52,72 @@ Notes:
 Chart Markup Picture(s):
 {chart_images}
 """
+
+
+TRADE_SUMMARY_FIELDS = frozenset(
+    {
+        "date",
+        "trade_number",
+        "asset",
+        "trade_source",
+        "account_context",
+        "model",
+        "direction",
+        "entry_tf",
+        "entry_time",
+        "entry_price",
+        "close_time",
+        "close_price",
+        "trade_time",
+        "result_handles",
+        "result_ticks",
+        "stop_handles",
+        "stop_ticks",
+        "reward_risk",
+        "cycle_16y",
+        "quadrennial",
+        "quarter",
+        "month",
+        "week",
+        "day",
+        "session",
+        "macro_90m",
+        "summary",
+        "chart_images",
+    }
+)
+
+STUDY_FIND_FIELDS = frozenset(
+    {
+        "date",
+        "asset",
+        "session",
+        "pattern",
+        "available_move",
+        "observation",
+        "notes",
+        "chart_images",
+    }
+)
+
+TEMPLATE_FIELDS = {
+    SummaryTemplateKind.TRADE_SUMMARY: TRADE_SUMMARY_FIELDS,
+    SummaryTemplateKind.STUDY_FIND: STUDY_FIND_FIELDS,
+}
+
+DEFAULT_SUMMARY_TEMPLATES = (
+    SummaryTemplateDefinition(
+        template_id="trade-summary-default",
+        revision=1,
+        kind=SummaryTemplateKind.TRADE_SUMMARY,
+        name="Trade Summary Default",
+        body=TRADE_SUMMARY_V1,
+    ),
+    SummaryTemplateDefinition(
+        template_id="study-find-default",
+        revision=1,
+        kind=SummaryTemplateKind.STUDY_FIND,
+        name="Study Find Default",
+        body=STUDY_FIND_SUMMARY_V1,
+    ),
+)
