@@ -6,11 +6,11 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `design/competency-synthesis-panel-v0`
-- **Main baseline:** `d6381ad2ab1b62c7c776448ed20caf50f4364317` — PR #35 merged Development Direction v0
+- **Active branch:** `feature/competency-synthesis-panel-v0`
+- **Main baseline:** `6420fea06cfc7792246310f3469669f770708fab` — PR #36 merged competency synthesis design + stable revision isolation
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Milestone B design — competency synthesis panel v0
+- **Current slice:** Milestone B — competency synthesis panel v0
 - **Schema:** v29
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** full schema v29 Development Direction suite green on 2026-10-08 (exact count not separately recorded)
@@ -127,39 +127,35 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-Development Direction v0 is merged via PR #35 and the project remains in **Milestone B — Review / Development synthesis**.
+Competency Synthesis v0 implementation is in progress on `feature/competency-synthesis-panel-v0`.
 
-The next design candidate is recorded in `docs/COMPETENCY_SYNTHESIS_PANEL.md`.
+Implemented for validation:
 
-The proposed **Competency Synthesis** panel is a compact competency-level reading surface combining:
+- the existing compact evidence summary becomes a competency-specific **Competency Synthesis** view when one competency is selected,
+- synthesis shows competency name/category and current Trade Plan revision,
+- synthesis shows the current human-authored Development Direction,
+- synthesis shows supporting-evidence count,
+- synthesis shows descriptive evidence coverage by run purpose,
+- synthesis shows descriptive counts by Study Outcome,
+- synthesis shows oldest -> newest reviewed evidence date range,
+- no-evidence state explicitly says no reviewed evidence is recorded,
+- synthesis explicitly states that coverage does not infer proficiency, Evidence Maturity, or eligibility,
+- saving Development Direction updates the synthesis immediately,
+- existing evidence list/detail and Study routing are reused rather than adding another tall panel,
+- no generic mixed-Trade-Plan warning is shown.
 
-- current human-authored Development Direction,
-- descriptive evidence coverage by Study / Rehearsal / Validation,
-- descriptive Study Outcome counts,
-- evidence age/range,
-- linked supporting-evidence count,
-- per-record provenance already available in the evidence list/detail,
-- per-record Trade Plan provenance, with no generic mixed-revision warning unless competency-definition provenance can establish a material definition change,
-- the explicit boundary that coverage is not proficiency, Evidence Maturity, or eligibility.
+Revision/provenance semantics remain:
 
-The design deliberately avoids automatic recommendations, trend/strength labels, competency-state changes, progression logic, and new Rehearsal/Validation routing.
+- per-evidence Trade Plan revision stays visible in evidence detail,
+- older evidence remains visible,
+- historical evidence is not silently reinterpreted under a changed competency definition,
+- a future strong warning should depend on competency-definition-level provenance, not merely whole-plan revision differences.
 
-UI constraint: this must remain compact and reuse existing evidence UI because recent operator testing showed that Review / Development can become vertically overloaded.
+No schema or Trade Plan revision change in this slice. Schema remains v29 and Trade Plan remains Alpha 0.7.
 
-No runtime/schema/Trade Plan changes are on this design branch.
+A focused **Competency Synthesis v0** section has been added to `docs/SMOKE_TEST.md`.
 
-The operator accepted the Competency Synthesis concept and clarified an important core revision-control requirement: a stable/proven Trade Plan revision must remain protected while later candidate revisions evolve beside it. Historical evidence must retain its original definition meaning; later competency changes or additions must not silently reinterpret earlier records.
-
-This requirement is now recorded in `DECISIONS.md`, `PROJECT_REQUIREMENTS.md`, and `SYSTEM_GUIDE.md`.
-
-Competency Synthesis refinement:
-
-- purpose/outcome coverage remains descriptive and accepted,
-- older-revision evidence remains visible,
-- generic mixed-Trade-Plan warnings are removed,
-- future warnings should depend on competency-definition-level provenance rather than whole-plan revision differences.
-
-Next action: merge this accepted design/documentation checkpoint, then implement the compact Competency Synthesis v0 surface without adding automatic interpretation or progression logic.
+Next action: pull the branch, run the full automated suite, then complete the focused Competency Synthesis smoke test. Pay particular attention to compactness/scroll behavior because Review / Development vertical space remains a functional constraint.
 
 ## System guide maintenance
 
