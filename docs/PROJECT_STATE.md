@@ -156,7 +156,14 @@ The slice deliberately does **not**:
 
 Schema moves from v28 to **v29**. Trade Plan remains **Alpha 0.7** because Development Direction is mutable technician/review state rather than plan-owned definition data.
 
-Next action: run the full automated suite locally **before launching the application**, because this branch migrates the normal database from v28 to v29. If green, manually verify Development Direction save/reload and the optional selected-evidence link.
+Initial manual testing found two important operator-loop issues:
+
+1. **Layout regression:** Review / Development became taller than the display and compressed the lower Lab / Replay / Competency Focus area. The page is now vertically scrollable and the evidence list is more compact so functionality remains reachable without forcing the whole window taller.
+2. **Supporting-evidence ambiguity:** the selected evidence ID was persisted, but the original UI did not restore/display the linked checkbox/status after navigation or restart. This made a stored link look lost and could make a later save remove it unintentionally. The editor now restores the checkbox for the currently selected linked evidence, shows a persistent supporting-evidence count, shows `Selected evidence link · linked/not linked`, and preserves unrelated evidence links when toggling one selected record.
+
+Operator already verified that the Development Direction dropdown and synthesis note persist through navigation/restart.
+
+Next action: pull the current branch, rerun the automated suite, then use the new **Development Direction v0** section in `docs/SMOKE_TEST.md` (or the smoke-test runner) for the focused manual retest. The most important remaining checks are the scrollable layout and visible supporting-evidence persistence across refresh/restart.
 
 ## System guide maintenance
 
