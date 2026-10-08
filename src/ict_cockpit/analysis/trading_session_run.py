@@ -102,6 +102,7 @@ class StudyRunContext:
     question: str
     hypothesis: str = ""
     scope: str = ""
+    competency_focus: list[dict] = field(default_factory=list)
     outcome: StudyOutcome = StudyOutcome.NOT_REVIEWED
     outcome_note: str = ""
     completed_at: str = ""
@@ -110,18 +111,43 @@ class StudyRunContext:
         self.question = self.question.strip()
         self.hypothesis = self.hypothesis.strip()
         self.scope = self.scope.strip()
+        normalized_focus = []
+        seen_ids = set()
+        for item in list(self.competency_focus or []):
+            source = dict(item or {})
+            competency_id = str(source.get("id", "")).strip()
+            if not competency_id or competency_id in seen_ids:
+                continue
+            normalized_focus.append(
+                {
+                    "id": competency_id,
+                    "name": str(source.get("name", competency_id)).strip()
+                    or competency_id,
+                    "category": str(source.get("category", "")).strip(),
+                }
+            )
+            seen_ids.add(competency_id)
+        self.competency_focus = normalized_focus
         self.outcome_note = self.outcome_note.strip()
         self.completed_at = self.completed_at.strip()
         if isinstance(self.outcome, str):
             self.outcome = StudyOutcome(self.outcome)
-        if not self.question:
-            raise ValueError("study question cannot be empty")
+        if not (
+            self.question
+            or self.hypothesis
+            or self.scope
+            or self.competency_focus
+        ):
+            raise ValueError("study context cannot be empty")
 
     def to_dict(self) -> dict:
         return {
             "question": self.question,
             "hypothesis": self.hypothesis,
             "scope": self.scope,
+            "competency_focus": [
+                dict(item) for item in self.competency_focus
+            ],
             "outcome": self.outcome.value,
             "outcome_note": self.outcome_note,
             "completed_at": self.completed_at,
@@ -131,12 +157,19 @@ class StudyRunContext:
     def from_dict(cls, payload: dict | None) -> "StudyRunContext | None":
         source = dict(payload or {})
         question = str(source.get("question", "")).strip()
-        if not question:
+        hypothesis = str(source.get("hypothesis", "")).strip()
+        scope = str(source.get("scope", "")).strip()
+        competency_focus = [
+            dict(item)
+            for item in list(source.get("competency_focus", []) or [])
+        ]
+        if not (question or hypothesis or scope or competency_focus):
             return None
         return cls(
             question=question,
-            hypothesis=str(source.get("hypothesis", "")),
-            scope=str(source.get("scope", "")),
+            hypothesis=hypothesis,
+            scope=scope,
+            competency_focus=competency_focus,
             outcome=str(source.get("outcome", StudyOutcome.NOT_REVIEWED.value)),
             outcome_note=str(source.get("outcome_note", "")),
             completed_at=str(source.get("completed_at", "")),

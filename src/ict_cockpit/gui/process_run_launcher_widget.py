@@ -2,6 +2,7 @@ from datetime import datetime
 
 from PySide6.QtCore import QDateTime
 from PySide6.QtWidgets import (
+    QCheckBox,
     QComboBox,
     QDateTimeEdit,
     QFrame,
@@ -22,6 +23,7 @@ from ict_cockpit.analysis.trading_session_run import (
     default_purpose_for_environment,
 )
 from ict_cockpit.gui.trading_day_shell_widget import TradingDayShellWidget
+from ict_cockpit.trade_plan import CompetencyDefinition
 
 
 class ProcessRunLauncherWidget(QWidget):
@@ -37,11 +39,14 @@ class ProcessRunLauncherWidget(QWidget):
         trading_day_shell: TradingDayShellWidget,
         *,
         trade_plan_revision: str,
+        competencies: tuple[CompetencyDefinition, ...] = (),
         on_launched=None,
     ) -> None:
         super().__init__()
         self.trading_day_shell = trading_day_shell
         self.trade_plan_revision = trade_plan_revision.strip()
+        self.competencies = tuple(competencies)
+        self.competency_checkboxes: dict[str, QCheckBox] = {}
         self.on_launched = on_launched
 
         frame = QFrame()
@@ -131,6 +136,33 @@ class ProcessRunLauncherWidget(QWidget):
         )
         study_layout.addWidget(self.study_scope_input)
 
+        self.competency_frame = QFrame()
+        self.competency_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        competency_layout = QVBoxLayout(self.competency_frame)
+        competency_layout.setContentsMargins(7, 5, 7, 5)
+        competency_layout.setSpacing(2)
+        competency_heading = QLabel("Competency focus (optional)")
+        competency_heading.setStyleSheet("font-weight: 600;")
+        competency_layout.addWidget(competency_heading)
+        competency_note = QLabel(
+            "Tag the plan-owned mechanic(s) this run is deliberately training. "
+            "This is evidence provenance, not a proficiency score."
+        )
+        competency_note.setWordWrap(True)
+        competency_layout.addWidget(competency_note)
+        for competency in self.competencies:
+            checkbox = QCheckBox(
+                f"{competency.name} · {competency.category}"
+            )
+            checkbox.setToolTip(competency.description)
+            self.competency_checkboxes[competency.id] = checkbox
+            competency_layout.addWidget(checkbox)
+        if not self.competencies:
+            competency_layout.addWidget(
+                QLabel("No competencies are defined in this Trade Plan revision.")
+            )
+        study_layout.addWidget(self.competency_frame)
+
         study_note = QLabel(
             "Historical Backtest requires a focused study question. "
             "Replay and Forward Test may carry optional intent without becoming Lab work."
@@ -192,6 +224,7 @@ class ProcessRunLauncherWidget(QWidget):
 
         intent_visible = environment is not RunEnvironment.LIVE
         self.study_frame.setVisible(intent_visible)
+        self.competency_frame.setVisible(intent_visible)
         self.study_heading.setText(
             "Study Intent"
             if environment is RunEnvironment.HISTORICAL_BACKTEST
@@ -262,11 +295,24 @@ class ProcessRunLauncherWidget(QWidget):
         else:
             shell.run_market_timestamp = None
 
-        if environment is not RunEnvironment.LIVE and question:
+        hypothesis = self.study_hypothesis_input.text().strip()
+        scope = self.study_scope_input.text().strip()
+        selected_focus = []
+        if environment is not RunEnvironment.LIVE:
+            for competency in self.competencies:
+                checkbox = self.competency_checkboxes.get(competency.id)
+                if checkbox is not None and checkbox.isChecked():
+                    selected_focus.append(competency.to_dict())
+
+        if (
+            environment is not RunEnvironment.LIVE
+            and (question or hypothesis or scope or selected_focus)
+        ):
             shell.run_study_context = {
                 "question": question,
-                "hypothesis": self.study_hypothesis_input.text().strip(),
-                "scope": self.study_scope_input.text().strip(),
+                "hypothesis": hypothesis,
+                "scope": scope,
+                "competency_focus": selected_focus,
             }
         else:
             shell.run_study_context = {}

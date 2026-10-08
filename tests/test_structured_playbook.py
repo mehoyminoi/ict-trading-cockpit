@@ -59,7 +59,7 @@ def select_silver_bullet(shell: TradingDayShellWidget):
 
 def test_default_trade_plan_exposes_declarative_playbooks() -> None:
     plan = build_default_trade_plan()
-    assert plan.revision == "Alpha 0.6"
+    assert plan.revision == "Alpha 0.7"
     assert [playbook.id for playbook in plan.playbooks] == ["2022-mentorship", "silver-bullet"]
     assert [gate.id for gate in plan.authorization_gates] == [
         "trading-day-permitted",
@@ -97,7 +97,7 @@ def test_playbook_snapshot_round_trip_is_data_only() -> None:
     ]
 
 
-def test_schema_v25_adds_run_purpose_storage(tmp_path) -> None:
+def test_schema_v26_adds_competency_assessment_storage(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
     columns = {
@@ -105,7 +105,7 @@ def test_schema_v25_adds_run_purpose_storage(tmp_path) -> None:
         for row in connection.execute("PRAGMA table_info(trading_session_run)").fetchall()
     }
     version = connection.execute("PRAGMA user_version").fetchone()[0]
-    assert version == CURRENT_SCHEMA_VERSION == 25
+    assert version == CURRENT_SCHEMA_VERSION == 26
     assert "setup_candidates_json" in columns
     assert "authorization_policy_snapshot_json" in columns
     assert "study_context_json" in columns
@@ -114,6 +114,21 @@ def test_schema_v25_adds_run_purpose_storage(tmp_path) -> None:
     assert "market_time_context_json" in columns
     assert "qt_context_json" in columns
     assert "selected_playbook_id" in columns
+    competency_columns = {
+        row[1]
+        for row in connection.execute(
+            "PRAGMA table_info(competency_assessment)"
+        ).fetchall()
+    }
+    assert {
+        "trade_plan_id",
+        "trade_plan_revision",
+        "competency_id",
+        "state",
+        "note",
+        "source",
+        "updated_at",
+    }.issubset(competency_columns)
     connection.close()
 
 
@@ -174,6 +189,10 @@ def test_multiple_setup_candidates_and_authorization_round_trip(tmp_path) -> Non
 def test_tda_models_in_play_are_multi_select_and_live_readiness_is_per_candidate() -> None:
     get_app()
     plan, shell = build_shell_with_plan()
+    shell.run_environment = RunEnvironment.REPLAY
+    shell.run_market_timestamp = datetime(
+        2026, 10, 6, 10, 15, tzinfo=MARKET_TIMEZONE
+    )
     shell.start_trading_run()
     run = shell.active_trading_run
     assert run is not None
@@ -194,16 +213,6 @@ def test_tda_models_in_play_are_multi_select_and_live_readiness_is_per_candidate
     editor.if_input.setText("PDH trades before the setup window")
     editor.then_input.setText("Return to analysis and reassess the primary draw")
     editor.add_button.click()
-    run.market_time_context = {
-        "timed_windows": [
-            {
-                "id": "nyam-silver-bullet",
-                "name": "NYAM Silver Bullet",
-                "state": "Active",
-                "minutes_until_start": 0,
-            }
-        ]
-    }
     assert shell.runtime.apply_transition("finish-tda", override_incomplete=True) is True
     live = shell.runtime.live_watch_widget
     assert (silver_candidate.id, "fvg-direction") in live.candidate_entry_checkboxes
@@ -215,20 +224,14 @@ def test_tda_models_in_play_are_multi_select_and_live_readiness_is_per_candidate
 def test_occurred_watch_point_updates_criterion_but_global_gates_still_block() -> None:
     get_app()
     _plan, shell = build_shell_with_plan()
+    shell.run_environment = RunEnvironment.REPLAY
+    shell.run_market_timestamp = datetime(
+        2026, 10, 6, 10, 15, tzinfo=MARKET_TIMEZONE
+    )
     shell.start_trading_run()
     run = shell.active_trading_run
     assert run is not None
     candidate = select_silver_bullet(shell)
-    run.market_time_context = {
-        "timed_windows": [
-            {
-                "id": "nyam-silver-bullet",
-                "name": "NYAM Silver Bullet",
-                "state": "Active",
-                "minutes_until_start": 0,
-            }
-        ]
-    }
     shell.runtime.apply_transition("finish-tda", override_incomplete=True)
     live = shell.runtime.live_watch_widget
 

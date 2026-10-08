@@ -219,6 +219,8 @@ class PostMarketReviewWidget(QWidget):
         self.study_hypothesis_label.setWordWrap(True)
         self.study_scope_label = QLabel()
         self.study_scope_label.setWordWrap(True)
+        self.study_competency_label = QLabel()
+        self.study_competency_label.setWordWrap(True)
 
         outcome_row = QHBoxLayout()
         outcome_row.addWidget(QLabel("Study outcome"))
@@ -243,6 +245,7 @@ class PostMarketReviewWidget(QWidget):
         study_layout.addWidget(self.study_question_label)
         study_layout.addWidget(self.study_hypothesis_label)
         study_layout.addWidget(self.study_scope_label)
+        study_layout.addWidget(self.study_competency_label)
         study_layout.addLayout(outcome_row)
         study_layout.addWidget(self.study_outcome_note_input)
         layout.addWidget(self.study_review_frame)
@@ -338,7 +341,7 @@ class PostMarketReviewWidget(QWidget):
             self.study_review_frame.setVisible(study is not None)
             if study is not None:
                 self.study_question_label.setText(
-                    "Question · " + study.question
+                    "Question · " + (study.question or "Not specified")
                 )
                 self.study_hypothesis_label.setText(
                     "Hypothesis · "
@@ -346,6 +349,19 @@ class PostMarketReviewWidget(QWidget):
                 )
                 self.study_scope_label.setText(
                     "Scope · " + (study.scope or "Not specified")
+                )
+                competency_names = [
+                    str(item.get("name", item.get("id", ""))).strip()
+                    for item in study.competency_focus
+                    if str(item.get("name", item.get("id", ""))).strip()
+                ]
+                self.study_competency_label.setText(
+                    "Competency focus · "
+                    + (
+                        ", ".join(competency_names)
+                        if competency_names
+                        else "Not specified"
+                    )
                 )
                 self.study_outcome_combo.setCurrentText(
                     study.outcome.value
@@ -376,6 +392,7 @@ class PostMarketReviewWidget(QWidget):
             self.study_question_label.clear()
             self.study_hypothesis_label.clear()
             self.study_scope_label.clear()
+            self.study_competency_label.clear()
             self.study_outcome_combo.setCurrentText(
                 StudyOutcome.NOT_REVIEWED.value
             )

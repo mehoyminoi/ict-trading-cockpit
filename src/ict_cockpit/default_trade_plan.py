@@ -1,6 +1,7 @@
 from ict_cockpit.default_process import build_default_process_blueprint
 from ict_cockpit.trade_plan import (
     AuthorizationGateDefinition,
+    CompetencyDefinition,
     EntryCriterionDefinition,
     PlaybookDefinition,
     TradePlanDefinition,
@@ -129,7 +130,7 @@ def build_default_trade_plan() -> TradePlanDefinition:
     return TradePlanDefinition(
         id="ict-trade-plan-alpha",
         name="ICT Trading Plan",
-        revision="Alpha 0.6",
+        revision="Alpha 0.7",
         sections=(
             TradePlanSectionDefinition(
                 id="foundation", name="Foundation",
@@ -159,6 +160,53 @@ def build_default_trade_plan() -> TradePlanDefinition:
         ),
         process_blueprint=build_default_process_blueprint(),
         playbooks=(_build_2022_mentorship_playbook(), _build_silver_bullet_playbook()),
+        competencies=(
+            CompetencyDefinition(
+                id="htf-liquidity-recognition",
+                name="HTF liquidity recognition",
+                category="Market Structure",
+                description=(
+                    "Recognize meaningful liquidity on higher timeframes, including "
+                    "liquidity resting inside and around higher-timeframe wicks."
+                ),
+            ),
+            CompetencyDefinition(
+                id="draw-on-liquidity",
+                name="Draw on liquidity / narrative",
+                category="TDA",
+                description=(
+                    "Form and maintain a coherent draw-on-liquidity hypothesis from "
+                    "higher-timeframe context through the active session."
+                ),
+            ),
+            CompetencyDefinition(
+                id="displacement-fvg-recognition",
+                name="Displacement and FVG recognition",
+                category="Price Action",
+                description=(
+                    "Recognize meaningful displacement and distinguish qualifying FVG "
+                    "context from incidental gaps."
+                ),
+            ),
+            CompetencyDefinition(
+                id="premium-discount-context",
+                name="Premium / discount context",
+                category="Price Delivery",
+                description=(
+                    "Use dealing-range premium, discount, equilibrium, and related PD "
+                    "arrays without losing the higher-timeframe narrative."
+                ),
+            ),
+            CompetencyDefinition(
+                id="time-session-awareness",
+                name="Time / session awareness",
+                category="Time",
+                description=(
+                    "Maintain awareness of session, killzone, macro, and other timed "
+                    "opportunity context while price unfolds."
+                ),
+            ),
+        ),
         authorization_gates=(
             AuthorizationGateDefinition(
                 id="trading-day-permitted",

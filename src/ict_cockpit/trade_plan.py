@@ -4,6 +4,41 @@ from ict_cockpit.process_blueprint import ProcessBlueprint
 
 
 @dataclass(frozen=True)
+class CompetencyDefinition:
+    """One plan-owned skill or mechanic that can be trained and validated."""
+
+    id: str
+    name: str
+    category: str
+    description: str = ""
+
+    def __post_init__(self) -> None:
+        if not self.id.strip():
+            raise ValueError("competency id cannot be empty")
+        if not self.name.strip():
+            raise ValueError("competency name cannot be empty")
+        if not self.category.strip():
+            raise ValueError("competency category cannot be empty")
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "category": self.category,
+            "description": self.description,
+        }
+
+    @classmethod
+    def from_dict(cls, payload: dict) -> "CompetencyDefinition":
+        return cls(
+            id=str(payload.get("id", "")),
+            name=str(payload.get("name", "")),
+            category=str(payload.get("category", "")),
+            description=str(payload.get("description", "")),
+        )
+
+
+@dataclass(frozen=True)
 class EntryCriterionDefinition:
     """One plan-owned condition that contributes to setup authorization."""
 
@@ -271,6 +306,7 @@ class TradePlanDefinition:
     sections: tuple[TradePlanSectionDefinition, ...]
     process_blueprint: ProcessBlueprint
     playbooks: tuple[PlaybookDefinition, ...] = field(default_factory=tuple)
+    competencies: tuple[CompetencyDefinition, ...] = field(default_factory=tuple)
     authorization_gates: tuple[AuthorizationGateDefinition, ...] = field(default_factory=tuple)
     live_watch_policy: LiveWatchPolicyDefinition = field(default_factory=LiveWatchPolicyDefinition)
 
@@ -291,6 +327,9 @@ class TradePlanDefinition:
         playbook_ids = [playbook.id for playbook in self.playbooks]
         if len(playbook_ids) != len(set(playbook_ids)):
             raise ValueError("trade plan playbook ids must be unique")
+        competency_ids = [item.id for item in self.competencies]
+        if len(competency_ids) != len(set(competency_ids)):
+            raise ValueError("trade plan competency ids must be unique")
         gate_ids = [gate.id for gate in self.authorization_gates]
         if len(gate_ids) != len(set(gate_ids)):
             raise ValueError("trade plan authorization gate ids must be unique")
@@ -305,6 +344,15 @@ class TradePlanDefinition:
         for playbook in self.playbooks:
             if playbook.id == playbook_id:
                 return playbook
+        return None
+
+    def competency_by_id(
+        self,
+        competency_id: str,
+    ) -> CompetencyDefinition | None:
+        for competency in self.competencies:
+            if competency.id == competency_id:
+                return competency
         return None
 
     def authorization_snapshot(self) -> list[dict]:
