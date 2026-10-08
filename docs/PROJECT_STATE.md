@@ -6,11 +6,11 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `docs/system-guide-v0`
-- **Main baseline:** `276a2b0c4c57e5db01db6582d699b08527a94a18` — PR #31 merged competency evidence Review / Development surface v0
+- **Active branch:** `feature/competency-study-routing-v0`
+- **Main baseline:** `b6b1f9ec854b26fb25c388e571390d60f82042c6` — PR #32 merged human-readable System Guide v0
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** documentation checkpoint — human-readable system guide v0
+- **Current slice:** Milestone A — evidence to targeted Study routing v0
 - **Schema:** v28
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** full v28 competency-evidence suite green on 2026-10-08 (exact count not separately recorded)
@@ -127,31 +127,28 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-The human-readable System Guide v0 is **accepted and ready for merge**.
+Milestone A continues on `feature/competency-study-routing-v0`.
 
-Accepted contents:
+This slice adds the first **active consumption** behavior for competency evidence without introducing automatic interpretation.
 
-- coherent whole-system mental model,
-- canonical terminology and ownership boundaries,
-- daily operating loop,
-- Study / Rehearsal / Validation / Execution progression loop,
-- Competency Definition / State / Evidence separation,
-- evidence -> metrics -> Evidence Maturity -> progression -> eligibility separation,
-- Playbook / opportunity / authorization relationships,
-- QT / AMDX separation,
-- revision/provenance model,
-- paper-doll UI versus domain concepts,
-- competency extensibility and historical-data cautions,
-- source-of-truth map and terminology guardrails.
+Implemented for validation:
 
-No runtime/schema/Trade Plan changes are part of this documentation branch.
+- Review / Development evidence panel now exposes an explicit **Study this competency** action,
+- the action can use either the selected evidence record's competency or the currently filtered competency,
+- selecting the action prepares the shared Process Run launcher for **Historical Backtest / Study**,
+- the selected competency becomes the sole competency focus,
+- any previously checked competency focus is cleared,
+- the Study question remains blank and must still be authored by the technician,
+- the action does **not** automatically launch a run,
+- the existing Historical Backtest requirement for an explicit Study question remains intact,
+- no competency state, score, eligibility, progression, or Evidence Maturity change is inferred,
+- no schema or Trade Plan revision change.
 
-Next action:
+The intended semantic is:
 
-1. open and merge the System Guide documentation PR,
-2. sync `main`,
-3. return to Milestone A,
-4. implement the first active evidence-consumption behavior as a small vertical slice: route a selected competency from Review / Development into a pre-focused Study/Lab launch, without automatic proficiency interpretation.
+`human-reviewed evidence -> technician chooses competency -> prepare targeted Study -> technician defines question -> normal shared runtime`
+
+Next action: run the full automated suite locally. If green, manually verify that **Study this competency** prepares the Lab launcher correctly without starting a run or inventing a Study question.
 
 ## System guide maintenance
 
