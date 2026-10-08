@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 26
+CURRENT_SCHEMA_VERSION = 27
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -86,6 +86,9 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 25:
             _migrate_version_25_to_26(connection)
             version = 26
+        if version == 26:
+            _migrate_version_26_to_27(connection)
+            version = 27
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -456,3 +459,36 @@ def _migrate_version_25_to_26(connection: sqlite3.Connection) -> None:
         "ON competency_assessment(trade_plan_id, competency_id)"
     )
     connection.execute("PRAGMA user_version = 26")
+
+
+def _migrate_version_26_to_27(connection: sqlite3.Connection) -> None:
+    connection.execute(
+        """
+        CREATE TABLE summary_template (
+            template_id TEXT NOT NULL,
+            revision INTEGER NOT NULL,
+            kind TEXT NOT NULL,
+            name TEXT NOT NULL,
+            body TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            PRIMARY KEY (template_id, revision)
+        )
+        """
+    )
+    connection.execute(
+        """
+        CREATE TABLE summary_template_active (
+            kind TEXT PRIMARY KEY,
+            template_id TEXT NOT NULL,
+            revision INTEGER NOT NULL,
+            FOREIGN KEY (template_id, revision)
+                REFERENCES summary_template(template_id, revision)
+                ON DELETE RESTRICT
+        )
+        """
+    )
+    connection.execute(
+        "CREATE INDEX idx_summary_template_kind "
+        "ON summary_template(kind, template_id, revision)"
+    )
+    connection.execute("PRAGMA user_version = 27")
