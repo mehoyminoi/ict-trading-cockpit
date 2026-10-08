@@ -127,27 +127,31 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-The accepted competency evidence Review / Development slice is merged via PR #31.
+The human-readable System Guide v0 is **accepted and ready for merge**.
 
-The planned documentation checkpoint is now active on `docs/system-guide-v0`.
+Accepted contents:
 
-Created for review:
-
-- `docs/SYSTEM_GUIDE.md` as a human-readable conceptual map of the Cockpit,
-- definitions for Trade Plan, Process, Review / Development, Trading Day, Trading Run, environment, purpose, eligibility, and account context,
-- whole-system, daily-process, learning/progression, competency, evidence, authorization, and execution-loop diagrams,
-- explicit distinction between competency Definition / State / Evidence,
+- coherent whole-system mental model,
+- canonical terminology and ownership boundaries,
+- daily operating loop,
+- Study / Rehearsal / Validation / Execution progression loop,
+- Competency Definition / State / Evidence separation,
 - evidence -> metrics -> Evidence Maturity -> progression -> eligibility separation,
-- competency extensibility guidance for newly adopted ICT concepts,
-- historical-data caution for retrospective competency mapping,
-- current paper-doll controls versus underlying domain concepts,
-- source-of-truth map and common terminology mistakes,
-- maintenance rule for keeping the guide useful without turning it into another competing authority,
-- handoff/startup instructions updated so future chats read the guide during orientation.
+- Playbook / opportunity / authorization relationships,
+- QT / AMDX separation,
+- revision/provenance model,
+- paper-doll UI versus domain concepts,
+- competency extensibility and historical-data cautions,
+- source-of-truth map and terminology guardrails.
 
-No product runtime, database, schema, Trade Plan, or behavior changes are part of this branch.
+No runtime/schema/Trade Plan changes are part of this documentation branch.
 
-Next action: operator reviews `docs/SYSTEM_GUIDE.md` for clarity, terminology, missing concepts, and whether the diagrams reflect the intended mental model. After acceptance, merge this documentation checkpoint and return to Milestone A.
+Next action:
+
+1. open and merge the System Guide documentation PR,
+2. sync `main`,
+3. return to Milestone A,
+4. implement the first active evidence-consumption behavior as a small vertical slice: route a selected competency from Review / Development into a pre-focused Study/Lab launch, without automatic proficiency interpretation.
 
 ## System guide maintenance
 
