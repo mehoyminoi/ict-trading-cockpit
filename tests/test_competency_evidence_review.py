@@ -185,6 +185,7 @@ def test_study_this_competency_prepares_focused_historical_study(
     ].isChecked() is False
     assert trade_plan_widget.trading_day_shell_widget.active_trading_run is None
     assert "Define the study question" in launcher.status_label.text()
+    assert "Begin Process Run" in launcher.status_label.text()
 
     connection.close()
 
@@ -228,5 +229,46 @@ def test_study_this_competency_uses_selected_evidence_competency(
     assert launcher.competency_checkboxes[
         "displacement-fvg-recognition"
     ].isChecked() is True
+
+    connection.close()
+
+
+def test_study_this_competency_preserves_existing_question_and_marks_ready(
+    tmp_path,
+) -> None:
+    get_app()
+    connection, window = build_window(tmp_path)
+
+    trade_plan_widget = window.trade_plan_widget
+    trade_plan_widget.section_list.setCurrentRow(4)
+    evidence_widget = trade_plan_widget.competency_evidence_review_widget
+    launcher = trade_plan_widget.process_run_launcher_widget
+
+    assert evidence_widget is not None
+    index = evidence_widget.competency_combo.findData(
+        "time-session-awareness"
+    )
+    assert index >= 0
+    evidence_widget.competency_combo.setCurrentIndex(index)
+
+    launcher.environment_combo.setCurrentText(
+        RunEnvironment.HISTORICAL_BACKTEST.value
+    )
+    launcher.study_question_input.setText(
+        "Can I identify the correct session context before the setup develops?"
+    )
+
+    evidence_widget.study_this_button.click()
+
+    assert launcher.selected_environment is RunEnvironment.HISTORICAL_BACKTEST
+    assert launcher.study_question_input.text() == (
+        "Can I identify the correct session context before the setup develops?"
+    )
+    assert launcher.competency_checkboxes[
+        "time-session-awareness"
+    ].isChecked() is True
+    assert "Study question is set" in launcher.status_label.text()
+    assert "Begin Process Run" in launcher.status_label.text()
+    assert trade_plan_widget.trading_day_shell_widget.active_trading_run is None
 
     connection.close()
