@@ -94,7 +94,10 @@ class MainWindow(QMainWindow):
         self.resize(1120, 760)
 
         self.trade_plan = build_default_trade_plan()
-        self.trade_plan_widget = TradePlanWidget(self.trade_plan)
+        self.trade_plan_widget = TradePlanWidget(
+            self.trade_plan,
+            competency_evidence_repository=self.competency_evidence_repository,
+        )
         # Backward-compatible references retained while Process Map tests and
         # callers transition to the Trade Plan parent model.
         self.process_blueprint = self.trade_plan.process_blueprint
