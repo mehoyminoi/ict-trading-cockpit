@@ -145,7 +145,7 @@ Before merging `feature/configurable-summary-templates-v0`, additionally confirm
 - [PASS] Generated Trade Summary output includes the active template name/revision provenance footer.
 - [PASS] An unknown field such as `{does_not_exist}` is rejected rather than publishing a broken revision.
 - [PASS] Full automated suite is green immediately before merge.
-  - Verified: 278 passed in 106.21s before the final provenance regression test was added; rerun after provenance change also reported 278 green.
+  - Verified: 277 passed in 106.21s before the final provenance regression test was added; final rerun after the provenance change reported 278 green.
 
 ---
 
