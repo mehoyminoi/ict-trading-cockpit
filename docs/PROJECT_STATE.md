@@ -13,8 +13,8 @@ This is the starting point for a new development chat or developer handoff. Git 
 - **Current slice:** configurable/versioned summary templates v0
 - **Schema:** v27
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** **272 passed** (268 prior baseline + 4 smoke-test document unit tests; user confirmed full suite green)
-- **Manual smoke test:** smoke-test runner v0 acceptance PASS — load/edit/save/reopen works, and Git diff showed only the intended selected change.
+- **Verified full test result:** **278 passed**
+- **Manual smoke test:** configurable summary templates v0 acceptance PASS — both template kinds publish/use new revisions, persistence survives restart, generated outputs show template provenance, and invalid fields are rejected.
 
 ## Current completed slice — Competency / Proficiency substrate v0
 
@@ -115,29 +115,26 @@ The runner remains a convenience layer over Markdown, not a second acceptance-da
 
 ## Current task
 
-The active slice is configurable/versioned summary templates v0, chosen because Study Find and Trade Summary already have generated text, quick copy, and chart attachments while the template bodies remain hardcoded.
+The configurable/versioned summary templates v0 slice is acceptance-complete and ready for PR/merge.
 
-Implemented so far:
+Implemented and verified:
 
 - versioned `SummaryTemplateDefinition` domain model,
-- schema v27 storage for immutable template revisions plus an active template pointer per summary kind,
-- seeded default Trade Summary and Study Find templates preserving current output,
-- repository support for publishing a new immutable revision,
+- schema v27 immutable template revisions plus active template pointers,
+- seeded default Trade Summary and Study Find templates preserving existing output,
+- repository support for publishing new immutable revisions,
 - template-field validation,
-- a minimal Workbench editor that publishes revisions,
-- Study Find and Trade Summary generation now resolve the active persisted template,
-- active template revision labels on both summary surfaces,
-- regression/unit coverage for schema, seeding, revision history, validation, and Workbench-to-Study-Find generation.
+- minimal Workbench editor for publishing revisions,
+- Study Find and Trade Summary resolve the active persisted template,
+- active template labels on both summary surfaces,
+- generated/copyable output includes non-editable template name/revision provenance,
+- invalid template fields are rejected before publication,
+- active revisions persist across restart,
+- full automated suite is 278 green.
 
-Next:
+After merge, pause product feature development for a dedicated project requirements / roadmap reconciliation milestone. Reconcile the early living roadmap, current repository architecture, durable decisions, and prior-chat decisions before selecting the next larger implementation milestone.
 
-1. run the full automated suite locally,
-2. correct any migration/UI regressions,
-3. manually verify Workbench publication for both Study Find and Trade Summary,
-4. confirm previous template revisions remain in storage and current summaries use the new active revision,
-5. complete the branch smoke test before PR/merge.
-
-Do not turn this slice into a general Workbench redesign. The Workbench surface exists here only because configuration/revision needs now justify a dedicated design surface.
+Deferred from this slice: exposing Trade Plan revision as an available summary-template field. It is desirable provenance but requires adding Trade Plan revision to the summary context first.
 
 ## Continuity protocol
 
