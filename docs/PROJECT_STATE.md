@@ -6,11 +6,11 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `feature/development-direction-v0`
-- **Main baseline:** `3951f5bfaf4232c7456b68d74f114ef2ae9640d2` — PR #34 merged Review / Development synthesis v0 design
+- **Active branch:** `design/competency-synthesis-panel-v0`
+- **Main baseline:** `d6381ad2ab1b62c7c776448ed20caf50f4364317` — PR #35 merged Development Direction v0
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Milestone B — Development Direction v0
+- **Current slice:** Milestone B design — competency synthesis panel v0
 - **Schema:** v29
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** full schema v29 Development Direction suite green on 2026-10-08 (exact count not separately recorded)
@@ -127,38 +127,28 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-Milestone B — Development Direction v0 is **acceptance-complete and ready for PR/merge**.
+Development Direction v0 is merged via PR #35 and the project remains in **Milestone B — Review / Development synthesis**.
 
-Accepted behavior:
+The next design candidate is recorded in `docs/COMPETENCY_SYNTHESIS_PANEL.md`.
 
-- Development Direction is explicit human-reviewed synthesis over competency evidence,
-- one current mutable direction is stored per Trade Plan + competency,
-- accepted directions are Study, Rehearsal, Validation, Monitor / Gather Evidence, and No Active Focus,
-- optional synthesis note persists,
-- selected supporting-evidence links persist across navigation/restart,
-- the UI restores and visibly distinguishes the selected evidence record's link state,
-- unrelated supporting-evidence links are preserved when one selected record is toggled,
-- Review / Development is vertically scrollable so added synthesis functionality does not make the application taller than the display or crush the lower Lab / Replay controls,
-- saving a Development Direction does not mutate Competency State,
-- saving a Development Direction does not alter Eligibility or create an Evidence Maturity conclusion,
-- no Development Direction is inferred automatically from Study Outcome,
-- schema is v29,
-- Trade Plan remains Alpha 0.7,
-- full automated suite is green,
-- focused manual smoke test is fully PASS.
+The proposed **Competency Synthesis** panel is a compact competency-level reading surface combining:
 
-This completes the first Milestone B synthesis primitive:
+- current human-authored Development Direction,
+- descriptive evidence coverage by Study / Rehearsal / Validation,
+- descriptive Study Outcome counts,
+- evidence age/range,
+- linked supporting-evidence count,
+- per-record provenance already available in the evidence list/detail,
+- a mixed-Trade-Plan-revision caution when evidence spans revisions,
+- the explicit boundary that coverage is not proficiency, Evidence Maturity, or eligibility.
 
-`accumulated evidence -> human-reviewed Development Direction -> explicit next-development intent`
+The design deliberately avoids automatic recommendations, trend/strength labels, competency-state changes, progression logic, and new Rehearsal/Validation routing.
 
-Next action:
+UI constraint: this must remain compact and reuse existing evidence UI because recent operator testing showed that Review / Development can become vertically overloaded.
 
-1. inspect the complete branch diff,
-2. open and merge the accepted Development Direction v0 slice,
-3. sync `main`,
-4. continue Milestone B with the next small synthesis slice: decide how Review / Development should present competency-level cross-run synthesis and Development Direction together without turning descriptive counts into automatic recommendations.
+No runtime/schema/Trade Plan changes are on this design branch.
 
-Do not add Evidence Maturity, automatic competency-state transitions, or progression rules yet.
+Next action: operator reviews `docs/COMPETENCY_SYNTHESIS_PANEL.md` and its six confirmation questions before implementation.
 
 ## System guide maintenance
 
