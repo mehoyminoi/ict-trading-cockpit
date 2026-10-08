@@ -6,11 +6,11 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `feature/competency-evidence-review-v0`
-- **Main baseline:** `c190b037dd994d21e01b260328c41c1787f1eaea` — PR #30 merged competency evidence substrate v0
+- **Active branch:** `docs/system-guide-v0`
+- **Main baseline:** `276a2b0c4c57e5db01db6582d699b08527a94a18` — PR #31 merged competency evidence Review / Development surface v0
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Milestone A — competency evidence Review / Development surface v0
+- **Current slice:** documentation checkpoint — human-readable system guide v0
 - **Schema:** v28
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** full v28 competency-evidence suite green on 2026-10-08 (exact count not separately recorded)
@@ -127,48 +127,35 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-Milestone A — competency evidence Review / Development v0 is **acceptance-complete and ready for PR/merge**.
+The accepted competency evidence Review / Development slice is merged via PR #31.
 
-Accepted behavior:
+The planned documentation checkpoint is now active on `docs/system-guide-v0`.
 
-- Review / Development surfaces accumulated competency evidence in a read-only human-legible panel,
-- evidence can be viewed across all competencies or filtered to one plan-owned competency,
-- compact counts summarize environment purpose and reviewed outcome without asserting proficiency,
-- selected evidence preserves useful context such as Trade Plan revision, Study question/hypothesis/scope, review note, and Trading Run identity,
-- entering Review / Development refreshes the evidence view,
-- no competency score, automatic state change, eligibility decision, or maturity threshold is introduced,
-- full automated suite is green,
-- operator manual acceptance passed with no current implementation/function concerns.
+Created for review:
 
-Next action:
+- `docs/SYSTEM_GUIDE.md` as a human-readable conceptual map of the Cockpit,
+- definitions for Trade Plan, Process, Review / Development, Trading Day, Trading Run, environment, purpose, eligibility, and account context,
+- whole-system, daily-process, learning/progression, competency, evidence, authorization, and execution-loop diagrams,
+- explicit distinction between competency Definition / State / Evidence,
+- evidence -> metrics -> Evidence Maturity -> progression -> eligibility separation,
+- competency extensibility guidance for newly adopted ICT concepts,
+- historical-data caution for retrospective competency mapping,
+- current paper-doll controls versus underlying domain concepts,
+- source-of-truth map and common terminology mistakes,
+- maintenance rule for keeping the guide useful without turning it into another competing authority,
+- handoff/startup instructions updated so future chats read the guide during orientation.
 
-1. inspect the branch diff,
-2. open and merge the accepted Review / Development evidence slice,
-3. sync `main`,
-4. use the now-convenient documentation checkpoint to create `docs/SYSTEM_GUIDE.md`,
-5. after the guide is reviewed, return to Milestone A and decide the first active evidence-consumption behavior (likely a lightweight route from a competency/evidence view back into targeted Study, still without automatic proficiency interpretation).
+No product runtime, database, schema, Trade Plan, or behavior changes are part of this branch.
 
-## Accepted upcoming documentation slice
+Next action: operator reviews `docs/SYSTEM_GUIDE.md` for clarity, terminology, missing concepts, and whether the diagrams reflect the intended mental model. After acceptance, merge this documentation checkpoint and return to Milestone A.
 
-At the next convenient documentation checkpoint after the current competency-evidence review slice, create a human-readable `docs/SYSTEM_GUIDE.md`.
+## System guide maintenance
 
-Its purpose is to explain the Cockpit as a coherent system rather than as a backlog or implementation log. It should include:
+`docs/SYSTEM_GUIDE.md` is now part of the maintained handoff package.
 
-- canonical terminology and definitions,
-- subsystem purposes and ownership boundaries,
-- whole-system architecture diagrams,
-- daily operating-loop diagrams,
-- Study/Rehearsal/Validation/Execution progression loops,
-- competency Definition / State / Evidence relationships,
-- environment vs eligibility vs account-context distinctions,
-- Playbook / opportunity / authorization relationships,
-- revision/provenance concepts,
-- current paper-doll UI controls versus the underlying domain concepts,
-- examples showing how newly adopted concepts can be added to later Trade Plan revisions and begin accumulating new evidence.
+Update it when terminology, subsystem relationships, ownership boundaries, or major system loops materially change. Do not update it for ordinary bug fixes or minor UI changes.
 
-The guide should be maintained when terminology, ownership boundaries, or major system loops materially change. It should remain explanatory and must not supersede `PROJECT_REQUIREMENTS.md`, `DECISIONS.md`, `PROJECT_STATE.md`, or verified implementation.
-
-This is intentionally scheduled for the next convenient documentation opportunity rather than interrupting the current evidence-review validation slice.
+The guide is explanatory and must not supersede `PROJECT_REQUIREMENTS.md`, `DECISIONS.md`, `PROJECT_STATE.md`, the decision audit, or verified implementation.
 
 ## Continuity protocol
 
