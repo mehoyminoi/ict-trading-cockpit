@@ -6,15 +6,15 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `docs/system-guide-v0`
-- **Main baseline:** `276a2b0c4c57e5db01db6582d699b08527a94a18` — PR #31 merged competency evidence Review / Development surface v0
+- **Active branch:** `feature/competency-study-routing-v0`
+- **Main baseline:** `b6b1f9ec854b26fb25c388e571390d60f82042c6` — PR #32 merged human-readable System Guide v0
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** documentation checkpoint — human-readable system guide v0
+- **Current slice:** Milestone A — evidence to targeted Study routing v0
 - **Schema:** v28
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** full v28 competency-evidence suite green on 2026-10-08 (exact count not separately recorded)
-- **Manual smoke test:** competency evidence Review / Development v0 acceptance PASS — evidence panel, details, all-competency view, filtering, summary counts, and non-scorecard semantics manually verified.
+- **Manual smoke test:** evidence-to-targeted-Study routing v0 acceptance PASS — staging semantics, question-first path, Begin Process Run handoff, and progression gate behavior manually verified.
 
 ## Current completed slice — Competency / Proficiency substrate v0
 
@@ -127,31 +127,32 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-The human-readable System Guide v0 is **accepted and ready for merge**.
+Milestone A's evidence-to-targeted-Study routing slice is **acceptance-complete and ready for PR/merge**.
 
-Accepted contents:
+Accepted behavior:
 
-- coherent whole-system mental model,
-- canonical terminology and ownership boundaries,
-- daily operating loop,
-- Study / Rehearsal / Validation / Execution progression loop,
-- Competency Definition / State / Evidence separation,
-- evidence -> metrics -> Evidence Maturity -> progression -> eligibility separation,
-- Playbook / opportunity / authorization relationships,
-- QT / AMDX separation,
-- revision/provenance model,
-- paper-doll UI versus domain concepts,
-- competency extensibility and historical-data cautions,
-- source-of-truth map and terminology guardrails.
+- **Study this competency** is an intent-staging action, not a second run-entry mechanism,
+- it prepares Historical Backtest / Study in the shared launcher,
+- the selected competency becomes the sole deliberate focus,
+- an existing Study question is preserved,
+- a missing Study question is still required,
+- **Begin Process Run** remains the explicit run-creation action,
+- progression eligibility continues to gate higher environments and guide downward,
+- no score, competency-state transition, Evidence Maturity conclusion, or eligibility promotion is inferred.
 
-No runtime/schema/Trade Plan changes are part of this documentation branch.
+This closes the first complete operator-facing competency-evidence loop:
+
+`focus competency -> deliberate run -> reviewed evidence -> inspect evidence -> route back to targeted Study`
 
 Next action:
 
-1. open and merge the System Guide documentation PR,
-2. sync `main`,
-3. return to Milestone A,
-4. implement the first active evidence-consumption behavior as a small vertical slice: route a selected competency from Review / Development into a pre-focused Study/Lab launch, without automatic proficiency interpretation.
+1. inspect branch diff,
+2. open and merge this accepted routing slice,
+3. sync `main`,
+4. mark Milestone A's first trustworthy competency-evidence loop complete,
+5. begin Milestone B — Review / Development synthesis with a design/inventory slice before adding automatic weakness interpretation.
+
+The first Milestone B design question is how the operator should explicitly identify a recurring weakness or development need across evidence **without** abusing Study Outcome as a hidden proficiency score.
 
 ## System guide maintenance
 

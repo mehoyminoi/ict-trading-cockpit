@@ -1,11 +1,13 @@
 from collections import Counter
 from datetime import datetime
 
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QComboBox,
     QFrame,
     QLabel,
     QListWidget,
+    QPushButton,
     QVBoxLayout,
     QWidget,
 )
@@ -18,6 +20,8 @@ from ict_cockpit.trade_plan import TradePlanDefinition
 
 class CompetencyEvidenceReviewWidget(QWidget):
     """Read-only Review / Development view over accumulated competency evidence."""
+
+    study_competency_requested = Signal(str)
 
     def __init__(
         self,
@@ -63,6 +67,10 @@ class CompetencyEvidenceReviewWidget(QWidget):
         self.detail_label.setFrameShape(QFrame.Shape.StyledPanel)
         self.detail_label.setContentsMargins(8, 6, 8, 6)
 
+        self.study_this_button = QPushButton("Study this competency")
+        self.study_this_button.setEnabled(False)
+        self.study_this_button.clicked.connect(self._request_targeted_study)
+
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(5)
@@ -72,6 +80,7 @@ class CompetencyEvidenceReviewWidget(QWidget):
         layout.addWidget(self.summary_label)
         layout.addWidget(self.evidence_list)
         layout.addWidget(self.detail_label)
+        layout.addWidget(self.study_this_button)
 
         self.refresh()
 
@@ -90,6 +99,7 @@ class CompetencyEvidenceReviewWidget(QWidget):
         self.evidence_list.clear()
 
         if not evidence:
+            self.study_this_button.setEnabled(bool(competency_id))
             label = (
                 self.competency_combo.currentText()
                 if competency_id
@@ -132,6 +142,20 @@ class CompetencyEvidenceReviewWidget(QWidget):
             )
 
         self.evidence_list.setCurrentRow(0)
+        self.study_this_button.setEnabled(True)
+
+    def _selected_competency_id(self) -> str:
+        selected = self.evidence_list.currentItem()
+        evidence_id = selected.data(256) if selected is not None else ""
+        item = self._evidence_by_id.get(str(evidence_id or ""))
+        if item is not None:
+            return item.competency_id
+        return str(self.competency_combo.currentData() or "")
+
+    def _request_targeted_study(self) -> None:
+        competency_id = self._selected_competency_id()
+        if competency_id:
+            self.study_competency_requested.emit(competency_id)
 
     def _render_selected(self) -> None:
         selected = self.evidence_list.currentItem()

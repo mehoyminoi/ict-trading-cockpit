@@ -265,6 +265,45 @@ class ProcessRunLauncherWidget(QWidget):
     def selected_environment(self) -> RunEnvironment:
         return RunEnvironment(self.environment_combo.currentData())
 
+    def prepare_targeted_study(self, competency_id: str) -> bool:
+        competency_id = competency_id.strip()
+        checkbox = self.competency_checkboxes.get(competency_id)
+        if checkbox is None:
+            self.status_label.setText(
+                "The selected competency is not defined in this Trade Plan revision."
+            )
+            return False
+
+        self.environment_combo.setCurrentText(
+            RunEnvironment.HISTORICAL_BACKTEST.value
+        )
+        for item in self.competency_checkboxes.values():
+            item.setChecked(False)
+        checkbox.setChecked(True)
+        competency = next(
+            (
+                item
+                for item in self.competencies
+                if item.id == competency_id
+            ),
+            None,
+        )
+        label = competency.name if competency is not None else competency_id
+        question = self.study_question_input.text().strip()
+        if question:
+            self.status_label.setText(
+                f"Targeted Study prepared for {label}. "
+                "Study question is set; click Begin Process Run to start."
+            )
+            self.begin_button.setFocus()
+        else:
+            self.status_label.setText(
+                f"Targeted Study prepared for {label}. "
+                "Define the study question, then click Begin Process Run."
+            )
+            self.study_question_input.setFocus()
+        return True
+
     def begin_process_run(self) -> bool:
         shell = self.trading_day_shell
         if shell.active_trading_run is not None:
