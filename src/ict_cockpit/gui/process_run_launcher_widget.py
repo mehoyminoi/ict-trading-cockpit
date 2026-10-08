@@ -295,16 +295,23 @@ class ProcessRunLauncherWidget(QWidget):
         else:
             shell.run_market_timestamp = None
 
-        if environment is not RunEnvironment.LIVE and question:
-            selected_focus = []
+        hypothesis = self.study_hypothesis_input.text().strip()
+        scope = self.study_scope_input.text().strip()
+        selected_focus = []
+        if environment is not RunEnvironment.LIVE:
             for competency in self.competencies:
                 checkbox = self.competency_checkboxes.get(competency.id)
                 if checkbox is not None and checkbox.isChecked():
                     selected_focus.append(competency.to_dict())
+
+        if (
+            environment is not RunEnvironment.LIVE
+            and (question or hypothesis or scope or selected_focus)
+        ):
             shell.run_study_context = {
                 "question": question,
-                "hypothesis": self.study_hypothesis_input.text().strip(),
-                "scope": self.study_scope_input.text().strip(),
+                "hypothesis": hypothesis,
+                "scope": scope,
                 "competency_focus": selected_focus,
             }
         else:
