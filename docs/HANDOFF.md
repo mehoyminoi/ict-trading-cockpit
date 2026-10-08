@@ -42,13 +42,14 @@ Then provide fresh terminal output when local state may be ahead of GitHub.
 
 ## Before ending a development slice
 
-1. Run the full test suite.
-2. Record the exact result.
-3. Confirm the schema and Trade Plan revision.
-4. Update `PROJECT_STATE.md`.
-5. Append any durable decision to `DECISIONS.md`.
-6. Commit those documentation changes with the feature.
-7. Make sure "Current task" describes the next action precisely enough that another chat can continue without reconstruction.
+1. Run the full automated test suite.
+2. Run the relevant manual acceptance checks in `docs/SMOKE_TEST.md` for substantial branches or workflow/schema/risk/time changes.
+3. Record the exact automated and manual results.
+4. Confirm the schema and Trade Plan revision.
+5. Update `PROJECT_STATE.md`.
+6. Append any durable decision to `DECISIONS.md`.
+7. Commit those documentation changes with the feature.
+8. Make sure "Current task" describes the next action precisely enough that another chat can continue without reconstruction.
 
 ## Principle
 
