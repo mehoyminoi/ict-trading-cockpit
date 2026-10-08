@@ -72,16 +72,20 @@ An earlier run on this branch collected 267 tests and reported **265 passed / 2 
 
 Those failures were time-context dependent. Pulling through implementation commit `9fa5807` changed the affected structured-playbook tests to deterministic Replay runs; the subsequent full suite was **267 passed**. Do not carry the earlier result forward as an unresolved Live Watch production regression.
 
+## Manual acceptance status
+
+Current operator checks completed on 2026-10-07:
+
+- non-Live environments expose the expected five competency focus checkboxes,
+- competency focus selections persist into Post-Market Review,
+- competency focus selections persist after application restart as part of the Trading Run,
+- launcher checkbox selections do not repopulate after restart; this is expected because the launcher represents a new run while persisted Study Context belongs to the started/restored run.
+
+See `docs/SMOKE_TEST.md` for the repeatable acceptance checklist.
+
 ## Current task
 
-No new feature should be inferred solely from an old chat checkpoint.
-
-At the next work session:
-
-1. verify local branch/HEAD against this handoff and GitHub,
-2. run or confirm the full test suite,
-3. review the completed Competency / Proficiency v0 slice in actual use,
-4. choose the next slice from observed workflow friction and the established roadmap rather than inventing competency thresholds prematurely.
+Complete the remaining pre-merge smoke checks for the Competency / Proficiency v0 slice, confirm the full automated suite remains green, and then prepare the branch for merge. Do not add proficiency thresholds/readiness scoring as part of this slice.
 
 ## Continuity protocol
 
