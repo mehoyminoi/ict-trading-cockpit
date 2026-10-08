@@ -259,12 +259,15 @@ class StudyFindWidget(QWidget):
     def submit(self) -> None:
         self.study_find_ready.emit(self.build_study_find())
 
-    def _active_summary_template_body(self) -> str:
+    def _active_summary_template(self):
         if self.summary_template_repository is None:
-            return STUDY_FIND_SUMMARY_V1
-        template = self.summary_template_repository.get_active(
+            return None
+        return self.summary_template_repository.get_active(
             SummaryTemplateKind.STUDY_FIND
         )
+
+    def _active_summary_template_body(self) -> str:
+        template = self._active_summary_template()
         return template.body if template is not None else STUDY_FIND_SUMMARY_V1
 
     def refresh_summary_template_label(self) -> None:
@@ -290,10 +293,22 @@ class StudyFindWidget(QWidget):
             study_find=self.build_study_find(),
             image_paths=self.image_paths,
         )
-        rendered = SummaryRenderer().render(
-            self._active_summary_template_body(),
-            context.to_template_values(),
-        )
+        renderer = SummaryRenderer()
+        template = self._active_summary_template()
+        if template is None:
+            rendered = renderer.render(
+                STUDY_FIND_SUMMARY_V1,
+                context.to_template_values(),
+            )
+            rendered = (
+                rendered.rstrip()
+                + "\n\nTemplate: Study Find Default · r1\n"
+            )
+        else:
+            rendered = renderer.render_versioned(
+                template,
+                context.to_template_values(),
+            )
         self.summary_preview.setPlainText(rendered)
         return rendered
 
