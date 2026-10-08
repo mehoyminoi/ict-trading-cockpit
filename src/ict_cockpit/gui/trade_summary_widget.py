@@ -399,12 +399,15 @@ class TradeSummaryWidget(QWidget):
             image_paths=self.image_paths,
         )
 
-    def _active_summary_template_body(self) -> str:
+    def _active_summary_template(self):
         if self.summary_template_repository is None:
-            return TRADE_SUMMARY_V1
-        template = self.summary_template_repository.get_active(
+            return None
+        return self.summary_template_repository.get_active(
             SummaryTemplateKind.TRADE_SUMMARY
         )
+
+    def _active_summary_template_body(self) -> str:
+        template = self._active_summary_template()
         return template.body if template is not None else TRADE_SUMMARY_V1
 
     def refresh_summary_template_label(self) -> None:
@@ -427,10 +430,23 @@ class TradeSummaryWidget(QWidget):
 
     def generate_summary(self) -> str:
         try:
-            rendered = SummaryRenderer().render(
-                self._active_summary_template_body(),
-                self._build_summary_context().to_template_values(),
-            )
+            renderer = SummaryRenderer()
+            values = self._build_summary_context().to_template_values()
+            template = self._active_summary_template()
+            if template is None:
+                rendered = renderer.render(
+                    TRADE_SUMMARY_V1,
+                    values,
+                )
+                rendered = (
+                    rendered.rstrip()
+                    + "\n\nTemplate: Trade Summary Default · r1\n"
+                )
+            else:
+                rendered = renderer.render_versioned(
+                    template,
+                    values,
+                )
         except ValueError as exc:
             self.validation_label.setText(str(exc))
             self.validation_label.show()
