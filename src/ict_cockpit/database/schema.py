@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 27
+CURRENT_SCHEMA_VERSION = 28
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -89,6 +89,9 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 26:
             _migrate_version_26_to_27(connection)
             version = 27
+        if version == 27:
+            _migrate_version_27_to_28(connection)
+            version = 28
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -492,3 +495,40 @@ def _migrate_version_26_to_27(connection: sqlite3.Connection) -> None:
         "ON summary_template(kind, template_id, revision)"
     )
     connection.execute("PRAGMA user_version = 27")
+
+def _migrate_version_27_to_28(connection: sqlite3.Connection) -> None:
+    connection.execute(
+        """
+        CREATE TABLE competency_evidence (
+            id TEXT PRIMARY KEY,
+            trade_plan_id TEXT NOT NULL,
+            trade_plan_revision TEXT NOT NULL,
+            competency_id TEXT NOT NULL,
+            competency_name TEXT NOT NULL,
+            competency_category TEXT NOT NULL DEFAULT '',
+            trading_run_id TEXT NOT NULL,
+            run_environment TEXT NOT NULL,
+            run_purpose TEXT NOT NULL,
+            study_outcome TEXT NOT NULL,
+            note TEXT NOT NULL DEFAULT '',
+            study_question TEXT NOT NULL DEFAULT '',
+            study_hypothesis TEXT NOT NULL DEFAULT '',
+            study_scope TEXT NOT NULL DEFAULT '',
+            market_time_context_json TEXT NOT NULL DEFAULT '{}',
+            qt_context_json TEXT NOT NULL DEFAULT '{}',
+            source TEXT NOT NULL DEFAULT 'Study Review',
+            recorded_at TEXT NOT NULL,
+            UNIQUE (trading_run_id, competency_id)
+        )
+        """
+    )
+    connection.execute(
+        "CREATE INDEX idx_competency_evidence_competency "
+        "ON competency_evidence(trade_plan_id, competency_id, recorded_at)"
+    )
+    connection.execute(
+        "CREATE INDEX idx_competency_evidence_run "
+        "ON competency_evidence(trading_run_id)"
+    )
+    connection.execute("PRAGMA user_version = 28")
+

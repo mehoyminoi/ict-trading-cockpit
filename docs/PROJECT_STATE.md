@@ -6,15 +6,15 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `docs/roadmap-reconciliation-2026-10`
-- **Main baseline:** `c9df4713b9f11558f6b94f5abfbc10e26a0cc1e2` — PR #28 merged configurable/versioned summary templates v0
+- **Active branch:** `feature/competency-evidence-v0`
+- **Main baseline:** `c243074c4a204ca1e91fa84e15b2844442747c58` — PR #29 merged roadmap reconciliation / hardened handoff
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** project requirements / roadmap reconciliation
-- **Schema:** v27
+- **Current slice:** Milestone A — competency evidence loop v0
+- **Schema:** v28
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** **278 passed**
-- **Manual smoke test:** configurable summary templates v0 acceptance PASS — both template kinds publish/use new revisions, persistence survives restart, generated outputs show template provenance, and invalid fields are rejected.
+- **Verified full test result:** full v28 competency-evidence suite green on 2026-10-08 (exact count not separately recorded)
+- **Manual smoke test:** competency evidence v0 acceptance PASS — focused Historical Backtest / Study review completed normally with no visible workflow regression.
 
 ## Current completed slice — Competency / Proficiency substrate v0
 
@@ -127,34 +127,29 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-The roadmap reconciliation and handoff-hardening milestone is **accepted**.
+Milestone A — competency evidence v0 is **acceptance-complete and ready for PR/merge**.
 
-The accepted milestone order is:
+Accepted behavior:
 
-A. **Competency evidence loop**  
-B. **Review / Development synthesis**  
-C. **Evidence Maturity and progression governance**  
-D. **Continuous operator-loop hardening** (parallel/supporting)  
-E. **Context maturity: QT/AMDX, news, and distortions**  
-F. **Execution-safety simulation**  
-G. **NinjaTrader execution integration**  
-H. **Shared / multi-device operation**
-
-The current architectural frontier is:
-
-`targeted Study -> competency evidence -> Replay integration -> Forward validation -> progression/eligibility -> Live Execution`
-
-Revision/provenance remains a cross-cutting requirement rather than a standalone first milestone.
+- first-class `CompetencyEvidence` remains separate from competency definition and mutable competency state,
+- schema v28 persists one evidence record per reviewed Trading Run + focused competency,
+- evidence preserves run/environment/purpose, Trade Plan revision, study question/hypothesis/scope/outcome/note, competency identity, market-time context, and QT context,
+- re-review replaces the current run+competency evidence rather than duplicating one observation,
+- evidence is materialized through the existing Study Review save path,
+- retrieval exists by Trading Run and by competency,
+- no score, automatic competency-state mutation, promotion/demotion, eligibility change, weighting, or Evidence Maturity threshold has been introduced,
+- full automated suite is green,
+- operator manual acceptance passed.
 
 Next action:
 
-1. finalize this documentation branch,
-2. inspect the final diff,
-3. open and merge the reconciliation PR,
+1. inspect branch diff,
+2. open PR for `feature/competency-evidence-v0`,
+3. merge only this accepted evidence substrate,
 4. sync `main`,
-5. begin Milestone A with a small competency-evidence design/inventory slice.
+5. start the next Milestone A slice from the accepted evidence model rather than adding scoring prematurely.
 
-Do not resume older Film Night, responsive-gallery, broad Live-Watch, hardware, or integration feature queues unless real use makes one blocking.
+The likely next design question is how Review / Development should **surface and consume** accumulated evidence without yet converting it into automatic state/progression decisions.
 
 ## Continuity protocol
 
