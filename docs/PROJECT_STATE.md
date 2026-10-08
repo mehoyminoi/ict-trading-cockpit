@@ -149,7 +149,9 @@ The design intentionally keeps Development Direction separate from Study Outcome
 
 No runtime/schema/Trade Plan changes are on this design branch.
 
-Next action: operator reviews the concept/terminology and the five confirmation questions in the design note before implementation.
+The operator approved `docs/REVIEW_DEVELOPMENT_SYNTHESIS.md` on 2026-10-08, including its distinctions, nuances, and guardrails.
+
+Next action: merge this accepted design checkpoint, then implement the smallest v0 Development Direction vertical slice.
 
 ## System guide maintenance
 
