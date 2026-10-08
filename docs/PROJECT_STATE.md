@@ -14,7 +14,7 @@ This is the starting point for a new development chat or developer handoff. Git 
 - **Schema:** v28
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** full v28 competency-evidence suite green on 2026-10-08 (exact count not separately recorded)
-- **Manual smoke test:** competency evidence v0 acceptance PASS — focused Historical Backtest / Study review completed normally with no visible workflow regression.
+- **Manual smoke test:** competency evidence Review / Development v0 acceptance PASS — evidence panel, details, all-competency view, filtering, summary counts, and non-scorecard semantics manually verified.
 
 ## Current completed slice — Competency / Proficiency substrate v0
 
@@ -127,27 +127,26 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-Milestone A continues on `feature/competency-evidence-review-v0`.
+Milestone A — competency evidence Review / Development v0 is **acceptance-complete and ready for PR/merge**.
 
-This slice tests whether the evidence substrate is useful when surfaced in the existing **Trade Plan -> Review / Development** area, without adding scores or automatic interpretation.
+Accepted behavior:
 
-Implemented for validation:
+- Review / Development surfaces accumulated competency evidence in a read-only human-legible panel,
+- evidence can be viewed across all competencies or filtered to one plan-owned competency,
+- compact counts summarize environment purpose and reviewed outcome without asserting proficiency,
+- selected evidence preserves useful context such as Trade Plan revision, Study question/hypothesis/scope, review note, and Trading Run identity,
+- entering Review / Development refreshes the evidence view,
+- no competency score, automatic state change, eligibility decision, or maturity threshold is introduced,
+- full automated suite is green,
+- operator manual acceptance passed with no current implementation/function concerns.
 
-- read-only Competency Evidence panel in Review / Development,
-- All Competencies view plus filtering by plan-owned competency,
-- compact counts by environment purpose and reviewed Study outcome,
-- evidence rows showing time, competency, purpose, and outcome,
-- selected-evidence detail with Trade Plan revision, study question/hypothesis/scope, review note, and Trading Run identity,
-- automatic refresh when Review / Development is entered,
-- plan-level evidence retrieval in the repository,
-- no schema change; remains v28,
-- no automatic competency-state, proficiency, or eligibility behavior.
+Next action:
 
-This is intentionally a **human-legibility / usefulness test**, not an analytics dashboard.
-
-Next action: run the full automated suite locally. If green, manually create/review at least one focused Study or Replay run, open Trade Plan -> Review / Development, and judge whether the evidence panel makes the accumulated evidence understandable without feeling like a scorecard or adding workflow friction.
-
-If accepted, the next decision is whether the first active consumption behavior should be a lightweight **Study this competency** route from evidence back into a pre-focused Lab launcher, or whether the evidence presentation needs refinement first.
+1. inspect the branch diff,
+2. open and merge the accepted Review / Development evidence slice,
+3. sync `main`,
+4. use the now-convenient documentation checkpoint to create `docs/SYSTEM_GUIDE.md`,
+5. after the guide is reviewed, return to Milestone A and decide the first active evidence-consumption behavior (likely a lightweight route from a competency/evidence view back into targeted Study, still without automatic proficiency interpretation).
 
 ## Accepted upcoming documentation slice
 
