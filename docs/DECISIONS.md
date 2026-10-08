@@ -262,3 +262,35 @@ For v0:
 **Rationale:** accumulated evidence needs a human synthesis layer before later governance can safely reason about progression. This avoids turning descriptive evidence or Study outcomes into hidden readiness scores.
 
 **Consequence:** Review / Development can become actionable without prematurely automating weakness detection or proficiency decisions.
+
+
+## 2026-10-08 — Stable Trade Plan revisions are protected from candidate development
+
+**Status:** Accepted
+
+A proven/stable Trade Plan revision must remain immutable and historically interpretable while later candidate revisions are developed, studied, rehearsed, and validated.
+
+Conceptually:
+
+```text
+stable / trusted rX
+        |
+        +-- continues to mean exactly what it meant
+        +-- historical runs/evidence remain bound to rX
+        |
+        +--> candidate rY
+              + new/changed models
+              + new/changed competencies
+              + new/changed rules/process
+              + new evidence collected under rY
+```
+
+Development of `rY` must not mutate `rX`, retroactively change what old records mean, or silently make old evidence satisfy newly changed competency definitions.
+
+If a competency definition is unchanged between Trade Plan revisions, evidence may still be comparable across those revisions. If the competency definition materially changes, evidence created under the earlier definition remains valid historical evidence for that earlier definition but must not silently be treated as evidence for the new meaning.
+
+A newly added competency begins collecting evidence from the revision that defines it. Historical pre-definition records do not automatically become evidence for it. Any future retrospective classification/mapping must be an explicit analytical act with its own provenance.
+
+**Rationale:** revision control must protect a known-good trading system while allowing experimentation beside it. It also makes later comparisons meaningful: what exactly changed, which evidence belonged to which definition, and whether the candidate revision actually improved the process/system.
+
+**Consequence:** future Workbench/revision tooling should distinguish stable/trusted revisions from candidate development revisions and preserve exact definition provenance. Competency Synthesis should show revision provenance but should not issue a generic warning merely because records span Trade Plan revisions; meaningful caution depends on whether the competency definition itself changed.
