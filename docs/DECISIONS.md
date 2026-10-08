@@ -117,3 +117,31 @@ Every handoff must state the project's **current architectural frontier** in add
 **Rationale:** Recovery of the prior long conversation showed that an old feature can remain richly documented even after later work deliberately demoted or superseded it. A chronological history plus an explicit supersession ledger prevents future chats from mistaking historical detail for current priority.
 
 **Consequence:** `PROJECT_REQUIREMENTS.md` should remain current-state oriented rather than becoming a diary. Historical evolution and supersession belong in their dedicated documents.
+
+
+## 2026-10-08 — Reconciled roadmap and learning frontier accepted
+
+**Status:** Accepted
+
+The recovered project trajectory is now authoritative for forward planning.
+
+The current architectural frontier is:
+
+`targeted Study -> competency evidence -> Replay integration -> Forward validation -> progression/eligibility -> Live Execution`
+
+The accepted milestone order is:
+
+1. Competency evidence loop
+2. Review / Development synthesis
+3. Evidence Maturity and progression governance
+4. Continuous operator-loop hardening in parallel
+5. Context maturity: QT/AMDX, news, and distortions
+6. Execution-safety simulation
+7. NinjaTrader execution integration
+8. Shared / multi-device operation
+
+Revision/provenance is a cross-cutting requirement that each slice must preserve; it is not the next standalone milestone.
+
+**Supersedes:** the earlier reconciliation draft that placed abstract process/revision architecture first, and any older roadmap ordering that would elevate Film Night, visual-polish, broad Live-Watch expansion, hardware controls, or deep integrations ahead of the learning/progression loop.
+
+**Rationale:** recovery of the full conversation history showed that the project had already deliberately pivoted from operating-surface expansion toward Study/Lab, competency evidence, and progression semantics before the previous chat ended.
