@@ -4,6 +4,14 @@ from enum import Enum
 from uuid import uuid4
 
 
+class DevelopmentDirection(str, Enum):
+    STUDY = "Study"
+    REHEARSAL = "Rehearsal"
+    VALIDATION = "Validation"
+    MONITOR = "Monitor / Gather Evidence"
+    NO_ACTIVE_FOCUS = "No Active Focus"
+
+
 class CompetencyState(str, Enum):
     NOT_ASSESSED = "Not Assessed"
     UNDER_STUDY = "Under Study"
@@ -117,3 +125,43 @@ class CompetencyEvidence:
                 timespec="seconds"
             )
 
+
+
+@dataclass
+class CompetencyDevelopmentDirection:
+    """Current human-reviewed development direction for one competency."""
+
+    trade_plan_id: str
+    trade_plan_revision: str
+    competency_id: str
+    direction: DevelopmentDirection = DevelopmentDirection.NO_ACTIVE_FOCUS
+    note: str = ""
+    supporting_evidence_ids: list[str] = None
+    source: str = "Review / Development"
+    created_at: str = ""
+    updated_at: str = ""
+
+    def __post_init__(self) -> None:
+        self.trade_plan_id = self.trade_plan_id.strip()
+        self.trade_plan_revision = self.trade_plan_revision.strip()
+        self.competency_id = self.competency_id.strip()
+        if isinstance(self.direction, str):
+            self.direction = DevelopmentDirection(self.direction)
+        self.note = self.note.strip()
+        self.supporting_evidence_ids = [
+            str(item).strip()
+            for item in (self.supporting_evidence_ids or [])
+            if str(item).strip()
+        ]
+        self.source = self.source.strip() or "Review / Development"
+        if not self.trade_plan_id:
+            raise ValueError("trade plan id cannot be empty")
+        if not self.trade_plan_revision:
+            raise ValueError("trade plan revision cannot be empty")
+        if not self.competency_id:
+            raise ValueError("competency id cannot be empty")
+        now = datetime.now().astimezone().isoformat(timespec="seconds")
+        if not self.created_at:
+            self.created_at = now
+        if not self.updated_at:
+            self.updated_at = now
