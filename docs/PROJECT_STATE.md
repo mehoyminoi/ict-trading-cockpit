@@ -6,14 +6,15 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Current branch:** `main`
+- **Active feature branch:** `feature/configurable-summary-templates-v0`
+- **Main baseline:** `e778674a48337a772976ee5268aff785f5869877` — handoff synchronized after PR #27
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** none open; ready to select the next roadmap slice
-- **Schema:** v26
+- **Current slice:** configurable/versioned summary templates v0
+- **Schema:** v27
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** **272 passed** (268 prior baseline + 4 smoke-test document unit tests; user confirmed full suite green)
-- **Manual smoke test:** smoke-test runner v0 acceptance PASS — load/edit/save/reopen works, and Git diff showed only the intended selected change.
+- **Verified full test result:** **278 passed**
+- **Manual smoke test:** configurable summary templates v0 acceptance PASS — both template kinds publish/use new revisions, persistence survives restart, generated outputs show template provenance, and invalid fields are rejected.
 
 ## Current completed slice — Competency / Proficiency substrate v0
 
@@ -114,9 +115,26 @@ The runner remains a convenience layer over Markdown, not a second acceptance-da
 
 ## Current task
 
-No feature branch is open. Start the next isolated roadmap slice from current `main` after selecting the highest-value item based on observed workflow friction and the established roadmap.
+The configurable/versioned summary templates v0 slice is acceptance-complete and ready for PR/merge.
 
-Do not expand the smoke-test runner unless repeated use exposes concrete friction. Do not introduce competency thresholds/readiness scoring until evidence rules justify them.
+Implemented and verified:
+
+- versioned `SummaryTemplateDefinition` domain model,
+- schema v27 immutable template revisions plus active template pointers,
+- seeded default Trade Summary and Study Find templates preserving existing output,
+- repository support for publishing new immutable revisions,
+- template-field validation,
+- minimal Workbench editor for publishing revisions,
+- Study Find and Trade Summary resolve the active persisted template,
+- active template labels on both summary surfaces,
+- generated/copyable output includes non-editable template name/revision provenance,
+- invalid template fields are rejected before publication,
+- active revisions persist across restart,
+- full automated suite is 278 green.
+
+After merge, pause product feature development for a dedicated project requirements / roadmap reconciliation milestone. Reconcile the early living roadmap, current repository architecture, durable decisions, and prior-chat decisions before selecting the next larger implementation milestone.
+
+Deferred from this slice: exposing Trade Plan revision as an available summary-template field. It is desirable provenance but requires adding Trade Plan revision to the summary context first.
 
 ## Continuity protocol
 

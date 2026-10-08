@@ -24,8 +24,12 @@ from ict_cockpit.media.study_find_media import (
     get_study_find_image_destination,
     store_study_find_image,
 )
+from ict_cockpit.database.summary_template_repository import (
+    SummaryTemplateRepository,
+)
 from ict_cockpit.summary.renderer import SummaryRenderer
 from ict_cockpit.summary.study_find_context import StudyFindSummaryContext
+from ict_cockpit.summary.template_definition import SummaryTemplateKind
 from ict_cockpit.summary.templates import STUDY_FIND_SUMMARY_V1
 
 
@@ -35,9 +39,13 @@ class StudyFindWidget(QWidget):
     study_find_ready = Signal(StudyFind)
     draft_changed = Signal(StudyFindDraft)
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        summary_template_repository: SummaryTemplateRepository | None = None,
+    ) -> None:
         super().__init__()
 
+        self.summary_template_repository = summary_template_repository
         self.current_study_find_id = str(uuid4())
         self.image_paths: list[str] = []
         self.next_image_number = 1
@@ -95,6 +103,9 @@ class StudyFindWidget(QWidget):
         self.remove_image_button = QPushButton("Remove Selected")
         self.remove_image_button.clicked.connect(self.remove_selected_image)
 
+        self.summary_template_label = QLabel()
+        self.summary_template_label.setWordWrap(True)
+
         self.summary_preview = QPlainTextEdit()
         self.summary_preview.setReadOnly(True)
         self.summary_preview.setPlaceholderText(
@@ -130,6 +141,7 @@ class StudyFindWidget(QWidget):
         layout.addWidget(self.copy_image_button)
         layout.addWidget(self.attach_image_button)
         layout.addWidget(self.remove_image_button)
+        layout.addWidget(self.summary_template_label)
         layout.addWidget(self.generate_summary_button)
         layout.addWidget(self.summary_preview)
         layout.addWidget(self.copy_summary_button)
@@ -138,6 +150,7 @@ class StudyFindWidget(QWidget):
         self.setLayout(layout)
 
         self._connect_draft_signals()
+        self.refresh_summary_template_label()
 
         app = QApplication.instance()
         if app is not None:
@@ -246,15 +259,56 @@ class StudyFindWidget(QWidget):
     def submit(self) -> None:
         self.study_find_ready.emit(self.build_study_find())
 
+    def _active_summary_template(self):
+        if self.summary_template_repository is None:
+            return None
+        return self.summary_template_repository.get_active(
+            SummaryTemplateKind.STUDY_FIND
+        )
+
+    def _active_summary_template_body(self) -> str:
+        template = self._active_summary_template()
+        return template.body if template is not None else STUDY_FIND_SUMMARY_V1
+
+    def refresh_summary_template_label(self) -> None:
+        if self.summary_template_repository is None:
+            self.summary_template_label.setText(
+                "Template · Study Find Default · r1"
+            )
+            return
+        template = self.summary_template_repository.get_active(
+            SummaryTemplateKind.STUDY_FIND
+        )
+        if template is None:
+            self.summary_template_label.setText(
+                "Template · Study Find Default · r1"
+            )
+        else:
+            self.summary_template_label.setText(
+                f"Template · {template.label}"
+            )
+
     def generate_summary(self) -> str:
         context = StudyFindSummaryContext(
             study_find=self.build_study_find(),
             image_paths=self.image_paths,
         )
-        rendered = SummaryRenderer().render(
-            STUDY_FIND_SUMMARY_V1,
-            context.to_template_values(),
-        )
+        renderer = SummaryRenderer()
+        template = self._active_summary_template()
+        if template is None:
+            rendered = renderer.render(
+                STUDY_FIND_SUMMARY_V1,
+                context.to_template_values(),
+            )
+            rendered = (
+                rendered.rstrip()
+                + "\n\nTemplate: Study Find Default · r1\n"
+            )
+        else:
+            rendered = renderer.render_versioned(
+                template,
+                context.to_template_values(),
+            )
         self.summary_preview.setPlainText(rendered)
         return rendered
 

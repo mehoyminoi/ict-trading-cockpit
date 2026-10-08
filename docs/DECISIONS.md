@@ -79,3 +79,16 @@ For future substantial decisions, append an entry containing:
 - important consequences or intentionally deferred behavior.
 
 Prefer recording the reason a choice was made, not just the final implementation.
+
+
+## 2026-10-08 — Summary templates are versioned Workbench configuration
+
+**Status:** Accepted
+
+Generated Trade Summary and Study Find text should not depend on hardcoded GUI strings.
+
+Summary template definitions are separate configuration from the Trade Plan. Published template revisions are immutable, previous revisions remain available for provenance/history, and each summary kind has an explicit active revision used for new generated output.
+
+Editing/publishing belongs in Workbench rather than the focused daily capture surfaces. Study Find and Trade Summary consume the active definition and remain responsible for structured record data, not template design.
+
+The first slice intentionally supports revisioning of the existing default template families rather than a broad template-library/catalog UX. Expand that only when repeated use justifies it.

@@ -29,11 +29,15 @@ from ict_cockpit.analysis.trade_record import (
     TradeRecord,
     TradeRecordDraft,
 )
+from ict_cockpit.database.summary_template_repository import (
+    SummaryTemplateRepository,
+)
 from ict_cockpit.media.trade_media import (
     get_trade_image_destination,
     store_trade_image,
 )
 from ict_cockpit.summary.renderer import SummaryRenderer
+from ict_cockpit.summary.template_definition import SummaryTemplateKind
 from ict_cockpit.summary.templates import TRADE_SUMMARY_V1
 from ict_cockpit.summary.trade_summary_context import TradeSummaryContext
 from ict_cockpit.summary.trade_summary_data import TradeSummaryData
@@ -43,9 +47,13 @@ class TradeSummaryWidget(QWidget):
     trade_ready = Signal(TradeRecord)
     draft_changed = Signal(object)
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        summary_template_repository: SummaryTemplateRepository | None = None,
+    ) -> None:
         super().__init__()
 
+        self.summary_template_repository = summary_template_repository
         self.current_trade_id = str(uuid4())
         self.image_paths: list[str] = []
         self.next_image_number = 1
@@ -133,6 +141,9 @@ class TradeSummaryWidget(QWidget):
         self.copy_image_button.setEnabled(False)
         self.copy_image_button.clicked.connect(self.copy_selected_image)
 
+        self.summary_template_label = QLabel()
+        self.summary_template_label.setWordWrap(True)
+
         self.summary_preview = QPlainTextEdit()
         self.summary_preview.setReadOnly(True)
         self.summary_preview.setPlaceholderText(
@@ -161,6 +172,7 @@ class TradeSummaryWidget(QWidget):
         container_layout.addWidget(self._build_notes_group())
         container_layout.addWidget(self._build_charts_group())
         container_layout.addWidget(self.validation_label)
+        container_layout.addWidget(self.summary_template_label)
         container_layout.addWidget(self.generate_summary_button)
         container_layout.addWidget(self.summary_preview)
         container_layout.addWidget(self.copy_summary_button)
@@ -175,6 +187,7 @@ class TradeSummaryWidget(QWidget):
         layout.addWidget(scroll)
 
         self._connect_draft_signals()
+        self.refresh_summary_template_label()
 
         app = QApplication.instance()
         if app is not None:
@@ -386,12 +399,54 @@ class TradeSummaryWidget(QWidget):
             image_paths=self.image_paths,
         )
 
+    def _active_summary_template(self):
+        if self.summary_template_repository is None:
+            return None
+        return self.summary_template_repository.get_active(
+            SummaryTemplateKind.TRADE_SUMMARY
+        )
+
+    def _active_summary_template_body(self) -> str:
+        template = self._active_summary_template()
+        return template.body if template is not None else TRADE_SUMMARY_V1
+
+    def refresh_summary_template_label(self) -> None:
+        if self.summary_template_repository is None:
+            self.summary_template_label.setText(
+                "Template · Trade Summary Default · r1"
+            )
+            return
+        template = self.summary_template_repository.get_active(
+            SummaryTemplateKind.TRADE_SUMMARY
+        )
+        if template is None:
+            self.summary_template_label.setText(
+                "Template · Trade Summary Default · r1"
+            )
+        else:
+            self.summary_template_label.setText(
+                f"Template · {template.label}"
+            )
+
     def generate_summary(self) -> str:
         try:
-            rendered = SummaryRenderer().render(
-                TRADE_SUMMARY_V1,
-                self._build_summary_context().to_template_values(),
-            )
+            renderer = SummaryRenderer()
+            values = self._build_summary_context().to_template_values()
+            template = self._active_summary_template()
+            if template is None:
+                rendered = renderer.render(
+                    TRADE_SUMMARY_V1,
+                    values,
+                )
+                rendered = (
+                    rendered.rstrip()
+                    + "\n\nTemplate: Trade Summary Default · r1\n"
+                )
+            else:
+                rendered = renderer.render_versioned(
+                    template,
+                    values,
+                )
         except ValueError as exc:
             self.validation_label.setText(str(exc))
             self.validation_label.show()
