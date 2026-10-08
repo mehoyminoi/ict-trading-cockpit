@@ -155,7 +155,11 @@ No schema or Trade Plan revision change in this slice. Schema remains v29 and Tr
 
 A focused **Competency Synthesis v0** section has been added to `docs/SMOKE_TEST.md`.
 
-Next action: pull the branch, run the full automated suite, then complete the focused Competency Synthesis smoke test. Pay particular attention to compactness/scroll behavior because Review / Development vertical space remains a functional constraint.
+First full-suite run after the synthesis UI change reported **293 passed / 1 failed**. The failure was an existing Review / Development regression test that intentionally looked for the established human-readable substring `1 evidence record` after filtering to one competency. The new synthesis wording had changed that phrase to `1 reviewed`.
+
+The implementation has been corrected to preserve the existing evidence-count wording inside the new synthesis surface (`N evidence record(s)`) rather than weakening/removing the older regression expectation. The new synthesis-specific regression assertion was updated to match that compatibility-preserving wording.
+
+Next action: pull the fix and rerun the full automated suite. If green, continue with the focused Competency Synthesis smoke test. Pay particular attention to compactness/scroll behavior because Review / Development vertical space remains a functional constraint.
 
 ## System guide maintenance
 
