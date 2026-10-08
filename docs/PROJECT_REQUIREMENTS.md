@@ -452,6 +452,16 @@ Near-term and medium-term chart workflow is:
 
 `TradingView -> screenshot/copy/import -> structured Cockpit record -> generated share/review artifact`
 
+A later responsive chart-gallery / Film Night review surface should reuse the existing managed image attachments rather than introduce a second media model. Desired behavior already discussed includes:
+
+- 1 image -> large primary view,
+- 2 images -> side-by-side when space permits,
+- 3 images -> balanced 2+1 or equivalent layout,
+- 4+ images -> compact responsive grid,
+- selecting/clicking an image -> full-resolution view,
+- layout adapting to the available panel/window size,
+- shared gallery behavior across Study Find, Trade Summary, Film Night, and Lab review where practical.
+
 Rebuilding a full TradingView-style charting environment inside the Cockpit is not a current priority.
 
 ---
