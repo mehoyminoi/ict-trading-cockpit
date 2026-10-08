@@ -71,7 +71,7 @@ class CompetencyEvidenceReviewWidget(QWidget):
         self.summary_label.setContentsMargins(8, 6, 8, 6)
 
         self.evidence_list = QListWidget()
-        self.evidence_list.setMaximumHeight(220)
+        self.evidence_list.setMaximumHeight(150)
         self.evidence_list.currentItemChanged.connect(
             lambda _current, _previous: self._selection_changed()
         )
@@ -244,10 +244,8 @@ class CompetencyEvidenceReviewWidget(QWidget):
         self.link_selected_evidence_checkbox.setEnabled(
             enabled and selected_evidence is not None
         )
-        if selected_evidence is None:
-            self.link_selected_evidence_checkbox.setChecked(False)
-
         if not enabled:
+            self.link_selected_evidence_checkbox.setChecked(False)
             self.current_direction_label.setText(
                 "Select a competency or evidence record to review its "
                 "Development Direction."
@@ -268,7 +266,14 @@ class CompetencyEvidenceReviewWidget(QWidget):
                 DevelopmentDirection.NO_ACTIVE_FOCUS.value
             )
             self.direction_note_input.clear()
+            self.link_selected_evidence_checkbox.setChecked(False)
         else:
+            linked_count = len(current.supporting_evidence_ids)
+            link_text = (
+                f" · supporting evidence: {linked_count}"
+                if linked_count
+                else " · no supporting evidence linked"
+            )
             self.current_direction_label.setText(
                 f"Current · {current.direction.value}"
                 + (
@@ -276,10 +281,18 @@ class CompetencyEvidenceReviewWidget(QWidget):
                     if current.note
                     else ""
                 )
+                + link_text
             )
             self.direction_combo.setCurrentText(current.direction.value)
             self.direction_note_input.setText(current.note)
-        self.development_status_label.clear()
+            self.link_selected_evidence_checkbox.setChecked(
+                selected_evidence is not None
+                and selected_evidence.id in current.supporting_evidence_ids
+            )
+        self.development_status_label.setText(
+            "The checkbox reflects whether the currently selected evidence "
+            "record is linked to the saved Development Direction."
+        )
 
     def _save_development_direction(self) -> None:
         if self.development_direction_repository is None:
@@ -292,13 +305,26 @@ class CompetencyEvidenceReviewWidget(QWidget):
             )
             return
 
-        supporting_evidence_ids = []
         selected_evidence = self._selected_evidence()
-        if (
-            self.link_selected_evidence_checkbox.isChecked()
-            and selected_evidence is not None
-        ):
-            supporting_evidence_ids.append(selected_evidence.id)
+        current = self.development_direction_repository.get(
+            self.trade_plan.id,
+            competency_id,
+        )
+        supporting_evidence_ids = list(
+            current.supporting_evidence_ids
+            if current is not None
+            else []
+        )
+        if selected_evidence is not None:
+            if self.link_selected_evidence_checkbox.isChecked():
+                if selected_evidence.id not in supporting_evidence_ids:
+                    supporting_evidence_ids.append(selected_evidence.id)
+            else:
+                supporting_evidence_ids = [
+                    evidence_id
+                    for evidence_id in supporting_evidence_ids
+                    if evidence_id != selected_evidence.id
+                ]
 
         item = CompetencyDevelopmentDirection(
             trade_plan_id=self.trade_plan.id,
@@ -311,15 +337,29 @@ class CompetencyEvidenceReviewWidget(QWidget):
             supporting_evidence_ids=supporting_evidence_ids,
         )
         self.development_direction_repository.save(item)
+        linked_count = len(item.supporting_evidence_ids)
         self.current_direction_label.setText(
             f"Current · {item.direction.value}"
             + (f" · {item.note}" if item.note else "")
+            + (
+                f" · supporting evidence: {linked_count}"
+                if linked_count
+                else " · no supporting evidence linked"
+            )
         )
-        evidence_text = (
-            " · selected evidence linked"
-            if supporting_evidence_ids
-            else " · no specific evidence link"
-        )
+        if selected_evidence is not None:
+            selected_state = (
+                "linked"
+                if selected_evidence.id in item.supporting_evidence_ids
+                else "not linked"
+            )
+            evidence_text = f" · selected evidence is {selected_state}"
+        else:
+            evidence_text = (
+                f" · supporting evidence: {linked_count}"
+                if linked_count
+                else " · no supporting evidence linked"
+            )
         self.development_status_label.setText(
             f"Development Direction saved{evidence_text}. "
             "No competency state or eligibility change was made."
