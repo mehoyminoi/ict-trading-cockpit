@@ -145,3 +145,22 @@ Revision/provenance is a cross-cutting requirement that each slice must preserve
 **Supersedes:** the earlier reconciliation draft that placed abstract process/revision architecture first, and any older roadmap ordering that would elevate Film Night, visual-polish, broad Live-Watch expansion, hardware controls, or deep integrations ahead of the learning/progression loop.
 
 **Rationale:** recovery of the full conversation history showed that the project had already deliberately pivoted from operating-surface expansion toward Study/Lab, competency evidence, and progression semantics before the previous chat ended.
+
+
+## 2026-10-08 — Competency evidence is provenance, not competency state
+
+**Status:** Accepted
+
+Competency evidence is a first-class persisted record separate from both the Trade Plan-owned competency definition and the operator's mutable competency state.
+
+The v0 evidence loop is:
+
+`focused Study/Rehearsal/Validation run -> reviewed outcome -> persisted evidence for each focused competency`
+
+Evidence should preserve enough provenance to understand where it came from, including the Trading Run, environment/purpose, Trade Plan revision, study intent/outcome, and relevant market-time/QT context.
+
+Re-reviewing the same run+competency updates/replaces that evidence rather than manufacturing duplicate samples from one run.
+
+**Rationale:** the project needs trustworthy observations before it can justify proficiency scoring, state transitions, or progression rules.
+
+**Consequence / deferred behavior:** evidence creation does not automatically change `CompetencyState`, proficiency, eligibility, or Evidence Maturity. Those interpretations remain later work.
