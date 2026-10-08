@@ -124,6 +124,12 @@ class CompetencyEvidenceReviewWidget(QWidget):
         self.link_selected_evidence_checkbox.setChecked(False)
         development_layout.addWidget(self.link_selected_evidence_checkbox)
 
+        self.selected_evidence_link_label = QLabel(
+            "Selected evidence link · no evidence selected"
+        )
+        self.selected_evidence_link_label.setWordWrap(True)
+        development_layout.addWidget(self.selected_evidence_link_label)
+
         self.save_direction_button = QPushButton("Save Development Direction")
         self.save_direction_button.clicked.connect(
             self._save_development_direction
@@ -246,6 +252,9 @@ class CompetencyEvidenceReviewWidget(QWidget):
         )
         if not enabled:
             self.link_selected_evidence_checkbox.setChecked(False)
+            self.selected_evidence_link_label.setText(
+                "Selected evidence link · no competency/evidence selected"
+            )
             self.current_direction_label.setText(
                 "Select a competency or evidence record to review its "
                 "Development Direction."
@@ -267,6 +276,11 @@ class CompetencyEvidenceReviewWidget(QWidget):
             )
             self.direction_note_input.clear()
             self.link_selected_evidence_checkbox.setChecked(False)
+            self.selected_evidence_link_label.setText(
+                "Selected evidence link · not linked"
+                if selected_evidence is not None
+                else "Selected evidence link · no evidence selected"
+            )
         else:
             linked_count = len(current.supporting_evidence_ids)
             link_text = (
@@ -285,9 +299,19 @@ class CompetencyEvidenceReviewWidget(QWidget):
             )
             self.direction_combo.setCurrentText(current.direction.value)
             self.direction_note_input.setText(current.note)
-            self.link_selected_evidence_checkbox.setChecked(
+            selected_is_linked = (
                 selected_evidence is not None
                 and selected_evidence.id in current.supporting_evidence_ids
+            )
+            self.link_selected_evidence_checkbox.setChecked(selected_is_linked)
+            self.selected_evidence_link_label.setText(
+                "Selected evidence link · linked"
+                if selected_is_linked
+                else (
+                    "Selected evidence link · not linked"
+                    if selected_evidence is not None
+                    else "Selected evidence link · no evidence selected"
+                )
             )
         self.development_status_label.setText(
             "The checkbox reflects whether the currently selected evidence "
@@ -359,6 +383,16 @@ class CompetencyEvidenceReviewWidget(QWidget):
                 f" · supporting evidence: {linked_count}"
                 if linked_count
                 else " · no supporting evidence linked"
+            )
+        if selected_evidence is not None:
+            self.selected_evidence_link_label.setText(
+                "Selected evidence link · linked"
+                if selected_evidence.id in item.supporting_evidence_ids
+                else "Selected evidence link · not linked"
+            )
+        else:
+            self.selected_evidence_link_label.setText(
+                "Selected evidence link · no evidence selected"
             )
         self.development_status_label.setText(
             f"Development Direction saved{evidence_text}. "
