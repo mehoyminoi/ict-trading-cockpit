@@ -231,3 +231,34 @@ It prepares the shared Process Run launcher for Historical Backtest / Study, sel
 **Rationale:** evidence should be able to route the technician toward deliberate practice without bypassing the shared launcher, its validation rules, environment semantics, or provenance capture.
 
 **Consequence:** future Review-to-Study routing should preconfigure the canonical launcher rather than create parallel launch paths. The technician still controls the Study question and explicitly starts the run.
+
+
+## 2026-10-08 — Development Direction separates synthesis from competency state
+
+**Status:** Accepted
+
+Introduce **Development Direction** as explicit human-reviewed synthesis over accumulated competency evidence.
+
+Initial directions are:
+
+- Study
+- Rehearsal
+- Validation
+- Monitor / Gather Evidence
+- No Active Focus
+
+Development Direction answers **what deliberate work should happen next**. It is separate from Study Outcome, Competency State, Evidence Maturity, and Eligibility.
+
+For v0:
+
+- one current mutable direction is stored per Trade Plan + competency,
+- an operator note is optional,
+- supporting evidence links are optional,
+- no automatic derivation occurs,
+- no competency-state transition occurs,
+- no eligibility or Evidence Maturity conclusion occurs,
+- only the existing Study routing needs active behavior initially.
+
+**Rationale:** accumulated evidence needs a human synthesis layer before later governance can safely reason about progression. This avoids turning descriptive evidence or Study outcomes into hidden readiness scores.
+
+**Consequence:** Review / Development can become actionable without prematurely automating weakness detection or proficiency decisions.
