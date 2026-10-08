@@ -13,8 +13,8 @@ This is the starting point for a new development chat or developer handoff. Git 
 - **Current slice:** Milestone B — Development Direction v0
 - **Schema:** v29
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** full v28 competency-evidence suite green on 2026-10-08 (exact count not separately recorded)
-- **Manual smoke test:** evidence-to-targeted-Study routing v0 acceptance PASS — staging semantics, question-first path, Begin Process Run handoff, and progression gate behavior manually verified.
+- **Verified full test result:** full schema v29 Development Direction suite green on 2026-10-08 (exact count not separately recorded)
+- **Manual smoke test:** Development Direction v0 acceptance PASS — scrollable Review / Development layout, direction/note persistence, supporting-evidence link persistence, guardrails, and full-suite status manually verified.
 
 ## Current completed slice — Competency / Proficiency substrate v0
 
@@ -127,43 +127,38 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-Milestone B implementation has started on `feature/development-direction-v0`.
+Milestone B — Development Direction v0 is **acceptance-complete and ready for PR/merge**.
 
-Implemented for validation:
+Accepted behavior:
 
-- new `DevelopmentDirection` enum with the five accepted directions,
-- new `CompetencyDevelopmentDirection` domain record,
-- schema v29 `competency_development_direction` storage,
-- one current mutable Development Direction per Trade Plan + competency,
-- optional operator synthesis note,
-- optional supporting evidence IDs,
-- created/updated timestamps and Trade Plan revision provenance,
-- Review / Development editor integrated into the existing competency-evidence panel,
-- current direction display and persistence,
-- optional linking of the selected evidence record,
-- explicit confirmation that saving a direction does not change Competency State or eligibility,
-- System Guide updated with the new synthesis layer.
+- Development Direction is explicit human-reviewed synthesis over competency evidence,
+- one current mutable direction is stored per Trade Plan + competency,
+- accepted directions are Study, Rehearsal, Validation, Monitor / Gather Evidence, and No Active Focus,
+- optional synthesis note persists,
+- selected supporting-evidence links persist across navigation/restart,
+- the UI restores and visibly distinguishes the selected evidence record's link state,
+- unrelated supporting-evidence links are preserved when one selected record is toggled,
+- Review / Development is vertically scrollable so added synthesis functionality does not make the application taller than the display or crush the lower Lab / Replay controls,
+- saving a Development Direction does not mutate Competency State,
+- saving a Development Direction does not alter Eligibility or create an Evidence Maturity conclusion,
+- no Development Direction is inferred automatically from Study Outcome,
+- schema is v29,
+- Trade Plan remains Alpha 0.7,
+- full automated suite is green,
+- focused manual smoke test is fully PASS.
 
-The slice deliberately does **not**:
+This completes the first Milestone B synthesis primitive:
 
-- infer a Development Direction from Study Outcome,
-- detect recurring weakness automatically,
-- mutate Competency State,
-- calculate Evidence Maturity,
-- alter progression/eligibility,
-- add direction-history records,
-- activate Rehearsal/Validation routing.
+`accumulated evidence -> human-reviewed Development Direction -> explicit next-development intent`
 
-Schema moves from v28 to **v29**. Trade Plan remains **Alpha 0.7** because Development Direction is mutable technician/review state rather than plan-owned definition data.
+Next action:
 
-Initial manual testing found two important operator-loop issues:
+1. inspect the complete branch diff,
+2. open and merge the accepted Development Direction v0 slice,
+3. sync `main`,
+4. continue Milestone B with the next small synthesis slice: decide how Review / Development should present competency-level cross-run synthesis and Development Direction together without turning descriptive counts into automatic recommendations.
 
-1. **Layout regression:** Review / Development became taller than the display and compressed the lower Lab / Replay / Competency Focus area. The page is now vertically scrollable and the evidence list is more compact so functionality remains reachable without forcing the whole window taller.
-2. **Supporting-evidence ambiguity:** the selected evidence ID was persisted, but the original UI did not restore/display the linked checkbox/status after navigation or restart. This made a stored link look lost and could make a later save remove it unintentionally. The editor now restores the checkbox for the currently selected linked evidence, shows a persistent supporting-evidence count, shows `Selected evidence link · linked/not linked`, and preserves unrelated evidence links when toggling one selected record.
-
-Operator already verified that the Development Direction dropdown and synthesis note persist through navigation/restart.
-
-Next action: pull the current branch, rerun the automated suite, then use the new **Development Direction v0** section in `docs/SMOKE_TEST.md` (or the smoke-test runner) for the focused manual retest. The most important remaining checks are the scrollable layout and visible supporting-evidence persistence across refresh/restart.
+Do not add Evidence Maturity, automatic competency-state transitions, or progression rules yet.
 
 ## System guide maintenance
 
