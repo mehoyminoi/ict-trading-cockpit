@@ -6,6 +6,7 @@ from ict_cockpit.database.summary_template_repository import (
     SummaryTemplateRepository,
 )
 from ict_cockpit.gui.study_find_widget import StudyFindWidget
+from ict_cockpit.gui.trade_summary_widget import TradeSummaryWidget
 from ict_cockpit.gui.summary_template_workbench_widget import (
     SummaryTemplateWorkbenchWidget,
 )
@@ -122,5 +123,32 @@ def test_workbench_publishes_revision_used_by_study_find(tmp_path) -> None:
     rendered = widget.generate_summary()
 
     assert rendered.startswith("CUSTOM MNQ | London low raid")
+    assert "Template: Study Find Compact · r2" in rendered
+    assert "r2" in widget.summary_template_label.text()
+    connection.close()
+
+
+def test_trade_summary_output_includes_active_template_provenance(tmp_path) -> None:
+    get_app()
+    connection, repository = build_repository(tmp_path)
+    original = repository.get_active(SummaryTemplateKind.TRADE_SUMMARY)
+    assert original is not None
+    repository.publish_revision(
+        original,
+        name="Trade Summary Compact",
+        body="TRADE {asset} | {direction} | {result_handles}\n",
+    )
+
+    widget = TradeSummaryWidget(repository)
+    widget.instrument_input.setText("MNQ")
+    widget.direction_input.setCurrentText("Long")
+    widget.entry_price_input.setText("20000")
+    widget.close_price_input.setText("20010")
+    widget.stop_price_input.setText("19995")
+
+    rendered = widget.generate_summary()
+
+    assert rendered.startswith("TRADE MNQ | Long | 10.00")
+    assert "Template: Trade Summary Compact · r2" in rendered
     assert "r2" in widget.summary_template_label.text()
     connection.close()
