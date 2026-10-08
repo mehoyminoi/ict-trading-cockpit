@@ -41,3 +41,15 @@ class SummaryRenderer:
             ) from exc
         except ValueError as exc:
             raise ValueError(f"Invalid summary template syntax: {exc}") from exc
+
+
+    def render_versioned(
+        self,
+        definition,
+        values: dict[str, object],
+    ) -> str:
+        rendered = self.render(definition.body, values).rstrip()
+        return (
+            f"{rendered}\n\n"
+            f"Template: {definition.name} · r{definition.revision}\n"
+        )
