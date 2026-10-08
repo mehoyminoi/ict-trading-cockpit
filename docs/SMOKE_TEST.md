@@ -211,7 +211,7 @@ Before merging `feature/development-direction-v0`, use this section as the prima
   - Expected: Review / Development has its own vertical scrollbar when the full content does not fit.
   - Expected: the lower **Lab / Replay** launcher and its **Competency focus** area remain reachable by scrolling and are not compressed to an unusable height.
   - Originally failed during Development Direction testing: the page's combined content made the window too tall and compressed the lower launcher/focus area.
-  - Fix pending manual verification: Review / Development is now a scrollable page and the evidence list is capped more compactly.
+  - Resolved and manually verified: Review / Development is scrollable and the evidence list is capped more compactly.
 
 ### B. Save a Development Direction
 
