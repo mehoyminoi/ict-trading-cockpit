@@ -1,510 +1,802 @@
-# ICT Trading Cockpit — Living Requirements & Roadmap
+# ICT Trading Cockpit — Product Requirements & Milestone Roadmap
 
-**Status:** Living document  
-**Purpose:** Canonical project requirements, priorities, architecture decisions, and progress record.  
-**Recommended repository location:** `docs/PROJECT_REQUIREMENTS.md`
+**Status:** Reconciled working draft — 2026-10-08  
+**Role:** Canonical product requirements and milestone roadmap once this reconciliation branch is accepted and merged.  
+**Companion documents:** `docs/PROJECT_STATE.md` for the current implementation checkpoint, `docs/DECISIONS.md` for durable design rationale, and `docs/SMOKE_TEST.md` for manual acceptance.
 
-## 1. Project Mission
-
-Build a local-first trading process operating system that makes discretionary trading more structured, repeatable, analyzable, and boring. The application should reduce emotional decision-making by guiding the user through a consistent process, recording what happened, and allowing accumulated data to evaluate the quality of the process over time.
-
-The application is not primarily a P&L dashboard. Its first measure of success is **process adherence**. A fully compliant "No Trade — Process Followed" outcome is successful.
-
-## 2. Core Product Principles
-
-1. **Process over P&L.** Reward completion and adherence, not trading frequency or profitability.
-2. **Structured data is the bedrock.** Summaries, images, dashboards, statistics, and journal pages are generated views of authoritative structured records.
-3. **Guided when executing; flexible when designing.** Daily use should be focused and stepwise. Editing the process belongs in a separate Workbench/Lab environment.
-4. **Revision controlled process.** TDA workflows, trade plans, checklists, management rules, templates, and safety rules should eventually be versioned and immutable once used.
-5. **Incomplete is data, not failure.** Users may deliberately file incomplete records; missing values must remain genuinely unknown rather than being replaced with junk values.
-6. **Low-friction interaction.** Buttons, keyboard navigation, mouse controls, and future macro-pad inputs should trigger shared application actions rather than duplicate logic.
-7. **Local-first and resilient.** Temporary NAS, network, Trilium, or external-service outages must not stop core local data capture.
-8. **Safe evolution.** Database schema changes use explicit migrations. Application behavior should be testable in small, known-good milestones.
-9. **Close the alpha feedback loop.** While the product is being dogfooded, friction and feature wishes should be capturable in seconds and retained in a human-readable form for later prioritization.
-
-## 3. Desired Operating Modes
-
-### 3.1 Guided Mode — highest current priority
-
-Purpose: daily pre-market/TDA workflow and disciplined study capture.
-
-Characteristics:
-- One manageable step visible at a time.
-- Previous information remains one or two clicks away.
-- Progressive disclosure minimizes distraction.
-- Clear progress through the current process revision.
-- Missing required fields guide the user back to the relevant step.
-- Intentional incomplete override remains possible and is recorded.
-- Drafts autosave and should restore after restart.
-
-Current prototype steps:
-1. Context — instrument, analysis date.
-2. Bias — weekly bias, daily bias.
-3. Draw / Thesis — primary draw, secondary draw, narrative.
-
-These are prototypes, not a permanent commitment to the final TDA structure.
-
-### 3.2 Workbench / Lab — high future priority
-
-Purpose: design, research, reflection, film night/backtesting, configuration, and process improvement.
-
-Expected capabilities:
-- Edit workflow definitions.
-- Edit TDA fields and ordering.
-- Edit trade plans/checklists/risk and safety rules.
-- Edit summary templates.
-- View revision history.
-- Analyze performance by revision and by adherence.
-- Review friction flags or queued “review later” items.
-- Backtesting-find capture and cataloging.
-
-The Workbench should feel familiar to CAD/tuning software: configurable, modular, information-dense when desired, but separate from the focused daily workflow.
-
-### 3.3 Live Trade Mode — intentionally later priority
-
-Purpose: precision entry, order intent, management, and safety enforcement using context established in Guided Mode.
-
-Expected future characteristics:
-- Guided Mode sets the ball on the tee for Live Mode.
-- Bias, draw, allowed setup, invalidation, risk, and other relevant context carry forward automatically.
-- Explicit state machine for authorization/order lifecycle.
-- Entry gating based on required checklist conditions.
-- Exits/flatten are never gated.
-- Max trades/day, loss limits, prop/live account rules, cooldowns, and lockouts are defined by the active trade-plan revision.
-- Rule violations can trigger warnings, acknowledgement, timeout, review requirement, or entry lockout.
-- Simulation testing is mandatory before any live execution integration.
-
-## 4. Process Revision System — priority future capability
-
-Each meaningful process definition should eventually have a revision identity, for example:
-
-- Trade Plan Rev 4
-- TDA Workflow Rev 7
-- Entry Checklist Rev 3
-- Management Rules Rev 2
-- Risk Rules Rev 5
-- Safety Rules Rev 4
-- Summary Template Rev 3
-
-Once a revision has been used for a real record, it should become immutable. Editing it creates a new draft revision that can later be published.
-
-Historical records remain linked to the exact revisions used at the time.
-
-This enables analysis such as:
-- Win rate when Rev 4 was fully adhered to.
-- Average handles/trade by revision.
-- Average R by revision.
-- Drawdown by revision.
-- Sample size by revision.
-- Complete-process trades vs non-adhered trades.
-- TDA accuracy by workflow revision.
-
-Performance and process adherence must remain separate dimensions.
-
-## 5. Study, Backtesting, and Sharing — immediate/high priority
-
-The application should make it easy to capture and share notable study ideas before live execution features are mature.
-
-### 5.1 Structured observations
-
-Support records for:
-- Executed trades.
-- Backtesting finds.
-- Replay finds.
-- Live market observations.
-- TDA/pre-market observations.
-
-### 5.2 Configurable summary templates
-
-Users should eventually define templates such as:
-
-- Trade Summary.
-- Backtesting Find Summary.
-- TDA Summary.
-- Daily Review Summary.
-
-Templates should consume structured data using placeholders and produce generated artifacts rather than become the authoritative record.
-
-Desired outputs:
-- Copyable text summary.
-- Chart/image summary card.
-- Stored/cataloged summary package.
-- Easy sharing into external chat applications.
-
-### 5.3 Chart screenshots
-
-Near-term preference: use screenshots/captures from the existing TradingView workflow rather than rebuilding the charting environment.
-
-Current/near-term flow:
-
-`TradingView chart -> clipboard/file capture -> managed attachment -> structured study/trade record -> generated share card`
-
-Clipboard image paste is an accepted high-value bridge for TradingView/Ksnip use.
-
-### 5.4 Responsive chart gallery — alpha priority 6/10
-
-Chart images are first-class study data and should become automatically visible when reviewing a Study Find or Trade Summary rather than requiring filename-by-filename navigation.
-
-Desired behavior:
-- 1 image: large primary view.
-- 2 images: side-by-side when space permits.
-- 3 images: balanced 2+1 or equivalent responsive arrangement.
-- 4+ images: compact responsive grid with easy access to full resolution.
-- Clicking/selecting an image opens the original full-resolution capture.
-- Layout should adapt to available panel/window size rather than assume one fixed geometry.
-- The gallery infrastructure should eventually be shared by Study Find, Trade Summary, Film Night, and Lab review views.
-
-Priority: **6/10**. Important for visual review and Film Night, but below the immediate alpha feedback loop and Trade Summary data-capture path.
-
-An embedded TradingView-style chart can remain a later option if it becomes valuable, but is not currently a priority.
-
-## 6. Interaction and Input Requirements
-
-### 6.1 Current successful interaction patterns
-
-- Guided Back/Next buttons.
-- Standard Tab/Shift+Tab navigation inside steps, with workflow navigation at step boundaries.
-- Logitech MX Master horizontal thumbwheel for previous/next workflow navigation.
-- Logitech MX Master Back/Forward buttons for previous/next workflow navigation.
-- Clipboard chart paste from the normal TradingView/Ksnip workflow.
-
-### 6.2 Input architecture direction
-
-Application actions should be logically independent of their physical triggers.
-
-Example future actions:
-- `workflow.next`
-- `workflow.back`
-- `mark.friction`
-- `capture.chart`
-- `save.find`
-- `complete.no_trade`
-- `trade.arm`
-- `trade.flatten`
-
-Possible triggers:
-- GUI button.
-- Keyboard shortcut.
-- Mouse button/wheel.
-- Macro pad.
-- SpaceMouse.
-- Future custom HID/MIDI hardware.
-
-Dangerous actions such as arming or order submission must have stronger safeguards than harmless navigation actions.
-
-## 7. Alpha Feedback / Friction Capture — alpha priority 9/10
-
-During alpha testing, the application should provide a nearly instantaneous way to record friction, missing capability, workflow confusion, or a feature wish without abandoning the current trading/study context.
-
-Priority: **9/10**. This is now an early alpha capability rather than a deferred analytics feature because it closes the feedback loop while the product is being actively dogfooded.
-
-### 7.1 Design goal
-
-The capture mechanism should take only a few seconds and should not force the user into a separate planning system while trading or reviewing charts.
-
-Preferred flow:
-
-`notice friction/wish -> one action/hotkey -> short note -> continue workflow`
-
-A friction marker should automatically capture useful context where available, such as:
-- Timestamp.
-- Active app area/tab/workflow.
-- Current record or draft identifier when applicable.
-- Current workflow step or field when available.
-- A lightweight category such as `friction`, `wish`, `bug`, or `review later`.
-- Freeform human-readable note.
-
-The note text is the important artifact. Structured context exists to make later triage easier, not to make capture cumbersome.
-
-### 7.2 Human-readable review/export
-
-Feedback records should be easy to review inside the suite and easy to bring into development/planning sessions.
-
-Near-term acceptable outputs include:
-- A simple chronological Feedback/Review queue in the application.
-- Copy selected/all as Markdown or plain text.
-- A generated Markdown feedback digest suitable for pasting into ChatGPT or committing to project notes.
-
-This should not require GitHub issue creation during capture. Later, selected feedback items can be promoted into roadmap items, GitHub issues, or completed/archived states.
-
-### 7.3 Future analysis
-
-Once enough usage exists, the same data may support:
-- Friction heat maps by workflow step/field/revision.
-- Repeated Back/Next behavior.
-- Time spent per step.
-- Fields frequently revised before completion.
-- Steps frequently skipped or overridden.
-
-Those analytics remain later work; fast capture is the current requirement.
-
-## 8. TDA Status and Adherence
-
-Current TDA states:
-- `DRAFT`
-- `COMPLETE`
-- `INCOMPLETE_OVERRIDE`
-
-Important semantic distinctions:
-- `None` / SQL `NULL` means not assessed or missing.
-- `Neutral` means assessed and genuinely neutral.
-- A complete TDA may still produce “No Trade — Process Followed.”
-- An incomplete override is intentionally recorded as non-conformant rather than being blocked or filled with fake answers.
-
-Desired future adherence data:
-- Required fields completed / total required.
-- Overrides used.
-- Missing requirements.
-- Checklist adherence.
-- Management adherence.
-- Trade-plan violations.
-
-## 9. Current Technical Architecture
-
-### 9.1 Stack
-
-- Python 3.10+
-- PySide6 / Qt desktop GUI
-- SQLite authoritative local database
-- pytest
-- Git local version control
-- GitHub remote repository / connected development workflow
-- VS Code
-- Linux primary workstation
-- NAS for safe snapshots/backups, not the live database
-- Trilium on a VM for future narrative/journal integration
-- TradingView for charting/study
-- NinjaTrader for eventual execution bridge
-
-### 9.2 Application flow
-
-```text
-Guided / Workbench / Future Live UI
-              |
-              v
-        Domain models
-              |
-              v
-         Repositories
-              |
-              v
-     Local SQLite database
-              |
-              +----> safe snapshots/backups ----> NAS
-              |
-              +----> future summary artifacts / Trilium
-```
-
-### 9.3 Database safety
-
-- Live SQLite database resides on local SSD.
-- WAL enabled.
-- Foreign keys enabled.
-- Multi-step DB operations use transactions.
-- Live SQLite DB is not copied naively while active; use WAL-safe backup APIs.
-- Schema evolution uses explicit version migrations (`PRAGMA user_version`).
-- RAID is redundancy, not backup.
-
-## 10. Multi-Device / Laptop Requirement
-
-### 10.1 Requirement
-
-The application should eventually be usable from a second Linux machine, including a laptop used while traveling. Desired laptop capabilities may include:
-- Guided TDA.
-- Backtesting/study capture.
-- Summary generation/sharing.
-- Access to existing historical data.
-- Eventually the same trade-plan safety state if live execution is supported remotely.
-
-The user already has VPN access into the home network and can reach Trilium and the NAS remotely.
-
-### 10.2 Important constraint
-
-**Do not run the live SQLite database directly from the NAS or over the VPN.** Network filesystems introduce locking, latency, and corruption/failure-mode concerns that are inappropriate for the authoritative local SQLite database.
-
-A NAS backup is not automatically a multi-device synchronization system.
-
-### 10.3 Recommended staged approach
-
-#### Phase A — portable code, local data
-
-Near term:
-- Application code moves between machines using Git.
-- Each machine keeps its own local SQLite database.
-- NAS stores safe backups/snapshots.
-- Study-only export/import can be added if needed.
-
-This requires little architectural change now.
-
-#### Phase B — shared study data
-
-When two-device data access becomes important, choose either:
-- a deliberate sync/export layer between local databases, or
-- a small central application/database service reachable through the VPN.
-
-#### Phase C — authoritative cross-device safety state
-
-If trade lockouts, max-trade counters, daily loss limits, or account safety must be enforced consistently from multiple machines, a single authoritative shared state is required.
-
-Preferred eventual architecture:
-
-```text
-Desktop ----\
-             -> secure application/API service -> central PostgreSQL
-Laptop  ----/                 ^
-                               |
-                              VPN
-```
-
-Local SQLite may still serve as an offline cache/local-first store, but cross-device live safety cannot safely depend on independently synced SQLite copies.
-
-### 10.4 Planning decision now
-
-Plan for multi-device operation at interfaces and data-model boundaries now, but do not build synchronization yet.
-
-Specific implications:
-- Stable UUIDs for records.
-- Explicit timestamps and revision IDs.
-- Avoid machine-specific assumptions in domain records.
-- Keep storage paths configurable.
-- Keep database access behind repository/service interfaces.
-- Future sync metadata can be added without redesigning the GUI.
-
-## 11. Current Implementation Progress
-
-### Completed foundations
-
-- Git repository, GitHub remote, and known-good commit workflow.
-- Python virtual environment and packaging.
-- PySide6 application skeleton.
-- TDA domain model.
-- Bias enum and TDA statuses.
-- Text normalization/validation.
-- SQLite connection infrastructure.
-- WAL and foreign-key configuration.
-- SQL schema and explicit migrations through schema version 6.
-- TDA repository create/read/update behavior.
-- Duplicate protection.
-- Persistence across database reopen.
-- Deliberate incomplete TDA support with nullable bias/draw fields.
-- Linux XDG application-data path.
-- Real application DB bootstrap and clean shutdown.
-- Guided three-step workflow shell.
-- Context step.
-- Bias step.
-- Draw / Thesis step.
-- Guided navigation.
-- Tab/Shift+Tab boundary experiment.
-- MX Master horizontal thumbwheel navigation.
-- MX Master Back/Forward navigation.
-- Complete TDA path.
-- Missing-field guidance.
-- Intentional `INCOMPLETE_OVERRIDE` path.
-- GUI-to-repository persistence.
-- Quiet saved-state confirmation.
-- Saved/reset state and Start New TDA.
-- Stable UUID throughout a draft lifecycle.
-- TDA draft autosave and restart restore.
-- Study Find domain/repository/capture workflow.
-- Study Find text summary generation/copy.
-- Multiple managed chart attachments.
-- Study Find clipboard chart paste.
-- Study Review split-pane workflow and full-size chart opening.
-- Separate Study Find draft model/table.
-- Debounced Study Find draft autosave and restart restore.
-- Draft chart-path restoration and safe image numbering.
-- Final Study Find save clears its draft.
-- Test suite currently at 95 passing tests at this checkpoint.
-
-### Next planned milestones
-
-1. Add low-friction alpha Feedback/Friction capture.
-2. Build first Trade Summary UI with draft autosave from the beginning.
-3. Dogfood Study Find + Trade Summary during TradingView replay/backtesting.
-4. Use captured friction/wishes to revise priorities.
-5. Add responsive chart-gallery behavior when it becomes the best next visual-review improvement.
-
-## 12. Priority Roadmap
-
-| Priority | Area | Status |
-|---|---|---|
-| 10/10 | Stable local data foundation and preservation | Strong foundation / ongoing |
-| 10/10 | Guided TDA workflow and draft reliability | Working alpha |
-| 9/10 | Alpha Feedback/Friction capture and human-readable review/export | **Next early capability** |
-| 9/10 | Trade Summary capture with draft autosave and Trade Source/Account Context | Immediate next product workflow |
-| 9/10 | Study/backtesting observation capture and clipboard chart bridge | Working alpha |
-| 8/10 | Dogfood TradingView replay/backtest workflow and gather real records | Begin as soon as Trade Summary exists |
-| 7/10 | Economic-news/calendar context and later filters/lockouts | Planned |
-| 6/10 | Responsive chart gallery / Film Night visual review foundation | Restored to roadmap; planned |
-| 6/10 | Actions/intent layer and reduced button dependence | Started with Paste Chart; expand incrementally |
-| 6/10 | Workbench/Lab shell | Planned when review/configuration needs justify it |
-| 5/10 | Revision-controlled workflow/template definitions | Architecture direction accepted; implementation later |
-| 4/10 | Process/revision analytics | Planned after useful sample size |
-| 4/10 | Multi-device study access | Requirement accepted; sync implementation deferred |
-| 3/10 | Trilium integration | Planned |
-| 2/10 | NinjaTrader execution adapter | Later |
-| 1/10 | Live Trade Mode / safety enforcement | Intentionally last major focus |
-
-## 13. Near-Term Development Sequence
-
-1. Implement minimal alpha Feedback/Friction capture and human-readable review/export.
-2. Build first Trade Summary UI using the existing calculation/render pipeline.
-3. Include Trade Source / Account Context in Trade Summary from the start.
-4. Give Trade Summary draft autosave/restart restore from its first usable version.
-5. Reuse the managed attach/paste/preview/copy chart workflow in Trade Summary.
-6. Begin actual TradingView replay/backtesting sessions using Study Find + Trade Summary.
-7. Periodically ingest the Feedback/Friction queue into roadmap/prioritization sessions.
-8. Add responsive chart gallery (priority 6/10) when visual review friction justifies the next slice.
-9. Continue expanding actions/intents and reducing button proliferation based on real use.
-10. Defer live execution until the study/process system is mature.
-
-## 14. Development Practices
-
-### Start of session
-
-```text
-open project
--> activate .venv
--> git status
--> pytest
--> begin work
-```
-
-### End of session
-
-```text
-pytest
--> git status
--> inspect diff
--> stage intentional milestone
--> inspect staged diff
--> commit known-good milestone
--> confirm clean working tree
-```
-
-### General implementation rule
-
-Prefer small vertical slices with tests over large feature batches. Keep domain rules, GUI behavior, persistence, and external integrations separated enough that any one layer can evolve without forcing a rewrite of the others.
-
-## 15. Open Decisions / Questions
-
-These should remain explicit rather than being silently decided in code:
-
-- Final TDA step/field definitions.
-- Exact workflow revision/publishing UX.
-- Study observation taxonomy.
-- Summary-template syntax and editor UX.
-- Exact Workbench layout.
-- Feedback capture categories and whether context tagging should remain fully automatic or allow optional editing.
-- Feedback queue lifecycle: open / promoted / resolved / archived.
-- Exact responsive gallery layout behavior beyond the 1–3 image priority cases.
-- Draft restoration policy if multiple drafts exist.
-- Whether portable laptop use initially uses manual export/import, sync service, or central DB/API.
-- Offline behavior for future multi-device operation.
-- Central service technology when cross-device authoritative state becomes necessary.
-- Trilium linking/package format.
-- NinjaTrader bridge details and execution-state reconciliation.
+This document supersedes the early living requirements/roadmap as the forward-looking product plan. The older document remains useful historical context, but its priority ordering no longer reflects the current Cockpit.
 
 ---
 
-**Guiding test for future features:** Does this reduce friction, improve process adherence, preserve honest data, close the alpha feedback loop, or create a meaningful way to analyze/communicate that data? If not, it is probably not a current priority.
+## 1. Product mission
+
+Build a local-first **trading process operating system** that makes discretionary trading more structured, repeatable, analyzable, teachable, and deliberately boring.
+
+The Cockpit is not primarily a P&L dashboard and is not intended to replace TradingView as the charting environment. Its first measure of success is **process adherence and decision quality**.
+
+A fully compliant **No Trade — Process Followed** outcome is a successful operating result.
+
+The long-term product should help the operator:
+
+1. form and record a top-down market thesis,
+2. translate that thesis into concrete things to watch,
+3. observe the market with minimal interaction cost,
+4. determine whether one or more opportunities satisfy a versioned Trade Plan,
+5. execute only when authorization is explicit,
+6. review what happened without rewriting history,
+7. turn repeated evidence into process and competency improvement,
+8. compare performance and adherence across process revisions.
+
+---
+
+## 2. Core product principles
+
+### 2.1 Process over P&L
+
+Profitability matters, but it does not define whether the process was followed. Performance and process adherence must remain separate analytical dimensions.
+
+### 2.2 Structured records are authoritative
+
+Trade summaries, Study Find text, screenshots, dashboards, share cards, Trilium notes, and future reports are derived views of structured records. They must not become the only copy of important context.
+
+### 2.3 Guided when operating; flexible when designing
+
+The daily operating surface should reveal only what is useful now. Process design, template editing, revision management, research configuration, and deeper analytics belong in **Workbench / Lab**.
+
+### 2.4 Preserve honest incompleteness
+
+Unknown/not assessed is not the same as Neutral, False, or Failed. Intentional overrides and incomplete records are useful evidence and should remain explicit.
+
+### 2.5 Revision control is part of the product model
+
+A process revision is not merely a software version. Trade Plans, process definitions, playbooks, templates, management rules, risk/safety rules, and other behavior-defining artifacts should carry revision identity where historical comparison requires it.
+
+Once a published revision has been used as authoritative context for a record, it should not be silently mutated.
+
+### 2.6 Low-friction operation
+
+The application should reduce operator interaction cost during market hours. Navigation, evidence capture, acknowledgement, and future hardware bindings should map to shared application actions rather than duplicate domain logic.
+
+### 2.7 Local-first and resilient
+
+Loss of NAS, Trilium, external APIs, internet services, or future integrations must not prevent the core local process from recording authoritative state.
+
+### 2.8 Safety grows from explicit state, not hidden magic
+
+Trade authorization, progression eligibility, competency state, and evidence maturity should be inspectable. Automatic decisions should not appear until the evidence and rules supporting them are explicit and testable.
+
+### 2.9 Build from whole-loop use
+
+Expand the Cockpit from real operator friction observed across the full loop, not from speculative form growth. A hidden required control or awkward transition is a workflow defect, not merely a visual issue.
+
+---
+
+## 3. Operating model
+
+### 3.1 Trading Day
+
+A **Trading Day** is the top-level operating container for one futures trading day. It owns the collection of Trading Runs and day-level state.
+
+### 3.2 Trading Run
+
+The normal case is one **Trading Run** spanning the operator's active decision process for the day.
+
+Market sessions such as Asia, London, NYAM, and NYPM are **market context inside a run**, not mandatory run containers.
+
+Starting another Trading Run should be an explicit exception used when the operator intentionally wants a fresh process context after a meaningful break or reset.
+
+The default `Run Trading Day` path should therefore naturally begin **Trading Run 1**, while **Start Another Trading Run** remains deliberate.
+
+### 3.3 Core operating loop
+
+The core loop is:
+
+`TDA / Pre-market analysis -> Watch -> Post-Market Review`
+
+This is the same conceptual loop across study and execution environments. The environment changes purpose, timing, and authorization semantics; it should not create a completely separate workflow.
+
+### 3.4 TDA
+
+TDA establishes the working interpretation of the market and the evidence that matters next.
+
+TDA must support:
+
+- draft/autosave/restore,
+- complete and intentional incomplete paths,
+- version-aware process context,
+- top-down bias/draw/thesis,
+- market-time and Quarter Theory evidence,
+- multiple Models in Play where appropriate,
+- explicit watch points and conditional expectations,
+- carry-forward into Watch and Review.
+
+TDA is not required to produce a trade. It can correctly conclude with no actionable opportunity.
+
+### 3.5 Watch
+
+Watch is the quiet operating surface for seconds-long decisions and evidence capture.
+
+Its purpose is to:
+
+- keep the active thesis visible,
+- show actionable watch points,
+- record whether expected evidence occurred,
+- track thesis-state changes,
+- expose relevant setup candidates,
+- make candidate readiness/authorization visible,
+- preserve observations into Review.
+
+It should not require the operator to reconstruct TDA or navigate through large forms during active market observation.
+
+### 3.6 Post-Market Review
+
+Review is where the operator records outcome, process adherence, interpretation quality, lessons, and study follow-up.
+
+Review should preserve rather than rewrite the run's historical context, including:
+
+- Trade Plan revision,
+- process/playbook snapshots,
+- Study/Rehearsal intent,
+- competency focus,
+- market/QT context,
+- captured evidence,
+- setup candidates and authorization state,
+- run outcome.
+
+---
+
+## 4. Environment ladder and training progression
+
+The accepted environment semantics are:
+
+| Environment | Purpose |
+|---|---|
+| Historical Backtest / Lab | **Study** |
+| Replay | **Rehearsal** |
+| Forward Test | **Validation** |
+| Live | **Execution** |
+
+These labels describe what the environment is for. **Progression eligibility is separate.**
+
+All environments should increasingly share the same process model so that study evidence transfers toward execution rather than training a different interface.
+
+### 4.1 Historical Backtest / Study
+
+Used to answer explicit study questions, test concepts, catalogue observations, and accumulate evidence.
+
+A focused study question is appropriate here because the environment exists to investigate something.
+
+### 4.2 Replay / Rehearsal
+
+Used to rehearse the process against historical data while preserving realistic sequencing and uncertainty.
+
+Run intent may be present but need not be mandatory.
+
+### 4.3 Forward Test / Validation
+
+Used to validate the current process/model prospectively without live capital exposure.
+
+### 4.4 Live / Execution
+
+Used for actual execution only after the relevant process and safety behavior has matured sufficiently in earlier environments.
+
+Competency scores or evidence thresholds must not become hidden automatic Live locks until the project has explicit, justified rules for doing so.
+
+---
+
+## 5. Playbooks, opportunities, and authorization
+
+### 5.1 Models are scaffolds, not cages
+
+Named models/playbooks such as the 2022 Mentorship Model and Silver Bullet are useful teaching and process structures, but the Cockpit should not force every opportunity into a named model.
+
+The system must support:
+
+- multiple simultaneous setup candidates,
+- named playbook-derived candidates,
+- custom/day-specific candidates,
+- technician-defined opportunities as the process matures.
+
+### 5.2 Opportunity evidence can outrank model labels
+
+Time, QT/AMDX state, TDA evidence, liquidity, displacement, imbalance, and other observed market facts may establish a valid opportunity even when a named model label is incomplete or absent.
+
+The architecture should reduce execution subjectivity while preserving disciplined technician interpretation.
+
+### 5.3 Authorization separation
+
+Candidate setup conditions and Trade Plan/global safety gates are separate concerns.
+
+A candidate can be technically complete yet still blocked by a day/account/risk gate.
+
+Authorization semantics:
+
+- **Pending blocks entry.**
+- **Blocked blocks entry.**
+- Only explicit **Clear** safety gates plus satisfied setup conditions can authorize entry.
+- Entry authorization may later expire when required context becomes stale.
+- Exit/flatten actions must never be blocked by entry authorization logic.
+
+Future broker integration should follow an explicit lifecycle such as:
+
+`analysis -> candidate -> checklist/evidence -> authorization -> arm -> submit -> manage -> close/flatten`
+
+No live order adapter should bypass the same state used in simulation.
+
+---
+
+## 6. Trade Plan and process ownership
+
+The Trade Plan is the authoritative definition of the trading process and its non-negotiable rules.
+
+Plan-owned content may include:
+
+- competencies,
+- playbooks/models,
+- entry criteria,
+- authorization gates,
+- market/time restrictions,
+- risk and loss limits,
+- trade/day capacity,
+- management expectations,
+- no-trade conditions,
+- later economic-news rules.
+
+Changing authoritative plan-owned definitions requires a new published Trade Plan revision.
+
+Not every configurable artifact belongs inside the Trade Plan. For example, summary-template revisions are separate Workbench configuration because they change presentation/output rather than trading permission or process meaning.
+
+---
+
+## 7. Revision and provenance architecture
+
+Historical records should retain enough information to answer **what process was actually in force when this decision was made?**
+
+Revision/provenance targets include:
+
+- Trade Plan revision,
+- process/TDA workflow revision,
+- playbook/model revision,
+- management-rule revision,
+- risk/safety-rule revision,
+- summary-template revision,
+- future checklist revisions.
+
+The current implementation already snapshots selected playbook definitions and records Trade Plan revision on Trading Runs. Summary templates now publish immutable revisions with active pointers and generated-output provenance.
+
+### 7.1 Future revision analytics
+
+The system should eventually support analysis such as:
+
+- process adherence by revision,
+- win/loss and expectancy by revision,
+- average handles and R by revision,
+- drawdown and sample size by revision,
+- TDA interpretation quality by revision,
+- complete-process outcomes vs override/non-adhered outcomes,
+- competency evidence by revision,
+- behavior before/after a process change.
+
+Performance and adherence must remain separate axes so a profitable violation is not misclassified as good process.
+
+---
+
+## 8. Competency and evidence model
+
+Keep these concepts separate:
+
+1. **Competency definition** — a plan-owned skill/mechanic.
+2. **Competency state** — the operator's current mutable training state.
+3. **Evidence** — observations that may later justify changing competency state.
+
+The current plan-owned competency substrate includes:
+
+- HTF liquidity recognition,
+- draw on liquidity,
+- displacement/FVG recognition,
+- premium/discount context,
+- time/session awareness.
+
+Study/Rehearsal runs can identify which competencies are being trained, and those links persist into Review.
+
+### 8.1 Evidence maturity
+
+Evidence maturity is a useful future governance concept: concepts and revisions should earn confidence through structured Study, Rehearsal, and Validation evidence before they are treated as mature enough for Execution.
+
+However, the project does **not** currently have justified fixed thresholds for:
+
+- readiness percentages,
+- automatic promotion/demotion,
+- automatic competency-based Live lock,
+- universal minimum sample counts.
+
+Those rules should be derived from actual accumulated evidence rather than invented prematurely.
+
+When a concept is below whatever future maturity standard is adopted, the Cockpit should provide an actionable path back to study/backtest/rehearsal rather than merely showing a bad score.
+
+---
+
+## 9. Market time, Quarter Theory, and AMDX/XAMD
+
+### 9.1 Canonical time
+
+Market-time reasoning uses **America/New_York**.
+
+The futures trading day rolls at **18:00 ET**.
+
+Replay/Historical environments must use the selected historical market timestamp rather than wall-clock time.
+
+### 9.2 Structured temporal evidence
+
+The application should persist factual time/session/QT context as run evidence, including where useful:
+
+- futures-day identity,
+- session,
+- killzone/window,
+- temporal quarter,
+- relevant opens,
+- prior-cycle relationships.
+
+The current direction is to derive factual temporal/QT state first and keep interpretive AMDX/XAMD classification owned by the Trade Plan/operator rather than hiding it inside opaque automation.
+
+### 9.3 Quarterly Theory hierarchy
+
+The accepted hierarchy for future structured context is:
+
+- 16-year cycle,
+- Quadrennial,
+- Yearly,
+- Monthly,
+- Weekly,
+- Daily,
+- session,
+- 90-minute cycle.
+
+The 22.5-minute cycle remains omitted for stability unless later evidence justifies bringing it back.
+
+Weekly QT uses Monday–Thursday as the four quarters; Friday is distortion / separate PO3 context rather than a fifth standard quarter.
+
+Q1 should be interpreted relative to the prior cycle's Q4 where applicable.
+
+### 9.4 AMDX/XAMD
+
+AMDX/XAMD should be recorded as structured expected-vs-observed process context rather than only free text.
+
+The application should be able to preserve:
+
+- anticipated phase/profile,
+- observed phase/profile,
+- relevant prior-quarter relationship,
+- whether the observed behavior confirmed, distorted, or invalidated the expectation.
+
+The product should not force an AMDX interpretation solely because a timestamp falls in a quarter.
+
+---
+
+## 10. Economic news and calendar context
+
+Economic/news integration is a meaningful later priority because it can alter both interpretation and trading permission.
+
+Future requirements:
+
+- ingest an economic calendar/news source,
+- identify especially high-impact/red-folder events,
+- preserve event timing/context with the run,
+- support Trade Plan-specific warnings and lockouts,
+- support model-specific conditions such as Friday Asian Range news filters,
+- handle major events such as NFP, FOMC, and CPI explicitly,
+- account for holidays, early closures, and other schedule distortions.
+
+News should become structured context usable by TDA, QT/AMDX interpretation, authorization, and later analytics—not merely a decorative calendar panel.
+
+---
+
+## 11. Study, observations, summaries, and sharing
+
+### 11.1 Study Find
+
+Study Find is a structured way to catalogue a notable observation with market context, an available move, notes, and chart attachments.
+
+### 11.2 Trade Summary
+
+Trade Summary captures execution/trade context and produces a shareable summary from structured fields.
+
+### 11.3 Configurable summary templates
+
+Summary templates are Workbench-owned, versioned configuration separate from the Trade Plan.
+
+Published template revisions are immutable. New generated summaries use the active revision, and generated/copyable text includes template provenance.
+
+Future useful fields may include additional structured provenance such as the **Trade Plan revision** once that value is exposed through the summary context.
+
+### 11.4 Chart workflow
+
+TradingView remains the preferred chart/study environment.
+
+Near-term and medium-term chart workflow is:
+
+`TradingView -> screenshot/copy/import -> structured Cockpit record -> generated share/review artifact`
+
+Rebuilding a full TradingView-style charting environment inside the Cockpit is not a current priority.
+
+---
+
+## 12. Workbench / Lab
+
+Workbench is the design and reflection environment, not the active market-operating surface.
+
+Expected long-term responsibilities:
+
+- Trade Plan/process configuration,
+- workflow/TDA definition editing,
+- playbook configuration,
+- summary-template editing,
+- revision history,
+- study/backtesting catalogue,
+- process/revision analytics,
+- competency/evidence review,
+- friction/feedback review,
+- later rule/configuration publishing.
+
+The first Workbench capability exists because summary-template revisioning created a real configuration need.
+
+Do not build a large generic Workbench shell merely to satisfy an old roadmap checkbox. Add Workbench capabilities as real configuration/research needs appear.
+
+---
+
+## 13. Interaction and workspace requirements
+
+### 13.1 TradingView/Cockpit parity
+
+The Cockpit is intended to operate beside TradingView. Workflow modes/stations should correspond naturally to the operator's chart/deck context so the two workspaces advance together rather than fighting each other.
+
+### 13.2 Responsive operating surface
+
+The active operating surface should work as a compact shared-pane desktop companion to TradingView.
+
+Required controls must remain discoverable without forcing excessive scrolling. Hiding a required Models-in-Play control or critical gate because of layout is a functional failure.
+
+### 13.3 Shared application actions
+
+Long-term input bindings should target logical actions such as:
+
+- workflow next/back,
+- capture chart,
+- mark friction,
+- save observation,
+- complete no-trade,
+- arm trade,
+- flatten.
+
+Possible triggers can include GUI, keyboard, mouse, macro pad, SpaceMouse, or future custom hardware.
+
+Dangerous actions require stronger safeguards than navigation/capture actions.
+
+---
+
+## 14. Feedback and process friction
+
+A low-friction feedback mechanism is useful for recording where the Cockpit itself impedes the process.
+
+The current feedback capture/digest capability establishes the substrate.
+
+Future analysis can include:
+
+- friction by workflow step/revision,
+- repeated backtracking,
+- time per step,
+- fields frequently revised,
+- commonly overridden requirements,
+- recurring user-interface failures.
+
+Do not build large friction dashboards until repeated usage produces enough meaningful evidence.
+
+---
+
+## 15. Data and technical architecture
+
+### 15.1 Current stack
+
+- Python 3.10+
+- PySide6 / Qt
+- SQLite local authoritative database
+- pytest
+- Git / GitHub
+- Linux primary workstation
+- TradingView for charting
+- NinjaTrader as the eventual execution target
+- Trilium as a future narrative/journal companion
+- NAS for safe backup/snapshots, not the live database
+
+### 15.2 Database rules
+
+- authoritative SQLite database stays on local storage,
+- WAL enabled,
+- foreign keys enabled,
+- explicit schema migrations via `PRAGMA user_version`,
+- transactional multi-step writes,
+- safe backup/snapshot practices,
+- RAID is redundancy, not backup.
+
+Do not operate the authoritative SQLite database directly from a NAS share or across the VPN.
+
+### 15.3 Multi-device direction
+
+Near term:
+
+- code travels through Git,
+- each machine may keep local application data,
+- NAS provides backups,
+- interfaces use stable IDs, explicit timestamps/revisions, configurable paths, and repository boundaries.
+
+If shared study data becomes necessary, add deliberate export/sync or a central application service.
+
+If live safety state must be shared across devices, use one authoritative central state/service. Independently synchronized SQLite databases are not sufficient for cross-device trade lockouts, counters, or account safety.
+
+---
+
+## 16. External integrations
+
+### TradingView
+
+Primary charting/study workspace. Prefer screenshot/copy/import and workflow parity over embedded chart replacement.
+
+### NinjaTrader
+
+Primary intended execution platform for eventual real orders.
+
+Integration remains later because the Cockpit must first prove:
+
+- authorization semantics,
+- risk/safety state,
+- entry vs flatten behavior,
+- counters/lockouts,
+- persistence/recovery,
+- simulation behavior,
+- state reconciliation.
+
+### Trilium
+
+Future narrative/journal companion. Cockpit structured records remain authoritative; Trilium can receive links, generated summaries, and richer narrative packages later.
+
+### Economic calendar/news
+
+Future structured context and authorization input as described above.
+
+---
+
+## 17. Current capability status
+
+### Implemented / established
+
+- local SQLite persistence with migrations through schema v27,
+- draft autosave/restore for major capture surfaces,
+- Guided TDA foundations,
+- Trade Plan and process blueprint,
+- Trading Day / Trading Run persistence,
+- shared runtime across Live/Replay/Backtest/Forward Test,
+- TDA -> Watch -> Review workflow,
+- watch-point evidence and thesis-state persistence,
+- Models in Play / multiple setup candidates,
+- declarative playbooks and playbook snapshots,
+- setup criteria and separate authorization gates,
+- market-time context,
+- QT context substrate,
+- Study/Rehearsal/Validation/Execution environment semantics,
+- Study intent and competency-focus provenance,
+- plan-owned competency catalogue and mutable competency-assessment substrate,
+- Post-Market Review,
+- Study Find capture/review,
+- Trade Summary capture,
+- chart image import/paste,
+- text summary generation/copy,
+- configurable/versioned Study Find and Trade Summary templates,
+- template provenance in generated text,
+- feedback capture/digest,
+- manual acceptance smoke-test runner,
+- project handoff/decision discipline.
+
+### Partially implemented / needs maturation
+
+- full Trade Plan/process revision architecture across all definition types,
+- Workbench as a coherent design environment,
+- QT/AMDX top-down interpretation workflow,
+- evidence maturity and progression governance,
+- process/adherence analytics,
+- competency evidence accumulation,
+- operator-loop ergonomics from sustained real use,
+- richer linkage between Trading Runs, Trade Summaries, Study Finds, and review artifacts.
+
+### Intentionally deferred
+
+- fixed readiness percentages,
+- automatic competency promotion/demotion,
+- automatic competency-based Live lock,
+- broad generic Workbench framework,
+- large analytics dashboards before enough data exists,
+- multi-device sync,
+- Trilium integration,
+- NinjaTrader order submission,
+- authoritative cross-device Live safety,
+- embedded TradingView replacement.
+
+---
+
+## 18. Reconciled milestone roadmap
+
+The roadmap is now organized around product outcomes rather than the old P0/P1/P2 feature queue.
+
+### Milestone A — Coherent process/revision architecture
+
+**Goal:** Every behavior-defining artifact that matters to historical interpretation has clear ownership, revision semantics, and provenance.
+
+Includes:
+
+- define the revision boundary among Trade Plan, process blueprint, TDA workflow, playbooks, management/risk/safety rules, and templates,
+- remove remaining ambiguous mutable definitions,
+- ensure runs/reviews link to exact revisions/snapshots,
+- expose useful revision provenance in generated artifacts where appropriate,
+- establish publish/edit semantics in Workbench without building unnecessary generic infrastructure.
+
+**Why first:** analytics and trustworthy evidence are weak if the process that generated a record cannot be identified.
+
+### Milestone B — Harden the whole operator loop
+
+**Goal:** Make `TDA -> Watch -> Review` comfortable enough for repeated daily Study/Rehearsal/Validation use.
+
+Includes:
+
+- use the complete loop repeatedly,
+- fix layout/discoverability friction,
+- refine transitions and attention cues,
+- improve linkage among TDA evidence, setup candidates, Watch, and Review,
+- reduce duplicate data entry,
+- keep TradingView/Cockpit workspace parity,
+- capture genuine friction instead of speculating about more fields.
+
+**Exit condition:** the process can be used repeatedly without the software itself becoming the dominant source of friction.
+
+### Milestone C — Evidence, adherence, and process analytics substrate
+
+**Goal:** Turn accumulated records into evidence about both the trading process and operator development.
+
+Includes:
+
+- explicit adherence facts,
+- competency evidence records linked to runs/studies/revisions,
+- revision-aware aggregation,
+- separate process-quality and P&L/performance views,
+- study/rehearsal/validation evidence pathways,
+- Evidence Maturity reporting without premature universal thresholds.
+
+**Why before Live:** the system should be able to demonstrate what has actually been practiced and validated before it makes execution-readiness claims.
+
+### Milestone D — Structured QT/AMDX and economic context
+
+**Goal:** Make major temporal/news context first-class and usable by TDA, opportunity interpretation, and later authorization.
+
+Includes:
+
+- complete top-down QT evidence model,
+- expected vs observed AMDX/XAMD capture,
+- distortion/holiday context,
+- economic calendar ingestion,
+- red-folder event context,
+- Trade Plan warnings/no-trade rules,
+- preserved event context for later analytics.
+
+This milestone may overlap B/C in small slices where it removes real TDA friction.
+
+### Milestone E — Execution-safety simulation
+
+**Goal:** Prove the full authorization and safety state machine without sending live orders.
+
+Includes:
+
+- explicit arm/submit/manage/flatten lifecycle,
+- stale-authorization handling,
+- max trades/day,
+- consecutive-loss/day-loss rules,
+- cooldowns/lockouts,
+- account context,
+- restart/recovery behavior,
+- simulated order/execution state reconciliation,
+- guaranteed ungated flatten/exit behavior.
+
+### Milestone F — NinjaTrader execution integration
+
+**Goal:** Connect the proven Cockpit authorization/safety model to NinjaTrader without creating a second execution truth.
+
+Includes:
+
+- adapter/interface,
+- order intent transfer,
+- acknowledgement/rejection handling,
+- broker/platform state reconciliation,
+- recovery from disconnect/restart,
+- simulation/shadow mode before real-money enablement.
+
+### Milestone G — Shared/multi-device operation
+
+**Goal:** Provide cross-device access only when it is operationally valuable.
+
+Study data may use export/sync or a central service earlier. Cross-device Live safety requires one authoritative central service/database state.
+
+---
+
+## 19. Near-term sequence after reconciliation
+
+Unless the reconciliation review changes the ordering:
+
+1. Finish and merge the reconciliation documentation itself.
+2. Begin **Milestone A — Coherent process/revision architecture** with a small inventory/design slice before changing runtime behavior.
+3. Identify the highest-value revision/provenance gap from that inventory.
+4. Continue whole-loop Study/Rehearsal usage in parallel and capture friction.
+5. Prefer fixes that strengthen the core loop over isolated convenience features.
+6. Move toward Milestone C only after revision identities are trustworthy enough for analytics.
+
+---
+
+## 20. Later pile / accepted but not current
+
+These are valid ideas that should not silently become the next task:
+
+- expose Trade Plan revision as a field available to generated summary templates,
+- broader summary-template library/catalog management,
+- chart-image summary cards,
+- responsive chart gallery / Film Night visual review,
+- Trilium package/link generation,
+- generalized macro/binding system,
+- friction heat maps,
+- large competency dashboard,
+- embedded charting,
+- multi-device study sync,
+- centralized PostgreSQL service,
+- direct NinjaTrader execution.
+
+---
+
+## 21. Open design questions
+
+Keep these explicit until evidence or implementation work resolves them:
+
+- exact ownership/revision boundaries among Trade Plan, process blueprint, TDA workflow, playbooks, management rules, risk rules, and safety rules,
+- final TDA station/field structure,
+- exact Workbench publishing UX for non-template definitions,
+- competency evidence taxonomy and evidence-maturity calibration,
+- criteria for future Live eligibility,
+- how a completed Trading Run links to one or more executed Trade Records,
+- how Study Finds should link to runs/competencies/revisions,
+- economic-calendar provider and normalization model,
+- exact holiday/early-close distortion representation,
+- NinjaTrader bridge and reconciliation protocol,
+- initial multi-device study-data strategy,
+- Trilium linking/package format.
+
+---
+
+## 22. Development and acceptance discipline
+
+For each substantial slice:
+
+1. start from an up-to-date `main`,
+2. use an isolated branch,
+3. prefer a small vertical slice,
+4. run the automated suite,
+5. run relevant manual acceptance checks,
+6. inspect the diff,
+7. update `PROJECT_STATE.md`,
+8. append durable decisions to `DECISIONS.md`,
+9. merge only a known-good checkpoint.
+
+The manual smoke-test runner is a convenience layer over `docs/SMOKE_TEST.md`; Markdown remains the durable acceptance record.
+
+---
+
+## 23. Priority test for future work
+
+Before adding a feature, ask:
+
+> Does this materially improve process adherence, reduce operating friction, preserve honest/structured evidence, strengthen safety, or make accumulated evidence meaningfully analyzable?
+
+If not, it is probably not the next priority.
