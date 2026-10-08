@@ -198,7 +198,7 @@ def test_development_direction_can_link_selected_evidence(tmp_path) -> None:
     synthesis = widget.summary_label.text()
     assert "Competency Synthesis · Draw on liquidity" in synthesis
     assert "Development Direction · Study · supporting evidence: 1" in synthesis
-    assert "Evidence coverage · 1 reviewed · Study: 1" in synthesis
+    assert "Evidence coverage · 1 evidence record(s) · Study: 1" in synthesis
     assert "Reviewed outcomes · Refined: 1" in synthesis
     assert "Evidence range · " in synthesis
     assert "Descriptive coverage only" in synthesis
