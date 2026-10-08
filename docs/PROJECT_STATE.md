@@ -139,7 +139,7 @@ The proposed **Competency Synthesis** panel is a compact competency-level readin
 - evidence age/range,
 - linked supporting-evidence count,
 - per-record provenance already available in the evidence list/detail,
-- a mixed-Trade-Plan-revision caution when evidence spans revisions,
+- per-record Trade Plan provenance, with no generic mixed-revision warning unless competency-definition provenance can establish a material definition change,
 - the explicit boundary that coverage is not proficiency, Evidence Maturity, or eligibility.
 
 The design deliberately avoids automatic recommendations, trend/strength labels, competency-state changes, progression logic, and new Rehearsal/Validation routing.
@@ -148,7 +148,18 @@ UI constraint: this must remain compact and reuse existing evidence UI because r
 
 No runtime/schema/Trade Plan changes are on this design branch.
 
-Next action: operator reviews `docs/COMPETENCY_SYNTHESIS_PANEL.md` and its six confirmation questions before implementation.
+The operator accepted the Competency Synthesis concept and clarified an important core revision-control requirement: a stable/proven Trade Plan revision must remain protected while later candidate revisions evolve beside it. Historical evidence must retain its original definition meaning; later competency changes or additions must not silently reinterpret earlier records.
+
+This requirement is now recorded in `DECISIONS.md`, `PROJECT_REQUIREMENTS.md`, and `SYSTEM_GUIDE.md`.
+
+Competency Synthesis refinement:
+
+- purpose/outcome coverage remains descriptive and accepted,
+- older-revision evidence remains visible,
+- generic mixed-Trade-Plan warnings are removed,
+- future warnings should depend on competency-definition-level provenance rather than whole-plan revision differences.
+
+Next action: merge this accepted design/documentation checkpoint, then implement the compact Competency Synthesis v0 surface without adding automatic interpretation or progression logic.
 
 ## System guide maintenance
 
