@@ -16,10 +16,11 @@ Read these repository documents in this exact order:
 2. `docs/PROJECT_REQUIREMENTS.md`
 3. `docs/DECISION_AUDIT.md`
 4. `docs/DECISIONS.md`
-5. `docs/PROJECT_EVOLUTION.md`
-6. `docs/HANDOFF.md`
-7. `docs/SMOKE_TEST.md` when testing/acceptance context is relevant
-8. relevant current code and tests
+5. `docs/SYSTEM_GUIDE.md`
+6. `docs/PROJECT_EVOLUTION.md`
+7. `docs/HANDOFF.md`
+8. `docs/SMOKE_TEST.md` when testing/acceptance context is relevant
+9. relevant current code and tests
 
 If historical clarification is still necessary after those files, consult `docs/history/README.md` before asking me to recover old chat transcripts.
 

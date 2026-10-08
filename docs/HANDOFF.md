@@ -10,9 +10,10 @@ A new development chat should read these documents in this order:
 2. **`docs/PROJECT_REQUIREMENTS.md`** — current intended product architecture and milestone roadmap.
 3. **`docs/DECISION_AUDIT.md`** — conflict/supersession ledger; use this when an older idea disagrees with a newer one.
 4. **`docs/DECISIONS.md`** — durable accepted architectural decisions and rationale.
-5. **`docs/PROJECT_EVOLUTION.md`** — chronological architecture history explaining how the current model emerged.
-6. **Relevant code/tests** — Git is authoritative for what is actually implemented.
-7. **Historical source material** — consult only when clarification is still needed after the canonical package.
+5. **`docs/SYSTEM_GUIDE.md`** — human-readable conceptual map, terminology, subsystem relationships, and architecture loops.
+6. **`docs/PROJECT_EVOLUTION.md`** — chronological architecture history explaining how the current model emerged.
+7. **Relevant code/tests** — Git is authoritative for what is actually implemented.
+8. **Historical source material** — consult only when clarification is still needed after the canonical package.
 
 Do **not** infer current priority from the recency, detail, or enthusiasm of an older feature discussion. First check whether that idea was later implemented, refined, deferred, or superseded.
 
@@ -59,6 +60,7 @@ Also update:
 - **`DECISIONS.md`** when a durable decision is accepted,
 - **`DECISION_AUDIT.md`** when an older decision is refined/superseded or a conflict is discovered,
 - **`PROJECT_EVOLUTION.md`** when the project changes architectural phase or center of gravity,
+- **`SYSTEM_GUIDE.md`** when terminology, ownership boundaries, subsystem relationships, or major system loops materially change,
 - **`PROJECT_REQUIREMENTS.md`** only when the accepted current product/roadmap itself changes.
 
 Do not use `PROJECT_REQUIREMENTS.md` as a running diary.
@@ -135,9 +137,10 @@ Use this prompt when starting a fresh ChatGPT development conversation:
 > 2. `docs/PROJECT_REQUIREMENTS.md`
 > 3. `docs/DECISION_AUDIT.md`
 > 4. `docs/DECISIONS.md`
-> 5. `docs/PROJECT_EVOLUTION.md`
-> 6. `docs/HANDOFF.md`
-> 7. `docs/SMOKE_TEST.md` when acceptance/testing context is relevant
+> 5. `docs/SYSTEM_GUIDE.md`
+> 6. `docs/PROJECT_EVOLUTION.md`
+> 7. `docs/HANDOFF.md`
+> 8. `docs/SMOKE_TEST.md` when acceptance/testing context is relevant
 >
 > Then inspect the relevant current code/tests and Git branch/commit state before proposing changes.
 >
@@ -175,7 +178,7 @@ Use this prompt when starting a fresh ChatGPT development conversation:
 
 When the canonical package is known to be current, this shorter form is acceptable:
 
-> Continue the ICT Trading Cockpit from GitHub. Read `PROJECT_STATE.md`, `PROJECT_REQUIREMENTS.md`, `DECISION_AUDIT.md`, `DECISIONS.md`, `PROJECT_EVOLUTION.md`, and `HANDOFF.md` in that order before coding. Respect the precedence/supersession rules in HANDOFF. Report the verified checkpoint and current architectural frontier before proposing the next slice.
+> Continue the ICT Trading Cockpit from GitHub. Read `PROJECT_STATE.md`, `PROJECT_REQUIREMENTS.md`, `DECISION_AUDIT.md`, `DECISIONS.md`, `SYSTEM_GUIDE.md`, `PROJECT_EVOLUTION.md`, and `HANDOFF.md` in that order before coding. Respect the precedence/supersession rules in HANDOFF. Report the verified checkpoint and current architectural frontier before proposing the next slice.
 
 ## Principle
 
@@ -186,6 +189,7 @@ Chat history is useful working context, but it is not the canonical project reco
 - **PROJECT_REQUIREMENTS.md** is canonical for current intended product architecture/roadmap.
 - **DECISION_AUDIT.md** is canonical for supersession/conflict status.
 - **DECISIONS.md** is canonical for durable design rationale.
+- **SYSTEM_GUIDE.md** explains the architecture in human-readable form without superseding canonical requirements/decisions.
 - **PROJECT_EVOLUTION.md** preserves architectural history without making old priorities current.
 - Versioned Trade Plan data is canonical for trading/process rules.
 

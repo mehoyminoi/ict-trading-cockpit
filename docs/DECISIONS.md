@@ -205,3 +205,16 @@ The accepted v0 surface supports:
 **Rationale:** the operator should be able to inspect and challenge the underlying observations before later aggregation or progression rules are trusted.
 
 **Consequence / deferred behavior:** evidence counts and outcomes are descriptive. They do not yet constitute a score, competency-state transition, Evidence Maturity judgment, or progression decision.
+
+
+## 2026-10-08 — System Guide v0 accepted
+
+**Status:** Accepted
+
+`docs/SYSTEM_GUIDE.md` is accepted as the maintained human-readable conceptual map of the ICT Trading Cockpit.
+
+It explains terminology, subsystem relationships, major operating/learning loops, competency/evidence semantics, source-of-truth relationships, and the distinction between temporary UI controls and underlying domain concepts.
+
+**Rationale:** the project architecture is now broad enough that the operator needs one coherent explanatory document in addition to the canonical requirements, decisions, state, and evolution records.
+
+**Consequence:** future material changes to terminology, ownership boundaries, or major system loops should update the guide. The guide remains explanatory and does not supersede canonical requirements, decisions, current state, or verified implementation.
