@@ -91,6 +91,48 @@ def test_replay_launcher_attaches_sparse_study_intent_to_run() -> None:
     assert run.study_context.completed_at == ""
 
 
+def test_replay_and_forward_preserve_competency_focus_without_question() -> None:
+    get_app()
+    for environment in (
+        RunEnvironment.REPLAY,
+        RunEnvironment.FORWARD_TEST,
+    ):
+        widget = TradePlanWidget(build_default_trade_plan())
+        launcher = widget.process_run_launcher_widget
+
+        launcher.environment_combo.setCurrentText(environment.value)
+        launcher.competency_checkboxes[
+            "time-session-awareness"
+        ].setChecked(True)
+
+        assert launcher.study_question_input.text() == ""
+        assert launcher.begin_process_run() is True
+
+        shell = widget.trading_day_shell_widget
+        run = shell.active_trading_run
+        assert run is not None
+        assert run.study_context is not None
+        assert run.study_context.question == ""
+        assert run.study_context.competency_focus == [
+            {
+                "id": "time-session-awareness",
+                "name": "Time / session awareness",
+                "category": "Time",
+            }
+        ]
+
+        review = shell.runtime.post_market_review_widget
+        review.load_state(
+            run,
+            shell.runtime.tda_station_runner_widget.session,
+        )
+        assert review.study_review_frame.isHidden() is False
+        assert review.study_question_label.text() == "Question · Not specified"
+        assert "Time / session awareness" in (
+            review.study_competency_label.text()
+        )
+
+
 def test_live_run_does_not_require_or_create_study_context() -> None:
     get_app()
     widget = TradePlanWidget(build_default_trade_plan())
