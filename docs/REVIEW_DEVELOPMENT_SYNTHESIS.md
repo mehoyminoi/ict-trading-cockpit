@@ -1,6 +1,6 @@
 # Review / Development Synthesis — v0 Design Candidate
 
-**Status:** Design candidate for operator review
+**Status:** Accepted for v0 implementation
 **Milestone:** B — Review / Development synthesis
 
 ## Purpose
@@ -87,3 +87,17 @@ If accepted, implement only:
 3. Should a direction be allowed without linking specific evidence records?
 4. Should v0 keep one current mutable direction per competency, with direction history deferred?
 5. Does this separation feel correct: Study Outcome = what this run taught us; Development Direction = what to work on next; Competency State = broader training-ladder state; Evidence Maturity = future confidence/governance layer?
+
+
+## Acceptance
+
+Accepted by the operator on 2026-10-08.
+
+The distinctions and guardrails in this note are intentional and should be preserved during implementation. In particular:
+
+- Development Direction is human-reviewed synthesis, not machine inference.
+- Study Outcome must not be repurposed as a hidden proficiency score.
+- Development Direction must not automatically mutate Competency State.
+- Development Direction must not make an Evidence Maturity or eligibility decision.
+- One current mutable direction per competency is sufficient for v0; historical direction changes are deferred.
+- Supporting evidence links are optional in v0.
