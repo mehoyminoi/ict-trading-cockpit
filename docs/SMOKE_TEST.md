@@ -122,7 +122,7 @@ Before merging `feature/competency-proficiency-v0`, additionally confirm:
 - [PASS] Exactly the expected plan-owned competencies are shown in non-Live competency focus controls.
 - [PASS] Live does not expose competency focus selection.
 - [PASS] Competency selections made at run launch survive into Post-Market Review.
-  - Orignally failed: Study Review section is missing from Post-Market Process Review for the environments that don't require a Focus question (Forward Test, Replay)
+  - Originally failed: Study Review section is missing from Post-Market Process Review for the environments that don't require a Focus question (Forward Test, Replay)
   - Resolved: Competency-only run intent is now persisted; verified in Replay and Forward Test with a blank question.
 - [PASS] Competency selections survive application restart as part of the persisted run.
 - [PASS] The launcher itself does **not** repopulate prior-run competency selections after restart.
