@@ -182,6 +182,37 @@ Used for actual execution only after the relevant process and safety behavior ha
 
 Competency scores or evidence thresholds must not become hidden automatic Live locks until the project has explicit, justified rules for doing so.
 
+### 4.5 Eligibility precedes account/capital context
+
+The hierarchy is:
+
+1. **What level of practice is the operator currently eligible for?**
+2. **What is the operator doing inside that level?**
+3. **Only then, if applicable, which account/capital context is allowed?**
+
+Account type is therefore not a peer to Lab/Replay/Forward/Live.
+
+The intended mapping is:
+
+- Historical Backtest / Lab -> no trading account,
+- Replay -> no trading account,
+- Forward Test -> Sim / Paper,
+- Live -> Prop / Cash.
+
+When the Trade Plan eventually defines justified proficiency requirements, a foundational competency that falls below the required level should make both Forward Test and Live unavailable. The remedy is not to take the same uncertain idea in a lower-risk account. The remedy is to return to targeted Study, demonstrate the competency, integrate it in Replay, validate it in Forward Test, and only then regain Live eligibility.
+
+Moving **up** the ladder should require evidence. Moving **down** should be frictionless and welcoming.
+
+Future eligibility logic should distinguish at least three reasons for restricting higher environments:
+
+- **Eligibility regression** — evidence indicates a competency no longer meets the requirement.
+- **Temporary pause** — current personal, market, news, or risk conditions do not permit Live execution today.
+- **Unknown / insufficient evidence** — there is not yet enough evidence to certify the higher level.
+
+These conditions may all prevent Live/Forward use, but they require different remedies and should not be collapsed into one generic blocked state.
+
+The existing progression substrate intentionally separates environment purpose from eligibility and supports AVAILABLE / NOT CONFIGURED / BLOCKED states. NOT CONFIGURED means readiness rules do not yet exist; it must not be treated as evidence of readiness or as an automatic hard lock.
+
 ---
 
 ## 5. Playbooks, opportunities, and authorization
@@ -302,6 +333,10 @@ Study/Rehearsal runs can identify which competencies are being trained, and thos
 ### 8.1 Evidence maturity
 
 Evidence maturity is a useful future governance concept: concepts and revisions should earn confidence through structured Study, Rehearsal, and Validation evidence before they are treated as mature enough for Execution.
+
+The intended training loop is:
+
+`Lab teaches components -> Replay integrates them -> Forward proves them against live information flow -> Live executes them with capital at risk -> Review sends weaknesses back down the ladder.`
 
 However, the project does **not** currently have justified fixed thresholds for:
 
