@@ -218,3 +218,16 @@ It explains terminology, subsystem relationships, major operating/learning loops
 **Rationale:** the project architecture is now broad enough that the operator needs one coherent explanatory document in addition to the canonical requirements, decisions, state, and evolution records.
 
 **Consequence:** future material changes to terminology, ownership boundaries, or major system loops should update the guide. The guide remains explanatory and does not supersede canonical requirements, decisions, current state, or verified implementation.
+
+
+## 2026-10-08 — Evidence routing stages intent; it does not bypass run launch
+
+**Status:** Accepted
+
+The Review / Development action **Study this competency** is an intent-staging action, not a second run-entry mechanism.
+
+It prepares the shared Process Run launcher for Historical Backtest / Study, selects the chosen competency as the deliberate focus, preserves an already-authored Study question, and leaves final run creation to the existing **Begin Process Run** action.
+
+**Rationale:** evidence should be able to route the technician toward deliberate practice without bypassing the shared launcher, its validation rules, environment semantics, or provenance capture.
+
+**Consequence:** future Review-to-Study routing should preconfigure the canonical launcher rather than create parallel launch paths. The technician still controls the Study question and explicitly starts the run.
