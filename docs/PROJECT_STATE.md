@@ -6,11 +6,11 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `feature/competency-study-routing-v0`
-- **Main baseline:** `b6b1f9ec854b26fb25c388e571390d60f82042c6` — PR #32 merged human-readable System Guide v0
+- **Active branch:** `design/review-development-synthesis-v0`
+- **Main baseline:** `cb1e505c850c791eb80d3f5de7b3cc5a44b43754` — PR #33 merged evidence-to-targeted-Study routing v0
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Milestone A — evidence to targeted Study routing v0
+- **Current slice:** Milestone B design — Review / Development synthesis v0
 - **Schema:** v28
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** full v28 competency-evidence suite green on 2026-10-08 (exact count not separately recorded)
@@ -127,32 +127,31 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-Milestone A's evidence-to-targeted-Study routing slice is **acceptance-complete and ready for PR/merge**.
+Milestone A's first trustworthy competency-evidence loop is complete:
 
-Accepted behavior:
+`competency focus -> deliberate run -> reviewed evidence -> inspect evidence -> route back to targeted Study`
 
-- **Study this competency** is an intent-staging action, not a second run-entry mechanism,
-- it prepares Historical Backtest / Study in the shared launcher,
-- the selected competency becomes the sole deliberate focus,
-- an existing Study question is preserved,
-- a missing Study question is still required,
-- **Begin Process Run** remains the explicit run-creation action,
-- progression eligibility continues to gate higher environments and guide downward,
-- no score, competency-state transition, Evidence Maturity conclusion, or eligibility promotion is inferred.
+The project is now entering **Milestone B — Review / Development synthesis**.
 
-This closes the first complete operator-facing competency-evidence loop:
+A design candidate is recorded in `docs/REVIEW_DEVELOPMENT_SYNTHESIS.md`.
 
-`focus competency -> deliberate run -> reviewed evidence -> inspect evidence -> route back to targeted Study`
+The proposed next concept is **Development Direction**: an explicit human-reviewed statement of what deliberate work should happen next for a competency, based on reviewed evidence.
 
-Next action:
+Candidate directions:
 
-1. inspect branch diff,
-2. open and merge this accepted routing slice,
-3. sync `main`,
-4. mark Milestone A's first trustworthy competency-evidence loop complete,
-5. begin Milestone B — Review / Development synthesis with a design/inventory slice before adding automatic weakness interpretation.
+- Study
+- Rehearsal
+- Validation
+- Monitor / Gather Evidence
+- No Active Focus
 
-The first Milestone B design question is how the operator should explicitly identify a recurring weakness or development need across evidence **without** abusing Study Outcome as a hidden proficiency score.
+The design intentionally keeps Development Direction separate from Study Outcome, Competency State, Evidence Maturity, and Eligibility.
+
+No runtime/schema/Trade Plan changes are on this design branch.
+
+The operator approved `docs/REVIEW_DEVELOPMENT_SYNTHESIS.md` on 2026-10-08, including its distinctions, nuances, and guardrails.
+
+Next action: merge this accepted design checkpoint, then implement the smallest v0 Development Direction vertical slice.
 
 ## System guide maintenance
 

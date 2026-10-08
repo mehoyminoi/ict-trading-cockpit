@@ -326,3 +326,16 @@ with Review / Development eventually consuming accumulated evidence to:
 - support justified progression rules.
 
 Do not return to older Film Night, responsive-gallery, visual-polish, broad TradingView-integration, hardware-controller, or Live-Watch feature queues merely because those discussions were detailed. They remain valid later ideas unless actual use makes them blocking.
+
+
+## Phase 16 — Review / Development synthesis
+
+After the first competency-evidence loop became operator-complete, the project moved from collecting/inspecting evidence into the next architectural question: how accumulated evidence should inform deliberate development without becoming an automatic proficiency score.
+
+The first design candidate introduces a human-reviewed **Development Direction** layer between evidence and later competency-state/progression governance.
+
+This phase preserves the separation:
+
+`Study Outcome -> evidence -> human synthesis / Development Direction -> later state/maturity/progression decisions`
+
+Automatic weakness inference, readiness scoring, competency-state mutation, and eligibility changes remain deferred.
