@@ -789,7 +789,55 @@ The human/Trade Plan remains responsible for deciding that the concept matters.
 
 ---
 
-# 18. Current competency evidence review surface
+# 18. Development Direction
+
+Development Direction is the human-reviewed synthesis layer between accumulated evidence and later governance.
+
+It answers:
+
+> What deliberate work should happen next for this competency, based on the evidence I have reviewed?
+
+Initial directions are:
+
+- Study
+- Rehearsal
+- Validation
+- Monitor / Gather Evidence
+- No Active Focus
+
+Keep the layers distinct:
+
+```text
+Study Outcome
+= what this run taught us
+
+Competency Evidence
+= the structured observation/provenance
+
+Development Direction
+= what the technician chooses to work on next
+
+Competency State
+= where the skill sits in the broader training ladder
+
+Evidence Maturity
+= future confidence/governance over the evidence
+
+Eligibility
+= whether explicit Trade Plan rules permit the higher level
+```
+
+Development Direction is mutable technician/review state. It preserves the Trade Plan revision under which the synthesis was made, but it does not alter the plan-owned competency definition.
+
+In v0 it is explicitly human-authored. The Cockpit does not claim to discover a recurring weakness automatically.
+
+A Development Direction may optionally reference specific evidence records that informed the judgment. The evidence link supports traceability; it is not required to make the direction valid.
+
+A direction does not automatically mutate Competency State, Evidence Maturity, or Eligibility.
+
+---
+
+# 18A. Current competency evidence review surface
 
 The current Review / Development surface is intentionally read-only.
 

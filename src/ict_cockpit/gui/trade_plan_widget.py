@@ -4,12 +4,16 @@ from PySide6.QtWidgets import (
     QLabel,
     QListWidget,
     QListWidgetItem,
+    QScrollArea,
     QStackedWidget,
     QTabWidget,
     QVBoxLayout,
     QWidget,
 )
 
+from ict_cockpit.database.competency_development_direction_repository import (
+    CompetencyDevelopmentDirectionRepository,
+)
 from ict_cockpit.database.competency_evidence_repository import (
     CompetencyEvidenceRepository,
 )
@@ -33,10 +37,15 @@ class TradePlanWidget(QWidget):
         self,
         trade_plan: TradePlanDefinition,
         competency_evidence_repository: CompetencyEvidenceRepository | None = None,
+        competency_development_direction_repository:
+            CompetencyDevelopmentDirectionRepository | None = None,
     ) -> None:
         super().__init__()
         self.trade_plan = trade_plan
         self.competency_evidence_repository = competency_evidence_repository
+        self.competency_development_direction_repository = (
+            competency_development_direction_repository
+        )
         self.competency_evidence_review_widget = None
 
         self.title_label = QLabel(f"{trade_plan.name} — {trade_plan.revision}")
@@ -170,8 +179,14 @@ class TradePlanWidget(QWidget):
     def _build_review_development_page(
         self, section: TradePlanSectionDefinition
     ) -> QWidget:
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+
         page = QWidget()
         layout = QVBoxLayout(page)
+        layout.setContentsMargins(6, 6, 6, 6)
+        layout.setSpacing(6)
 
         heading = QLabel(section.name)
         heading.setStyleSheet("font-size: 16px; font-weight: 600;")
@@ -194,6 +209,7 @@ class TradePlanWidget(QWidget):
             self.competency_evidence_review_widget = CompetencyEvidenceReviewWidget(
                 self.trade_plan,
                 self.competency_evidence_repository,
+                self.competency_development_direction_repository,
             )
             self.competency_evidence_review_widget.study_competency_requested.connect(
                 self._prepare_targeted_study
@@ -214,7 +230,8 @@ class TradePlanWidget(QWidget):
             layout.addWidget(label)
 
         layout.addStretch()
-        return page
+        scroll.setWidget(page)
+        return scroll
 
     def _build_playbooks_page(self, section: TradePlanSectionDefinition) -> QWidget:
         page = QWidget()

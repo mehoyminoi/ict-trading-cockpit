@@ -6,15 +6,15 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `design/review-development-synthesis-v0`
-- **Main baseline:** `cb1e505c850c791eb80d3f5de7b3cc5a44b43754` — PR #33 merged evidence-to-targeted-Study routing v0
+- **Active branch:** `feature/development-direction-v0`
+- **Main baseline:** `3951f5bfaf4232c7456b68d74f114ef2ae9640d2` — PR #34 merged Review / Development synthesis v0 design
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Milestone B design — Review / Development synthesis v0
-- **Schema:** v28
+- **Current slice:** Milestone B — Development Direction v0
+- **Schema:** v29
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** full v28 competency-evidence suite green on 2026-10-08 (exact count not separately recorded)
-- **Manual smoke test:** evidence-to-targeted-Study routing v0 acceptance PASS — staging semantics, question-first path, Begin Process Run handoff, and progression gate behavior manually verified.
+- **Verified full test result:** full schema v29 Development Direction suite green on 2026-10-08 (exact count not separately recorded)
+- **Manual smoke test:** Development Direction v0 acceptance PASS — scrollable Review / Development layout, direction/note persistence, supporting-evidence link persistence, guardrails, and full-suite status manually verified.
 
 ## Current completed slice — Competency / Proficiency substrate v0
 
@@ -127,31 +127,38 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-Milestone A's first trustworthy competency-evidence loop is complete:
+Milestone B — Development Direction v0 is **acceptance-complete and ready for PR/merge**.
 
-`competency focus -> deliberate run -> reviewed evidence -> inspect evidence -> route back to targeted Study`
+Accepted behavior:
 
-The project is now entering **Milestone B — Review / Development synthesis**.
+- Development Direction is explicit human-reviewed synthesis over competency evidence,
+- one current mutable direction is stored per Trade Plan + competency,
+- accepted directions are Study, Rehearsal, Validation, Monitor / Gather Evidence, and No Active Focus,
+- optional synthesis note persists,
+- selected supporting-evidence links persist across navigation/restart,
+- the UI restores and visibly distinguishes the selected evidence record's link state,
+- unrelated supporting-evidence links are preserved when one selected record is toggled,
+- Review / Development is vertically scrollable so added synthesis functionality does not make the application taller than the display or crush the lower Lab / Replay controls,
+- saving a Development Direction does not mutate Competency State,
+- saving a Development Direction does not alter Eligibility or create an Evidence Maturity conclusion,
+- no Development Direction is inferred automatically from Study Outcome,
+- schema is v29,
+- Trade Plan remains Alpha 0.7,
+- full automated suite is green,
+- focused manual smoke test is fully PASS.
 
-A design candidate is recorded in `docs/REVIEW_DEVELOPMENT_SYNTHESIS.md`.
+This completes the first Milestone B synthesis primitive:
 
-The proposed next concept is **Development Direction**: an explicit human-reviewed statement of what deliberate work should happen next for a competency, based on reviewed evidence.
+`accumulated evidence -> human-reviewed Development Direction -> explicit next-development intent`
 
-Candidate directions:
+Next action:
 
-- Study
-- Rehearsal
-- Validation
-- Monitor / Gather Evidence
-- No Active Focus
+1. inspect the complete branch diff,
+2. open and merge the accepted Development Direction v0 slice,
+3. sync `main`,
+4. continue Milestone B with the next small synthesis slice: decide how Review / Development should present competency-level cross-run synthesis and Development Direction together without turning descriptive counts into automatic recommendations.
 
-The design intentionally keeps Development Direction separate from Study Outcome, Competency State, Evidence Maturity, and Eligibility.
-
-No runtime/schema/Trade Plan changes are on this design branch.
-
-The operator approved `docs/REVIEW_DEVELOPMENT_SYNTHESIS.md` on 2026-10-08, including its distinctions, nuances, and guardrails.
-
-Next action: merge this accepted design checkpoint, then implement the smallest v0 Development Direction vertical slice.
+Do not add Evidence Maturity, automatic competency-state transitions, or progression rules yet.
 
 ## System guide maintenance
 
