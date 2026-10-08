@@ -148,7 +148,16 @@ The intended semantic is:
 
 `human-reviewed evidence -> technician chooses competency -> prepare targeted Study -> technician defines question -> normal shared runtime`
 
-Next action: run the full automated suite locally. If green, manually verify that **Study this competency** prepares the Lab launcher correctly without starting a run or inventing a Study question.
+Manual testing exposed a guidance defect: if the technician wrote the Study question first and then clicked **Study this competency**, the routing worked but the status message incorrectly said to define the question, making the prepared run appear blocked.
+
+The fix now supports both valid interaction orders:
+
+- choose **Study this competency** first -> define the question -> **Begin Process Run**, or
+- define the question first -> choose **Study this competency** -> **Begin Process Run**.
+
+The routing action preserves an existing question. If a question is already present, the status explicitly says the Study is ready and points to **Begin Process Run**. If the question is blank, it explicitly asks for the question and then **Begin Process Run**.
+
+Next action: rerun the automated suite and manually retest the question-first path that exposed the issue.
 
 ## System guide maintenance
 
