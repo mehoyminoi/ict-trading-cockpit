@@ -182,6 +182,24 @@ Before merging `feature/competency-evidence-review-v0`, additionally confirm:
 
 ---
 
+## Current branch acceptance — Evidence to targeted Study routing v0
+
+Before merging `feature/competency-study-routing-v0`, additionally confirm:
+
+- [PASS] Full automated test suite is green.
+- [PASS] **Study this competency** stages Historical Backtest / Study rather than silently starting a run.
+- [PASS] The selected competency becomes the sole competency focus.
+- [PASS] An existing Study question is preserved when the routing action is clicked after entering the question.
+- [PASS] With an existing Study question, the status clearly directs the technician to **Begin Process Run**.
+- [PASS] With no Study question, the status clearly requires one before **Begin Process Run**.
+- [PASS] **Begin Process Run** successfully starts the focused Historical Study after the staged intent is complete.
+- [PASS] Progression eligibility still blocks higher environments and guides the technician back toward the permitted rung.
+- [PASS] No competency score, state change, eligibility promotion, or Evidence Maturity decision is inferred by the routing action.
+  - Operator manually re-verified the question-first workflow after the guidance fix on 2026-10-08.
+
+
+---
+
 ## Reporting results
 
 Report results as:
