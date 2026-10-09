@@ -1384,23 +1384,58 @@ These should not be collapsed into one generic red light.
 
 # 37. Evidence Maturity
 
-Evidence Maturity is a future governance concept.
+Evidence Maturity is the governance layer that asks:
 
-It should answer:
+> Can this evidence set support a trustworthy decision at this progression boundary?
 
-> How much confidence should we place in the available evidence?
+It does not say how skilled the technician is and does not make the progression decision.
 
-It may consider:
+The accepted v0 profile is non-numeric and examines:
 
-- amount of evidence,
-- environment realism,
-- recency,
-- consistency,
-- market-condition coverage,
-- revision relevance,
-- unresolved failure modes.
+- Volume / Sample Depth,
+- Environment Relevance,
+- Recency,
+- Consistency,
+- Context Coverage,
+- Revision Relevance.
 
-It is not currently a numeric score.
+The profile is boundary-aware:
+
+```text
+Trade Plan
++ competency
++ progression boundary
+```
+
+Candidate boundaries:
+
+- Study -> Rehearsal,
+- Rehearsal -> Validation,
+- Validation -> Execution.
+
+The accepted v0 human states are:
+
+- Not Assessed,
+- Insufficient Evidence,
+- Developing Evidence,
+- Decision-Usable Evidence.
+
+These labels describe decision-usability of the evidence, not readiness to advance. The state layer is deliberately removable if real use shows it is too evaluative; the six-dimensional profile remains the durable substrate.
+
+Keep the layers separate:
+
+```text
+Evidence Maturity
+= can the evidence support a trustworthy decision?
+
+Progression Policy
+= what rule does the Trade Plan apply?
+
+Eligibility
+= is that rule currently satisfied?
+```
+
+No numeric readiness percentage or hidden weighted score is implied.
 
 ---
 
