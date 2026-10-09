@@ -6,11 +6,11 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `feature/evidence-maturity-profile-v0`
-- **Main baseline:** `a078ef167c5d5db8a064aea09068eb6c1b226d4b` — PR #40 merged Evidence Maturity Profile v0 design
+- **Active branch:** `design/progression-policy-model-v0`
+- **Main baseline:** `4098202e7048128a21baba5a54a57e52fa7c46f7` — PR #41 merged Evidence Maturity Profile v0 implementation
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Milestone C1 — Evidence Maturity Profile v0 implementation
+- **Current slice:** Milestone C2 design — Trade Plan Progression Policy v0
 - **Schema:** v31
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** 303 passed on 2026-10-09 for Evidence Maturity Profile v0
@@ -127,52 +127,40 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-Milestone B — Review / Development synthesis is complete. The active frontier is **Milestone C — Evidence Maturity and progression governance**.
+C1 — Evidence Maturity Profile v0 is complete and merged.
 
-C1 — Evidence Maturity Profile v0 is **acceptance-complete and ready for PR/merge** on `feature/evidence-maturity-profile-v0`.
+The active frontier is **Milestone C2 — Trade Plan-owned Progression Policy model**.
 
-Accepted behavior:
+The C2 design candidate is recorded in `docs/PROGRESSION_POLICY_MODEL.md`.
 
-- Evidence Maturity remains separate from Competency State, Progression Policy, and Eligibility.
-- Profile identity is **Trade Plan + competency + progression boundary**.
-- Boundaries are:
+Proposed architecture:
+
+- Progression Policy is immutable, versioned Trade Plan data.
+- One policy applies per upward progression boundary:
   - Study -> Rehearsal,
   - Rehearsal -> Validation,
   - Validation -> Execution.
-- Human maturity states are:
-  - Not Assessed,
-  - Insufficient Evidence,
-  - Developing Evidence,
-  - Decision-Usable Evidence.
-- The overall maturity-state label remains deliberately non-load-bearing/removable.
-- The six-dimensional profile remains meaningful independently of the overall state:
-  - Volume / Sample Depth,
-  - Environment Relevance,
-  - Recency,
-  - Consistency,
-  - Context Coverage,
-  - Revision Relevance.
-- Separate maturity profiles persist independently by progression boundary.
-- Human maturity, consistency, and known-gap/context notes persist across navigation and restart.
-- descriptive evidence facts remain derived from evidence rather than duplicated into stored profile state,
-- revision provenance is visible while competency-definition equivalence remains explicitly not machine-verifiable,
-- saving Evidence Maturity does not automatically change Competency State, Development Direction, progression, eligibility, or Live access,
-- no numeric readiness percentage, weighted score, traffic-light verdict, or machine-inferred maturity state is introduced.
+- policy may contain competency-scoped and boundary/global requirements,
+- required competencies must be explicit; a new competency does not silently become a blocker,
+- proposed minimal requirement kinds:
+  - Evidence Maturity State,
+  - Competency State,
+  - Evidence Purpose Present,
+  - Human Certification,
+- v0 uses simple ALL/AND composition only,
+- policy contains gating requirements only,
+- an empty published policy is proposed invalid,
+- no manual progression override is proposed in v0,
+- C2 defines policy only; C3 later evaluates policy into explainable eligibility,
+- no numeric thresholds or actual Alpha 0.7 readiness rules are invented by the substrate.
 
-Validation:
+Important revision consequence:
 
-- final full automated suite: **303 passed**,
-- focused **Evidence Maturity Profile v0** smoke test: **fully PASS / ACCEPTED**.
+Alpha 0.7 currently has no authoritative progression policy. Building the policy substrate does not by itself change the Trade Plan revision. Publishing the first real configured progression requirements is a separate operator policy decision and will require a new published Trade Plan revision.
 
-Schema is **v31**. Trade Plan remains **Alpha 0.7** because C1 adds mutable evidence/governance state only; no Trade Plan progression policy exists yet.
+No runtime/schema/Trade Plan changes are on this design branch.
 
-After merge, C1 is complete.
-
-Next architectural slice:
-
-**C2 — Trade Plan-owned Progression Policy model**
-
-C2 should begin with design/governance. It must define explicit, explainable progression requirements without turning C1's maturity state into a hidden readiness score or inventing arbitrary thresholds.
+Next action: operator reviews `docs/PROGRESSION_POLICY_MODEL.md` and answers the ten confirmation questions before C2 implementation begins.
 
 ## System guide maintenance
 
