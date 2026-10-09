@@ -129,7 +129,7 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 Competency Synthesis v0 is merged via PR #37. The project remains in **Milestone B — Review / Development synthesis** for one final human-synthesis slice before Evidence Maturity/progression governance.
 
-The design candidate is recorded in `docs/CROSS_RUN_PATTERN_SYNTHESIS.md`.
+The design candidate is recorded in `docs/CROSS_RUN_OBSERVATION.md`.
 
 Proposed new concept:
 
