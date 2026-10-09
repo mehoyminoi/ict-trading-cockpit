@@ -6,12 +6,12 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `design/evidence-maturity-profile-v0`
-- **Main baseline:** `ce985254154aa81a1f039011a5d737b13b2d1159` — PR #39 merged Cross-Run Observation v0 and completed Milestone B
+- **Active branch:** `feature/evidence-maturity-profile-v0`
+- **Main baseline:** `a078ef167c5d5db8a064aea09068eb6c1b226d4b` — PR #40 merged Evidence Maturity Profile v0 design
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Milestone C design — Evidence Maturity Profile v0
-- **Schema:** v30
+- **Current slice:** Milestone C1 — Evidence Maturity Profile v0 implementation
+- **Schema:** v31
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** 298 passed on 2026-10-09 after the Cross-Run Observation synthesis-focus regression fix
 - **Manual smoke test:** Cross-Run Observation v0 acceptance PASS — editor/persistence, multi-record supporting-evidence links, semantic separation from Development Direction, revision/provenance guardrails, existing synthesis/routing regressions, and full-suite status manually verified.
@@ -127,42 +127,54 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-Milestone B — Review / Development synthesis is complete.
+Milestone B — Review / Development synthesis is complete. The active frontier is **Milestone C — Evidence Maturity and progression governance**.
 
-The active frontier is **Milestone C — Evidence Maturity and progression governance**.
+C1 — Evidence Maturity Profile v0 is implemented for automated/manual validation on `feature/evidence-maturity-profile-v0`.
 
-The C1 design in `docs/EVIDENCE_MATURITY_PROFILE.md` is operator-accepted and ready for implementation planning.
+Implemented:
 
-Accepted Evidence Maturity semantics:
-
-- Evidence Maturity asks whether the evidence can support a trustworthy decision.
-- It does not describe technician proficiency, make the progression decision, or grant eligibility.
-- The profile is non-numeric and has six inspectable dimensions:
+- `EvidenceMaturityState` with:
+  - Not Assessed,
+  - Insufficient Evidence,
+  - Developing Evidence,
+  - Decision-Usable Evidence,
+- `ProgressionBoundary` with:
+  - Study -> Rehearsal,
+  - Rehearsal -> Validation,
+  - Validation -> Execution,
+- boundary-aware `CompetencyEvidenceMaturityProfile`,
+- profile identity: **Trade Plan + competency + progression boundary**,
+- schema v31 `competency_evidence_maturity` persistence,
+- repository UPSERT preserving original `created_at`,
+- human maturity note,
+- human consistency note,
+- human known-gap/context-coverage note,
+- six-dimensional Review / Development presentation:
   - Volume / Sample Depth,
   - Environment Relevance,
   - Recency,
   - Consistency,
   - Context Coverage,
-  - Revision Relevance.
-- v0 includes human maturity states:
-  - Not Assessed,
-  - Insufficient Evidence,
-  - Developing Evidence,
-  - Decision-Usable Evidence.
-- The overall maturity-state label is deliberately removable if real use shows it is too evaluative; the underlying dimensions/notes/evidence model must not depend on it.
-- Evidence Maturity is boundary-aware from v0.
-- Profile identity is **Trade Plan + competency + progression boundary**.
-- Candidate boundaries are Study -> Rehearsal, Rehearsal -> Validation, and Validation -> Execution.
-- Progression Policy remains a later, Trade Plan-owned rule layer.
-- Eligibility remains the explainable result of applying accepted policy.
+  - Revision Relevance,
+- descriptive evidence facts derived from current evidence rather than duplicated into stored profile state,
+- explicit revision limitation: evidence Trade Plan revisions are shown, but competency-definition equivalence is not yet machine-verifiable,
+- compact Competency Synthesis includes the selected boundary and saved human maturity state,
+- saved profiles remain separate by progression boundary,
+- overall maturity state remains non-load-bearing: dimensions/notes remain usable with Not Assessed,
+- no automatic Competency State, Development Direction, progression, eligibility, or Live-lock change,
+- focused C1 automated tests and manual smoke-test section.
 
-Accepted Milestone C sequence:
+Schema moves from v30 to **v31**. Trade Plan remains **Alpha 0.7** because Evidence Maturity is mutable evidence/governance state; no Trade Plan progression policy exists yet.
 
-`C1 Evidence Maturity Profile -> C2 Progression Policy model -> C3 Explainable Eligibility evaluation -> C4 Regression/downgrade semantics -> C5 Operator-loop integration and guardrails`
+Next action:
 
-No runtime/schema/Trade Plan changes are on this design branch.
+1. pull this feature branch,
+2. run the full automated suite,
+3. resolve any regressions exposed by the suite,
+4. complete the **Evidence Maturity Profile v0** section in `docs/SMOKE_TEST.md`,
+5. only after C1 acceptance proceed to C2 — Trade Plan-owned Progression Policy design.
 
-Next action: merge this design checkpoint, then implement C1 as a small vertical slice. Before implementation, preserve the removability of the overall maturity-state label and do not invent progression thresholds.
+Do not introduce progression thresholds, automatic advancement/demotion, eligibility changes, or numeric readiness scoring during C1 validation.
 
 ## System guide maintenance
 
