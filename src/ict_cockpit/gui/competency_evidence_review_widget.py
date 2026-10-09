@@ -9,17 +9,22 @@ from PySide6.QtWidgets import (
     QLabel,
     QLineEdit,
     QListWidget,
+    QPlainTextEdit,
     QPushButton,
     QVBoxLayout,
     QWidget,
 )
 
 from ict_cockpit.analysis.competency import (
+    CompetencyCrossRunObservation,
     CompetencyDevelopmentDirection,
     DevelopmentDirection,
 )
 from ict_cockpit.database.competency_development_direction_repository import (
     CompetencyDevelopmentDirectionRepository,
+)
+from ict_cockpit.database.competency_cross_run_observation_repository import (
+    CompetencyCrossRunObservationRepository,
 )
 from ict_cockpit.database.competency_evidence_repository import (
     CompetencyEvidenceRepository,
@@ -38,12 +43,17 @@ class CompetencyEvidenceReviewWidget(QWidget):
         repository: CompetencyEvidenceRepository,
         development_direction_repository:
             CompetencyDevelopmentDirectionRepository | None = None,
+        cross_run_observation_repository:
+            CompetencyCrossRunObservationRepository | None = None,
     ) -> None:
         super().__init__()
         self.trade_plan = trade_plan
         self.repository = repository
         self.development_direction_repository = (
             development_direction_repository
+        )
+        self.cross_run_observation_repository = (
+            cross_run_observation_repository
         )
         self._evidence_by_id = {}
 
@@ -84,6 +94,65 @@ class CompetencyEvidenceReviewWidget(QWidget):
         self.study_this_button = QPushButton("Study this competency")
         self.study_this_button.setEnabled(False)
         self.study_this_button.clicked.connect(self._request_targeted_study)
+
+        self.cross_run_frame = QFrame()
+        self.cross_run_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        cross_run_layout = QVBoxLayout(self.cross_run_frame)
+        cross_run_layout.setContentsMargins(8, 6, 8, 6)
+        cross_run_layout.setSpacing(4)
+
+        cross_run_heading = QLabel("Cross-Run Observation")
+        cross_run_heading.setStyleSheet("font-weight: 600;")
+        cross_run_layout.addWidget(cross_run_heading)
+
+        cross_run_note = QLabel(
+            "Human-authored interpretation of what seems to be happening "
+            "across reviewed runs. It does not change Development Direction, "
+            "competency state, Evidence Maturity, or eligibility."
+        )
+        cross_run_note.setWordWrap(True)
+        cross_run_layout.addWidget(cross_run_note)
+
+        self.current_cross_run_observation_label = QLabel(
+            "No Cross-Run Observation recorded."
+        )
+        self.current_cross_run_observation_label.setWordWrap(True)
+        cross_run_layout.addWidget(self.current_cross_run_observation_label)
+
+        self.cross_run_observation_input = QPlainTextEdit()
+        self.cross_run_observation_input.setPlaceholderText(
+            "What seems to be happening across these reviewed runs?"
+        )
+        self.cross_run_observation_input.setMaximumHeight(72)
+        cross_run_layout.addWidget(self.cross_run_observation_input)
+
+        self.cross_run_link_selected_evidence_checkbox = QCheckBox(
+            "Link the selected evidence record as supporting evidence"
+        )
+        self.cross_run_link_selected_evidence_checkbox.setChecked(False)
+        cross_run_layout.addWidget(
+            self.cross_run_link_selected_evidence_checkbox
+        )
+
+        self.cross_run_selected_evidence_link_label = QLabel(
+            "Selected evidence link · no evidence selected"
+        )
+        self.cross_run_selected_evidence_link_label.setWordWrap(True)
+        cross_run_layout.addWidget(
+            self.cross_run_selected_evidence_link_label
+        )
+
+        self.save_cross_run_observation_button = QPushButton(
+            "Save Cross-Run Observation"
+        )
+        self.save_cross_run_observation_button.clicked.connect(
+            self._save_cross_run_observation
+        )
+        cross_run_layout.addWidget(self.save_cross_run_observation_button)
+
+        self.cross_run_status_label = QLabel()
+        self.cross_run_status_label.setWordWrap(True)
+        cross_run_layout.addWidget(self.cross_run_status_label)
 
         self.development_frame = QFrame()
         self.development_frame.setFrameShape(QFrame.Shape.StyledPanel)
@@ -149,6 +218,7 @@ class CompetencyEvidenceReviewWidget(QWidget):
         layout.addWidget(self.summary_label)
         layout.addWidget(self.evidence_list)
         layout.addWidget(self.detail_label)
+        layout.addWidget(self.cross_run_frame)
         layout.addWidget(self.development_frame)
         layout.addWidget(self.study_this_button)
 
@@ -177,6 +247,7 @@ class CompetencyEvidenceReviewWidget(QWidget):
                 "Complete a focused Study, Rehearsal, or Validation review to "
                 "create evidence. No proficiency conclusion is inferred here."
             )
+            self._refresh_cross_run_observation_editor()
             self._refresh_development_editor()
             return
 
@@ -196,6 +267,7 @@ class CompetencyEvidenceReviewWidget(QWidget):
 
         self.evidence_list.setCurrentRow(0)
         self.study_this_button.setEnabled(True)
+        self._refresh_cross_run_observation_editor()
         self._refresh_development_editor()
 
     def _render_synthesis_summary(
@@ -252,11 +324,30 @@ class CompetencyEvidenceReviewWidget(QWidget):
             else 0
         )
 
+        current_observation = None
+        if self.cross_run_observation_repository is not None:
+            current_observation = self.cross_run_observation_repository.get(
+                self.trade_plan.id,
+                competency_id,
+            )
+        observation_text = (
+            current_observation.observation
+            if current_observation is not None and current_observation.observation
+            else "Not recorded"
+        )
+        observation_linked_count = (
+            len(current_observation.supporting_evidence_ids)
+            if current_observation is not None
+            else 0
+        )
+
         if not evidence:
             self.summary_label.setText(
                 f"Competency Synthesis · {competency_name}"
                 + (f" · {competency_category}" if competency_category else "")
                 + f" · Trade Plan {self.trade_plan.revision}\n"
+                f"Cross-Run Observation · {observation_text} · "
+                f"supporting evidence: {observation_linked_count}\n"
                 f"Development Direction · {direction_text} · "
                 f"supporting evidence: {linked_count}\n"
                 "Evidence coverage · no reviewed evidence recorded\n"
@@ -291,6 +382,8 @@ class CompetencyEvidenceReviewWidget(QWidget):
             f"Competency Synthesis · {competency_name}"
             + (f" · {competency_category}" if competency_category else "")
             + f" · Trade Plan {self.trade_plan.revision}\n"
+            f"Cross-Run Observation · {observation_text} · "
+            f"supporting evidence: {observation_linked_count}\n"
             f"Development Direction · {direction_text} · "
             f"supporting evidence: {linked_count}\n"
             f"Evidence coverage · {len(evidence)} evidence record(s) · {purpose_text}\n"
@@ -302,6 +395,7 @@ class CompetencyEvidenceReviewWidget(QWidget):
 
     def _selection_changed(self) -> None:
         self._render_selected()
+        self._refresh_cross_run_observation_editor()
         self._refresh_development_editor()
 
     def _selected_evidence(self):
@@ -319,6 +413,157 @@ class CompetencyEvidenceReviewWidget(QWidget):
         competency_id = self._selected_competency_id()
         if competency_id:
             self.study_competency_requested.emit(competency_id)
+
+    def _refresh_cross_run_observation_editor(self) -> None:
+        competency_id = self._selected_competency_id()
+        enabled = (
+            bool(competency_id)
+            and self.cross_run_observation_repository is not None
+        )
+        self.cross_run_observation_input.setEnabled(enabled)
+        self.save_cross_run_observation_button.setEnabled(enabled)
+
+        selected_evidence = self._selected_evidence()
+        self.cross_run_link_selected_evidence_checkbox.setEnabled(
+            enabled and selected_evidence is not None
+        )
+
+        if not enabled:
+            self.current_cross_run_observation_label.setText(
+                "Select a competency or evidence record to review its "
+                "Cross-Run Observation."
+            )
+            self.cross_run_observation_input.clear()
+            self.cross_run_link_selected_evidence_checkbox.setChecked(False)
+            self.cross_run_selected_evidence_link_label.setText(
+                "Selected evidence link · no competency/evidence selected"
+            )
+            self.cross_run_status_label.clear()
+            return
+
+        current = self.cross_run_observation_repository.get(
+            self.trade_plan.id,
+            competency_id,
+        )
+        if current is None:
+            self.current_cross_run_observation_label.setText(
+                "No Cross-Run Observation recorded."
+            )
+            self.cross_run_observation_input.clear()
+            self.cross_run_link_selected_evidence_checkbox.setChecked(False)
+            self.cross_run_selected_evidence_link_label.setText(
+                "Selected evidence link · not linked"
+                if selected_evidence is not None
+                else "Selected evidence link · no evidence selected"
+            )
+        else:
+            linked_count = len(current.supporting_evidence_ids)
+            self.current_cross_run_observation_label.setText(
+                "Current · "
+                + (current.observation or "No observation text")
+                + (
+                    f" · supporting evidence: {linked_count}"
+                    if linked_count
+                    else " · no supporting evidence linked"
+                )
+            )
+            self.cross_run_observation_input.setPlainText(
+                current.observation
+            )
+            selected_is_linked = (
+                selected_evidence is not None
+                and selected_evidence.id in current.supporting_evidence_ids
+            )
+            self.cross_run_link_selected_evidence_checkbox.setChecked(
+                selected_is_linked
+            )
+            self.cross_run_selected_evidence_link_label.setText(
+                "Selected evidence link · linked"
+                if selected_is_linked
+                else (
+                    "Selected evidence link · not linked"
+                    if selected_evidence is not None
+                    else "Selected evidence link · no evidence selected"
+                )
+            )
+        self.cross_run_status_label.setText(
+            "The checkbox reflects whether the currently selected evidence "
+            "record supports the saved Cross-Run Observation."
+        )
+
+    def _save_cross_run_observation(self) -> None:
+        if self.cross_run_observation_repository is None:
+            return
+
+        competency_id = self._selected_competency_id()
+        if not competency_id:
+            self.cross_run_status_label.setText(
+                "Select a competency before saving a Cross-Run Observation."
+            )
+            return
+
+        selected_evidence = self._selected_evidence()
+        current = self.cross_run_observation_repository.get(
+            self.trade_plan.id,
+            competency_id,
+        )
+        supporting_evidence_ids = list(
+            current.supporting_evidence_ids
+            if current is not None
+            else []
+        )
+        if selected_evidence is not None:
+            if self.cross_run_link_selected_evidence_checkbox.isChecked():
+                if selected_evidence.id not in supporting_evidence_ids:
+                    supporting_evidence_ids.append(selected_evidence.id)
+            else:
+                supporting_evidence_ids = [
+                    evidence_id
+                    for evidence_id in supporting_evidence_ids
+                    if evidence_id != selected_evidence.id
+                ]
+
+        item = CompetencyCrossRunObservation(
+            trade_plan_id=self.trade_plan.id,
+            trade_plan_revision=self.trade_plan.revision,
+            competency_id=competency_id,
+            observation=self.cross_run_observation_input.toPlainText(),
+            supporting_evidence_ids=supporting_evidence_ids,
+        )
+        self.cross_run_observation_repository.save(item)
+
+        linked_count = len(item.supporting_evidence_ids)
+        self.current_cross_run_observation_label.setText(
+            "Current · "
+            + (item.observation or "No observation text")
+            + (
+                f" · supporting evidence: {linked_count}"
+                if linked_count
+                else " · no supporting evidence linked"
+            )
+        )
+        if selected_evidence is not None:
+            selected_is_linked = (
+                selected_evidence.id in item.supporting_evidence_ids
+            )
+            self.cross_run_selected_evidence_link_label.setText(
+                "Selected evidence link · linked"
+                if selected_is_linked
+                else "Selected evidence link · not linked"
+            )
+        else:
+            self.cross_run_selected_evidence_link_label.setText(
+                "Selected evidence link · no evidence selected"
+            )
+
+        self._render_synthesis_summary(
+            list(self._evidence_by_id.values()),
+            competency_id,
+        )
+        self.cross_run_status_label.setText(
+            "Cross-Run Observation saved. No Development Direction, "
+            "competency state, Evidence Maturity, or eligibility change was made."
+        )
 
     def _refresh_development_editor(self) -> None:
         competency_id = self._selected_competency_id()
