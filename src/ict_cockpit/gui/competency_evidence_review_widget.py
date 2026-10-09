@@ -18,7 +18,10 @@ from PySide6.QtWidgets import (
 from ict_cockpit.analysis.competency import (
     CompetencyCrossRunObservation,
     CompetencyDevelopmentDirection,
+    CompetencyEvidenceMaturityProfile,
     DevelopmentDirection,
+    EvidenceMaturityState,
+    ProgressionBoundary,
 )
 from ict_cockpit.database.competency_development_direction_repository import (
     CompetencyDevelopmentDirectionRepository,
@@ -28,6 +31,9 @@ from ict_cockpit.database.competency_cross_run_observation_repository import (
 )
 from ict_cockpit.database.competency_evidence_repository import (
     CompetencyEvidenceRepository,
+)
+from ict_cockpit.database.competency_evidence_maturity_repository import (
+    CompetencyEvidenceMaturityRepository,
 )
 from ict_cockpit.trade_plan import TradePlanDefinition
 
@@ -45,6 +51,8 @@ class CompetencyEvidenceReviewWidget(QWidget):
             CompetencyDevelopmentDirectionRepository | None = None,
         cross_run_observation_repository:
             CompetencyCrossRunObservationRepository | None = None,
+        evidence_maturity_repository:
+            CompetencyEvidenceMaturityRepository | None = None,
     ) -> None:
         super().__init__()
         self.trade_plan = trade_plan
@@ -55,6 +63,7 @@ class CompetencyEvidenceReviewWidget(QWidget):
         self.cross_run_observation_repository = (
             cross_run_observation_repository
         )
+        self.evidence_maturity_repository = evidence_maturity_repository
         self._evidence_by_id = {}
 
         heading = QLabel("Competency Evidence")
@@ -209,6 +218,77 @@ class CompetencyEvidenceReviewWidget(QWidget):
         self.development_status_label.setWordWrap(True)
         development_layout.addWidget(self.development_status_label)
 
+        self.evidence_maturity_frame = QFrame()
+        self.evidence_maturity_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        maturity_layout = QVBoxLayout(self.evidence_maturity_frame)
+        maturity_layout.setContentsMargins(8, 6, 8, 6)
+        maturity_layout.setSpacing(4)
+
+        maturity_heading = QLabel("Evidence Maturity Profile")
+        maturity_heading.setStyleSheet("font-weight: 600;")
+        maturity_layout.addWidget(maturity_heading)
+
+        maturity_help = QLabel(
+            "Boundary-aware human governance over whether the evidence can "
+            "support a trustworthy decision. This does not decide progression "
+            "or change eligibility."
+        )
+        maturity_help.setWordWrap(True)
+        maturity_layout.addWidget(maturity_help)
+
+        self.maturity_boundary_combo = QComboBox()
+        for boundary in ProgressionBoundary:
+            self.maturity_boundary_combo.addItem(boundary.value, boundary.value)
+        self.maturity_boundary_combo.currentIndexChanged.connect(
+            lambda _index: self._refresh_evidence_maturity_editor()
+        )
+        maturity_layout.addWidget(self.maturity_boundary_combo)
+
+        self.current_maturity_label = QLabel(
+            "No Evidence Maturity Profile recorded for this boundary."
+        )
+        self.current_maturity_label.setWordWrap(True)
+        maturity_layout.addWidget(self.current_maturity_label)
+
+        self.maturity_state_combo = QComboBox()
+        for state in EvidenceMaturityState:
+            self.maturity_state_combo.addItem(state.value, state.value)
+        maturity_layout.addWidget(self.maturity_state_combo)
+
+        self.maturity_note_input = QLineEdit()
+        self.maturity_note_input.setPlaceholderText(
+            "Why is this evidence set usable or not yet usable for this boundary?"
+        )
+        maturity_layout.addWidget(self.maturity_note_input)
+
+        self.consistency_note_input = QLineEdit()
+        self.consistency_note_input.setPlaceholderText(
+            "Consistency note — coherent, mixed, contradicted, unresolved..."
+        )
+        maturity_layout.addWidget(self.consistency_note_input)
+
+        self.known_gap_note_input = QLineEdit()
+        self.known_gap_note_input.setPlaceholderText(
+            "Known gap / context coverage note"
+        )
+        maturity_layout.addWidget(self.known_gap_note_input)
+
+        self.maturity_dimensions_label = QLabel()
+        self.maturity_dimensions_label.setWordWrap(True)
+        self.maturity_dimensions_label.setFrameShape(QFrame.Shape.StyledPanel)
+        self.maturity_dimensions_label.setContentsMargins(6, 4, 6, 4)
+        maturity_layout.addWidget(self.maturity_dimensions_label)
+
+        self.save_maturity_button = QPushButton("Save Evidence Maturity Profile")
+        self.save_maturity_button.clicked.connect(
+            self._save_evidence_maturity_profile
+        )
+        maturity_layout.addWidget(self.save_maturity_button)
+
+        self.maturity_status_label = QLabel()
+        self.maturity_status_label.setWordWrap(True)
+        maturity_layout.addWidget(self.maturity_status_label)
+
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(5)
@@ -220,6 +300,7 @@ class CompetencyEvidenceReviewWidget(QWidget):
         layout.addWidget(self.detail_label)
         layout.addWidget(self.cross_run_frame)
         layout.addWidget(self.development_frame)
+        layout.addWidget(self.evidence_maturity_frame)
         layout.addWidget(self.study_this_button)
 
         self.refresh()
@@ -249,6 +330,7 @@ class CompetencyEvidenceReviewWidget(QWidget):
             )
             self._refresh_cross_run_observation_editor()
             self._refresh_development_editor()
+            self._refresh_evidence_maturity_editor()
             return
 
         self._render_synthesis_summary(evidence, competency_id)
@@ -269,6 +351,7 @@ class CompetencyEvidenceReviewWidget(QWidget):
         self.study_this_button.setEnabled(True)
         self._refresh_cross_run_observation_editor()
         self._refresh_development_editor()
+        self._refresh_evidence_maturity_editor()
 
     def _render_synthesis_summary(
         self,
@@ -341,6 +424,21 @@ class CompetencyEvidenceReviewWidget(QWidget):
             else 0
         )
 
+        maturity_text = "Not assessed"
+        maturity_boundary_text = ""
+        if self.evidence_maturity_repository is not None:
+            maturity_boundary_text = str(
+                self.maturity_boundary_combo.currentData()
+                or ProgressionBoundary.STUDY_TO_REHEARSAL.value
+            )
+            current_maturity = self.evidence_maturity_repository.get(
+                self.trade_plan.id,
+                competency_id,
+                maturity_boundary_text,
+            )
+            if current_maturity is not None:
+                maturity_text = current_maturity.maturity_state.value
+
         if not evidence:
             self.summary_label.setText(
                 f"Competency Synthesis · {competency_name}"
@@ -350,9 +448,11 @@ class CompetencyEvidenceReviewWidget(QWidget):
                 f"supporting evidence: {observation_linked_count}\n"
                 f"Development Direction · {direction_text} · "
                 f"supporting evidence: {linked_count}\n"
+                f"Evidence Maturity · {maturity_boundary_text or 'No boundary'} · "
+                f"{maturity_text}\n"
                 "Evidence coverage · no reviewed evidence recorded\n"
-                "Descriptive coverage only · no proficiency, Evidence Maturity, "
-                "or eligibility conclusion is inferred."
+                "Maturity is human governance over evidence usability; no "
+                "progression or eligibility conclusion is inferred."
             )
             return
 
@@ -386,17 +486,20 @@ class CompetencyEvidenceReviewWidget(QWidget):
             f"supporting evidence: {observation_linked_count}\n"
             f"Development Direction · {direction_text} · "
             f"supporting evidence: {linked_count}\n"
+            f"Evidence Maturity · {maturity_boundary_text or 'No boundary'} · "
+            f"{maturity_text}\n"
             f"Evidence coverage · {len(evidence)} evidence record(s) · {purpose_text}\n"
             f"Reviewed outcomes · {outcome_text}\n"
             f"Evidence range · {range_text}\n"
-            "Descriptive coverage only · no proficiency, Evidence Maturity, "
-            "or eligibility conclusion is inferred."
+            "Evidence facts remain descriptive; maturity is human-authored and "
+            "does not itself grant progression or eligibility."
         )
 
     def _selection_changed(self) -> None:
         self._render_selected()
         self._refresh_cross_run_observation_editor()
         self._refresh_development_editor()
+        self._refresh_evidence_maturity_editor()
 
     def _selected_evidence(self):
         selected = self.evidence_list.currentItem()
@@ -732,6 +835,203 @@ class CompetencyEvidenceReviewWidget(QWidget):
         self.development_status_label.setText(
             f"Development Direction saved{evidence_text}. "
             "No competency state or eligibility change was made."
+        )
+
+    def _selected_progression_boundary(self) -> str:
+        return str(
+            self.maturity_boundary_combo.currentData()
+            or ProgressionBoundary.STUDY_TO_REHEARSAL.value
+        )
+
+    def _evidence_for_selected_competency(self) -> list:
+        competency_id = self._selected_competency_id()
+        if not competency_id:
+            return []
+        return [
+            item
+            for item in self._evidence_by_id.values()
+            if item.competency_id == competency_id
+        ]
+
+    def _render_maturity_dimensions(self, evidence: list) -> None:
+        purposes = Counter(item.run_purpose for item in evidence)
+        purpose_text = (
+            " · ".join(
+                f"{name}: {count}"
+                for name, count in sorted(purposes.items())
+            )
+            if purposes
+            else "none"
+        )
+
+        run_count = len({item.trading_run_id for item in evidence})
+        volume_text = (
+            f"{len(evidence)} reviewed record(s) across {run_count} run(s)"
+        )
+
+        parsed_times = []
+        for item in evidence:
+            try:
+                parsed_times.append(datetime.fromisoformat(item.recorded_at))
+            except (TypeError, ValueError):
+                continue
+        if parsed_times:
+            oldest = min(parsed_times).strftime("%Y-%m-%d")
+            newest = max(parsed_times).strftime("%Y-%m-%d")
+            recency_text = f"{oldest} -> {newest}"
+        else:
+            recency_text = "No dated reviewed evidence"
+
+        revisions = sorted(
+            {
+                item.trade_plan_revision
+                for item in evidence
+                if item.trade_plan_revision
+            }
+        )
+        revision_text = (
+            ", ".join(revisions)
+            if revisions
+            else "No evidence revision provenance"
+        )
+
+        consistency_text = (
+            self.consistency_note_input.text().strip()
+            or "Not assessed by technician"
+        )
+        coverage_text = (
+            self.known_gap_note_input.text().strip()
+            or "No human coverage/gap note recorded"
+        )
+
+        self.maturity_dimensions_label.setText(
+            "Profile dimensions\n"
+            f"Volume / Sample Depth · {volume_text}\n"
+            f"Environment Relevance · {purpose_text}\n"
+            f"Recency · {recency_text}\n"
+            f"Consistency · {consistency_text}\n"
+            f"Context Coverage · {coverage_text}\n"
+            f"Revision Relevance · evidence Trade Plan revision(s): {revision_text}; "
+            "competency-definition equivalence is not yet machine-verifiable."
+        )
+
+    def _refresh_evidence_maturity_editor(self) -> None:
+        competency_id = self._selected_competency_id()
+        enabled = (
+            bool(competency_id)
+            and self.evidence_maturity_repository is not None
+        )
+        self.maturity_boundary_combo.setEnabled(enabled)
+        self.maturity_state_combo.setEnabled(enabled)
+        self.maturity_note_input.setEnabled(enabled)
+        self.consistency_note_input.setEnabled(enabled)
+        self.known_gap_note_input.setEnabled(enabled)
+        self.save_maturity_button.setEnabled(enabled)
+
+        if not enabled:
+            self.current_maturity_label.setText(
+                "Select a competency or evidence record to review Evidence Maturity."
+            )
+            self.maturity_state_combo.setCurrentText(
+                EvidenceMaturityState.NOT_ASSESSED.value
+            )
+            self.maturity_note_input.clear()
+            self.consistency_note_input.clear()
+            self.known_gap_note_input.clear()
+            self.maturity_dimensions_label.setText(
+                "Profile dimensions become available after selecting a competency."
+            )
+            self.maturity_status_label.clear()
+            return
+
+        boundary = self._selected_progression_boundary()
+        current = self.evidence_maturity_repository.get(
+            self.trade_plan.id,
+            competency_id,
+            boundary,
+        )
+        if current is None:
+            self.current_maturity_label.setText(
+                f"Current · {boundary} · Not Assessed"
+            )
+            self.maturity_state_combo.setCurrentText(
+                EvidenceMaturityState.NOT_ASSESSED.value
+            )
+            self.maturity_note_input.clear()
+            self.consistency_note_input.clear()
+            self.known_gap_note_input.clear()
+        else:
+            self.current_maturity_label.setText(
+                f"Current · {boundary} · {current.maturity_state.value}"
+                + (
+                    f" · {current.maturity_note}"
+                    if current.maturity_note
+                    else ""
+                )
+            )
+            self.maturity_state_combo.setCurrentText(
+                current.maturity_state.value
+            )
+            self.maturity_note_input.setText(current.maturity_note)
+            self.consistency_note_input.setText(current.consistency_note)
+            self.known_gap_note_input.setText(current.known_gap_note)
+
+        self._render_maturity_dimensions(
+            self._evidence_for_selected_competency()
+        )
+        self.maturity_status_label.setText(
+            "The six-dimensional profile remains meaningful independently of "
+            "the overall maturity label. No progression or eligibility action "
+            "is performed here."
+        )
+
+    def _save_evidence_maturity_profile(self) -> None:
+        if self.evidence_maturity_repository is None:
+            return
+
+        competency_id = self._selected_competency_id()
+        if not competency_id:
+            self.maturity_status_label.setText(
+                "Select a competency before saving Evidence Maturity."
+            )
+            return
+
+        boundary = ProgressionBoundary(
+            self._selected_progression_boundary()
+        )
+        item = CompetencyEvidenceMaturityProfile(
+            trade_plan_id=self.trade_plan.id,
+            trade_plan_revision=self.trade_plan.revision,
+            competency_id=competency_id,
+            progression_boundary=boundary,
+            maturity_state=EvidenceMaturityState(
+                self.maturity_state_combo.currentData()
+            ),
+            maturity_note=self.maturity_note_input.text(),
+            consistency_note=self.consistency_note_input.text(),
+            known_gap_note=self.known_gap_note_input.text(),
+        )
+        self.evidence_maturity_repository.save(item)
+
+        self.current_maturity_label.setText(
+            f"Current · {boundary.value} · {item.maturity_state.value}"
+            + (
+                f" · {item.maturity_note}"
+                if item.maturity_note
+                else ""
+            )
+        )
+        self._render_maturity_dimensions(
+            self._evidence_for_selected_competency()
+        )
+        synthesis_competency_id = self._selected_competency_id()
+        self._render_synthesis_summary(
+            list(self._evidence_by_id.values()),
+            synthesis_competency_id,
+        )
+        self.maturity_status_label.setText(
+            "Evidence Maturity Profile saved. No Competency State, "
+            "Development Direction, progression, or eligibility change was made."
         )
 
     def _render_selected(self) -> None:
