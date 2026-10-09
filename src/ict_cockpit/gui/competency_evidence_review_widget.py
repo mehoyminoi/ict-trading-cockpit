@@ -240,7 +240,7 @@ class CompetencyEvidenceReviewWidget(QWidget):
         for boundary in ProgressionBoundary:
             self.maturity_boundary_combo.addItem(boundary.value, boundary.value)
         self.maturity_boundary_combo.currentIndexChanged.connect(
-            lambda _index: self._refresh_evidence_maturity_editor()
+            self._maturity_boundary_changed
         )
         maturity_layout.addWidget(self.maturity_boundary_combo)
 
@@ -424,7 +424,7 @@ class CompetencyEvidenceReviewWidget(QWidget):
             else 0
         )
 
-        maturity_text = "Not assessed"
+        maturity_text = EvidenceMaturityState.NOT_ASSESSED.value
         maturity_boundary_text = ""
         if self.evidence_maturity_repository is not None:
             maturity_boundary_text = str(
@@ -451,8 +451,10 @@ class CompetencyEvidenceReviewWidget(QWidget):
                 f"Evidence Maturity · {maturity_boundary_text or 'No boundary'} · "
                 f"{maturity_text}\n"
                 "Evidence coverage · no reviewed evidence recorded\n"
-                "Maturity is human governance over evidence usability; no "
-                "progression or eligibility conclusion is inferred."
+                "Descriptive coverage only · no proficiency, Evidence Maturity, "
+                "or eligibility conclusion is inferred.\n"
+                "Evidence Maturity is human-authored governance over evidence "
+                "decision-usability; it does not itself grant progression or eligibility."
             )
             return
 
@@ -491,8 +493,10 @@ class CompetencyEvidenceReviewWidget(QWidget):
             f"Evidence coverage · {len(evidence)} evidence record(s) · {purpose_text}\n"
             f"Reviewed outcomes · {outcome_text}\n"
             f"Evidence range · {range_text}\n"
-            "Evidence facts remain descriptive; maturity is human-authored and "
-            "does not itself grant progression or eligibility."
+            "Descriptive coverage only · no proficiency, Evidence Maturity, "
+            "or eligibility conclusion is inferred.\n"
+            "Evidence Maturity is human-authored governance over evidence "
+            "decision-usability; it does not itself grant progression or eligibility."
         )
 
     def _selection_changed(self) -> None:
@@ -836,6 +840,15 @@ class CompetencyEvidenceReviewWidget(QWidget):
             f"Development Direction saved{evidence_text}. "
             "No competency state or eligibility change was made."
         )
+
+    def _maturity_boundary_changed(self, _index: int) -> None:
+        self._refresh_evidence_maturity_editor()
+        competency_id = self._selected_competency_id()
+        if competency_id:
+            self._render_synthesis_summary(
+                self._evidence_for_selected_competency(),
+                competency_id,
+            )
 
     def _selected_progression_boundary(self) -> str:
         return str(
