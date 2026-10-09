@@ -203,3 +203,60 @@ class CompetencyCrossRunObservation:
             self.created_at = now
         if not self.updated_at:
             self.updated_at = now
+
+
+
+class EvidenceMaturityState(str, Enum):
+    NOT_ASSESSED = "Not Assessed"
+    INSUFFICIENT = "Insufficient Evidence"
+    DEVELOPING = "Developing Evidence"
+    DECISION_USABLE = "Decision-Usable Evidence"
+
+
+class ProgressionBoundary(str, Enum):
+    STUDY_TO_REHEARSAL = "Study -> Rehearsal"
+    REHEARSAL_TO_VALIDATION = "Rehearsal -> Validation"
+    VALIDATION_TO_EXECUTION = "Validation -> Execution"
+
+
+@dataclass
+class CompetencyEvidenceMaturityProfile:
+    """Current human-reviewed evidence-maturity judgment for one boundary."""
+
+    trade_plan_id: str
+    trade_plan_revision: str
+    competency_id: str
+    progression_boundary: ProgressionBoundary
+    maturity_state: EvidenceMaturityState = EvidenceMaturityState.NOT_ASSESSED
+    maturity_note: str = ""
+    consistency_note: str = ""
+    known_gap_note: str = ""
+    source: str = "Review / Development"
+    created_at: str = ""
+    updated_at: str = ""
+
+    def __post_init__(self) -> None:
+        self.trade_plan_id = self.trade_plan_id.strip()
+        self.trade_plan_revision = self.trade_plan_revision.strip()
+        self.competency_id = self.competency_id.strip()
+        if isinstance(self.progression_boundary, str):
+            self.progression_boundary = ProgressionBoundary(
+                self.progression_boundary
+            )
+        if isinstance(self.maturity_state, str):
+            self.maturity_state = EvidenceMaturityState(self.maturity_state)
+        self.maturity_note = self.maturity_note.strip()
+        self.consistency_note = self.consistency_note.strip()
+        self.known_gap_note = self.known_gap_note.strip()
+        self.source = self.source.strip() or "Review / Development"
+        if not self.trade_plan_id:
+            raise ValueError("trade plan id cannot be empty")
+        if not self.trade_plan_revision:
+            raise ValueError("trade plan revision cannot be empty")
+        if not self.competency_id:
+            raise ValueError("competency id cannot be empty")
+        now = datetime.now().astimezone().isoformat(timespec="seconds")
+        if not self.created_at:
+            self.created_at = now
+        if not self.updated_at:
+            self.updated_at = now
