@@ -1,6 +1,6 @@
-# Cross-Run Pattern Synthesis — v0 Design Candidate
+# Cross-Run Observation — v0 Design
 
-**Status:** Design candidate for operator review  
+**Status:** Accepted for v0 implementation  
 **Milestone:** B — Review / Development synthesis
 
 ## Purpose
@@ -11,7 +11,7 @@ The remaining Milestone B gap is making **recurring patterns across runs** easie
 
 This slice should answer:
 
-> Across the evidence I have reviewed, what recurring pattern do I believe is present?
+> Across the evidence I have reviewed, what recurring behavior or relationship do I believe is present?
 
 The answer remains **human-authored synthesis**.
 
@@ -35,9 +35,9 @@ So this is the final intended Milestone B synthesis slice, not an Evidence Matur
 
 ---
 
-## New concept: Pattern Observation
+## New concept: Cross-Run Observation
 
-A **Pattern Observation** is a human-reviewed statement about a recurring cross-run pattern for one competency.
+A **Cross-Run Observation** is a human-reviewed statement about a recurring behavior across multiple reviewed runs for one competency.
 
 It answers:
 
@@ -50,7 +50,7 @@ Examples:
 - "The apparent issue only appears in older evidence; recent Replay work does not reproduce it."
 - "No stable pattern yet — evidence is mixed."
 
-A Pattern Observation is not:
+A Cross-Run Observation is not:
 
 - a competency score,
 - a Development Direction,
@@ -72,7 +72,7 @@ Competency Evidence
 Competency Synthesis
 (descriptive coverage)
         ↓
-Pattern Observation
+Cross-Run Observation
 (human interpretation across runs)
         ↓
 Development Direction
@@ -92,7 +92,7 @@ A technician may observe a recurring pattern and still decide:
 - Monitor / Gather Evidence,
 - No Active Focus.
 
-The Pattern Observation explains **what seems to be happening**.
+The Cross-Run Observation explains **what seems to be happening**.
 
 Development Direction records **what to do next**.
 
@@ -100,7 +100,7 @@ Development Direction records **what to do next**.
 
 ## Ownership and persistence
 
-Pattern Observation is mutable Review / Development state, not Trade Plan-owned definition data.
+Cross-Run Observation is mutable Review / Development state, not Trade Plan-owned definition data.
 
 Recommended v0 record:
 
@@ -113,9 +113,9 @@ Recommended v0 record:
 - created_at,
 - updated_at.
 
-One current Pattern Observation per Trade Plan + competency is sufficient for v0.
+One current Cross-Run Observation per Trade Plan + competency is sufficient for v0.
 
-History/versioning of Pattern Observation edits is deferred unless actual use shows that preserving synthesis history is important.
+History/versioning of Cross-Run Observation edits is deferred unless actual use shows that preserving synthesis history is important.
 
 ---
 
@@ -133,7 +133,7 @@ For v0:
 - support is explicit rather than inferred,
 - no minimum count is required.
 
-A Pattern Observation with no linked evidence is permitted, but the UI should make that state clear rather than implying evidentiary support.
+A Cross-Run Observation with no linked evidence is permitted, but the UI should make that state clear rather than implying evidentiary support.
 
 ---
 
@@ -141,7 +141,7 @@ A Pattern Observation with no linked evidence is permitted, but the UI should ma
 
 The stable-vs-candidate Trade Plan guardrail applies directly here.
 
-A Pattern Observation must preserve the Trade Plan revision under which the technician authored the synthesis.
+A Cross-Run Observation must preserve the Trade Plan revision under which the technician authored the synthesis.
 
 Historical evidence keeps its own original Trade Plan revision.
 
@@ -180,7 +180,7 @@ Retrospective mapping remains explicit future analytical work.
 
 Do not add another large permanent card.
 
-When a specific competency is selected, extend the existing compact synthesis area with a short Pattern Observation section:
+When a specific competency is selected, extend the existing compact synthesis area with a short Cross-Run Observation section:
 
 ```text
 Competency Synthesis · Draw on liquidity
@@ -188,7 +188,7 @@ Competency Synthesis · Draw on liquidity
 Evidence coverage
 Study: 4 · Rehearsal: 3 · Validation: 1
 
-Current Pattern Observation
+Current Cross-Run Observation
 "Intermediate-liquidity classification is inconsistent
 after large expansion."
 
@@ -208,7 +208,7 @@ The page must remain scrollable and the lower Lab / Replay launcher must remain 
 
 "Cross-run" and "cross-day" should not become separate domain concepts.
 
-The evidence already belongs to Trading Runs with timestamps. A Pattern Observation may synthesize:
+The evidence already belongs to Trading Runs with timestamps. A Cross-Run Observation may synthesize:
 
 - multiple runs on one day,
 - runs across many days,
@@ -247,7 +247,7 @@ unless those statements are explicitly authored by the technician or later justi
 
 ---
 
-## Pattern Observation and Development Direction workflow
+## Cross-Run Observation and Development Direction workflow
 
 The intended operator loop is:
 
@@ -258,7 +258,7 @@ Review synthesis + evidence history
       ↓
 Inspect several relevant records
       ↓
-Write/update Pattern Observation
+Write/update Cross-Run Observation
       ↓
 Optionally link supporting records
       ↓
@@ -268,9 +268,9 @@ If direction = Study:
 stage targeted Study through existing launcher
 ```
 
-Saving Pattern Observation must not start a run or change Development Direction automatically.
+Saving Cross-Run Observation must not start a run or change Development Direction automatically.
 
-Saving Development Direction must not rewrite Pattern Observation automatically.
+Saving Development Direction must not rewrite Cross-Run Observation automatically.
 
 ---
 
@@ -278,7 +278,7 @@ Saving Development Direction must not rewrite Pattern Observation automatically.
 
 If accepted, implement:
 
-- one current mutable Pattern Observation per Trade Plan + competency,
+- one current mutable Cross-Run Observation per Trade Plan + competency,
 - optional note/text,
 - optional multiple supporting-evidence IDs,
 - current Trade Plan revision provenance,
@@ -314,7 +314,7 @@ Evidence
   ↓
 Descriptive competency synthesis
   ↓
-Human Pattern Observation
+Human Cross-Run Observation
   ↓
 Human Development Direction
   ↓
@@ -332,8 +332,23 @@ At that point Milestone C can introduce Evidence Maturity/governance over a Revi
 
 ## Operator confirmation questions
 
-1. Does **Pattern Observation** feel like the right name, or would **Recurring Pattern** / **Cross-Run Observation** be clearer?
+1. **Resolved:** use **Cross-Run Observation**. The term avoids conflating evidence-synthesis patterns with retail-style market-pattern hunting.
 2. Is one current mutable observation per competency sufficient for v0?
 3. Should supporting evidence be optional, as proposed?
-4. Does it make sense that Pattern Observation says "what seems to be happening" while Development Direction says "what should I do next"?
+4. Does it make sense that Cross-Run Observation says "what seems to be happening" while Development Direction says "what should I do next"?
 5. Is the proposed boundary enough to close Milestone B after implementation?
+
+
+## Operator acceptance
+
+Accepted on 2026-10-09.
+
+Confirmed:
+
+- **Cross-Run Observation** is the preferred term.
+- One current mutable observation per competency is sufficient for v0.
+- Supporting evidence remains optional.
+- Cross-Run Observation means **what seems to be happening**.
+- Development Direction means **what should I do next**.
+- This slice is sufficient to close Milestone B after successful implementation and acceptance.
+- The distinction intentionally supports the operator's IF/THEN reasoning style without turning the observation into an automatic rule.
