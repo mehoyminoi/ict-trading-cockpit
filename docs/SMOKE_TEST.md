@@ -298,39 +298,39 @@ Before merging `feature/cross-run-observation-v0`, use this section for the focu
 
 ### A. Cross-Run Observation editor
 
-- [NOT TESTED] Open **Trade Plan -> Review / Development**, select one competency, and confirm a compact **Cross-Run Observation** editor is visible.
+- [PASS] Open **Trade Plan -> Review / Development**, select one competency, and confirm a compact **Cross-Run Observation** editor is visible.
   - Expected: it is presented as human-authored interpretation of what seems to be happening across reviewed runs.
   - Expected: Review / Development remains vertically scrollable and the lower Lab / Replay launcher remains reachable.
-- [NOT TESTED] Enter a distinctive Cross-Run Observation and save it.
+- [PASS] Enter a distinctive Cross-Run Observation and save it.
   - Expected: the current observation display updates immediately.
   - Expected: the compact Competency Synthesis includes the saved Cross-Run Observation.
-- [NOT TESTED] Navigate away and return, then restart the application.
+- [PASS] Navigate away and return, then restart the application.
   - Expected: the saved observation persists.
 
 ### B. Supporting evidence
 
-- [NOT TESTED] Select one evidence record, check the Cross-Run Observation supporting-evidence checkbox, and save.
+- [PASS] Select one evidence record, check the Cross-Run Observation supporting-evidence checkbox, and save.
   - Expected: the selected record is reported as linked.
   - Expected: supporting-evidence count increases.
-- [NOT TESTED] Link a second evidence record for the same competency.
+- [PASS] Link a second evidence record for the same competency.
   - Expected: both links are preserved; adding one record does not remove the previous link.
-- [NOT TESTED] Unlink one selected supporting record and save.
+- [PASS] Unlink one selected supporting record and save.
   - Expected: only that record is removed; unrelated supporting links remain.
-- [NOT TESTED] Restart and confirm the observation and supporting-evidence relationship persist.
+- [PASS] Restart and confirm the observation and supporting-evidence relationship persist.
 
 ### C. Semantic separation
 
-- [NOT TESTED] Save/change a Cross-Run Observation and confirm **Development Direction does not change automatically**.
-- [NOT TESTED] Save/change Development Direction and confirm the Cross-Run Observation is not rewritten automatically.
-- [NOT TESTED] Confirm the UI describes Cross-Run Observation as **what seems to be happening** and Development Direction as **what should happen next**.
-- [NOT TESTED] Confirm no automatic recurring-pattern/weakness detection, trend score, competency-state change, Evidence Maturity conclusion, progression decision, or eligibility change appears.
+- [PASS] Save/change a Cross-Run Observation and confirm **Development Direction does not change automatically**.
+- [PASS] Save/change Development Direction and confirm the Cross-Run Observation is not rewritten automatically.
+- [PASS] Confirm the UI describes Cross-Run Observation as **what seems to be happening** and Development Direction as **what should happen next**.
+- [PASS] Confirm no automatic recurring-pattern/weakness detection, trend score, competency-state change, Evidence Maturity conclusion, progression decision, or eligibility change appears.
 
 ### D. Revision / regression guardrails
 
-- [NOT TESTED] Confirm individual evidence detail still shows its original Trade Plan revision.
-- [NOT TESTED] Confirm older evidence remains visible and is not silently remapped to a newer competency meaning.
-- [NOT TESTED] Confirm existing Competency Synthesis counts/date range, evidence selection/detail, Development Direction linking, and **Study this competency** routing still work.
-- [NOT TESTED] Full automated suite is green immediately before merge.
+- [PASS] Confirm individual evidence detail still shows its original Trade Plan revision.
+- [PASS] Confirm older evidence remains visible and is not silently remapped to a newer competency meaning.
+- [PASS] Confirm existing Competency Synthesis counts/date range, evidence selection/detail, Development Direction linking, and **Study this competency** routing still work.
+- [PASS] Full automated suite is green immediately before merge.
 
 
 ---
