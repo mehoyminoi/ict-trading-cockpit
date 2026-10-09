@@ -198,8 +198,14 @@ class TradePlanWidget(QWidget):
         self,
         section: TradePlanSectionDefinition,
     ) -> QWidget:
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+
         page = QWidget()
         layout = QVBoxLayout(page)
+        layout.setContentsMargins(6, 6, 6, 6)
+        layout.setSpacing(6)
 
         heading = QLabel(section.name)
         heading.setStyleSheet("font-size: 16px; font-weight: 600;")
@@ -273,7 +279,8 @@ class TradePlanWidget(QWidget):
             label.setWordWrap(True)
             layout.addWidget(label)
         layout.addStretch()
-        return page
+        scroll.setWidget(page)
+        return scroll
 
     def _build_review_development_page(
         self, section: TradePlanSectionDefinition
