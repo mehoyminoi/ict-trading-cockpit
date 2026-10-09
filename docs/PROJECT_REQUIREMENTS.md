@@ -1240,3 +1240,31 @@ These states describe whether evidence is usable for a decision; they do not dec
 The overall maturity-state label is intentionally removable if real operator use shows it is too evaluative. The underlying dimensional profile, notes, and descriptive evidence facts must remain useful without it.
 
 Do not introduce a weighted readiness score, automatic promotion/demotion, or eligibility change in the Evidence Maturity layer.
+
+
+## Progression policy and cross-revision competency continuity
+
+Progression Policy is Trade Plan-owned, immutable within a published revision, and defined per upward progression boundary.
+
+v0 boundaries:
+
+- Study -> Rehearsal,
+- Rehearsal -> Validation,
+- Validation -> Execution.
+
+Each policy contains explicit gating requirements only. v0 uses simple ALL/AND composition. Required competencies must be named explicitly; a competency does not become a blocker merely because it exists in the catalog.
+
+Accepted v0 requirement kinds:
+
+- Evidence Maturity State,
+- Competency State,
+- Evidence Purpose Present,
+- Human Certification.
+
+C2 builds the policy substrate without inventing real readiness criteria. The first configured progression rules require separate operator acceptance and a new published Trade Plan revision.
+
+Whole-plan revision change must not automatically reset unchanged competencies. If a competency definition is materially unchanged between rX and rY, prior evidence and Competency State may remain valid. rY may still require fresh Rehearsal/Validation evidence to establish contextual integration under the revised plan.
+
+If a competency definition materially changes, historical evidence remains valid for the old definition but must not silently certify the new one. New competencies do not inherit historical evidence/proficiency automatically.
+
+Long-term analytics should preserve enough provenance to study learning velocity, time-to-proficiency, progression friction, revalidation, competency-family/genre transfer, and diminishing returns. These are analytics goals, not current readiness thresholds.
