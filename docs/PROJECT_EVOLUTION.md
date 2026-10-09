@@ -313,17 +313,13 @@ This was useful but did **not** change the larger architectural frontier.
 
 The recovered development trajectory had already shifted away from more Live-Watch expansion and toward the learning/progression loop.
 
-The frontier is:
+The frontier has advanced through the human Review / Development synthesis layer. The current progression-governance frontier is:
 
-`targeted Study -> competency evidence -> Replay integration -> Forward validation -> progression/eligibility -> Live Execution`
+`boundary-aware Evidence Maturity -> Trade Plan progression policy -> explainable eligibility -> regression/downgrade semantics -> operator-loop integration -> later Live Execution governance`
 
-with Review / Development eventually consuming accumulated evidence to:
+The completed human synthesis chain beneath it is:
 
-- identify weaknesses,
-- recommend targeted Study,
-- compare process revisions,
-- assess evidence maturity,
-- support justified progression rules.
+`Evidence -> Competency Synthesis -> Cross-Run Observation -> Development Direction -> targeted Study routing`.
 
 Do not return to older Film Night, responsive-gallery, visual-polish, broad TradingView-integration, hardware-controller, or Live-Watch feature queues merely because those discussions were detailed. They remain valid later ideas unless actual use makes them blocking.
 
@@ -339,3 +335,43 @@ This phase preserves the separation:
 `Study Outcome -> evidence -> human synthesis / Development Direction -> later state/maturity/progression decisions`
 
 Automatic weakness inference, readiness scoring, competency-state mutation, and eligibility changes remain deferred.
+
+
+## Phase 17 — Evidence Maturity and progression governance
+
+Milestone B completed the Review / Development human-synthesis chain:
+
+`Evidence -> Competency Synthesis -> Cross-Run Observation -> Development Direction -> targeted Study routing`
+
+The project then moved into Milestone C.
+
+The first accepted governance concept is a boundary-aware **Evidence Maturity Profile**. Its purpose is not to score the technician or authorize advancement. It answers whether the available evidence is trustworthy enough to support a decision at a specific progression boundary.
+
+The accepted profile dimensions are:
+
+- Volume / Sample Depth,
+- Environment Relevance,
+- Recency,
+- Consistency,
+- Context Coverage,
+- Revision Relevance.
+
+Evidence Maturity is explicitly distinct from Competency State, Trade Plan Progression Policy, and Eligibility.
+
+The profile is boundary-aware from the beginning:
+
+`Trade Plan + competency + progression boundary`
+
+with candidate boundaries:
+
+- Study -> Rehearsal,
+- Rehearsal -> Validation,
+- Validation -> Execution.
+
+Four human maturity states are accepted for v0 — Not Assessed, Insufficient Evidence, Developing Evidence, Decision-Usable Evidence — but the overall state is deliberately removable if operator use shows that it is too evaluative. The dimensional profile must remain useful without it.
+
+The accepted Milestone C sequence is:
+
+`C1 Evidence Maturity Profile -> C2 Progression Policy -> C3 Explainable Eligibility -> C4 Regression/downgrade semantics -> C5 Operator-loop integration and guardrails`
+
+No numeric readiness score, hidden weighting, automatic promotion/demotion, or Live lock is implied by entering this phase.
