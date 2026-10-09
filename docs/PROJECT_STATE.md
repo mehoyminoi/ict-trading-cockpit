@@ -13,8 +13,8 @@ This is the starting point for a new development chat or developer handoff. Git 
 - **Current slice:** Milestone B — competency synthesis panel v0
 - **Schema:** v29
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** full schema v29 Development Direction suite green on 2026-10-08 (exact count not separately recorded)
-- **Manual smoke test:** Development Direction v0 acceptance PASS — scrollable Review / Development layout, direction/note persistence, supporting-evidence link persistence, guardrails, and full-suite status manually verified.
+- **Verified full test result:** 294 passed on 2026-10-09 after the competency-synthesis wording regression fix
+- **Manual smoke test:** Competency Synthesis v0 acceptance PASS — compact synthesis surface, descriptive evidence coverage, revision/provenance guardrails, Development Direction refresh, existing evidence/Study routing regression checks, and full-suite status manually verified.
 
 ## Current completed slice — Competency / Proficiency substrate v0
 
@@ -127,39 +127,41 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-Competency Synthesis v0 implementation is in progress on `feature/competency-synthesis-panel-v0`.
+Competency Synthesis v0 is **acceptance-complete and ready for PR/merge** on `feature/competency-synthesis-panel-v0`.
 
-Implemented for validation:
+Accepted behavior:
 
-- the existing compact evidence summary becomes a competency-specific **Competency Synthesis** view when one competency is selected,
-- synthesis shows competency name/category and current Trade Plan revision,
-- synthesis shows the current human-authored Development Direction,
-- synthesis shows supporting-evidence count,
-- synthesis shows descriptive evidence coverage by run purpose,
-- synthesis shows descriptive counts by Study Outcome,
-- synthesis shows oldest -> newest reviewed evidence date range,
-- no-evidence state explicitly says no reviewed evidence is recorded,
-- synthesis explicitly states that coverage does not infer proficiency, Evidence Maturity, or eligibility,
-- saving Development Direction updates the synthesis immediately,
-- existing evidence list/detail and Study routing are reused rather than adding another tall panel,
-- no generic mixed-Trade-Plan warning is shown.
+- selecting one competency turns the existing compact evidence summary into a **Competency Synthesis** view rather than adding another tall panel,
+- synthesis shows competency identity and current Trade Plan revision,
+- synthesis shows current human-authored Development Direction and supporting-evidence count,
+- evidence coverage remains descriptive by purpose and Study Outcome,
+- oldest -> newest reviewed-evidence date range is visible,
+- the no-evidence state describes absence of evidence rather than implying failure,
+- the surface explicitly states that coverage does not infer proficiency, Evidence Maturity, or eligibility,
+- detailed evidence still preserves per-record Trade Plan revision,
+- older evidence remains visible and is not silently remapped,
+- no generic warning is generated merely because whole Trade Plan revisions differ,
+- saving/changing Development Direction immediately refreshes the synthesis,
+- evidence selection/detail, supporting-evidence linking, and **Study this competency** routing remain functional,
+- Review / Development remains usable within the accepted scrollable layout.
 
-Revision/provenance semantics remain:
+Validation:
 
-- per-evidence Trade Plan revision stays visible in evidence detail,
-- older evidence remains visible,
-- historical evidence is not silently reinterpreted under a changed competency definition,
-- a future strong warning should depend on competency-definition-level provenance, not merely whole-plan revision differences.
+- first full-suite run exposed one wording regression: **293 passed / 1 failed**,
+- the regression was fixed by preserving the accepted `N evidence record(s)` wording rather than weakening the pre-existing test,
+- final full automated suite: **294 passed**,
+- focused Competency Synthesis v0 smoke test: **fully PASS / ACCEPTED**.
 
 No schema or Trade Plan revision change in this slice. Schema remains v29 and Trade Plan remains Alpha 0.7.
 
-A focused **Competency Synthesis v0** section has been added to `docs/SMOKE_TEST.md`.
+The stable-vs-candidate Trade Plan isolation requirement remains a cross-cutting architectural rule. This slice preserves revision provenance but does not yet introduce competency-definition fingerprints/revisions.
 
-First full-suite run after the synthesis UI change reported **293 passed / 1 failed**. The failure was an existing Review / Development regression test that intentionally looked for the established human-readable substring `1 evidence record` after filtering to one competency. The new synthesis wording had changed that phrase to `1 reviewed`.
+Next action:
 
-The implementation has been corrected to preserve the existing evidence-count wording inside the new synthesis surface (`N evidence record(s)`) rather than weakening/removing the older regression expectation. The new synthesis-specific regression assertion was updated to match that compatibility-preserving wording.
-
-Next action: pull the fix and rerun the full automated suite. If green, continue with the focused Competency Synthesis smoke test. Pay particular attention to compactness/scroll behavior because Review / Development vertical space remains a functional constraint.
+1. inspect the complete branch diff,
+2. open and merge the accepted Competency Synthesis v0 implementation PR,
+3. sync `main`,
+4. choose the next Milestone B slice from the remaining Review / Development synthesis work before entering Evidence Maturity/progression governance.
 
 ## System guide maintenance
 
