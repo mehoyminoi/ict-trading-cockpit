@@ -112,7 +112,7 @@ This document is a reconciliation ledger, not a feature backlog. For current req
 | Proficiency percentages | Not justified yet. | DEFERRED |
 | Automatic promotion/demotion | Not justified yet. | DEFERRED |
 | Automatic competency Live lock | Directionally desired eventually but thresholds/rules do not yet exist. | DEFERRED |
-| Evidence Maturity Profile | Accepted future governance concept; must be grounded in real evidence. | CURRENT future architecture |
+| Evidence Maturity Profile | Boundary-aware, non-numeric governance profile; six dimensions accepted; human overall state is removable if too evaluative. | CURRENT design / Milestone C |
 
 ## Review / Development and analytics
 
@@ -120,7 +120,7 @@ This document is a reconciliation ledger, not a feature backlog. For current req
 |---|---|---|
 | Film Night | Valid eventual consumption workflow, but not current frontier. | DEFERRED |
 | Responsive chart gallery | Useful eventual review UX, not a roadmap driver. | DEFERRED |
-| Cross-run synthesis | Important after enough structured study/evidence exists. | CURRENT future |
+| Cross-run synthesis | Implemented as Competency Synthesis + human Cross-Run Observation + Development Direction. | CURRENT / IMPLEMENTED |
 | KPI dashboard | Do not build before categories/evidence are earned through use. | DEFERRED |
 | Revision analytics | Performance and process adherence should eventually be analyzable by process/plan revision. | CURRENT future |
 | Feedback export | Full cumulative digest is acceptable temporary workflow; incremental handoff batches are later improvement. | DEFERRED |
@@ -149,17 +149,23 @@ This document is a reconciliation ledger, not a feature backlog. For current req
 
 ## Current priority interpretation
 
-The historical trajectory does **not** point back toward Film Night polish, more Live-Watch widgets, chart-gallery work, or broad integrations.
+Milestone B — Review / Development synthesis is complete.
 
-The current frontier after Competency / Proficiency v0 is:
+The current frontier is Milestone C:
 
-1. connect completed Study/Rehearsal/Validation work to explicit competency evidence,
-2. let Review/Lab route weaknesses toward targeted Study,
-3. preserve evidence provenance by environment, plan/process revision, competency, market/QT context, and run,
-4. establish enough evidence structure for later progression/eligibility rules,
-5. build Review/Development synthesis and Evidence Maturity only after the evidence substrate is trustworthy.
+1. build a boundary-aware Evidence Maturity Profile without numeric readiness scoring,
+2. define Trade Plan-owned progression policy separately,
+3. evaluate eligibility explainably from that policy,
+4. model regression/downgrade semantics,
+5. integrate the governance loop into operator workflow with clear guardrails.
 
-Revision/provenance architecture remains important, but should support this learning/progression loop rather than displacing it as an abstract architecture project.
+The accepted Evidence Maturity identity is:
+
+`Trade Plan + competency + progression boundary`
+
+The four human maturity states are accepted for v0 but remain removable if they prove too evaluative. The dimensional evidence profile must not depend on them.
+
+Do not move priority back toward Film Night polish, additional Live-Watch widgets, chart galleries, broad integrations, hardware, or broker execution merely because those areas are older or richly discussed.
 
 ## Rule for future handoffs
 
