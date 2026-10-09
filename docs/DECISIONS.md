@@ -380,3 +380,82 @@ These states describe whether the evidence set is usable for a decision. They do
 **Rationale:** the same evidence set can be sufficient for one progression boundary and insufficient for another. Boundary-aware maturity prevents a global "mature" label from silently becoming Live readiness.
 
 **Consequence:** C1 builds the Evidence Maturity Profile; C2 later defines Trade Plan-owned progression policy; C3 evaluates eligibility explainably. No automatic advancement/demotion or Live lock is introduced in C1.
+
+
+## 2026-10-09 — Progression Policy is Trade Plan-owned permission logic
+
+**Status:** Accepted
+
+Progression Policy is immutable, revisioned Trade Plan data.
+
+The v0 unit is one policy per upward progression boundary:
+
+- Study -> Rehearsal,
+- Rehearsal -> Validation,
+- Validation -> Execution.
+
+A policy may contain competency-scoped and boundary/global gating requirements. Required competencies are explicit; adding a competency to the Trade Plan does not automatically make it a progression blocker.
+
+The v0 requirement kinds are:
+
+- Evidence Maturity State,
+- Competency State,
+- Evidence Purpose Present,
+- Human Certification.
+
+v0 composition is simple ALL/AND. Empty policies are invalid. Progression Policy contains gating requirements only. No manual progression override exists in v0.
+
+C2 defines policy substrate only. C3 later evaluates it into explainable eligibility. A required condition that cannot be evaluated must never silently pass.
+
+**Rationale:** progression rate/restriction is a core Trade Plan lever. Policy therefore belongs with the known/gold-standard system rather than in mutable profile state or hidden evaluator code.
+
+**Consequence:** Alpha 0.7 remains without configured progression policy. Publishing the first real policy requires a new Trade Plan revision and a separate deliberate operator decision.
+
+
+## 2026-10-09 — Competency continuity survives whole-plan revision when the definition is unchanged
+
+**Status:** Accepted
+
+A whole Trade Plan revision change does not automatically reset competency knowledge.
+
+If a competency definition is materially unchanged between rX and rY:
+
+- prior evidence remains valid evidence of that competency,
+- prior Competency State may remain intact,
+- a technician who was Proficient does not become unskilled merely because surrounding plan content changed,
+- rY may still require fresh Rehearsal or Validation evidence to prove the known competency integrates correctly with the revised system.
+
+Therefore distinguish:
+
+- **competency knowledge/proficiency continuity**, from
+- **current-plan contextual validation / progression eligibility**.
+
+If the competency definition materially changes, old evidence remains historically valid for the old definition but must not silently certify the new definition. The needed return point depends on the change; it is not universally hardcoded to Study, Rehearsal, or Validation.
+
+New competencies do not inherit historical evidence or proficiency automatically.
+
+**Rationale:** resetting unchanged competencies discards real learning, while automatically accepting old proficiency for a materially changed system can overstate readiness.
+
+**Consequence:** future definition-level identity/fingerprinting should support machine-verifiable unchanged/changed competency continuity. Progression Policy may require fresh evidence under rY without mutating broader Competency State.
+
+
+## 2026-10-09 — Learning velocity and progression friction are future analytics targets
+
+**Status:** Accepted future direction
+
+The Cockpit should eventually analyze the rate and efficiency of learning, not only trade outcomes.
+
+Future analytics may examine:
+
+- time from first exposure to usable competence,
+- time spent at each Study/Rehearsal/Validation stage,
+- evidence volume/type before progression,
+- revalidation and regression events,
+- competency families/genres,
+- transfer learning from already-mastered related concepts,
+- diminishing returns from additional practice at one rung,
+- progression-policy friction and whether a different practice sequence would have produced equally trustworthy competence faster.
+
+The long-term objective is lifetime mastery while improving allocation of learning time.
+
+**Guardrail:** this does not justify numeric readiness scores, arbitrary current thresholds, or rushing progression. C2 only preserves the structured provenance needed for later analytics.
