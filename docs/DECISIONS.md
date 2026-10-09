@@ -329,3 +329,54 @@ For v0:
 **Consequence:** successful implementation/acceptance of this slice completes the intended Milestone B human-synthesis chain:
 
 `Evidence -> Competency Synthesis -> Cross-Run Observation -> Development Direction -> targeted Study routing`
+
+
+## 2026-10-09 — Evidence Maturity is boundary-aware evidence governance
+
+**Status:** Accepted
+
+Introduce **Evidence Maturity Profile** as the governance layer that answers:
+
+> Can this evidence set support a trustworthy decision at this progression boundary?
+
+Evidence Maturity remains separate from:
+
+- Competency State — where the skill sits in the training ladder,
+- Progression Policy — what evidence/conditions the Trade Plan requires,
+- Eligibility — whether the configured policy is currently satisfied.
+
+The v0 profile uses six inspectable dimensions:
+
+- Volume / Sample Depth,
+- Environment Relevance,
+- Recency,
+- Consistency,
+- Context Coverage,
+- Revision Relevance.
+
+No weighted composite score or readiness percentage is introduced.
+
+The v0 profile is explicitly boundary-aware and is identified by:
+
+`Trade Plan + competency + progression boundary`
+
+Candidate boundaries are:
+
+- Study -> Rehearsal,
+- Rehearsal -> Validation,
+- Validation -> Execution.
+
+The v0 human maturity states are:
+
+- Not Assessed,
+- Insufficient Evidence,
+- Developing Evidence,
+- Decision-Usable Evidence.
+
+These states describe whether the evidence set is usable for a decision. They do **not** say what that decision should be.
+
+**Removability guardrail:** the overall maturity-state label is not load-bearing architecture. The six-dimensional profile, notes, and descriptive evidence facts must remain meaningful without it. If operator use shows the labels are too evaluative, the state can be hidden/removed without redesigning the evidence model. Progression policy must not become irreversibly coupled to the label before its usefulness is validated.
+
+**Rationale:** the same evidence set can be sufficient for one progression boundary and insufficient for another. Boundary-aware maturity prevents a global "mature" label from silently becoming Live readiness.
+
+**Consequence:** C1 builds the Evidence Maturity Profile; C2 later defines Trade Plan-owned progression policy; C3 evaluates eligibility explainably. No automatic advancement/demotion or Live lock is introduced in C1.
