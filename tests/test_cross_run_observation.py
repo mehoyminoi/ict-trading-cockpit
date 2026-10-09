@@ -137,21 +137,14 @@ def test_cross_run_observation_persists_and_updates_synthesis(tmp_path) -> None:
         widget.summary_label.text()
     )
     assert "supporting evidence: 1" in widget.summary_label.text()
-    assert "No Development Direction" not in widget.cross_run_status_label.text()
-    assert "No Development Direction" not in widget.summary_label.text()
-    assert "No Development Direction" not in saved.observation
-    assert "No Development Direction" not in widget.current_cross_run_observation_label.text()
-    assert "No Development Direction" not in widget.cross_run_observation_input.toPlainText()
-    assert "No Development Direction" not in widget.cross_run_selected_evidence_link_label.text()
-    assert "No Development Direction" not in widget.save_cross_run_observation_button.text()
-    assert "No Development Direction" not in widget.competency_combo.currentText()
-    assert "No Development Direction" not in widget.evidence_list.item(0).text()
-    assert "No Development Direction" not in widget.detail_label.text()
-    assert "No Development Direction" not in widget.study_this_button.text()
-    assert "No Development Direction" not in widget.direction_combo.currentText()
-    assert "No Development Direction" not in widget.direction_note_input.text()
-    assert "No Development Direction" not in widget.selected_evidence_link_label.text()
-    assert "No Development Direction" not in widget.development_status_label.text()
+    assert (
+        "No Development Direction, competency state, Evidence Maturity, "
+        "or eligibility change was made."
+    ) in widget.cross_run_status_label.text()
+    assert window.competency_development_direction_repository.get(
+        window.trade_plan.id,
+        "draw-on-liquidity",
+    ) is None
     connection.close()
 
 
