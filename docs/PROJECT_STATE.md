@@ -10,7 +10,7 @@ This is the starting point for a new development chat or developer handoff. Git 
 - **Main baseline:** `85f3d198840d4391d35c5be19293570673246f37` — PR #37 merged Competency Synthesis v0
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Milestone B design — cross-run Pattern Observation v0
+- **Current slice:** Milestone B design — Cross-Run Observation v0
 - **Schema:** v29
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** 294 passed on 2026-10-09 after the competency-synthesis wording regression fix
@@ -133,7 +133,7 @@ The design candidate is recorded in `docs/CROSS_RUN_PATTERN_SYNTHESIS.md`.
 
 Proposed new concept:
 
-**Pattern Observation** — a human-reviewed statement about a recurring cross-run pattern for one competency.
+**Cross-Run Observation** — a human-reviewed statement about a recurring cross-run pattern for one competency.
 
 It answers:
 
@@ -150,7 +150,7 @@ It is distinct from:
 
 The intended final Milestone B chain is:
 
-`Evidence -> descriptive Competency Synthesis -> human Pattern Observation -> human Development Direction -> targeted Study routing when needed`
+`Evidence -> descriptive Competency Synthesis -> human Cross-Run Observation -> human Development Direction -> targeted Study routing when needed`
 
 The design deliberately excludes automatic pattern detection, trend scoring, automatic Development Direction suggestions, competency-state changes, Evidence Maturity, progression policy, and eligibility changes.
 
@@ -158,7 +158,18 @@ Revision/provenance guardrails remain unchanged: stable Trade Plan revisions are
 
 No runtime/schema/Trade Plan changes are on this design branch.
 
-Next action: operator reviews `docs/CROSS_RUN_PATTERN_SYNTHESIS.md` and its five confirmation questions. If accepted, implement as the intended final Milestone B slice.
+Operator review accepted the design on 2026-10-09.
+
+Accepted decisions:
+
+- use **Cross-Run Observation** rather than Pattern Observation,
+- one current mutable observation per competency is sufficient for v0,
+- supporting evidence remains optional,
+- Cross-Run Observation = **what seems to be happening**,
+- Development Direction = **what should I do next**,
+- successful implementation/acceptance of this slice will close Milestone B.
+
+Next action: merge this design checkpoint, then implement Cross-Run Observation v0 as the intended final Milestone B slice.
 
 ## System guide maintenance
 
