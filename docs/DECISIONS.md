@@ -294,3 +294,38 @@ A newly added competency begins collecting evidence from the revision that defin
 **Rationale:** revision control must protect a known-good trading system while allowing experimentation beside it. It also makes later comparisons meaningful: what exactly changed, which evidence belonged to which definition, and whether the candidate revision actually improved the process/system.
 
 **Consequence:** future Workbench/revision tooling should distinguish stable/trusted revisions from candidate development revisions and preserve exact definition provenance. Competency Synthesis should show revision provenance but should not issue a generic warning merely because records span Trade Plan revisions; meaningful caution depends on whether the competency definition itself changed.
+
+
+## 2026-10-09 — Cross-Run Observation separates recurring interpretation from Development Direction
+
+**Status:** Accepted
+
+Introduce **Cross-Run Observation** as the human-authored interpretation layer over multiple competency-evidence records.
+
+Cross-Run Observation answers:
+
+> What seems to be happening across these reviewed runs?
+
+Development Direction remains separate and answers:
+
+> What should I do next?
+
+For v0:
+
+- one current mutable Cross-Run Observation is stored per Trade Plan + competency,
+- observation text is human-authored,
+- supporting evidence links are optional,
+- multiple evidence records may be linked deliberately,
+- no minimum sample count is required,
+- no automatic pattern detection or trend classification occurs,
+- saving an observation does not change Development Direction,
+- saving Development Direction does not rewrite the observation,
+- no competency-state, Evidence Maturity, progression, or eligibility change occurs.
+
+**Rationale:** Review / Development should distinguish raw evidence, descriptive aggregation, human interpretation, and next-development intent before Evidence Maturity/governance is introduced.
+
+**Terminology:** use **Cross-Run Observation**, not Pattern Observation. "Pattern" has an unwanted trading-pattern connotation and could blur the distinction between study-data synthesis and market-pattern hunting.
+
+**Consequence:** successful implementation/acceptance of this slice completes the intended Milestone B human-synthesis chain:
+
+`Evidence -> Competency Synthesis -> Cross-Run Observation -> Development Direction -> targeted Study routing`
