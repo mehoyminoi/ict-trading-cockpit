@@ -396,6 +396,45 @@ Before merging `feature/evidence-maturity-profile-v0`, use this section for the 
 
 ---
 
+## Current branch acceptance — Progression Policy substrate v0
+
+Before merging `feature/progression-policy-model-v0`, use this section for the focused C2 acceptance pass.
+
+### A. Alpha 0.7 remains unconfigured
+
+- [NOT TESTED] Open **Trade Plan -> Rules / Safety**.
+  - Expected: a read-only **Progression Policy** section is visible.
+  - Expected: Trade Plan **Alpha 0.7** reports **NOT CONFIGURED** for Progression Policy.
+  - Expected: the UI explicitly says no readiness rule is inferred.
+- [NOT TESTED] Confirm no Study/Rehearsal/Validation/Execution launcher behavior changes merely because the policy substrate exists.
+  - Expected: C2 defines policy data only; it does not evaluate or enforce eligibility.
+
+### B. Policy substrate guardrails
+
+- [NOT TESTED] Confirm the current application still opens normally with schema **v31**.
+  - Expected: C2 adds no database schema migration.
+- [NOT TESTED] Confirm the current Trade Plan revision remains **Alpha 0.7**.
+  - Expected: the first real configured progression policy has not been smuggled into the current published plan.
+- [NOT TESTED] Confirm there is no numeric readiness score, percentage, traffic-light verdict, automatic promotion/demotion, or manual progression override.
+- [NOT TESTED] Confirm existing Evidence Maturity, Cross-Run Observation, Development Direction, competency evidence, and targeted Study routing still work.
+
+### C. Read-only policy representation
+
+This branch intentionally ships with no configured Alpha 0.7 policy. Automated tests exercise synthetic configured policies.
+
+- [NOT TESTED] Confirm the Rules / Safety Progression Policy text clearly separates:
+  - Trade Plan policy definition,
+  - later eligibility evaluation.
+- [NOT TESTED] Confirm the operator-facing text does not imply that NOT CONFIGURED means approved or available.
+
+### D. Regression
+
+- [NOT TESTED] Confirm existing Trade Plan sections remain navigable and render normally.
+- [NOT TESTED] Full automated suite is green immediately before merge.
+
+
+---
+
 ## Reporting results
 
 Report results as:
