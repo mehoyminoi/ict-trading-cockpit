@@ -6,12 +6,12 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `design/cross-run-pattern-synthesis-v0`
-- **Main baseline:** `85f3d198840d4391d35c5be19293570673246f37` — PR #37 merged Competency Synthesis v0
+- **Active branch:** `feature/cross-run-observation-v0`
+- **Main baseline:** `5f138e0b133b484fe221e8a2097461df8128439d` — PR #38 merged Cross-Run Observation v0 design
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Milestone B design — Cross-Run Observation v0
-- **Schema:** v29
+- **Current slice:** Milestone B — Cross-Run Observation v0 implementation
+- **Schema:** v30
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** 294 passed on 2026-10-09 after the competency-synthesis wording regression fix
 - **Manual smoke test:** Competency Synthesis v0 acceptance PASS — compact synthesis surface, descriptive evidence coverage, revision/provenance guardrails, Development Direction refresh, existing evidence/Study routing regression checks, and full-suite status manually verified.
@@ -127,49 +127,46 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-Competency Synthesis v0 is merged via PR #37. The project remains in **Milestone B — Review / Development synthesis** for one final human-synthesis slice before Evidence Maturity/progression governance.
+Cross-Run Observation v0 implementation is in progress on `feature/cross-run-observation-v0`.
 
-The design candidate is recorded in `docs/CROSS_RUN_OBSERVATION.md`.
+Accepted purpose:
 
-Proposed new concept:
+- **Cross-Run Observation** = what seems to be happening across reviewed runs,
+- **Development Direction** = what should I do next.
 
-**Cross-Run Observation** — a human-reviewed statement about a recurring cross-run pattern for one competency.
+Implemented for validation:
 
-It answers:
+- new `CompetencyCrossRunObservation` domain record,
+- schema v30 `competency_cross_run_observation` storage,
+- one current mutable observation per Trade Plan + competency,
+- optional observation text,
+- optional multiple supporting-evidence IDs,
+- Trade Plan revision provenance,
+- repository UPSERT preserving original `created_at`,
+- MainWindow/TradePlan/Review wiring,
+- compact Cross-Run Observation editor adjacent to existing synthesis controls,
+- selected-evidence link state and link count,
+- persistence across navigation/restart,
+- current observation included in Competency Synthesis,
+- saving an observation does not automatically mutate Development Direction, competency state, Evidence Maturity, progression, or eligibility,
+- accepted terminology propagated to requirements/system guide,
+- focused automated tests and smoke-test checklist added.
 
-> What recurring behavior, strength, weakness, uncertainty, or context dependency do I believe is present across these reviewed records?
+Revision/provenance guardrails remain:
 
-It is distinct from:
+- evidence retains its own original Trade Plan revision,
+- older evidence remains visible,
+- no cross-definition remapping occurs automatically,
+- whole-plan revision differences alone do not create a warning,
+- competency-definition-level provenance/fingerprinting remains future work.
 
-- Study Outcome — what one reviewed run taught,
-- Competency Evidence — the structured observation/provenance,
-- Competency Synthesis — descriptive aggregation/coverage,
-- Development Direction — what deliberate work should happen next,
-- Evidence Maturity — future confidence/governance,
-- Eligibility — later Trade Plan-governed permission.
+Schema moves from v29 to **v30**. Trade Plan remains **Alpha 0.7** because Cross-Run Observation is mutable technician/review state, not plan-owned definition data.
 
-The intended final Milestone B chain is:
+This is intended to be the final Milestone B synthesis slice. Successful automated/manual acceptance will complete:
 
-`Evidence -> descriptive Competency Synthesis -> human Cross-Run Observation -> human Development Direction -> targeted Study routing when needed`
+`Evidence -> Competency Synthesis -> Cross-Run Observation -> Development Direction -> targeted Study routing`
 
-The design deliberately excludes automatic pattern detection, trend scoring, automatic Development Direction suggestions, competency-state changes, Evidence Maturity, progression policy, and eligibility changes.
-
-Revision/provenance guardrails remain unchanged: stable Trade Plan revisions are protected, historical evidence retains its original revision meaning, and cross-definition reinterpretation is never silent.
-
-No runtime/schema/Trade Plan changes are on this design branch.
-
-Operator review accepted the design on 2026-10-09.
-
-Accepted decisions:
-
-- use **Cross-Run Observation** rather than Pattern Observation,
-- one current mutable observation per competency is sufficient for v0,
-- supporting evidence remains optional,
-- Cross-Run Observation = **what seems to be happening**,
-- Development Direction = **what should I do next**,
-- successful implementation/acceptance of this slice will close Milestone B.
-
-Next action: merge this design checkpoint, then implement Cross-Run Observation v0 as the intended final Milestone B slice.
+Next action: pull the branch, run the full automated suite, then complete the **Cross-Run Observation v0** section in `docs/SMOKE_TEST.md`. If accepted, Milestone B can close and Milestone C — Evidence Maturity / progression governance — can begin.
 
 ## System guide maintenance
 
