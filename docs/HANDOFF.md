@@ -39,7 +39,7 @@ This is intended to prevent a future chat from finishing a small convenience fea
 
 For example, a frontier statement should look like:
 
-> Competency / Proficiency v0 is complete. The larger trajectory has shifted toward the Study/Lab learning loop: targeted Study -> competency evidence -> Replay integration -> Forward validation -> progression/eligibility. Older Film Night, visual-polish, chart-gallery, broad integration, and Live-Watch enhancement ideas remain downstream unless actual use makes them blocking.
+> Milestone B — Review / Development synthesis is complete. The active frontier is Milestone C: boundary-aware Evidence Maturity -> Trade Plan progression policy -> explainable eligibility -> regression/downgrade semantics -> operator-loop integration. Older Film Night, visual-polish, chart-gallery, broad integration, and Live-Watch enhancement ideas remain downstream unless actual use makes them blocking.
 
 Update this statement whenever the project's center of gravity materially changes.
 
@@ -164,9 +164,13 @@ Use this prompt when starting a fresh ChatGPT development conversation:
 >
 > The project values architecture correctness, explicit revision/provenance semantics, small tested vertical slices, and substantial manual acceptance. Do not invent readiness percentages, thresholds, automation, or trading rules that the Trade Plan/evidence does not yet justify.
 >
-> Important recovered trajectory: the project had deliberately shifted away from further Live-Watch embellishment toward the learning/progression loop. The current frontier after Competency / Proficiency v0 is approximately:
+> Important recovered trajectory: the project deliberately shifted away from further Live-Watch embellishment toward the learning/progression loop. Milestone B's human synthesis chain is complete:
 >
-> **targeted Study -> competency evidence -> Replay integration -> Forward validation -> progression/eligibility -> Live Execution**, with Review/Development and Evidence Maturity becoming stronger only after the evidence substrate is trustworthy.
+> **Evidence -> Competency Synthesis -> Cross-Run Observation -> Development Direction -> targeted Study routing**
+>
+> The active frontier is Milestone C:
+>
+> **boundary-aware Evidence Maturity -> Trade Plan progression policy -> explainable eligibility -> regression/downgrade semantics -> operator-loop integration -> later Live Execution governance**.
 >
 > Treat `docs/PROJECT_STATE.md` as the final authority for whether that frontier has changed since this prompt was written.
 >

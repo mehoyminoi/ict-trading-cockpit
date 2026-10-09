@@ -1,16 +1,16 @@
 # ICT Trading Cockpit — Current Project State
 
-**Last handoff update:** 2026-10-08
+**Last handoff update:** 2026-10-09
 
 This is the starting point for a new development chat or developer handoff. Git remains the source of truth for code; this file records the verified project checkpoint and the reasoning context needed to continue without reconstructing chat history.
 
 ## Repository state
 
-- **Active branch:** `feature/cross-run-observation-v0`
-- **Main baseline:** `5f138e0b133b484fe221e8a2097461df8128439d` — PR #38 merged Cross-Run Observation v0 design
+- **Active branch:** `design/evidence-maturity-profile-v0`
+- **Main baseline:** `ce985254154aa81a1f039011a5d737b13b2d1159` — PR #39 merged Cross-Run Observation v0 and completed Milestone B
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Milestone B — Cross-Run Observation v0 implementation
+- **Current slice:** Milestone C design — Evidence Maturity Profile v0
 - **Schema:** v30
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** 298 passed on 2026-10-09 after the Cross-Run Observation synthesis-focus regression fix
@@ -127,44 +127,42 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-Cross-Run Observation v0 is **acceptance-complete and ready for PR/merge** on `feature/cross-run-observation-v0`.
+Milestone B — Review / Development synthesis is complete.
 
-Accepted behavior:
+The active frontier is **Milestone C — Evidence Maturity and progression governance**.
 
-- one current mutable Cross-Run Observation per Trade Plan + competency,
-- human-authored observation text answers **what seems to be happening across reviewed runs**,
-- optional multiple supporting-evidence links,
-- supporting links persist across navigation/restart,
-- linking/unlinking one evidence record preserves unrelated links,
-- current observation appears in Competency Synthesis,
-- saving/changing a Cross-Run Observation does not automatically change Development Direction,
-- saving/changing Development Direction does not rewrite the Cross-Run Observation,
-- no automatic recurring-pattern/weakness detection, trend score, competency-state transition, Evidence Maturity conclusion, progression decision, or eligibility change,
-- individual evidence detail retains original Trade Plan revision,
-- older evidence remains visible and is not silently remapped,
-- existing Competency Synthesis counts/date range, Development Direction linking, evidence detail, and **Study this competency** routing remain functional.
+The C1 design in `docs/EVIDENCE_MATURITY_PROFILE.md` is operator-accepted and ready for implementation planning.
 
-Validation:
+Accepted Evidence Maturity semantics:
 
-- initial full-suite run after implementation: **297 passed / 1 failed**,
-- failure exposed a post-save synthesis-focus regression under the All Competencies filter,
-- fix restored accepted behavior: after saving competency-specific synthesis, the compact summary remains focused on the selected competency while normal All Competencies browsing remains aggregate,
-- final full automated suite: **298 passed**,
-- focused Cross-Run Observation v0 smoke test: **fully PASS / ACCEPTED**.
+- Evidence Maturity asks whether the evidence can support a trustworthy decision.
+- It does not describe technician proficiency, make the progression decision, or grant eligibility.
+- The profile is non-numeric and has six inspectable dimensions:
+  - Volume / Sample Depth,
+  - Environment Relevance,
+  - Recency,
+  - Consistency,
+  - Context Coverage,
+  - Revision Relevance.
+- v0 includes human maturity states:
+  - Not Assessed,
+  - Insufficient Evidence,
+  - Developing Evidence,
+  - Decision-Usable Evidence.
+- The overall maturity-state label is deliberately removable if real use shows it is too evaluative; the underlying dimensions/notes/evidence model must not depend on it.
+- Evidence Maturity is boundary-aware from v0.
+- Profile identity is **Trade Plan + competency + progression boundary**.
+- Candidate boundaries are Study -> Rehearsal, Rehearsal -> Validation, and Validation -> Execution.
+- Progression Policy remains a later, Trade Plan-owned rule layer.
+- Eligibility remains the explainable result of applying accepted policy.
 
-Schema is **v30**. Trade Plan remains **Alpha 0.7** because Cross-Run Observation is mutable technician/review state, not plan-owned definition data.
+Accepted Milestone C sequence:
 
-Milestone B exit condition is now satisfied:
+`C1 Evidence Maturity Profile -> C2 Progression Policy model -> C3 Explainable Eligibility evaluation -> C4 Regression/downgrade semantics -> C5 Operator-loop integration and guardrails`
 
-`Evidence -> Competency Synthesis -> Cross-Run Observation -> Development Direction -> targeted Study routing`
+No runtime/schema/Trade Plan changes are on this design branch.
 
-After merge, **Milestone B — Review / Development synthesis is complete**.
-
-Next architectural frontier:
-
-**Milestone C — Evidence Maturity and progression governance**
-
-The next work should begin by designing how evidence quality/confidence is represented and interpreted before defining progression/eligibility policy. No numeric maturity score, hidden readiness percentage, or automatic promotion/demotion should be invented without explicit accepted rules.
+Next action: merge this design checkpoint, then implement C1 as a small vertical slice. Before implementation, preserve the removability of the overall maturity-state label and do not invent progression thresholds.
 
 ## System guide maintenance
 
