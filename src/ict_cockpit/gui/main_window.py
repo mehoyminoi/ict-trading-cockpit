@@ -21,6 +21,9 @@ from ict_cockpit.database.competency_cross_run_observation_repository import (
 from ict_cockpit.database.competency_evidence_repository import (
     CompetencyEvidenceRepository,
 )
+from ict_cockpit.database.competency_evidence_maturity_repository import (
+    CompetencyEvidenceMaturityRepository,
+)
 from ict_cockpit.database.feedback_repository import FeedbackRepository
 from ict_cockpit.database.study_find_repository import StudyFindRepository
 from ict_cockpit.database.summary_template_repository import (
@@ -89,6 +92,11 @@ class MainWindow(QMainWindow):
         self.competency_evidence_repository = CompetencyEvidenceRepository(
             study_find_repository.connection
         )
+        self.competency_evidence_maturity_repository = (
+            CompetencyEvidenceMaturityRepository(
+                study_find_repository.connection
+            )
+        )
         self.competency_development_direction_repository = (
             CompetencyDevelopmentDirectionRepository(
                 study_find_repository.connection
@@ -118,6 +126,9 @@ class MainWindow(QMainWindow):
             ),
             competency_cross_run_observation_repository=(
                 self.competency_cross_run_observation_repository
+            ),
+            competency_evidence_maturity_repository=(
+                self.competency_evidence_maturity_repository
             ),
         )
         # Backward-compatible references retained while Process Map tests and
