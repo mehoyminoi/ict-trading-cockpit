@@ -1439,6 +1439,94 @@ No numeric readiness percentage or hidden weighted score is implied.
 
 ---
 
+# 37A. Progression Policy
+
+Progression Policy is the Trade Plan-owned layer that says what must be true before an upward training boundary may be crossed.
+
+It is revisioned with the Trade Plan because changing progression requirements changes permission semantics.
+
+v0 uses one policy per boundary:
+
+- Study -> Rehearsal,
+- Rehearsal -> Validation,
+- Validation -> Execution.
+
+A boundary policy can contain competency-scoped and boundary/global gating requirements. Required competencies are explicit.
+
+The v0 policy vocabulary is intentionally small:
+
+- Evidence Maturity State,
+- Competency State,
+- Evidence Purpose Present,
+- Human Certification.
+
+Every listed requirement must pass. There is no weighting, majority vote, empty-policy auto-pass, or casual override.
+
+C2 defines the policy. C3 evaluates it.
+
+---
+
+# 37B. Competency continuity across Trade Plan revisions
+
+A Trade Plan revision change does not automatically erase skill.
+
+If a competency definition is unchanged from rX to rY, prior evidence and proficiency can remain meaningful. What may need to change is **contextual validation under the new plan**.
+
+Example:
+
+```text
+rX:
+Draw on Liquidity = Proficient
+
+rY:
+Draw on Liquidity definition unchanged
+but session/process/model context changed
+
+Result:
+Competency knowledge may remain Proficient
+while rY requires fresh Rehearsal/Validation
+before higher-level eligibility is restored
+```
+
+This avoids confusing:
+
+```text
+"I understand this competency"
+```
+
+with:
+
+```text
+"I have proven this competency inside the revised system"
+```
+
+If the competency definition materially changes, old evidence stays valid for the old definition but must not silently certify the new definition. The correct re-entry point may be Study, Rehearsal, or Validation depending on the change.
+
+A new competency starts without inherited evidence unless a later explicit retrospective mapping is performed.
+
+Future definition-level identity/fingerprinting should make unchanged-vs-changed competency continuity machine-verifiable.
+
+---
+
+# 37C. Learning-rate analytics direction
+
+Long term, the Cockpit should analyze not only whether progression occurred, but how efficiently trustworthy competence was built.
+
+Useful future questions include:
+
+- How long did this competency take from first exposure to useful proficiency?
+- Which rung consumed the most time?
+- Did related prior competencies shorten the learning curve?
+- How much additional benefit came from more Study before Rehearsal?
+- At what point did additional practice show diminishing returns?
+- Which competency families/genres show similar learning curves?
+
+The goal is lifetime mastery with increasingly efficient allocation of deliberate-practice time.
+
+This is a future analytics layer. It does not justify current readiness percentages or arbitrary progression thresholds.
+
+---
+
 # 38. The current architectural frontier
 
 The current accepted frontier is:
