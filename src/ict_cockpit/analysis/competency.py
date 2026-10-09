@@ -3,6 +3,8 @@ from datetime import datetime
 from enum import Enum
 from uuid import uuid4
 
+from ict_cockpit.progression import ProgressionBoundary
+
 
 class DevelopmentDirection(str, Enum):
     STUDY = "Study"
@@ -211,12 +213,6 @@ class EvidenceMaturityState(str, Enum):
     INSUFFICIENT = "Insufficient Evidence"
     DEVELOPING = "Developing Evidence"
     DECISION_USABLE = "Decision-Usable Evidence"
-
-
-class ProgressionBoundary(str, Enum):
-    STUDY_TO_REHEARSAL = "Study -> Rehearsal"
-    REHEARSAL_TO_VALIDATION = "Rehearsal -> Validation"
-    VALIDATION_TO_EXECUTION = "Validation -> Execution"
 
 
 @dataclass
