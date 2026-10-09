@@ -1199,3 +1199,44 @@ Before adding a feature, ask:
 If not, it is probably not the next priority.
 
 When a later milestone becomes the new center of gravity, update the current frontier explicitly rather than allowing old roadmap order to take over.
+
+
+## Evidence Maturity accepted refinement
+
+Evidence Maturity is the boundary-aware governance layer that asks:
+
+> Can this evidence set support a trustworthy decision at this progression boundary?
+
+It is separate from Competency State, Progression Policy, and Eligibility.
+
+The accepted v0 profile is non-numeric and uses six inspectable dimensions:
+
+- Volume / Sample Depth,
+- Environment Relevance,
+- Recency,
+- Consistency,
+- Context Coverage,
+- Revision Relevance.
+
+The v0 profile is identified by:
+
+`Trade Plan + competency + progression boundary`
+
+Candidate boundaries are:
+
+- Study -> Rehearsal,
+- Rehearsal -> Validation,
+- Validation -> Execution.
+
+The accepted human maturity states are:
+
+- Not Assessed,
+- Insufficient Evidence,
+- Developing Evidence,
+- Decision-Usable Evidence.
+
+These states describe whether evidence is usable for a decision; they do not decide progression.
+
+The overall maturity-state label is intentionally removable if real operator use shows it is too evaluative. The underlying dimensional profile, notes, and descriptive evidence facts must remain useful without it.
+
+Do not introduce a weighted readiness score, automatic promotion/demotion, or eligibility change in the Evidence Maturity layer.
