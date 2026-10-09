@@ -556,10 +556,10 @@ class CompetencyEvidenceReviewWidget(QWidget):
                 "Selected evidence link · no evidence selected"
             )
 
-        filter_competency_id = str(self.competency_combo.currentData() or "")
+        synthesis_competency_id = self._selected_competency_id()
         self._render_synthesis_summary(
             list(self._evidence_by_id.values()),
-            filter_competency_id,
+            synthesis_competency_id,
         )
         self.cross_run_status_label.setText(
             "Cross-Run Observation saved. No Development Direction, "
@@ -691,10 +691,10 @@ class CompetencyEvidenceReviewWidget(QWidget):
             supporting_evidence_ids=supporting_evidence_ids,
         )
         self.development_direction_repository.save(item)
-        filter_competency_id = str(self.competency_combo.currentData() or "")
+        synthesis_competency_id = self._selected_competency_id()
         self._render_synthesis_summary(
             list(self._evidence_by_id.values()),
-            filter_competency_id,
+            synthesis_competency_id,
         )
         linked_count = len(item.supporting_evidence_ids)
         self.current_direction_label.setText(
