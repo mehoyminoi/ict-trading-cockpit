@@ -254,6 +254,44 @@ Before merging `feature/development-direction-v0`, use this section as the prima
 
 ---
 
+## Current branch acceptance — Competency Synthesis v0
+
+Before merging `feature/competency-synthesis-panel-v0`, use this section for the focused manual acceptance pass.
+
+### A. Compact synthesis surface
+
+- [PASS] Open **Trade Plan -> Review / Development** and select one specific competency.
+  - Expected: the existing compact evidence summary becomes a **Competency Synthesis** summary rather than adding another tall panel.
+  - Expected: Review / Development remains vertically scrollable and the lower Lab / Replay launcher remains comfortably reachable.
+- [PASS] Confirm the synthesis identifies the selected competency and current Trade Plan revision.
+- [PASS] Confirm it shows the current human-authored **Development Direction** and supporting-evidence count when one exists.
+
+### B. Descriptive evidence coverage
+
+- [PASS] For a competency with reviewed evidence, confirm the synthesis shows:
+  - total reviewed evidence count,
+  - descriptive count by purpose (Study / Rehearsal / Validation as actually present),
+  - descriptive count by Study Outcome,
+  - oldest -> newest reviewed evidence date range.
+- [PASS] For a competency with no reviewed evidence, confirm it explicitly says no reviewed evidence is recorded rather than implying failure.
+- [PASS] Confirm the synthesis explicitly states that coverage is descriptive only and does not infer proficiency, Evidence Maturity, or eligibility.
+
+### C. Revision/provenance guardrail
+
+- [PASS] Select evidence records and confirm the detailed evidence view still shows each record's Trade Plan revision.
+- [PASS] Confirm the synthesis does **not** display a generic warning merely because evidence could span multiple whole Trade Plan revisions.
+  - Rationale: a meaningful future caution depends on whether the competency definition itself changed, not merely whether the surrounding Trade Plan revision changed.
+- [PASS] Confirm older evidence remains visible; nothing is silently remapped to the current competency definition.
+
+### D. Regression / automation
+
+- [PASS] Saving/changing Development Direction immediately updates the compact synthesis direction/supporting-evidence count.
+- [PASS] Existing evidence selection, detail view, supporting-evidence linking, and **Study this competency** routing remain functional.
+- [PASS] Full automated suite is green immediately before merge.
+
+
+---
+
 ## Reporting results
 
 Report results as:
