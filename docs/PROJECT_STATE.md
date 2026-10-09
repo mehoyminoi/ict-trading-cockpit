@@ -131,36 +131,51 @@ C1 — Evidence Maturity Profile v0 is complete and merged.
 
 The active frontier is **Milestone C2 — Trade Plan-owned Progression Policy model**.
 
-The C2 design candidate is recorded in `docs/PROGRESSION_POLICY_MODEL.md`.
+The design in `docs/PROGRESSION_POLICY_MODEL.md` is operator-accepted and ready for implementation planning.
 
-Proposed architecture:
+Accepted C2 architecture:
 
 - Progression Policy is immutable, versioned Trade Plan data.
 - One policy applies per upward progression boundary:
   - Study -> Rehearsal,
   - Rehearsal -> Validation,
   - Validation -> Execution.
-- policy may contain competency-scoped and boundary/global requirements,
-- required competencies must be explicit; a new competency does not silently become a blocker,
-- proposed minimal requirement kinds:
+- Boundary policy is the authoritative permission object; competency-scoped and boundary/global requirements are inputs to that decision.
+- Required competencies are explicit; adding a competency does not silently make it a blocker.
+- v0 requirement kinds:
   - Evidence Maturity State,
   - Competency State,
   - Evidence Purpose Present,
-  - Human Certification,
-- v0 uses simple ALL/AND composition only,
+  - Human Certification.
+- v0 composition is simple ALL/AND.
 - policy contains gating requirements only,
-- an empty published policy is proposed invalid,
-- no manual progression override is proposed in v0,
-- C2 defines policy only; C3 later evaluates policy into explainable eligibility,
-- no numeric thresholds or actual Alpha 0.7 readiness rules are invented by the substrate.
+- empty policies are invalid,
+- no manual progression override exists in v0,
+- an unevaluable required condition must not silently pass,
+- C2 defines policy substrate only; C3 later performs explainable eligibility evaluation,
+- Alpha 0.7 remains without configured progression rules.
 
-Important revision consequence:
+Accepted cross-revision competency continuity:
 
-Alpha 0.7 currently has no authoritative progression policy. Building the policy substrate does not by itself change the Trade Plan revision. Publishing the first real configured progression requirements is a separate operator policy decision and will require a new published Trade Plan revision.
+- unchanged competency definition across rX -> rY can preserve prior evidence and Competency State,
+- prior proficiency does not automatically disappear because the whole Trade Plan changed,
+- rY may still require fresh Rehearsal/Validation evidence to prove the known competency integrates correctly with the changed system,
+- materially changed definitions require explicit revalidation/mapping; no universal automatic fallback rung is assumed,
+- new competencies do not inherit historical evidence/proficiency automatically.
+
+This separates:
+
+`competency knowledge continuity`
+
+from:
+
+`current-plan contextual validation / progression eligibility`.
+
+Future analytics direction is also recorded: progression rate, learning time, revalidation events, competency families/genres, transfer learning, and diminishing returns should eventually become measurable KPI/analysis targets. This does not change C2 v0 or justify current numeric thresholds.
 
 No runtime/schema/Trade Plan changes are on this design branch.
 
-Next action: operator reviews `docs/PROGRESSION_POLICY_MODEL.md` and answers the ten confirmation questions before C2 implementation begins.
+Next action: merge this design checkpoint, then implement the C2 policy substrate without publishing real Alpha 0.7 readiness rules.
 
 ## System guide maintenance
 
