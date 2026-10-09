@@ -13,8 +13,8 @@ This is the starting point for a new development chat or developer handoff. Git 
 - **Current slice:** Milestone C2 — Trade Plan Progression Policy substrate v0 implementation
 - **Schema:** v31
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** 303 passed on 2026-10-09 for Evidence Maturity Profile v0
-- **Manual smoke test:** Evidence Maturity Profile v0 acceptance PASS — boundary-aware persistence, four human maturity states, six-dimensional profile, restart persistence, removability guardrail, governance separation, and regression checks manually verified.
+- **Verified full test result:** 310 passed on 2026-10-09 for Progression Policy substrate v0
+- **Manual smoke test:** Progression Policy substrate v0 acceptance PASS — Alpha 0.7 remains NOT CONFIGURED, schema v31 confirmed, read-only policy representation, no eligibility enforcement, and regression checks manually verified.
 
 ## Current completed slice — Competency / Proficiency substrate v0
 
@@ -129,9 +129,9 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 C1 — Evidence Maturity Profile v0 is complete and merged.
 
-C2 — Trade Plan Progression Policy substrate v0 is implemented for automated/manual validation on `feature/progression-policy-model-v0`.
+C2 — Trade Plan Progression Policy substrate v0 is **acceptance-complete and ready for PR/merge** on `feature/progression-policy-model-v0`.
 
-Implemented:
+Accepted behavior:
 
 - canonical shared `ProgressionBoundary` identity,
 - immutable `ProgressionRequirementDefinition`,
@@ -141,39 +141,45 @@ Implemented:
   - Competency State,
   - Evidence Purpose Present,
   - Human Certification,
-- accepted v0 operators required by those kinds:
+- accepted v0 operators:
   - IS,
   - IS_ONE_OF,
   - EXISTS,
-- validation for requirement kind/operator/value combinations,
-- empty policy rejection,
+- requirement kind/operator/value validation,
+- empty-policy rejection,
 - duplicate requirement/policy/boundary rejection,
-- Trade Plan validation of referenced competency IDs,
+- Trade Plan competency-reference validation,
 - one-policy-per-boundary enforcement,
-- policy serialization/deserialization and Trade Plan policy snapshot support,
-- Trade Plan boundary lookup,
-- read-only Rules / Safety rendering of configured policies,
-- explicit `NOT CONFIGURED` rendering when no policy exists,
-- Alpha 0.7 remains explicitly unconfigured,
-- no database schema change; schema remains **v31**,
-- no eligibility evaluator/enforcement,
-- no actual readiness criteria or new Trade Plan revision.
+- policy serialization/deserialization and Trade Plan snapshot support,
+- read-only Rules / Safety policy rendering,
+- Alpha 0.7 explicitly remains **NOT CONFIGURED**,
+- schema remains **v31**,
+- no eligibility evaluation or launcher enforcement,
+- no actual readiness thresholds or configured progression rules,
+- no new Trade Plan revision.
 
-The implementation deliberately keeps C2 substrate separate from the later first real policy publication.
+Validation:
 
-The cross-revision competency-continuity decision remains architectural guidance for later C3/C4 work: unchanged competency knowledge may persist while the current Trade Plan can still require fresh contextual Rehearsal/Validation.
+- final full automated suite: **310 passed**,
+- focused **Progression Policy substrate v0** smoke test: **fully PASS / ACCEPTED**,
+- schema v31 manually confirmed.
 
-Automated tests added for policy round-trip, all four requirement kinds, malformed operator/value combinations, unknown competency references, duplicate boundary rejection, empty-policy rejection, Alpha 0.7 NOT CONFIGURED semantics, and read-only rendering.
+After merge, C2 is complete.
 
-Next action:
+Next architectural slice:
 
-1. pull this feature branch,
-2. run the full automated suite,
-3. resolve any regressions,
-4. complete the **Progression Policy substrate v0** section in `docs/SMOKE_TEST.md`,
-5. only after acceptance merge C2 and begin C3 explainable eligibility design.
+**C3 — Explainable Eligibility evaluation**
 
-Do not publish real progression requirements, change Alpha 0.7, add numeric thresholds, or enforce launcher eligibility during C2 validation.
+C3 should begin as design/governance work. It must deterministically evaluate a configured Trade Plan progression policy into per-requirement explanations and a boundary eligibility result, while preserving:
+
+- NOT CONFIGURED when no policy exists,
+- Unknown / Cannot Evaluate as non-passing,
+- explicit distinction between insufficient evidence, regression, temporary restriction, and unconfigured policy,
+- no numeric readiness score,
+- no hidden weighting,
+- no automatic Competency State mutation.
+
+C3 design should also account for cross-revision competency continuity: unchanged competency knowledge can persist while the current Trade Plan may still require fresh contextual Rehearsal/Validation evidence.
 
 ## System guide maintenance
 
