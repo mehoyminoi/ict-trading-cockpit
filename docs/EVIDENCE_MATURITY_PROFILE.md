@@ -1,6 +1,6 @@
-# Evidence Maturity Profile — v0 Design Candidate
+# Evidence Maturity Profile — v0 Design
 
-**Status:** Design candidate for operator review  
+**Status:** Accepted for v0 implementation  
 **Milestone:** C — Evidence Maturity and progression governance
 
 ## Purpose
@@ -239,7 +239,7 @@ Rehearsal -> Validation
 Validation -> Execution
 ```
 
-For v0, the UI may show the profile without yet making a boundary decision.
+For v0, the profile is explicitly evaluated against a selected **progression boundary / decision context** even though the profile itself does not make the progression decision.
 
 ---
 
@@ -279,13 +279,20 @@ It does **not** mean:
 
 > The technician is ready to advance.
 
-### Alternative if these labels feel too evaluative
+### Removability guardrail
 
-A stricter v0 could omit the overall maturity state and present only the six-dimensional profile plus a human note.
+The four maturity states are accepted for v0, but they must remain a **removable human-governance layer**, not a load-bearing readiness mechanism.
 
-That would reduce automation risk but provide less governance structure for the next progression-policy slice.
+Architectural requirements:
 
-This is an explicit operator decision for this design.
+- the six-dimensional profile remains meaningful without the overall state,
+- `maturity_state` is human-authored and may be optional/unset,
+- descriptive facts do not depend on the state,
+- Cross-Run Observation and Development Direction do not depend on the state,
+- no progression policy should become irreversibly coupled to the state before operator use validates it,
+- if the labels later feel too evaluative, the UI can hide/remove them while retaining the underlying dimensions, notes, and evidence provenance.
+
+This makes trying the labels inexpensive rather than an architectural pivot.
 
 ---
 
@@ -414,7 +421,7 @@ Evidence Maturity may explain **insufficient evidence**, but must not absorb tem
 One current mutable Evidence Maturity Profile per:
 
 ```text
-Trade Plan + competency
+Trade Plan + competency + progression boundary
 ```
 
 Candidate fields:
@@ -426,20 +433,14 @@ Candidate fields:
 - maturity_note,
 - consistency_note,
 - known_gap_note,
-- decision_context / target boundary (optional in v0),
+- progression_boundary / decision_context (required in v0),
 - source = Review / Development,
 - created_at,
 - updated_at.
 
 Descriptive measurements should be derived from evidence when possible rather than duplicated into the persisted profile.
 
-If target-boundary semantics are accepted now, the key may eventually need to become:
-
-```text
-Trade Plan + competency + progression boundary
-```
-
-This is an important design decision before schema work.
+The progression boundary is part of the identity from v0. This prevents one global maturity judgment from being reused across materially different decisions such as Study -> Rehearsal and Validation -> Execution.
 
 ---
 
@@ -488,7 +489,7 @@ No traffic-light readiness dashboard is proposed.
 If accepted, implement first:
 
 - Evidence Maturity domain model,
-- one persisted current profile at the agreed key granularity,
+- one persisted current profile per Trade Plan + competency + progression boundary,
 - non-numeric maturity state if accepted,
 - human maturity note,
 - descriptive evidence facts already supported by current records,
@@ -540,3 +541,29 @@ This sequence keeps evidence confidence separate from rules and rules separate f
 4. Should maturity be stored globally per competency first, or should it be explicitly tied to a progression boundary such as Study -> Rehearsal / Rehearsal -> Validation / Validation -> Execution from the start?
 5. Does the separation **Evidence Maturity = can the evidence support a trustworthy decision** versus **Progression Policy = what decision rule applies** feel correct?
 6. Is the proposed Milestone C sequence C1 -> C2 -> C3 -> C4 -> C5 appropriate?
+
+
+## Operator acceptance
+
+Accepted on 2026-10-09.
+
+Confirmed:
+
+- **Evidence Maturity Profile** is the accepted name.
+- The six dimensions are accepted:
+  - Volume / Sample Depth,
+  - Environment Relevance,
+  - Recency,
+  - Consistency,
+  - Context Coverage,
+  - Revision Relevance.
+- v0 includes the four human maturity states:
+  - Not Assessed,
+  - Insufficient Evidence,
+  - Developing Evidence,
+  - Decision-Usable Evidence.
+- The maturity-state layer must remain removable if real use shows that it feels too evaluative.
+- Evidence Maturity is boundary-aware from the start.
+- v0 profile identity is **Trade Plan + competency + progression boundary**.
+- Evidence Maturity answers whether the evidence can support a trustworthy decision; Progression Policy defines what rule applies to that decision.
+- Milestone C sequencing C1 -> C2 -> C3 -> C4 -> C5 is accepted.
