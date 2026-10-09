@@ -68,18 +68,33 @@ If my local terminal may be ahead of GitHub, ask me for fresh `git status`, `git
 
 ## Step 4 — Preserve the recovered architectural trajectory
 
-Unless `PROJECT_STATE.md` records a later change, the recovered trajectory is:
+Unless `PROJECT_STATE.md` records a later change, Milestone B — Review / Development synthesis is complete.
 
-**targeted Study**
--> **competency evidence**
--> **Replay integration**
--> **Forward validation**
--> **progression / eligibility**
--> **Live Execution**
+The accepted human synthesis chain is:
 
-with Review / Development synthesis and Evidence Maturity becoming stronger after the evidence substrate is trustworthy.
+**Competency Evidence**
+-> **Competency Synthesis**
+-> **Cross-Run Observation**
+-> **Development Direction**
+-> **targeted Study routing**
 
-The project had deliberately shifted away from further Live-Watch embellishment toward the Study/Lab learning and progression loop.
+The active frontier is Milestone C — Evidence Maturity and progression governance:
+
+**C1 Evidence Maturity Profile**
+-> **C2 Progression Policy model**
+-> **C3 Explainable Eligibility evaluation**
+-> **C4 Regression / downgrade semantics**
+-> **C5 Operator-loop integration and guardrails**
+
+Evidence Maturity is boundary-aware from v0 and is keyed conceptually by:
+
+**Trade Plan + competency + progression boundary**
+
+Candidate boundaries are Study -> Rehearsal, Rehearsal -> Validation, and Validation -> Execution.
+
+Do not collapse Evidence Maturity, Competency State, Progression Policy, and Eligibility. Do not invent numeric readiness percentages, hidden weighted scores, automatic advancement/demotion, or Live locks before explicit policy exists.
+
+The project remains deliberately shifted away from further Live-Watch embellishment toward the learning/progression loop.
 
 Do **not** automatically move priority back toward:
 
