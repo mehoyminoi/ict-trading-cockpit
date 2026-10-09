@@ -13,8 +13,8 @@ This is the starting point for a new development chat or developer handoff. Git 
 - **Current slice:** Milestone B — Cross-Run Observation v0 implementation
 - **Schema:** v30
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** 294 passed on 2026-10-09 after the competency-synthesis wording regression fix
-- **Manual smoke test:** Competency Synthesis v0 acceptance PASS — compact synthesis surface, descriptive evidence coverage, revision/provenance guardrails, Development Direction refresh, existing evidence/Study routing regression checks, and full-suite status manually verified.
+- **Verified full test result:** 298 passed on 2026-10-09 after the Cross-Run Observation synthesis-focus regression fix
+- **Manual smoke test:** Cross-Run Observation v0 acceptance PASS — editor/persistence, multi-record supporting-evidence links, semantic separation from Development Direction, revision/provenance guardrails, existing synthesis/routing regressions, and full-suite status manually verified.
 
 ## Current completed slice — Competency / Proficiency substrate v0
 
@@ -127,46 +127,44 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-Cross-Run Observation v0 implementation is in progress on `feature/cross-run-observation-v0`.
+Cross-Run Observation v0 is **acceptance-complete and ready for PR/merge** on `feature/cross-run-observation-v0`.
 
-Accepted purpose:
+Accepted behavior:
 
-- **Cross-Run Observation** = what seems to be happening across reviewed runs,
-- **Development Direction** = what should I do next.
+- one current mutable Cross-Run Observation per Trade Plan + competency,
+- human-authored observation text answers **what seems to be happening across reviewed runs**,
+- optional multiple supporting-evidence links,
+- supporting links persist across navigation/restart,
+- linking/unlinking one evidence record preserves unrelated links,
+- current observation appears in Competency Synthesis,
+- saving/changing a Cross-Run Observation does not automatically change Development Direction,
+- saving/changing Development Direction does not rewrite the Cross-Run Observation,
+- no automatic recurring-pattern/weakness detection, trend score, competency-state transition, Evidence Maturity conclusion, progression decision, or eligibility change,
+- individual evidence detail retains original Trade Plan revision,
+- older evidence remains visible and is not silently remapped,
+- existing Competency Synthesis counts/date range, Development Direction linking, evidence detail, and **Study this competency** routing remain functional.
 
-Implemented for validation:
+Validation:
 
-- new `CompetencyCrossRunObservation` domain record,
-- schema v30 `competency_cross_run_observation` storage,
-- one current mutable observation per Trade Plan + competency,
-- optional observation text,
-- optional multiple supporting-evidence IDs,
-- Trade Plan revision provenance,
-- repository UPSERT preserving original `created_at`,
-- MainWindow/TradePlan/Review wiring,
-- compact Cross-Run Observation editor adjacent to existing synthesis controls,
-- selected-evidence link state and link count,
-- persistence across navigation/restart,
-- current observation included in Competency Synthesis,
-- saving an observation does not automatically mutate Development Direction, competency state, Evidence Maturity, progression, or eligibility,
-- accepted terminology propagated to requirements/system guide,
-- focused automated tests and smoke-test checklist added.
+- initial full-suite run after implementation: **297 passed / 1 failed**,
+- failure exposed a post-save synthesis-focus regression under the All Competencies filter,
+- fix restored accepted behavior: after saving competency-specific synthesis, the compact summary remains focused on the selected competency while normal All Competencies browsing remains aggregate,
+- final full automated suite: **298 passed**,
+- focused Cross-Run Observation v0 smoke test: **fully PASS / ACCEPTED**.
 
-Revision/provenance guardrails remain:
+Schema is **v30**. Trade Plan remains **Alpha 0.7** because Cross-Run Observation is mutable technician/review state, not plan-owned definition data.
 
-- evidence retains its own original Trade Plan revision,
-- older evidence remains visible,
-- no cross-definition remapping occurs automatically,
-- whole-plan revision differences alone do not create a warning,
-- competency-definition-level provenance/fingerprinting remains future work.
-
-Schema moves from v29 to **v30**. Trade Plan remains **Alpha 0.7** because Cross-Run Observation is mutable technician/review state, not plan-owned definition data.
-
-This is intended to be the final Milestone B synthesis slice. Successful automated/manual acceptance will complete:
+Milestone B exit condition is now satisfied:
 
 `Evidence -> Competency Synthesis -> Cross-Run Observation -> Development Direction -> targeted Study routing`
 
-Next action: pull the branch, run the full automated suite, then complete the **Cross-Run Observation v0** section in `docs/SMOKE_TEST.md`. If accepted, Milestone B can close and Milestone C — Evidence Maturity / progression governance — can begin.
+After merge, **Milestone B — Review / Development synthesis is complete**.
+
+Next architectural frontier:
+
+**Milestone C — Evidence Maturity and progression governance**
+
+The next work should begin by designing how evidence quality/confidence is represented and interpreted before defining progression/eligibility policy. No numeric maturity score, hidden readiness percentage, or automatic promotion/demotion should be invented without explicit accepted rules.
 
 ## System guide maintenance
 
