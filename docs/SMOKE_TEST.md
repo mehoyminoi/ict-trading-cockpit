@@ -335,6 +335,67 @@ Before merging `feature/cross-run-observation-v0`, use this section for the focu
 
 ---
 
+## Current branch acceptance — Evidence Maturity Profile v0
+
+Before merging `feature/evidence-maturity-profile-v0`, use this section for the focused C1 acceptance pass.
+
+### A. Boundary-aware profile
+
+- [PASS] Open **Trade Plan -> Review / Development**, select one specific competency, and confirm an **Evidence Maturity Profile** editor is visible.
+  - Expected: the editor clearly describes maturity as whether evidence can support a trustworthy decision, not whether the technician is proficient or eligible.
+  - Expected: Review / Development remains vertically scrollable and existing Cross-Run Observation, Development Direction, and Lab / Replay controls remain reachable.
+- [PASS] Confirm the progression-boundary selector offers exactly:
+  - Study -> Rehearsal,
+  - Rehearsal -> Validation,
+  - Validation -> Execution.
+- [PASS] Save different maturity states/notes for two different boundaries on the same competency.
+  - Expected: switching boundaries restores each boundary's own saved state and notes.
+  - Expected: one boundary does not overwrite another.
+
+### B. Human maturity state and removability guardrail
+
+- [PASS] Confirm the maturity-state choices are:
+  - Not Assessed,
+  - Insufficient Evidence,
+  - Developing Evidence,
+  - Decision-Usable Evidence.
+- [PASS] Save a distinctive maturity state and note.
+  - Expected: the current Evidence Maturity display and compact Competency Synthesis update immediately.
+  - Expected: the state is presented as human-authored governance, not a calculated readiness score.
+- [PASS] Confirm the six-dimensional profile remains visible and understandable even when the state is **Not Assessed**.
+  - Expected: descriptive evidence facts and human notes do not depend on choosing an evaluative state.
+  - This verifies that the overall maturity label remains removable/non-load-bearing.
+
+### C. Six-dimensional profile
+
+- [PASS] For a competency with reviewed evidence, confirm the profile shows all six accepted dimensions:
+  - Volume / Sample Depth,
+  - Environment Relevance,
+  - Recency,
+  - Consistency,
+  - Context Coverage,
+  - Revision Relevance.
+- [PASS] Confirm Volume / Sample Depth is descriptive (record/run counts) rather than a pass/fail threshold.
+- [PASS] Confirm Environment Relevance reports the actual Study/Rehearsal/Validation evidence distribution rather than automatically declaring relevance sufficient.
+- [PASS] Confirm Recency reports evidence dates without automatically declaring evidence stale.
+- [PASS] Enter a distinctive **Consistency** note and **Known gap / Context Coverage** note, save, navigate away/return, and restart.
+  - Expected: both human-reviewed notes persist for the selected competency + boundary.
+- [PASS] Confirm Revision Relevance shows evidence Trade Plan revision provenance and explicitly states that competency-definition equivalence is not yet machine-verifiable.
+  - Expected: no generic warning appears merely because whole Trade Plan revisions differ.
+
+### D. Governance separation / regressions
+
+- [PASS] Save/change Evidence Maturity and confirm **Competency State does not change automatically**.
+- [PASS] Save/change Evidence Maturity and confirm **Development Direction does not change automatically**.
+- [PASS] Confirm saving Evidence Maturity does not promote/demote progression, change eligibility, or create a Live lock.
+- [PASS] Confirm there is no numeric readiness percentage, weighted score, traffic-light readiness verdict, or machine-inferred maturity state.
+- [PASS] Confirm existing Competency Synthesis, Cross-Run Observation, Development Direction, evidence detail/provenance, and **Study this competency** routing still work.
+- [PASS] Restart the application and confirm the selected competency's saved profiles persist separately by progression boundary.
+- [PASS] Full automated suite is green immediately before merge.
+
+
+---
+
 ## Reporting results
 
 Report results as:

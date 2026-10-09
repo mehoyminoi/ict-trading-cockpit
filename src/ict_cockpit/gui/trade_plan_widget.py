@@ -20,6 +20,9 @@ from ict_cockpit.database.competency_cross_run_observation_repository import (
 from ict_cockpit.database.competency_evidence_repository import (
     CompetencyEvidenceRepository,
 )
+from ict_cockpit.database.competency_evidence_maturity_repository import (
+    CompetencyEvidenceMaturityRepository,
+)
 from ict_cockpit.gui.competency_evidence_review_widget import (
     CompetencyEvidenceReviewWidget,
 )
@@ -44,6 +47,8 @@ class TradePlanWidget(QWidget):
             CompetencyDevelopmentDirectionRepository | None = None,
         competency_cross_run_observation_repository:
             CompetencyCrossRunObservationRepository | None = None,
+        competency_evidence_maturity_repository:
+            CompetencyEvidenceMaturityRepository | None = None,
     ) -> None:
         super().__init__()
         self.trade_plan = trade_plan
@@ -53,6 +58,9 @@ class TradePlanWidget(QWidget):
         )
         self.competency_cross_run_observation_repository = (
             competency_cross_run_observation_repository
+        )
+        self.competency_evidence_maturity_repository = (
+            competency_evidence_maturity_repository
         )
         self.competency_evidence_review_widget = None
 
@@ -219,6 +227,7 @@ class TradePlanWidget(QWidget):
                 self.competency_evidence_repository,
                 self.competency_development_direction_repository,
                 self.competency_cross_run_observation_repository,
+                self.competency_evidence_maturity_repository,
             )
             self.competency_evidence_review_widget.study_competency_requested.connect(
                 self._prepare_targeted_study
