@@ -207,6 +207,7 @@ def build_default_trade_plan() -> TradePlanDefinition:
                 ),
             ),
         ),
+        progression_policies=(),
         authorization_gates=(
             AuthorizationGateDefinition(
                 id="trading-day-permitted",

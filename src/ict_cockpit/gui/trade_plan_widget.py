@@ -119,6 +119,8 @@ class TradePlanWidget(QWidget):
             self.section_list.addItem(QListWidgetItem(section.name))
             if section.id == "process":
                 page = self.process_tabs
+            elif section.id == "rules-safety":
+                page = self._build_rules_safety_page(section)
             elif section.id == "playbooks":
                 page = self._build_playbooks_page(section)
             elif section.id == "review-development":
@@ -191,6 +193,94 @@ class TradePlanWidget(QWidget):
             layout.addWidget(label)
         layout.addStretch()
         return page
+
+    def _build_rules_safety_page(
+        self,
+        section: TradePlanSectionDefinition,
+    ) -> QWidget:
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+
+        page = QWidget()
+        layout = QVBoxLayout(page)
+        layout.setContentsMargins(6, 6, 6, 6)
+        layout.setSpacing(6)
+
+        heading = QLabel(section.name)
+        heading.setStyleSheet("font-size: 16px; font-weight: 600;")
+        layout.addWidget(heading)
+
+        purpose = QLabel(section.purpose)
+        purpose.setWordWrap(True)
+        layout.addWidget(purpose)
+
+        progression_heading = QLabel("Progression Policy")
+        progression_heading.setStyleSheet("font-weight: 600;")
+        layout.addWidget(progression_heading)
+
+        progression_note = QLabel(
+            "Progression Policy is authoritative, versioned Trade Plan data. "
+            "It defines gating requirements for upward Study -> Rehearsal -> "
+            "Validation -> Execution boundaries. Eligibility evaluation is a "
+            "separate layer."
+        )
+        progression_note.setWordWrap(True)
+        progression_note.setFrameShape(QFrame.Shape.StyledPanel)
+        progression_note.setContentsMargins(8, 6, 8, 6)
+        layout.addWidget(progression_note)
+
+        if not self.trade_plan.progression_policies:
+            empty = QLabel(
+                f"Trade Plan {self.trade_plan.revision} · Progression Policy: "
+                "NOT CONFIGURED. No readiness rule is inferred."
+            )
+            empty.setWordWrap(True)
+            empty.setFrameShape(QFrame.Shape.StyledPanel)
+            empty.setContentsMargins(8, 6, 8, 6)
+            layout.addWidget(empty)
+        else:
+            for policy in self.trade_plan.progression_policies:
+                card = QFrame()
+                card.setFrameShape(QFrame.Shape.StyledPanel)
+                card_layout = QVBoxLayout(card)
+                card_layout.setContentsMargins(8, 6, 8, 6)
+                title = QLabel(
+                    f"{policy.name} · {policy.boundary.value}"
+                )
+                title.setStyleSheet("font-weight: 600;")
+                card_layout.addWidget(title)
+                if policy.description:
+                    description = QLabel(policy.description)
+                    description.setWordWrap(True)
+                    card_layout.addWidget(description)
+                for requirement in policy.requirements:
+                    scope = (
+                        requirement.competency_id
+                        if requirement.competency_id
+                        else "Boundary / global"
+                    )
+                    expected = ", ".join(requirement.expected_values)
+                    line = QLabel(
+                        f"• {requirement.name} · {scope} · "
+                        f"{requirement.requirement_kind.value} "
+                        f"{requirement.operator.value} {expected}"
+                    )
+                    line.setWordWrap(True)
+                    card_layout.addWidget(line)
+                layout.addWidget(card)
+
+        layout.addSpacing(8)
+        scope_heading = QLabel("Current scope")
+        scope_heading.setStyleSheet("font-weight: 600;")
+        layout.addWidget(scope_heading)
+        for topic in section.topics:
+            label = QLabel(f"• {topic}")
+            label.setWordWrap(True)
+            layout.addWidget(label)
+        layout.addStretch()
+        scroll.setWidget(page)
+        return scroll
 
     def _build_review_development_page(
         self, section: TradePlanSectionDefinition
