@@ -1,6 +1,6 @@
 # ICT Trading Cockpit — Current Project State
 
-**Last handoff update:** 2026-10-08
+**Last handoff update:** 2026-10-09
 
 This is the starting point for a new development chat or developer handoff. Git remains the source of truth for code; this file records the verified project checkpoint and the reasoning context needed to continue without reconstructing chat history.
 
@@ -129,55 +129,40 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 Milestone B — Review / Development synthesis is complete.
 
-The active frontier is now **Milestone C — Evidence Maturity and progression governance**.
+The active frontier is **Milestone C — Evidence Maturity and progression governance**.
 
-The first design candidate is recorded in `docs/EVIDENCE_MATURITY_PROFILE.md`.
+The C1 design in `docs/EVIDENCE_MATURITY_PROFILE.md` is operator-accepted and ready for implementation planning.
 
-Proposed concept:
+Accepted Evidence Maturity semantics:
 
-**Evidence Maturity Profile** — an inspectable, non-numeric governance layer that answers:
+- Evidence Maturity asks whether the evidence can support a trustworthy decision.
+- It does not describe technician proficiency, make the progression decision, or grant eligibility.
+- The profile is non-numeric and has six inspectable dimensions:
+  - Volume / Sample Depth,
+  - Environment Relevance,
+  - Recency,
+  - Consistency,
+  - Context Coverage,
+  - Revision Relevance.
+- v0 includes human maturity states:
+  - Not Assessed,
+  - Insufficient Evidence,
+  - Developing Evidence,
+  - Decision-Usable Evidence.
+- The overall maturity-state label is deliberately removable if real use shows it is too evaluative; the underlying dimensions/notes/evidence model must not depend on it.
+- Evidence Maturity is boundary-aware from v0.
+- Profile identity is **Trade Plan + competency + progression boundary**.
+- Candidate boundaries are Study -> Rehearsal, Rehearsal -> Validation, and Validation -> Execution.
+- Progression Policy remains a later, Trade Plan-owned rule layer.
+- Eligibility remains the explainable result of applying accepted policy.
 
-> How much confidence should we place in the available evidence for this competency and for the next progression decision?
+Accepted Milestone C sequence:
 
-The design keeps these layers distinct:
-
-```text
-Evidence Maturity
-= can this evidence set support a trustworthy decision?
-
-Competency State
-= where the skill currently sits in the training ladder
-
-Progression Policy
-= what evidence/conditions the Trade Plan requires
-
-Eligibility
-= whether those requirements are currently satisfied
-```
-
-Candidate maturity dimensions:
-
-- Volume / Sample Depth,
-- Environment Relevance,
-- Recency,
-- Consistency,
-- Context Coverage,
-- Revision Relevance.
-
-The design explicitly rejects a composite readiness percentage or hidden weighted score.
-
-A candidate non-numeric overall maturity state is proposed for operator review:
-
-- Not Assessed,
-- Insufficient Evidence,
-- Developing Evidence,
-- Decision-Usable Evidence.
-
-An important unresolved design question is whether maturity should initially be keyed only by Trade Plan + competency or explicitly by Trade Plan + competency + progression boundary.
+`C1 Evidence Maturity Profile -> C2 Progression Policy model -> C3 Explainable Eligibility evaluation -> C4 Regression/downgrade semantics -> C5 Operator-loop integration and guardrails`
 
 No runtime/schema/Trade Plan changes are on this design branch.
 
-Next action: operator reviews `docs/EVIDENCE_MATURITY_PROFILE.md` and its six confirmation questions before any schema or progression-policy implementation begins.
+Next action: merge this design checkpoint, then implement C1 as a small vertical slice. Before implementation, preserve the removability of the overall maturity-state label and do not invent progression thresholds.
 
 ## System guide maintenance
 
