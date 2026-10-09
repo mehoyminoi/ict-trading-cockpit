@@ -839,7 +839,7 @@ A direction does not automatically mutate Competency State, Evidence Maturity, o
 
 # 18A. Current competency evidence review surface
 
-The current Review / Development surface is intentionally read-only.
+The current Review / Development evidence history remains inspectable, while explicit human synthesis layers such as Cross-Run Observation and Development Direction are editable Review / Development state.
 
 It answers:
 
@@ -854,6 +854,51 @@ It answers:
 It can filter by competency and show simple descriptive counts.
 
 Those counts are **not scores**.
+
+---
+
+# 18B. Cross-Run Observation
+
+Cross-Run Observation is the human interpretation layer over multiple reviewed evidence records for one competency.
+
+It answers:
+
+> What seems to be happening across these reviewed runs?
+
+It is intentionally separate from Development Direction:
+
+```text
+Competency Evidence
+= individual reviewed observations
+
+Competency Synthesis
+= descriptive coverage across evidence
+
+Cross-Run Observation
+= human interpretation of what seems to be happening
+
+Development Direction
+= what the technician chooses to do next
+
+Evidence Maturity
+= future confidence/governance
+
+Eligibility
+= future Trade Plan-governed permission
+```
+
+Examples of Cross-Run Observations:
+
+- "Session context is reliable in NYAM but inconsistent in London."
+- "Intermediate-liquidity classification breaks down after large expansion."
+- "The issue appears only in older evidence; recent Replay runs do not reproduce it."
+- "No stable recurring behavior is clear yet; evidence is mixed."
+
+Cross-Run Observation is not automatic pattern detection. The Cockpit may display descriptive counts and history, but the technician authors the interpretation.
+
+The term **Cross-Run Observation** is deliberate. Avoid **Pattern Observation**, which can be confused with market-pattern hunting rather than synthesis of reviewed study data.
+
+For v0, one current mutable observation per competency is sufficient. Supporting evidence is optional. Saving an observation does not alter Development Direction, Competency State, Evidence Maturity, progression, or Eligibility.
 
 ---
 
