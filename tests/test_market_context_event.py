@@ -169,5 +169,5 @@ def test_e2_domain_model_does_not_change_schema(tmp_path) -> None:
 
     version = connection.execute("PRAGMA user_version").fetchone()[0]
 
-    assert version == CURRENT_SCHEMA_VERSION == 34
+    assert version == CURRENT_SCHEMA_VERSION == 35
     connection.close()

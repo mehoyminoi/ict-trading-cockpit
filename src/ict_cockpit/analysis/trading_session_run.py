@@ -3,6 +3,7 @@ from datetime import datetime
 from enum import Enum
 from uuid import uuid4
 
+from ict_cockpit.analysis.market_context_event import MarketContextSnapshot
 from ict_cockpit.analysis.market_time import temporal_relevance_for
 from ict_cockpit.analysis.quarter_theory import (
     apply_time_derived_qt_context,
@@ -333,6 +334,7 @@ class TradingSessionRun:
     authorization_policy_snapshot: list[dict] = field(default_factory=list)
     authorization_gate_states: dict[str, AuthorizationGateState] = field(default_factory=dict)
     market_time_context: dict = field(default_factory=dict)
+    market_context_snapshot: dict = field(default_factory=dict)
     qt_context: dict[str, str] = field(default_factory=dict)
     study_context: StudyRunContext | None = None
 
@@ -368,6 +370,9 @@ class TradingSessionRun:
         self.playbook_snapshot = dict(self.playbook_snapshot or {})
         self.authorization_policy_snapshot = [dict(item) for item in (self.authorization_policy_snapshot or [])]
         self.market_time_context = dict(self.market_time_context or {})
+        self.market_context_snapshot = MarketContextSnapshot.from_dict(
+            self.market_context_snapshot
+        ).to_dict()
         self.qt_context = normalize_qt_context(self.qt_context)
         self.review_observed_qt_context = apply_time_derived_qt_context(
             self.review_observed_qt_context,
@@ -478,6 +483,17 @@ class TradingSessionRun:
             self.setup_candidates.append(candidate)
             self._touch()
         return candidate
+
+    def set_market_context_snapshot(
+        self,
+        snapshot: MarketContextSnapshot | dict | None,
+    ) -> None:
+        self.market_context_snapshot = (
+            snapshot.to_dict()
+            if isinstance(snapshot, MarketContextSnapshot)
+            else MarketContextSnapshot.from_dict(snapshot).to_dict()
+        )
+        self._touch()
 
     def set_qt_context(self, context: dict | None) -> None:
         # Keep time-derived QT roles factual at the domain boundary. The UI
