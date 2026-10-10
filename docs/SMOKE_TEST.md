@@ -824,27 +824,27 @@ The fixture has no database, real calendar, or orders. It freezes historical mar
 
 ### A. Clock rule and entry effect
 
-- [NOT TESTED] In **Live / Watch**, cycle **Clock before cutoff / Clock exactly cutoff / Clock after cutoff**.
+- [PASS] In **Live / Watch**, cycle **Clock before cutoff / Clock exactly cutoff / Clock after cutoff**.
   - Expected: before/exactly 11:00 have no context effect; after 11:00 shows Matched / Block New Entry, and the Fixture setup is BLOCKED despite cleared manual gates and its satisfied criterion. Scroll or inspect the compact situation brief for the candidate status.
-- [NOT TESTED] Select **Clock warning**.
+- [PASS] Select **Clock warning**.
   - Expected: Matched / Warning; the otherwise-clear fixture setup is AUTHORIZED. Set Trading day permitted to Pending or Blocked and confirm it becomes BLOCKED; a warning never clears another gate.
 
 ### B. Event availability and coverage
 
-- [NOT TESTED] Cycle **Event matched / Event empty / Event unavailable / Unknown blocks**.
+- [PASS] Cycle **Event matched / Event empty / Event unavailable / Unknown blocks**.
   - Expected: respectively Matched / Block New Entry; Not Matched / no effect; Unknown / Warning; Unknown / Block New Entry. No unavailable context is presented as a clear calendar.
-- [NOT TESTED] Select **Week coverage unknown**, then expand context details.
+- [PASS] Select **Week coverage unknown**, then expand context details.
   - Expected: Unknown / Warning with incomplete calendar-week coverage reason; the day snapshot cannot prove a clear week.
 
 ### C. Applicability, detail, and existing behavior
 
-- [NOT TESTED] Select **Clock after cutoff**, switch from Live to Replay, Historical Backtest, and Forward Test.
+- [PASS] Select **Clock after cutoff**, switch from Live to Replay, Historical Backtest, and Forward Test.
   - Expected: Not Applicable / No effect in details, and the otherwise-clear fixture setup is AUTHORIZED. The fixture rule explicitly lists Live; real account applicability remains unconfigured.
-- [NOT TESTED] Inspect **TDA / Watch / Review** and **Show context details** for a matching or unknown rule.
+- [PASS] Inspect **TDA / Watch / Review** and **Show context details** for a matching or unknown rule.
   - Expected: stable compact navigation and bounded read-only detail; plan revision E5 fixture (unpublished), rule ID/rationale/environments, matched/unknown effects, market-time reasons and event IDs. Review does not use today's wall clock or silently refresh the snapshot.
-- [NOT TESTED] Select **Legacy rules**, then start/restore a normal Alpha 0.7 run.
+- [PASS] Select **Legacy rules**, then start/restore a normal Alpha 0.7 run.
   - Expected: no declarative rule effects; existing manual gates/criteria remain in force. Legacy runs have empty rules. Existing persisted context and Review workflows remain usable after v36 migration.
-- [NOT TESTED] Full automated suite is green locally; schema **v36**, published Trade Plan **Alpha 0.7**. Record this focused pass before merge.
+- [PASS] Full automated suite is green locally; schema **v36**, published Trade Plan **Alpha 0.7**. Record this focused pass before merge.
 
 ---
 
