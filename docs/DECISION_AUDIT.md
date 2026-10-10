@@ -151,7 +151,7 @@ This document is a reconciliation ledger, not a feature backlog. For current req
 
 Milestone B — Review / Development synthesis is complete.
 
-The current frontier is Milestone C:
+Milestone C is complete. The current major roadmap frontier is Milestone E — Context maturity: QT/AMDX, news, and distortions. Milestone D remains parallel and friction-driven.
 
 1. build a boundary-aware Evidence Maturity Profile without numeric readiness scoring,
 2. define Trade Plan-owned progression policy separately,
@@ -176,3 +176,19 @@ If an old source conflicts with this audit:
 3. prefer the later accepted architecture,
 4. treat the historical source as context, not current instruction,
 5. record any newly discovered conflict here before changing code or roadmap.
+
+
+## 2026-10-10 — Milestone C completion audit
+
+| Decision area | Current interpretation | Status |
+|---|---|---|
+| Evidence Maturity | Boundary-aware, non-numeric evidence decision-usability governance. | CURRENT / IMPLEMENTED |
+| Progression Policy | Trade Plan-owned, revisioned, explicit requirements; no implicit thresholds. | CURRENT / IMPLEMENTED substrate |
+| Explainable Eligibility | AVAILABLE / NOT CONFIGURED / BLOCKED derived on demand with requirement-level reasons. | CURRENT / IMPLEMENTED |
+| Regression / downgrade | Current eligibility, historical attainment, revalidation, and human-confirmed regression remain distinct. | CURRENT / IMPLEMENTED |
+| Operator-loop progression guardrails | Upward new-run transitions are gated; active runs are not continuously policed; lower-rung staging remains frictionless. | CURRENT / IMPLEMENTED |
+| Alpha 0.7 real progression policy | Still intentionally absent. | DEFERRED |
+| Temporary operating/safety restriction engine | Separate from progression governance. | DEFERRED |
+| Numeric readiness score / automatic promotion-demotion | Not justified by current architecture. | DEFERRED |
+
+Milestone C is complete without publishing real progression thresholds in Alpha 0.7.
