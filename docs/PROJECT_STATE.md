@@ -14,7 +14,7 @@ This is the starting point for a new development chat or developer handoff. Git 
 - **Schema:** v34
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** **348 passed** on 2026-10-10 for Milestone E1 expected-vs-observed QT/AMDX
-- **Manual smoke test:** C5 operator-loop integration and guardrails v0 acceptance **fully PASS** — schema v33 confirmed and all guided checks passed.
+- **Manual smoke test:** Milestone E1 expected-vs-observed QT/AMDX acceptance **fully PASS** — schema v34 confirmed and all guided checks passed.
 
 ## Current completed slice — Competency / Proficiency substrate v0
 
@@ -131,7 +131,7 @@ Milestone C — Evidence Maturity and progression governance is complete and mer
 
 Milestone E v0 architecture is accepted and merged.
 
-**E1 — Expected vs observed QT/AMDX review loop** is implemented for validation on `feature/context-maturity-e1-v0`.
+**E1 — Expected vs observed QT/AMDX review loop** is **acceptance-complete and ready for merge** on `feature/context-maturity-e1-v0`.
 
 Implemented E1 behavior:
 
@@ -165,15 +165,16 @@ Focused automated coverage includes:
 - no automatic run evidence creation,
 - preservation of time-derived month role.
 
-Next action:
+Validation:
 
-1. pull `feature/context-maturity-e1-v0`,
-2. run the full automated suite,
-3. fix any regressions,
-4. complete the guided E1 smoke section,
-5. merge only after acceptance.
+- full automated suite: **348 passed**,
+- guided E1 smoke test: **fully PASS**,
+- schema **v34** confirmed,
+- expected TDA interpretation remained historically intact,
+- observed Review state persisted across restart,
+- no automatic competency evidence was created.
 
-Do not begin E2 external-context/event work until E1 is accepted.
+Next action: merge E1, then begin **E2 — Provider-neutral market-context event model**.
 
 ## System guide maintenance
 
@@ -217,5 +218,5 @@ Preferred future direction: derive factual state automatically, focus the active
 Current E1 validation status:
 
 - full automated suite: **348 passed**,
-- guided smoke test: completed and saved locally by the operator,
-- smoke acceptance record still needs to be committed/pushed before merge.
+- guided smoke test: **fully PASS and committed/pushed**,
+- future intraday QT depth remains a documented Milestone E requirement, not a blocker to E1 acceptance.
