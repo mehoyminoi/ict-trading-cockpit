@@ -427,11 +427,9 @@ class TradePlanWidget(QWidget):
         ):
             return
         replacement = self._build_progression_governance_panel()
-        self.review_development_layout.replaceWidget(
-            self.progression_governance_widget,
-            replacement,
+        self.competency_evidence_review_widget.set_progression_standing_widget(
+            replacement
         )
-        self.progression_governance_widget.deleteLater()
         self.progression_governance_widget = replacement
 
     def _build_progression_governance_panel(self) -> QWidget:
@@ -609,6 +607,7 @@ class TradePlanWidget(QWidget):
     def _build_review_development_page(
         self, section: TradePlanSectionDefinition
     ) -> QWidget:
+        self.setProperty("uiAnchor", "review.development")
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QFrame.Shape.NoFrame)
@@ -636,12 +635,6 @@ class TradePlanWidget(QWidget):
         competency_summary.setContentsMargins(8, 6, 8, 6)
         layout.addWidget(competency_summary)
 
-        if self.trade_plan.progression_policies:
-            self.progression_governance_widget = (
-                self._build_progression_governance_panel()
-            )
-            layout.addWidget(self.progression_governance_widget)
-
         if self.competency_evidence_repository is not None:
             self.competency_evidence_review_widget = CompetencyEvidenceReviewWidget(
                 self.trade_plan,
@@ -653,12 +646,17 @@ class TradePlanWidget(QWidget):
             self.competency_evidence_review_widget.study_competency_requested.connect(
                 self._prepare_targeted_study
             )
+            self.competency_evidence_review_widget.set_practice_launcher_widget(
+                self.process_run_launcher_widget
+            )
+            if self.trade_plan.progression_policies:
+                self.progression_governance_widget = (
+                    self._build_progression_governance_panel()
+                )
+                self.competency_evidence_review_widget.set_progression_standing_widget(
+                    self.progression_governance_widget
+                )
             layout.addWidget(self.competency_evidence_review_widget)
-
-        launcher_heading = QLabel("Lab / Replay")
-        launcher_heading.setStyleSheet("font-weight: 600;")
-        layout.addWidget(launcher_heading)
-        layout.addWidget(self.process_run_launcher_widget)
 
         scope_heading = QLabel("Current scope")
         scope_heading.setStyleSheet("font-weight: 600;")
