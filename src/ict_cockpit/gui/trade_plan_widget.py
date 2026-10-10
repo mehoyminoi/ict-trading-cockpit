@@ -170,6 +170,7 @@ class TradePlanWidget(QWidget):
                 self.progression_attainment_repository
             ),
             on_launched=self.focus_runtime,
+            on_review_progression=self.focus_progression_review,
         )
 
         self._section_ids: list[str] = []
@@ -227,6 +228,19 @@ class TradePlanWidget(QWidget):
             return
         self.section_list.setCurrentRow(process_row)
         self.process_tabs.setCurrentWidget(self.trading_day_shell_widget)
+
+    def focus_progression_review(self) -> None:
+        """Navigate to the focused Review / Development progression surface."""
+
+        try:
+            review_row = self._section_ids.index("review-development")
+        except ValueError:
+            return
+        self.section_list.setCurrentRow(review_row)
+        if self.competency_evidence_review_widget is not None:
+            self.competency_evidence_review_widget.select_work_area(
+                "Progression"
+            )
 
     def _prepare_targeted_study(self, competency_id: str) -> None:
         if self.process_run_launcher_widget.prepare_targeted_study(competency_id):
