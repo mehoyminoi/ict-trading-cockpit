@@ -58,6 +58,10 @@ class TradingSessionRunRepository:
             session_run.market_time_context,
             sort_keys=True,
         )
+        market_context_snapshot_json = json.dumps(
+            session_run.market_context_snapshot,
+            sort_keys=True,
+        )
         qt_context_json = json.dumps(
             session_run.qt_context,
             sort_keys=True,
@@ -87,10 +91,10 @@ class TradingSessionRunRepository:
                     selected_playbook_id, selected_playbook_revision,
                     playbook_snapshot_json, setup_candidates_json,
                     authorization_policy_snapshot_json, authorization_gate_states_json,
-                    market_time_context_json, qt_context_json,
-                    review_observed_qt_context_json, review_qt_context_note,
-                    study_context_json, run_purpose
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    market_time_context_json, market_context_snapshot_json,
+                    qt_context_json, review_observed_qt_context_json,
+                    review_qt_context_note, study_context_json, run_purpose
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                     trading_day_id = excluded.trading_day_id,
                     session_name = excluded.session_name,
@@ -118,6 +122,7 @@ class TradingSessionRunRepository:
                     authorization_policy_snapshot_json = excluded.authorization_policy_snapshot_json,
                     authorization_gate_states_json = excluded.authorization_gate_states_json,
                     market_time_context_json = excluded.market_time_context_json,
+                    market_context_snapshot_json = excluded.market_context_snapshot_json,
                     qt_context_json = excluded.qt_context_json,
                     review_observed_qt_context_json = excluded.review_observed_qt_context_json,
                     review_qt_context_note = excluded.review_qt_context_note,
@@ -152,6 +157,7 @@ class TradingSessionRunRepository:
                     authorization_policy_snapshot_json,
                     authorization_gate_states_json,
                     market_time_context_json,
+                    market_context_snapshot_json,
                     qt_context_json,
                     review_observed_qt_context_json,
                     session_run.review_qt_context_note,
@@ -183,9 +189,9 @@ class TradingSessionRunRepository:
                    selected_playbook_id, selected_playbook_revision,
                    playbook_snapshot_json, setup_candidates_json,
                    authorization_policy_snapshot_json, authorization_gate_states_json,
-                   market_time_context_json, qt_context_json,
-                   review_observed_qt_context_json, review_qt_context_note,
-                   study_context_json, run_purpose
+                   market_time_context_json, market_context_snapshot_json,
+                   qt_context_json, review_observed_qt_context_json,
+                   review_qt_context_note, study_context_json, run_purpose
             FROM trading_session_run
             {where_clause}
         """
@@ -241,15 +247,16 @@ class TradingSessionRunRepository:
                 for gate_id, state in json.loads(row[25] or "{}").items()
             },
             market_time_context=json.loads(row[26] or "{}"),
-            qt_context=json.loads(row[27] or "{}"),
-            review_observed_qt_context=json.loads(row[28] or "{}"),
-            review_qt_context_note=row[29],
+            market_context_snapshot=json.loads(row[27] or "{}"),
+            qt_context=json.loads(row[28] or "{}"),
+            review_observed_qt_context=json.loads(row[29] or "{}"),
+            review_qt_context_note=row[30],
             study_context=StudyRunContext.from_dict(
-                json.loads(row[30] or "{}")
+                json.loads(row[31] or "{}")
             ),
             purpose=(
-                RunPurpose(row[31])
-                if row[31]
+                RunPurpose(row[32])
+                if row[32]
                 else None
             ),
         )
