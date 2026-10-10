@@ -262,7 +262,6 @@ class TradePlanWidget(QWidget):
 
         page = QWidget()
         layout = QVBoxLayout(page)
-        self.review_development_layout = layout
         layout.setContentsMargins(6, 6, 6, 6)
         layout.setSpacing(6)
 
@@ -616,6 +615,7 @@ class TradePlanWidget(QWidget):
 
         page = QWidget()
         layout = QVBoxLayout(page)
+        self.review_development_layout = layout
         layout.setContentsMargins(6, 6, 6, 6)
         layout.setSpacing(6)
 
