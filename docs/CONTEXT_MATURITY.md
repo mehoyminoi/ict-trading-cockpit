@@ -1,6 +1,6 @@
-# Milestone E — Context maturity v0 design candidate
+# Milestone E — Context maturity v0 design
 
-**Status:** Design candidate for operator review  
+**Status:** Accepted for v0 implementation  
 **Milestone:** E — Context maturity: QT/AMDX, news, and distortions  
 **Primary principle:** Mature the existing context substrate; do not replace it.
 
@@ -644,3 +644,29 @@ A successful Milestone E should make this statement true:
 18. Use the Friday Asian Range "no Monday high-impact/red-folder news" condition as a validation case for generic model-specific context predicates, not as hardcoded event-service logic?
 19. Permit schema migrations in Milestone E when required for honest historical snapshots instead of artificially preserving v33?
 20. Keep the active UI compact: context summary in TDA, only relevant/upcoming items in Watch, full comparison/provenance in Review?
+
+
+## Accepted operator decisions
+
+All twenty Milestone E design points were accepted on 2026-10-10.
+
+1. Start with expected-vs-observed QT/AMDX before external news ingestion.
+2. Treat existing TDA `qt_context` as expected/working interpretation and add separate observed Review state.
+3. Keep expected-vs-observed comparison descriptive only, with no score or automatic competency evidence.
+4. Use Matched / Changed / Expected Unknown / Observed Unknown / Not Comparable comparison states.
+5. Introduce a provider-neutral Market Context Event model before choosing a real economic-calendar API.
+6. Keep economic events, holidays/early closes, and QT structural distortion distinct.
+7. Normalize impact to Low / Medium / High / Unknown while preserving provider-native value/provenance.
+8. Treat red-folder as High impact only when explicitly supported by the source.
+9. Replay/Historical context uses the selected historical market date rather than current-day events.
+10. Preserve run-specific event/schedule context so later provider revisions do not silently rewrite history.
+11. Only explicit Trade Plan context rules may convert event/schedule facts into warnings or entry restrictions.
+12. Use Informational / Warning / Block New Entry / Stand Down Day as v0 rule effects.
+13. Allow environment-sensitive context-rule applicability.
+14. Keep unknown/unavailable event context distinct from no event; fail-open/fail-closed behavior belongs to the Trade Plan rule.
+15. Keep technician AMDX interpretation separate from raw QT facts and external event facts.
+16. Keep the provider adapter generic across API, imported calendar, manual fallback, and deterministic fixtures.
+17. Defer real provider selection until event model, snapshots, UI, and Trade Plan rule semantics stabilize.
+18. Use Friday Asian Range no-Monday-high-impact-news as a validation case for generic model-specific context predicates.
+19. Permit schema migrations when required for honest historical snapshots.
+20. Keep active UI compact: summary in TDA, relevant/upcoming in Watch, full comparison/provenance in Review.
