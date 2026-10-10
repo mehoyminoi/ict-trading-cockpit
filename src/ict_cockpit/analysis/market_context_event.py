@@ -281,3 +281,202 @@ class InMemoryMarketContextEventProvider:
                 ),
             )
         )
+
+
+
+class MarketContextSnapshotStatus(str, Enum):
+    AVAILABLE = "Available"
+    NOT_CONFIGURED = "Not Configured"
+    UNAVAILABLE = "Unavailable"
+
+
+@dataclass(frozen=True)
+class MarketContextSnapshot:
+    """Immutable run-level snapshot of external market-context facts."""
+
+    status: MarketContextSnapshotStatus
+    provider: str
+    query_start: str
+    query_end: str
+    reference_market_time: str
+    market_time_source: str
+    captured_at: str
+    events: tuple[MarketContextEvent, ...] = field(default_factory=tuple)
+    detail: str = ""
+
+    def __post_init__(self) -> None:
+        if isinstance(self.status, str):
+            object.__setattr__(
+                self,
+                "status",
+                MarketContextSnapshotStatus(self.status),
+            )
+        object.__setattr__(self, "provider", self.provider.strip())
+        object.__setattr__(self, "query_start", self.query_start.strip())
+        object.__setattr__(self, "query_end", self.query_end.strip())
+        object.__setattr__(
+            self,
+            "reference_market_time",
+            self.reference_market_time.strip(),
+        )
+        object.__setattr__(
+            self,
+            "market_time_source",
+            self.market_time_source.strip(),
+        )
+        object.__setattr__(self, "captured_at", self.captured_at.strip())
+        object.__setattr__(self, "detail", self.detail.strip())
+        object.__setattr__(
+            self,
+            "events",
+            tuple(
+                item
+                if isinstance(item, MarketContextEvent)
+                else MarketContextEvent.from_dict(item)
+                for item in self.events
+            ),
+        )
+
+    def to_dict(self) -> dict:
+        return {
+            "status": self.status.value,
+            "provider": self.provider,
+            "query_start": self.query_start,
+            "query_end": self.query_end,
+            "reference_market_time": self.reference_market_time,
+            "market_time_source": self.market_time_source,
+            "captured_at": self.captured_at,
+            "events": [item.to_dict() for item in self.events],
+            "detail": self.detail,
+        }
+
+    @classmethod
+    def from_dict(cls, payload: Mapping | None) -> "MarketContextSnapshot":
+        source = dict(payload or {})
+        return cls(
+            status=MarketContextSnapshotStatus(
+                source.get(
+                    "status",
+                    MarketContextSnapshotStatus.NOT_CONFIGURED.value,
+                )
+            ),
+            provider=str(source.get("provider", "")),
+            query_start=str(source.get("query_start", "")),
+            query_end=str(source.get("query_end", "")),
+            reference_market_time=str(
+                source.get("reference_market_time", "")
+            ),
+            market_time_source=str(source.get("market_time_source", "")),
+            captured_at=str(source.get("captured_at", "")),
+            events=tuple(
+                MarketContextEvent.from_dict(item)
+                for item in list(source.get("events", []) or [])
+            ),
+            detail=str(source.get("detail", "")),
+        )
+
+
+def futures_day_event_window(
+    futures_trading_day: str,
+    *,
+    timezone,
+) -> tuple[datetime, datetime]:
+    """Return the Cockpit's 18:00-to-18:00 futures-day event window."""
+
+    from datetime import date, time, timedelta
+
+    trading_date = date.fromisoformat(futures_trading_day)
+    start = datetime.combine(
+        trading_date - timedelta(days=1),
+        time(18, 0),
+        tzinfo=timezone,
+    )
+    end = datetime.combine(
+        trading_date,
+        time(18, 0),
+        tzinfo=timezone,
+    ) - timedelta(microseconds=1)
+    return start, end
+
+
+def capture_market_context_snapshot(
+    *,
+    provider: MarketContextEventProvider | None,
+    market_time_context: Mapping,
+    market_timezone,
+    captured_at: str,
+) -> MarketContextSnapshot:
+    """Capture external context once for a Trading Run.
+
+    The resulting snapshot is historical run provenance. Restoring a run should
+    read this stored snapshot rather than re-querying a provider.
+    """
+
+    futures_day = str(
+        market_time_context.get("futures_trading_day", "")
+    ).strip()
+    reference_time = str(
+        market_time_context.get("captured_at", "")
+    ).strip()
+    source = str(market_time_context.get("source", "")).strip()
+
+    if not futures_day:
+        return MarketContextSnapshot(
+            status=MarketContextSnapshotStatus.UNAVAILABLE,
+            provider=(
+                provider.provider_name if provider is not None else ""
+            ),
+            query_start="",
+            query_end="",
+            reference_market_time=reference_time,
+            market_time_source=source,
+            captured_at=captured_at,
+            detail="Futures trading day is unavailable.",
+        )
+
+    query_start, query_end = futures_day_event_window(
+        futures_day,
+        timezone=market_timezone,
+    )
+
+    if provider is None:
+        return MarketContextSnapshot(
+            status=MarketContextSnapshotStatus.NOT_CONFIGURED,
+            provider="",
+            query_start=query_start.isoformat(),
+            query_end=query_end.isoformat(),
+            reference_market_time=reference_time,
+            market_time_source=source,
+            captured_at=captured_at,
+            detail="No market-context event provider is configured.",
+        )
+
+    try:
+        events = provider.events_between(query_start, query_end)
+    except Exception as exc:
+        return MarketContextSnapshot(
+            status=MarketContextSnapshotStatus.UNAVAILABLE,
+            provider=provider.provider_name,
+            query_start=query_start.isoformat(),
+            query_end=query_end.isoformat(),
+            reference_market_time=reference_time,
+            market_time_source=source,
+            captured_at=captured_at,
+            detail=f"Provider query unavailable: {exc}",
+        )
+
+    return MarketContextSnapshot(
+        status=MarketContextSnapshotStatus.AVAILABLE,
+        provider=provider.provider_name,
+        query_start=query_start.isoformat(),
+        query_end=query_end.isoformat(),
+        reference_market_time=reference_time,
+        market_time_source=source,
+        captured_at=captured_at,
+        events=events,
+        detail=(
+            "Provider query completed with no matching events."
+            if not events
+            else f"{len(events)} event(s) captured."
+        ),
+    )
