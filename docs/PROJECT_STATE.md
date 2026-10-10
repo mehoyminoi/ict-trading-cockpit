@@ -179,6 +179,7 @@ Validation:
 
 - full automated suite: **364 passed**,
 - operator independently reported a green local full suite,
+- headless verification exposed a test-session Qt cleanup stall after all assertions passed; teardown now stops test-owned timers and disposes windows before draining queued events,
 - no new manual UI smoke pass required; E3 adds no operator-facing event surface,
 - schema **v35**, Trade Plan **Alpha 0.7**.
 

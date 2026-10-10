@@ -2,6 +2,7 @@ import gc
 import os
 
 import pytest
+from PySide6.QtCore import QCoreApplication, QEvent, QTimer
 from PySide6.QtWidgets import QApplication
 
 
@@ -30,7 +31,15 @@ def qt_application() -> QApplication:
     # Tear Qt down while Python classes/slots are still alive. Leaving the
     # QApplication until interpreter shutdown can produce misleading slot
     # lookup diagnostics after pytest has already reported success.
-    app.closeAllWindows()
+    # Dispose test-owned windows before draining events. Otherwise timers on
+    # hundreds of still-live widgets can run against already-closed test DBs
+    # or continuously replenish the event queue during session teardown.
+    for widget in app.topLevelWidgets():
+        for timer in widget.findChildren(QTimer):
+            timer.stop()
+        widget.close()
+        widget.deleteLater()
+    QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
     app.processEvents()
     app.quit()
     app.processEvents()
