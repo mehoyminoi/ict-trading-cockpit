@@ -15,7 +15,9 @@ from PySide6.QtWidgets import (
 )
 
 from ict_cockpit.analysis.environment_progression import (
+    EnvironmentEligibilityStatus,
     evaluate_environment_eligibility,
+    progression_eligibility_to_dict,
 )
 from ict_cockpit.analysis.market_time import MARKET_TIMEZONE, current_new_york_time
 from ict_cockpit.analysis.trading_session_run import (
@@ -23,6 +25,7 @@ from ict_cockpit.analysis.trading_session_run import (
     default_purpose_for_environment,
 )
 from ict_cockpit.gui.trading_day_shell_widget import TradingDayShellWidget
+from ict_cockpit.progression import ProgressionAttainment
 from ict_cockpit.trade_plan import CompetencyDefinition, TradePlanDefinition
 
 
@@ -45,6 +48,7 @@ class ProcessRunLauncherWidget(QWidget):
         competency_evidence_repository=None,
         competency_evidence_maturity_repository=None,
         progression_certification_repository=None,
+        progression_attainment_repository=None,
         on_launched=None,
     ) -> None:
         super().__init__()
@@ -60,6 +64,7 @@ class ProcessRunLauncherWidget(QWidget):
         self.progression_certification_repository = (
             progression_certification_repository
         )
+        self.progression_attainment_repository = progression_attainment_repository
         self.competency_checkboxes: dict[str, QCheckBox] = {}
         self.on_launched = on_launched
 
@@ -412,6 +417,34 @@ class ProcessRunLauncherWidget(QWidget):
             self.status_label.setText("The Process Run could not be started.")
             return False
 
+        attainment_note = ""
+        if (
+            self.progression_attainment_repository is not None
+            and eligibility.progression is not None
+            and eligibility.progression.status
+                is EnvironmentEligibilityStatus.AVAILABLE
+            and eligibility.progression.policy_id
+        ):
+            attainment = ProgressionAttainment(
+                trade_plan_id=eligibility.progression.trade_plan_id,
+                trade_plan_revision=eligibility.progression.trade_plan_revision,
+                boundary=eligibility.progression.boundary,
+                policy_id=eligibility.progression.policy_id,
+                eligibility_snapshot=progression_eligibility_to_dict(
+                    eligibility.progression
+                ),
+                attained_environment=environment.value,
+                note=f"Boundary crossed by starting Process Run {run.id}.",
+            )
+            saved = self.progression_attainment_repository.record_if_absent(
+                attainment
+            )
+            if saved.id == attainment.id:
+                attainment_note = (
+                    f" Progression attainment recorded for "
+                    f"{eligibility.progression.boundary.value}."
+                )
+
         available_count = len([item for item in shell.playbooks if item.available])
         self.status_label.setText(
             f"Started {environment.value} · {run.purpose.value} · {run.run_label} · Trade Plan "
@@ -424,6 +457,7 @@ class ProcessRunLauncherWidget(QWidget):
                 else ""
             )
             + "Choose Models in Play during Premarket Thesis if the TDA says they apply."
+            + attainment_note
         )
         if self.on_launched is not None:
             self.on_launched()
