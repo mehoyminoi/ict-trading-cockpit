@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import (
     QCheckBox,
+    QComboBox,
     QFrame,
     QHBoxLayout,
     QLabel,
@@ -29,8 +30,20 @@ from ict_cockpit.database.competency_evidence_repository import (
 from ict_cockpit.database.competency_evidence_maturity_repository import (
     CompetencyEvidenceMaturityRepository,
 )
+from ict_cockpit.database.progression_attainment_repository import (
+    ProgressionAttainmentRepository,
+)
 from ict_cockpit.database.progression_certification_repository import (
     ProgressionCertificationRepository,
+)
+from ict_cockpit.database.progression_regression_review_repository import (
+    ProgressionRegressionReviewRepository,
+)
+from ict_cockpit.analysis.environment_progression import (
+    derive_progression_standing,
+    environment_for_progression_boundary,
+    evaluate_environment_eligibility,
+    progression_eligibility_to_dict,
 )
 from ict_cockpit.gui.competency_evidence_review_widget import (
     CompetencyEvidenceReviewWidget,
@@ -38,7 +51,11 @@ from ict_cockpit.gui.competency_evidence_review_widget import (
 from ict_cockpit.gui.process_blueprint_widget import ProcessBlueprintWidget
 from ict_cockpit.gui.process_run_launcher_widget import ProcessRunLauncherWidget
 from ict_cockpit.gui.trading_day_shell_widget import TradingDayShellWidget
-from ict_cockpit.progression import ProgressionCertification
+from ict_cockpit.progression import (
+    ProgressionCertification,
+    ProgressionRegressionReview,
+    RegressionReviewClassification,
+)
 from ict_cockpit.trade_plan import (
     PlaybookDefinition,
     ProgressionRequirementKind,
@@ -63,6 +80,10 @@ class TradePlanWidget(QWidget):
             CompetencyEvidenceMaturityRepository | None = None,
         progression_certification_repository:
             ProgressionCertificationRepository | None = None,
+        progression_attainment_repository:
+            ProgressionAttainmentRepository | None = None,
+        progression_regression_review_repository:
+            ProgressionRegressionReviewRepository | None = None,
     ) -> None:
         super().__init__()
         self.trade_plan = trade_plan
@@ -79,6 +100,10 @@ class TradePlanWidget(QWidget):
         )
         self.progression_certification_repository = (
             progression_certification_repository
+        )
+        self.progression_attainment_repository = progression_attainment_repository
+        self.progression_regression_review_repository = (
+            progression_regression_review_repository
         )
         self.competency_evidence_review_widget = None
 
@@ -138,6 +163,9 @@ class TradePlanWidget(QWidget):
             ),
             progression_certification_repository=(
                 self.progression_certification_repository
+            ),
+            progression_attainment_repository=(
+                self.progression_attainment_repository
             ),
             on_launched=self.focus_runtime,
         )
@@ -389,6 +417,178 @@ class TradePlanWidget(QWidget):
         )
         self.process_run_launcher_widget._sync_environment_ui()
 
+    def _build_progression_governance_panel(self) -> QWidget:
+        panel = QFrame()
+        panel.setFrameShape(QFrame.Shape.StyledPanel)
+        layout = QVBoxLayout(panel)
+        layout.setContentsMargins(8, 6, 8, 6)
+        heading = QLabel("Progression Standing")
+        heading.setStyleSheet("font-weight: 600;")
+        layout.addWidget(heading)
+        note = QLabel(
+            "Historical attainment and current eligibility are shown separately. "
+            "Eligibility loss never changes Competency State automatically."
+        )
+        note.setWordWrap(True)
+        layout.addWidget(note)
+
+        for policy in self.trade_plan.progression_policies:
+            environment = environment_for_progression_boundary(policy.boundary)
+            eligibility = evaluate_environment_eligibility(
+                environment,
+                trade_plan=self.trade_plan,
+                competency_assessment_repository=(
+                    self.competency_assessment_repository
+                ),
+                competency_evidence_repository=self.competency_evidence_repository,
+                competency_evidence_maturity_repository=(
+                    self.competency_evidence_maturity_repository
+                ),
+                progression_certification_repository=(
+                    self.progression_certification_repository
+                ),
+            )
+            standing = derive_progression_standing(
+                trade_plan=self.trade_plan,
+                eligibility=eligibility.progression,
+                progression_attainment_repository=(
+                    self.progression_attainment_repository
+                ),
+            )
+            card = QFrame()
+            card.setFrameShape(QFrame.Shape.StyledPanel)
+            card_layout = QVBoxLayout(card)
+            title = QLabel(
+                f"{policy.boundary.value} · {standing.status.value}"
+            )
+            title.setStyleSheet("font-weight: 600;")
+            card_layout.addWidget(title)
+            current = QLabel(
+                f"Current eligibility · {eligibility.status.value.upper()} · "
+                f"{eligibility.detail}"
+            )
+            current.setWordWrap(True)
+            card_layout.addWidget(current)
+            if standing.prior_attainment is not None:
+                attained = QLabel(
+                    f"Historical attainment · "
+                    f"{standing.prior_attainment.trade_plan_revision} · "
+                    f"{standing.prior_attainment.attained_at}"
+                )
+                attained.setWordWrap(True)
+                card_layout.addWidget(attained)
+            detail = QLabel(standing.detail)
+            detail.setWordWrap(True)
+            card_layout.addWidget(detail)
+
+            if (
+                standing.review_required
+                and standing.prior_attainment is not None
+                and self.progression_regression_review_repository is not None
+            ):
+                existing = self.progression_regression_review_repository.get(
+                    self.trade_plan.id,
+                    self.trade_plan.revision,
+                    policy.boundary,
+                    standing.prior_attainment.id,
+                )
+                classification = QComboBox()
+                for item in RegressionReviewClassification:
+                    classification.addItem(item.value, item.value)
+                if existing is not None:
+                    classification.setCurrentText(
+                        existing.classification.value
+                    )
+                elif standing.status.value == "Revalidation Required":
+                    classification.setCurrentText(
+                        RegressionReviewClassification.REVALIDATION_REQUIRED.value
+                    )
+
+                review_note = QLineEdit()
+                review_note.setPlaceholderText(
+                    "Review note — what changed and what does it mean?"
+                )
+                if existing is not None:
+                    review_note.setText(existing.note)
+
+                evidence_ids = QLineEdit()
+                evidence_ids.setPlaceholderText(
+                    "Supporting evidence IDs (optional, comma-separated)"
+                )
+                if existing is not None:
+                    evidence_ids.setText(
+                        ", ".join(existing.supporting_evidence_ids)
+                    )
+
+                save_status = QLabel()
+                save_status.setWordWrap(True)
+                save_button = QPushButton("Save Regression / Revalidation Review")
+                save_button.clicked.connect(
+                    lambda _checked=False,
+                    boundary=policy.boundary,
+                    attainment=standing.prior_attainment,
+                    eligibility_result=eligibility.progression,
+                    classification_combo=classification,
+                    note_input=review_note,
+                    evidence_input=evidence_ids,
+                    status_label=save_status:
+                        self._save_progression_regression_review(
+                            boundary,
+                            attainment,
+                            eligibility_result,
+                            classification_combo,
+                            note_input,
+                            evidence_input,
+                            status_label,
+                        )
+                )
+                card_layout.addWidget(QLabel("Human review classification"))
+                card_layout.addWidget(classification)
+                card_layout.addWidget(review_note)
+                card_layout.addWidget(evidence_ids)
+                card_layout.addWidget(save_button)
+                card_layout.addWidget(save_status)
+
+            layout.addWidget(card)
+
+        return panel
+
+    def _save_progression_regression_review(
+        self,
+        boundary,
+        attainment,
+        eligibility_result,
+        classification_combo: QComboBox,
+        note_input: QLineEdit,
+        evidence_input: QLineEdit,
+        status_label: QLabel,
+    ) -> None:
+        if self.progression_regression_review_repository is None:
+            status_label.setText("Regression review persistence is unavailable.")
+            return
+        supporting_ids = [
+            item.strip()
+            for item in evidence_input.text().split(",")
+            if item.strip()
+        ]
+        item = ProgressionRegressionReview(
+            trade_plan_id=self.trade_plan.id,
+            trade_plan_revision=self.trade_plan.revision,
+            boundary=boundary,
+            prior_attainment_id=attainment.id,
+            eligibility_snapshot=progression_eligibility_to_dict(
+                eligibility_result
+            ),
+            classification=classification_combo.currentText(),
+            note=note_input.text(),
+            supporting_evidence_ids=supporting_ids,
+        )
+        self.progression_regression_review_repository.save(item)
+        status_label.setText(
+            "Review saved. Historical attainment is preserved; Competency State, "
+            "Evidence Maturity, and Development Direction were not changed."
+        )
+
     def _build_review_development_page(
         self, section: TradePlanSectionDefinition
     ) -> QWidget:
@@ -417,6 +617,9 @@ class TradePlanWidget(QWidget):
         competency_summary.setFrameShape(QFrame.Shape.StyledPanel)
         competency_summary.setContentsMargins(8, 6, 8, 6)
         layout.addWidget(competency_summary)
+
+        if self.trade_plan.progression_policies:
+            layout.addWidget(self._build_progression_governance_panel())
 
         if self.competency_evidence_repository is not None:
             self.competency_evidence_review_widget = CompetencyEvidenceReviewWidget(
