@@ -1315,72 +1315,132 @@ This is essential for honest process analytics.
 
 ---
 
-# 35. Current progression states
+# 35. Current progression and attainment states
 
-The existing substrate includes:
+Current progression eligibility uses:
 
 - AVAILABLE
 - NOT CONFIGURED
 - BLOCKED
 
-These are not competency scores.
+These are current permission results, not competency scores.
 
 ## AVAILABLE
 
-The environment can currently be used according to configured rules.
+The configured Trade Plan progression policy is satisfied now.
 
 ## NOT CONFIGURED
 
-The system does not yet have a rule capable of deciding readiness.
+The current Trade Plan does not define how to decide that upward boundary.
 
-This does **not** mean “approved.”
+This does **not** mean approved. Under Alpha 0.7 it remains deliberately non-restrictive because no real progression policy has yet been published.
 
 ## BLOCKED
 
-Configured rules currently prevent access.
+A configured policy exists and at least one required condition is not satisfied or cannot be safely evaluated.
 
-The reason should eventually be explainable.
+The C3 evaluator explains the contributing requirement results.
+
+Current Eligibility remains derived on demand rather than stored as mutable truth.
+
+## Historical Progression Attainment
+
+C4 adds a separate historical concept:
+
+> This configured boundary was deliberately crossed while eligibility was AVAILABLE.
+
+Progression Attainment stores the governing Trade Plan revision, policy, environment, time, and the eligibility snapshot that justified the crossing.
+
+Historical attainment is never rewritten merely because current eligibility later changes.
+
+The separation is:
+
+```text
+Competency State
+= what skill is believed to exist
+
+Current Eligibility
+= what the current Trade Plan permits now
+
+Progression Attainment
+= what boundary was actually cleared/crossed historically
+
+Development Direction
+= what work should happen next
+```
+
+---
+
+# 36. Eligibility loss, revalidation, and regression
+
+A current BLOCKED result does not automatically mean skill regression.
+
+When a previously attained boundary loses current support, C4 distinguishes the condition before interpreting its cause.
+
+## Eligibility Loss Detected
+
+If the same Trade Plan revision and policy previously supported an attained boundary but current eligibility is now BLOCKED, Cockpit may identify:
+
+> Eligibility Loss Detected
+
+This is an objective comparison, not a competency judgment.
+
+## Revalidation Required
+
+If historical attainment belongs to a different Trade Plan revision/policy and the current revision is BLOCKED, the appropriate default interpretation is revalidation, not regression.
+
+Prior skill/proficiency is not erased merely because current contextual evidence is insufficient.
+
+## Confirmed Competency Regression
+
+This is a human-reviewed interpretation that the underlying skill itself has materially deteriorated.
+
+It is never inferred automatically from one policy failure.
+
+Even after confirmation, v0 does not automatically mutate Competency State, Evidence Maturity, or Development Direction.
+
+## Never attained
+
+If a boundary has never been attained and current eligibility is BLOCKED, this is simply not-yet-attained progression. It is not regression.
+
+## Voluntary step-down
+
+Choosing a lower environment despite higher eligibility is non-punitive. Historical attainment remains intact and Competency State is unchanged.
+
+## Temporary operating pause
+
+News, risk limits, personal condition, account restrictions, market closure, and similar operating constraints remain a separate layer.
+
+Future effective access may compose:
+
+```text
+Progression Eligibility
+        +
+Temporary Operating / Safety Restrictions
+        ↓
+Effective Environment Access
+```
+
+Temporary operating restrictions must not be mislabeled as progression regression.
+
+## Recovery
+
+Regression/revalidation recovery uses the same transparent Trade Plan progression policy:
+
+```text
+Study / Rehearsal / Validation work
+        ↓
+new reviewed evidence / governance updates
+        ↓
+same progression-policy evaluation
+        ↓
+AVAILABLE again
+```
+
+No separate recovery score or hidden readiness mechanism is introduced.
 
 ---
 
-# 36. Future restriction reasons
-
-A future unavailable state should distinguish:
-
-## Eligibility regression
-
-Evidence indicates a competency no longer meets a requirement.
-
-Remedy:
-
-> targeted development.
-
-## Temporary pause
-
-Conditions today do not permit higher-risk operation.
-
-Examples:
-
-- news,
-- risk limit,
-- personal condition,
-- market restriction.
-
-Remedy:
-
-> wait / satisfy temporary condition.
-
-## Insufficient evidence
-
-There is not enough evidence to certify the level.
-
-Remedy:
-
-> gather the required evidence.
-
-These should not be collapsed into one generic red light.
-
----
 
 # 37. Evidence Maturity
 
