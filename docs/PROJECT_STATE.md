@@ -133,27 +133,26 @@ C2 — Trade Plan Progression Policy substrate v0 is complete and merged.
 
 C3 — Explainable Eligibility v0 is complete and merged.
 
-The active frontier is **C4 — Regression / downgrade semantics** on `design/regression-downgrade-semantics-v0`.
+C4 — Regression / downgrade semantics v0 design is **operator-accepted and ready for implementation** on `design/regression-downgrade-semantics-v0`.
 
-A design candidate is recorded in `docs/REGRESSION_DOWNGRADE_SEMANTICS.md`.
-
-Current proposed C4 direction:
+Accepted C4 semantics:
 
 - historical Progression Attainment is separate from current Eligibility,
-- prior attainment is never rewritten merely because current eligibility later becomes BLOCKED,
-- AVAILABLE -> BLOCKED under the same plan/policy can be detected as eligibility loss,
-- eligibility loss is not automatically competency regression,
+- attainment is recorded only on deliberate crossing of an AVAILABLE boundary,
+- eligibility loss does not automatically mean competency regression,
 - confirmed competency regression requires human review,
-- plan-revision contextual revalidation is classified separately from skill regression,
+- new-revision contextual requirements can trigger Revalidation Required without erasing proficiency,
 - never-attained insufficiency is not regression,
 - voluntary downward movement is non-punitive and preserves attainment,
-- temporary operating restrictions remain outside progression-regression semantics,
-- recovery uses the same transparent Trade Plan policy,
+- temporary operating restrictions remain outside C4 progression-regression semantics,
+- recovery reuses the same transparent progression policy,
 - no automatic Competency State, Evidence Maturity, or Development Direction mutation.
 
-No runtime/schema/Trade Plan changes are on this design branch yet.
+A later UI requirement is also recorded: highly visual, interactive process/state/revision/progression maps should explain current position, blocked transitions, terminology, and next actions with progressive disclosure and low working-memory burden. This is especially important for gates that may feel restrictive in the moment.
 
-Next action: operator review of the C4 design questions before implementation.
+No runtime/schema/Trade Plan changes are on this design branch.
+
+Next action: merge the C4 design checkpoint, then implement Progression Attainment + Regression Review substrate without publishing real progression rules.
 
 ## System guide maintenance
 
