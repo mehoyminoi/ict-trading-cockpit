@@ -6,11 +6,11 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `feature/operator-loop-friction-v0`
-- **Main baseline:** `b85da6dde3e00af7cc12a593b0ae5e6a4da97eb2` — PR #48 merged operator-loop friction reduction v0 design
+- **Active branch:** `design/operator-loop-integration-guardrails-v0`
+- **Main baseline:** `04b339c6b54f266f8037afaab5c8225bc440203d` — PR #49 merged operator-loop friction reduction v0
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Pre-C5 operator-loop friction reduction v0 implementation
+- **Current slice:** C5 design — Operator-loop integration and guardrails v0
 - **Schema:** v33
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** full suite green on 2026-10-10 for operator-loop friction reduction v0
@@ -135,36 +135,27 @@ C3 — Explainable Eligibility v0 is complete and merged.
 
 C4 — Regression / downgrade semantics v0 is complete and merged.
 
-The pre-C5 **operator-loop friction reduction v0** is **acceptance-complete and ready for PR/merge** on `feature/operator-loop-friction-v0`.
+The pre-C5 operator-loop friction reduction v0 is complete and merged.
 
-Accepted implementation:
+The **C5 — Operator-loop integration and guardrails v0 design is operator-accepted and ready for implementation** on `design/operator-loop-integration-guardrails-v0`.
 
-- always-visible compact Overview,
-- focused work areas:
-  - Evidence,
-  - Interpretation,
-  - Progression,
-  - Practice & Launch,
-- only one detailed work area exposed at a time,
-- Cross-Run Observation + Development Direction grouped under Interpretation,
-- Evidence Maturity + future progression standing grouped under Progression,
-- targeted Study + Process Run launcher grouped under Practice & Launch,
-- quiet tooltips for major governance concepts,
-- stable UI anchors for future guided navigation/testing,
-- guided smoke instructions using Where / Look for / Expected,
-- schema unchanged at **v33**,
-- no domain/Trade Plan semantic changes.
+Accepted implementation direction:
 
-Validation:
+- progression eligibility governs new upward environment starts only,
+- active runs are not auto-terminated/demoted by later progression changes,
+- progression remains separate from setup/trade authorization and never blocks exit/flatten,
+- temporary operating/safety restrictions remain outside C5 v0,
+- deterministic requirement-derived guidance is allowed; inferred coaching is not,
+- BLOCKED may stage the recommended lower environment but never auto-start it,
+- preserve semantically valid Study question/competency focus when staging downward,
+- Review / Development > Progression is the focused explanation surface,
+- Human Certification remains edited under Rules / Safety,
+- restore/resume does not re-run launch gating or duplicate attainment,
+- derive integration state on demand,
+- prefer no schema change from **v33**,
+- Alpha 0.7 remains without real progression thresholds/policy.
 
-- full automated suite: **operator-confirmed green** on 2026-10-10,
-- focused friction-reduction smoke test: **fully PASS / ACCEPTED**,
-- schema **v33** manually confirmed,
-- subjective acceptance: operator explicitly reported the new smoke test was much easier to follow and navigate.
-
-After merge, return to:
-
-**C5 — Operator-loop integration and guardrails**
+Next action: merge this C5 design checkpoint, then implement C5.1-C5.5.
 
 ## System guide maintenance
 
