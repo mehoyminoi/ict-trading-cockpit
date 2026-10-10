@@ -344,6 +344,8 @@ class TradingSessionRun:
     entry_condition_states: dict[str, bool] = field(default_factory=dict)
     watch_point_states: dict[str, WatchPointState] = field(default_factory=dict)
     review_interpretation_outcome: InterpretationOutcome = InterpretationOutcome.NOT_REVIEWED
+    review_observed_qt_context: dict[str, str] = field(default_factory=dict)
+    review_qt_context_note: str = ""
     review_process_adherence: ProcessAdherence = ProcessAdherence.NOT_REVIEWED
     review_takeaway: str = ""
     review_film_night: bool = False
@@ -364,6 +366,10 @@ class TradingSessionRun:
         self.authorization_policy_snapshot = [dict(item) for item in (self.authorization_policy_snapshot or [])]
         self.market_time_context = dict(self.market_time_context or {})
         self.qt_context = normalize_qt_context(self.qt_context)
+        self.review_observed_qt_context = normalize_qt_context(
+            self.review_observed_qt_context
+        )
+        self.review_qt_context_note = self.review_qt_context_note.strip()
         if self.study_context is not None and not isinstance(
             self.study_context,
             StudyRunContext,
@@ -471,6 +477,16 @@ class TradingSessionRun:
 
     def set_qt_context(self, context: dict | None) -> None:
         self.qt_context = normalize_qt_context(context)
+        self._touch()
+
+    def set_review_observed_qt_context(
+        self,
+        context: dict | None,
+        note: str | None = None,
+    ) -> None:
+        self.review_observed_qt_context = normalize_qt_context(context)
+        if note is not None:
+            self.review_qt_context_note = note.strip()
         self._touch()
 
     def set_study_context(
