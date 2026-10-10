@@ -6,11 +6,11 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `feature/progression-policy-model-v0`
-- **Main baseline:** `c37dfbc9f9debabe06b81af3c536e5c9aa97383d` — PR #42 merged Progression Policy v0 design
+- **Active branch:** `design/explainable-eligibility-v0`
+- **Main baseline:** `b8f42cb0582b227a0cd35724e45b8e2a5a1bb60d` — PR #43 merged Progression Policy substrate v0
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Milestone C2 — Trade Plan Progression Policy substrate v0 implementation
+- **Current slice:** Milestone C3 design — Explainable Eligibility v0
 - **Schema:** v31
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** 310 passed on 2026-10-09 for Progression Policy substrate v0
@@ -129,57 +129,33 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 C1 — Evidence Maturity Profile v0 is complete and merged.
 
-C2 — Trade Plan Progression Policy substrate v0 is **acceptance-complete and ready for PR/merge** on `feature/progression-policy-model-v0`.
+C2 — Trade Plan Progression Policy substrate v0 is complete and merged.
 
-Accepted behavior:
+The active frontier is **C3 — Explainable Eligibility evaluation** on `design/explainable-eligibility-v0`.
 
-- canonical shared `ProgressionBoundary` identity,
-- immutable `ProgressionRequirementDefinition`,
-- immutable `ProgressionPolicyDefinition`,
-- accepted v0 requirement kinds:
-  - Evidence Maturity State,
-  - Competency State,
-  - Evidence Purpose Present,
-  - Human Certification,
-- accepted v0 operators:
-  - IS,
-  - IS_ONE_OF,
-  - EXISTS,
-- requirement kind/operator/value validation,
-- empty-policy rejection,
-- duplicate requirement/policy/boundary rejection,
-- Trade Plan competency-reference validation,
-- one-policy-per-boundary enforcement,
-- policy serialization/deserialization and Trade Plan snapshot support,
-- read-only Rules / Safety policy rendering,
-- Alpha 0.7 explicitly remains **NOT CONFIGURED**,
-- schema remains **v31**,
-- no eligibility evaluation or launcher enforcement,
-- no actual readiness thresholds or configured progression rules,
-- no new Trade Plan revision.
+A design candidate is being recorded in `docs/EXPLAINABLE_ELIGIBILITY.md`.
 
-Validation:
+Current proposed C3 direction:
 
-- final full automated suite: **310 passed**,
-- focused **Progression Policy substrate v0** smoke test: **fully PASS / ACCEPTED**,
-- schema v31 manually confirmed.
+- eligibility is derived deterministically from current Trade Plan policy plus current evidence/governance state,
+- top-level states remain AVAILABLE / NOT CONFIGURED / BLOCKED,
+- requirement-level results use SATISFIED / NOT SATISFIED / UNKNOWN,
+- no percentage, weighting, or partial-credit readiness score,
+- NOT CONFIGURED remains non-restrictive for Alpha 0.7,
+- a future configured BLOCKED result should prevent only the upward transition,
+- movement downward remains frictionless,
+- current eligibility should be derived on demand rather than stored as mutable truth,
+- ordinary missing evidence is NOT SATISFIED / INSUFFICIENT_EVIDENCE,
+- UNKNOWN is reserved for genuinely unevaluable conditions,
+- Evidence Purpose Present should default to current-Trade-Plan-revision evidence,
+- older-revision Evidence Maturity should require current-plan review rather than silently carrying forward,
+- Human Certification needs explicit revision-bound provenance state,
+- regression/demotion remains C4,
+- temporary operating/safety restrictions remain a separate layer.
 
-After merge, C2 is complete.
+No runtime/schema/Trade Plan changes are on this design branch yet.
 
-Next architectural slice:
-
-**C3 — Explainable Eligibility evaluation**
-
-C3 should begin as design/governance work. It must deterministically evaluate a configured Trade Plan progression policy into per-requirement explanations and a boundary eligibility result, while preserving:
-
-- NOT CONFIGURED when no policy exists,
-- Unknown / Cannot Evaluate as non-passing,
-- explicit distinction between insufficient evidence, regression, temporary restriction, and unconfigured policy,
-- no numeric readiness score,
-- no hidden weighting,
-- no automatic Competency State mutation.
-
-C3 design should also account for cross-revision competency continuity: unchanged competency knowledge can persist while the current Trade Plan may still require fresh contextual Rehearsal/Validation evidence.
+Next action: operator review of the C3 design questions before implementation.
 
 ## System guide maintenance
 
