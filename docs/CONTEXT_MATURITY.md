@@ -311,6 +311,55 @@ Recommended v0 rule:
 
 This likely justifies a schema migration when implemented.
 
+### E3 implemented contract
+
+The v0 historical-context snapshot is captured **once when a Trading Run starts**.
+
+A `MarketContextSnapshot` preserves:
+
+- availability state,
+- provider identity,
+- query start/end,
+- reference market timestamp,
+- market-time source,
+- Cockpit capture timestamp,
+- normalized provider event records,
+- provenance/detail.
+
+Snapshot states are:
+
+- **Available** — the provider query completed, including the valid case of zero matching events,
+- **Not Configured** — no provider was configured,
+- **Unavailable** — required market date/context was missing or the provider query failed.
+
+This preserves the important distinction:
+
+```text
+provider queried + no events
+!=
+provider unavailable
+!=
+provider not configured
+```
+
+The query window follows the Cockpit futures day:
+
+```text
+previous calendar day 18:00 ET
+        ->
+futures trading day 18:00 ET
+```
+
+Replay and Historical Backtest derive that window from their selected historical market timestamp. They do not use the present-day calendar merely because the Cockpit is running today.
+
+The snapshot is persisted with the Trading Run. Restoring or viewing an existing run reads the stored snapshot and does not re-query a provider, so a later provider revision cannot silently rewrite historical run context.
+
+Live and Forward runs use the same snapshot contract against their run-start market-time context. E3 does not yet implement within-run event refresh/version history; that is intentionally deferred until a real provider and operator surface exist.
+
+The Trade Plan revision remains on the Trading Run itself, so the stored event snapshot and the plan revision that governed/interpreted the run remain reconstructable together.
+
+Schema advances to **v35** with `market_context_snapshot_json`.
+
 ## E4 — Distortion and schedule context
 
 "Distortion" currently exists in the QT substrate for known temporal structure such as fifth-week monthly distortion.
