@@ -13,8 +13,8 @@ This is the starting point for a new development chat or developer handoff. Git 
 - **Current slice:** Milestone C3 — Explainable Eligibility v0 implementation
 - **Schema:** v32
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** 310 passed on 2026-10-09 for Progression Policy substrate v0
-- **Manual smoke test:** Progression Policy substrate v0 acceptance PASS — Alpha 0.7 remains NOT CONFIGURED, schema v31 confirmed, read-only policy representation, no eligibility enforcement, and regression checks manually verified.
+- **Verified full test result:** full suite green on 2026-10-09 for Explainable Eligibility v0; previous numeric checkpoint 310 passed for C2
+- **Manual smoke test:** Explainable Eligibility v0 acceptance PASS — Alpha 0.7 remains NOT CONFIGURED/non-restrictive, schema v32 confirmed, learning-loop regressions checked, and configured-policy evaluator behavior covered by automated tests.
 
 ## Current completed slice — Competency / Proficiency substrate v0
 
@@ -131,9 +131,9 @@ C1 — Evidence Maturity Profile v0 is complete and merged.
 
 C2 — Trade Plan Progression Policy substrate v0 is complete and merged.
 
-C3 — Explainable Eligibility v0 is implemented for automated/manual validation on `feature/explainable-eligibility-v0`.
+C3 — Explainable Eligibility v0 is **acceptance-complete and ready for PR/merge** on `feature/explainable-eligibility-v0`.
 
-Implemented:
+Accepted implementation:
 
 - immutable requirement-level evaluation results,
 - immutable progression-boundary eligibility results,
@@ -149,30 +149,38 @@ Implemented:
 - current-Trade-Plan-revision filtering for Evidence Purpose Present,
 - older-revision Evidence Maturity -> UNKNOWN / current-plan review,
 - Competency State continuity without evaluator mutation,
-- dedicated `ProgressionCertification` state,
-- dedicated certification repository,
-- schema **v32** progression-certification storage,
-- Human Certification controls rendered only for configured Human Certification policy requirements,
+- dedicated `ProgressionCertification` state and repository,
+- schema **v32**,
+- revision-bound Human Certification persistence,
+- Human Certification controls only for configured Human Certification requirements,
 - launcher explanation of configured requirement results,
-- configured BLOCKED results prevent the gated upward environment from starting,
+- configured BLOCKED results prevent only the gated upward environment from starting,
 - Alpha 0.7 remains NOT CONFIGURED and non-restrictive,
+- current eligibility is derived on demand rather than stored as mutable truth,
 - no real readiness criteria or new Trade Plan revision.
 
-The evaluator derives current eligibility on demand; no mutable current-eligibility table was added.
+Validation:
 
-Focused automated tests were added for schema/persistence, all-satisfied AVAILABLE, missing-evidence blocking, current-revision evidence scope, old-revision maturity UNKNOWN behavior, Human Certification, Alpha 0.7 non-restrictive behavior, and configured launcher blocking.
+- full automated suite: **operator-confirmed green** on 2026-10-09,
+- focused **Explainable Eligibility v0** smoke test: **fully PASS / ACCEPTED**,
+- schema **v32** manually confirmed.
 
-Expected full-suite count from the previous 310-test baseline is **319** if all new tests and regressions pass.
+After merge, C3 is complete.
 
-Next action:
+Next architectural slice:
 
-1. pull this branch,
-2. run the full automated suite,
-3. resolve any failures,
-4. complete the **Explainable Eligibility v0** section in `docs/SMOKE_TEST.md`,
-5. merge C3 only after acceptance.
+**C4 — Regression / downgrade semantics**
 
-Do not publish real progression rules, change Alpha 0.7, implement regression/demotion, or fold temporary operating restrictions into progression eligibility during C3 validation.
+C4 should begin as design/governance work. It must define what happens when previously satisfied progression/eligibility conditions are no longer satisfied, while preserving the distinction between:
+
+- competency knowledge/proficiency,
+- current-plan contextual validation,
+- evidence maturity,
+- progression eligibility,
+- temporary operating restrictions,
+- deliberate frictionless movement downward.
+
+C4 must not assume that one blocked evaluation means the technician has "lost" a competency, and should distinguish true regression from temporary pause, stale/insufficient evidence, plan revision revalidation, and operator-chosen downgrade.
 
 ## System guide maintenance
 
