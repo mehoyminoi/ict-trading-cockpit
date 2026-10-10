@@ -135,33 +135,29 @@ C3 — Explainable Eligibility v0 is complete and merged.
 
 C4 — Regression / downgrade semantics v0 is complete and merged.
 
-Before C5, the active slice is **operator-loop friction reduction** on `design/operator-loop-friction-v0`.
+The pre-C5 **operator-loop friction reduction v0 design is operator-accepted and ready for implementation** on `design/operator-loop-friction-v0`.
 
-The operator reported a meaningful usability/testing failure mode: Review / Development is functionally correct but has become a wall of text, controls, and fields that is costly to scan and makes manual smoke testing tempting to shortcut.
+Accepted implementation direction:
 
-A design candidate is recorded in `docs/OPERATOR_LOOP_FRICTION.md`.
-
-Proposed low-risk direction:
-
-- reorganize Review / Development into presentation-only work areas:
+- five Review / Development presentation areas:
   - Overview,
   - Evidence,
   - Interpretation,
   - Progression,
   - Practice / Launch,
-- add a compact read-only Overview from existing state,
-- use progressive disclosure so only the relevant editor/work area is exposed,
-- keep saved-state summaries visible even when detailed controls are hidden,
-- add quiet definitions/tooltips for technical terms,
-- add stable UI anchors for future guided navigation/testing,
-- improve smoke-test instructions with Where / Look for / Expected guidance,
-- defer full-text search until simpler navigation is tested,
-- defer automated smoke-runner -> Cockpit deep linking/highlighting until stable anchors exist,
-- make no schema/domain/Trade Plan changes.
+- compact read-only Overview from existing state,
+- progressive disclosure so dense editors are not all exposed simultaneously,
+- saved-state summaries remain visible when detailed controls are hidden,
+- quiet definitions/tooltips for technical governance terms,
+- stable UI anchor IDs for future guided navigation/testing,
+- smoke-test instructions move toward Where / Look for / Expected guidance,
+- full-text search deferred,
+- smoke-runner -> Cockpit deep-link/highlight plumbing deferred,
+- no schema/domain/Trade Plan changes.
 
-Next action: operator review of the ten friction-reduction design decisions before implementation.
+Next action: merge this design checkpoint, then implement the small usability slice before resuming C5.
 
-After this small usability slice, resume:
+After acceptance of that implementation, resume:
 
 **C5 — Operator-loop integration and guardrails**
 
