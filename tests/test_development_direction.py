@@ -37,7 +37,7 @@ def test_schema_v29_adds_development_direction_storage(tmp_path) -> None:
         ).fetchall()
     }
 
-    assert version == CURRENT_SCHEMA_VERSION == 31
+    assert version == CURRENT_SCHEMA_VERSION == 32
     assert {
         "trade_plan_id",
         "trade_plan_revision",
