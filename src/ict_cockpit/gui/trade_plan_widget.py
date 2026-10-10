@@ -657,6 +657,15 @@ class TradePlanWidget(QWidget):
                     self.progression_governance_widget
                 )
             layout.addWidget(self.competency_evidence_review_widget)
+        elif self.trade_plan.progression_policies:
+            # Preserve progression-standing visibility for lightweight/synthetic
+            # TradePlanWidget uses that do not wire a competency-evidence repository.
+            # Normal application wiring places the same panel in the focused
+            # Progression work area above.
+            self.progression_governance_widget = (
+                self._build_progression_governance_panel()
+            )
+            layout.addWidget(self.progression_governance_widget)
 
         scope_heading = QLabel("Current scope")
         scope_heading.setStyleSheet("font-weight: 600;")
