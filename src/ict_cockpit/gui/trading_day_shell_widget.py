@@ -13,7 +13,15 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ict_cockpit.analysis.market_time import build_market_time_context, current_new_york_time
+from ict_cockpit.analysis.market_context_event import (
+    MarketContextEventProvider,
+    capture_market_context_snapshot,
+)
+from ict_cockpit.analysis.market_time import (
+    MARKET_TIMEZONE,
+    build_market_time_context,
+    current_new_york_time,
+)
 from ict_cockpit.analysis.quarter_theory import apply_time_derived_qt_context
 from ict_cockpit.analysis.trading_day import TradingDay, TradingDayLifecycleStatus
 from ict_cockpit.analysis.trading_day_session import TradingDaySession, TradingDayStatus
@@ -44,6 +52,7 @@ class TradingDayShellWidget(QWidget):
         *,
         run_environment: RunEnvironment = RunEnvironment.LIVE,
         trade_plan_revision: str = "",
+        market_context_event_provider: MarketContextEventProvider | None = None,
     ) -> None:
         super().__init__()
         self.blueprint = blueprint
@@ -53,6 +62,7 @@ class TradingDayShellWidget(QWidget):
         self.run_environment = RunEnvironment(run_environment)
         self.run_purpose = default_purpose_for_environment(self.run_environment)
         self.trade_plan_revision = trade_plan_revision.strip()
+        self.market_context_event_provider = market_context_event_provider
         self.run_market_timestamp: datetime | None = None
         self.run_study_context: dict = {}
         self.trading_day = TradingDay()
@@ -328,6 +338,12 @@ class TradingDayShellWidget(QWidget):
             {},
             market_time_context,
         )
+        market_context_snapshot = capture_market_context_snapshot(
+            provider=self.market_context_event_provider,
+            market_time_context=market_time_context,
+            market_timezone=MARKET_TIMEZONE,
+            captured_at=current_new_york_time().isoformat(timespec="seconds"),
+        )
         run = TradingRun(
             trading_day_id=self.trading_day.id,
             session_name=f"Trading Run {len(self.trading_runs) + 1}",
@@ -338,6 +354,7 @@ class TradingDayShellWidget(QWidget):
             trade_plan_revision=self.trade_plan_revision,
             authorization_policy_snapshot=[gate.to_dict() for gate in self.authorization_gates],
             market_time_context=market_time_context,
+            market_context_snapshot=market_context_snapshot.to_dict(),
             qt_context=initial_qt_context,
             study_context=(
                 dict(self.run_study_context)
