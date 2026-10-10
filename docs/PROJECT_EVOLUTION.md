@@ -375,3 +375,52 @@ The accepted Milestone C sequence is:
 `C1 Evidence Maturity Profile -> C2 Progression Policy -> C3 Explainable Eligibility -> C4 Regression/downgrade semantics -> C5 Operator-loop integration and guardrails`
 
 No numeric readiness score, hidden weighting, automatic promotion/demotion, or Live lock is implied by entering this phase.
+
+
+## 2026-10-10 — Milestone C completed
+
+Milestone C closed the progression-governance architecture without introducing arbitrary readiness math.
+
+The completed chain is:
+
+```text
+Evidence Maturity
+    ↓
+Trade Plan Progression Policy
+    ↓
+Explainable Eligibility
+    ↓
+Historical Attainment / Regression-Revalidation semantics
+    ↓
+Operator-loop integration and guardrails
+```
+
+C5 established that progression eligibility is enforced at the moment of a deliberate **new upward environment start**. It is not a continuous runtime kill switch.
+
+A configured BLOCKED boundary now has an explainable lower-friction operator path:
+
+```text
+BLOCKED upward transition
+    ↓
+concise reason + requirement detail on demand
+    ↓
+Review / Development > Progression
+    or
+stage normal lower environment
+    ↓
+operator explicitly starts next run when ready
+```
+
+The integration preserves these separations:
+
+- progression eligibility != trade/setup authorization,
+- current eligibility != historical attainment,
+- eligibility loss != competency regression,
+- progression restriction != temporary operating/safety pause,
+- lower-rung movement != punishment/demotion.
+
+Started runs preserve historical provenance and are not silently terminated or demoted if progression support later changes. Restore/browse/staging do not create duplicate attainment. Exit/flatten remains outside progression and entry gating.
+
+Alpha 0.7 intentionally remains without a real progression policy. Milestone C therefore completes the **machinery and governance semantics**, not the future policy thresholds themselves.
+
+The next major roadmap frontier is Milestone E — Context maturity: QT/AMDX, news, and distortions. Milestone D remains a parallel friction-driven hardening stream.
