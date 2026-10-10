@@ -13,7 +13,7 @@ This is the starting point for a new development chat or developer handoff. Git 
 - **Current slice:** Milestone E2 implementation — Provider-neutral market-context event model
 - **Schema:** v34
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** **348 passed** on 2026-10-10 for Milestone E1 expected-vs-observed QT/AMDX
+- **Verified full test result:** **356 passed** on 2026-10-10 for Milestone E2 provider-neutral market-context event model
 - **Manual smoke test:** Milestone E1 expected-vs-observed QT/AMDX acceptance **fully PASS** — schema v34 confirmed and all guided checks passed.
 
 ## Current completed slice — Competency / Proficiency substrate v0
@@ -133,7 +133,7 @@ Milestone E v0 architecture is accepted and merged.
 
 E1 — Expected vs observed QT/AMDX review loop is complete and merged.
 
-**E2 — Provider-neutral market-context event model** is implemented for validation on `feature/context-maturity-e2-v0`.
+**E2 — Provider-neutral market-context event model** is **acceptance-complete and ready for merge** on `feature/context-maturity-e2-v0`.
 
 Implemented E2 behavior:
 
@@ -178,13 +178,14 @@ Focused tests cover:
 - ambiguous query rejection,
 - no E2 schema change.
 
-Next action:
+Validation:
 
-1. pull latest `feature/context-maturity-e2-v0`,
-2. run the full automated suite,
-3. fix any regressions,
-4. if green, merge E2 without a UI smoke pass because E2 is domain/provider-contract only,
-5. begin E3 historical context snapshots only after E2 acceptance.
+- full automated suite: **356 passed**,
+- no manual smoke pass required because E2 has no operator-facing UI,
+- schema remains **v34**,
+- no provider-specific restriction logic or hidden event-to-authorization behavior was introduced.
+
+Next action: merge E2, then begin **E3 — Historical context snapshots and deterministic Replay/Historical event context**.
 
 ## System guide maintenance
 
