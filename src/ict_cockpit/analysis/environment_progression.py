@@ -116,6 +116,16 @@ def progression_boundary_for_environment(
     return _ENVIRONMENT_BOUNDARY.get(environment)
 
 
+def environment_for_progression_boundary(
+    boundary: ProgressionBoundary | str,
+) -> RunEnvironment:
+    boundary = ProgressionBoundary(boundary)
+    for environment, candidate in _ENVIRONMENT_BOUNDARY.items():
+        if candidate is boundary:
+            return environment
+    raise ValueError(f"no environment mapping for boundary: {boundary.value}")
+
+
 def _compare_expected(
     observed: str,
     operator: ProgressionRequirementOperator,
