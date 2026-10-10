@@ -104,5 +104,5 @@ def test_friction_slice_has_no_schema_change(tmp_path) -> None:
     initialize_schema(connection)
     version = connection.execute("PRAGMA user_version").fetchone()[0]
 
-    assert version == CURRENT_SCHEMA_VERSION == 33
+    assert version == CURRENT_SCHEMA_VERSION == 34
     connection.close()

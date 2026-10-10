@@ -690,6 +690,71 @@ Synthetic configured-policy behavior is primarily covered by automated tests bec
 
 ---
 
+## Current branch acceptance — Milestone E1 expected vs observed QT/AMDX
+
+Before merging `feature/context-maturity-e1-v0`, use this focused acceptance pass.
+
+### A. Migration and existing QT behavior
+
+- [PASS] Confirm the application opens normally after migration to schema **v34**.
+  - Where: launch Cockpit, then check database schema if convenient
+  - Look for: normal startup; no migration/runtime error
+  - Expected: `PRAGMA user_version` = **34** and existing runs still load.
+
+- [PASS] Confirm normal TDA QT / AMDX entry still behaves as before.
+  - Where: start a Process Run and open the Premarket Thesis QT / AMDX controls
+  - Look for: raw QT facts, technician phase controls, time-derived month role
+  - Expected: existing TDA behavior is unchanged; the time-derived month remains read-only.
+
+### B. Expected versus observed Review
+
+- [PASS] Confirm Post-Market Review shows a separate **QT / AMDX — expected vs observed** section.
+  - Where: advance a run to **Post-Market Review > Market Review**
+  - Look for: expected/TDA summary, observed phase selectors, optional context note, descriptive comparison
+  - Expected: the original TDA interpretation is visible as **Expected / TDA** and is not edited from this Review surface.
+
+- [PASS] Confirm observed values compare descriptively against expected values.
+  - Where: in the expected-vs-observed section
+  - Look for: set one level equal to expected, change one level, and leave another unknown
+  - Expected: comparison uses **Matched / Changed / Expected Unknown / Observed Unknown / Not Comparable** as appropriate; no numeric score appears.
+
+- [PASS] Confirm time-derived QT roles remain factual rather than becoming editable hindsight.
+  - Where: observed QT selectors in Post-Market Review
+  - Look for: the derived calendar-month role
+  - Expected: the derived role is read-only and remains consistent with market-time context.
+
+### C. Persistence and historical honesty
+
+- [PASS] Confirm saving observed QT context does not rewrite the TDA expectation.
+  - Where: enter observed values and a context note, then return to/reopen Review
+  - Look for: expected value and observed value on a changed level
+  - Expected: both remain distinct, e.g. **Expected M -> Observed D**; the expected/TDA value is unchanged.
+
+- [PASS] Confirm observed QT review survives restart.
+  - Where: save at least one observed phase plus the optional context note, close/reopen Cockpit, restore the run
+  - Look for: observed selectors, note, and comparison
+  - Expected: observed context and note rehydrate exactly; expected context remains the original run context.
+
+- [PASS] Confirm Review entry does not automatically create competency evidence.
+  - Where: record an observed QT/AMDX mismatch
+  - Look for: competency evidence / Review Development evidence records
+  - Expected: no evidence record is created merely because expected and observed QT differ.
+
+### D. Regression
+
+- [PASS] Confirm Market Review and Process Review still remain separate stages.
+  - Where: Post-Market Review
+  - Look for: interpretation classification on stage 1; process adherence/takeaway on stage 2
+  - Expected: E1 adds QT comparison without collapsing or rearranging the existing review semantics.
+
+- [PASS] Confirm the full automated suite is green.
+  - Where: terminal
+  - Look for: `pytest`
+  - Expected: all tests pass; schema is **v34**.
+
+
+---
+
 ## Reporting results
 
 Report results as:

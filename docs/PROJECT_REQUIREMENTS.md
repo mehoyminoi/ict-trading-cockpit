@@ -1362,3 +1362,39 @@ Future UI/test-support options should include:
 The objective is to reduce working-memory load and the temptation to skip or half-effort acceptance testing. Testing friction is itself product feedback: if an experienced operator cannot quickly locate a state or explanation during verification, the production surface likely also needs clearer information architecture.
 
 This should be addressed opportunistically during later UI/operator-loop hardening, with small low-risk improvements allowed earlier when they materially improve testing without derailing architectural milestones.
+
+
+---
+
+## Intraday QT depth without form burden
+
+The mature QT / AMDX experience must preserve the full intraday structure without turning active use into a large repetitive form.
+
+The system should eventually capture, display, and preserve enough structure to represent at least:
+
+- the four daily futures sessions (Asia, London, NYAM, NYPM),
+- the four 90-minute cycles within each session,
+- the relevant nested QT / AMDX interpretation at those intraday layers,
+- the time-derived/raw quarter context that supports those interpretations,
+- expected versus observed intraday interpretation where Review needs it,
+- provenance sufficient for later Study, Review, and analytics.
+
+This does **not** mean the operator should manually complete every layer on every run.
+
+The UI should actively reduce entry burden through techniques such as:
+
+- deriving factual time/session/quarter state automatically,
+- showing only the current/relevant intraday layer during active operation,
+- progressive disclosure for deeper hierarchy,
+- inheritance/carry-forward where semantically honest,
+- compact visual timelines or nested-state maps,
+- defaults that preserve Unknown rather than forcing an answer,
+- editing by exception instead of repeated confirmation,
+- Review views that can expand the full hierarchy after the fact,
+- pruning redundant inputs when the same fact is already known elsewhere.
+
+The product requirement is therefore:
+
+> **Preserve the full intraday QT hierarchy in the data model and historical record while minimizing how much of that hierarchy the operator must explicitly touch during live use.**
+
+Do not solve completeness by exposing every session × 90-minute cycle × QT layer as a permanent grid of fields. The operator-facing design should preserve depth while reducing simultaneous exposure and repetitive entry.

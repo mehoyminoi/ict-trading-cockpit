@@ -119,7 +119,7 @@ def test_schema_v33_adds_attainment_and_regression_review_storage(tmp_path) -> N
         ).fetchall()
     }
 
-    assert version == CURRENT_SCHEMA_VERSION == 33
+    assert version == CURRENT_SCHEMA_VERSION == 34
     assert "progression_attainment" in tables
     assert "progression_regression_review" in tables
     connection.close()

@@ -1073,6 +1073,40 @@ and certainly does not mean:
 
 ---
 
+
+## Expected versus observed QT / AMDX
+
+Milestone E1 adds a second, explicitly review-time interpretation state.
+
+The Trading Run now preserves:
+
+```text
+TDA / working QT context
+        ↓
+Expected interpretation
+        +
+Post-Market observed QT context
+        ↓
+Descriptive comparison
+```
+
+The original TDA `qt_context` remains historical truth for what the technician expected during the run. Post-Market Review writes to a separate observed context and optional human note.
+
+Comparison states are descriptive only:
+
+- Matched
+- Changed
+- Expected Unknown
+- Observed Unknown
+- Not Comparable
+
+A mismatch does not create a competency score, proficiency change, or evidence record automatically.
+
+Time-derived QT roles remain factual in both expected and observed views. Review cannot use hindsight to rewrite a role that is derived from market time.
+
+The current E1 UI is intentionally a testing-grade interaction surface. The mature QT experience must preserve the deeper intraday hierarchy—four sessions per futures day and four 90-minute cycles per session—without requiring the operator to complete a giant repetitive grid. Future UI work should prefer context focus, visual hierarchy, progressive disclosure, automatic factual derivation, inheritance where honest, and edit-by-exception.
+
+
 # 26. QT hierarchy
 
 Current conceptual hierarchy includes:

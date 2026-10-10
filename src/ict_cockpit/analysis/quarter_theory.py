@@ -12,6 +12,15 @@ class QTPhase(str, Enum):
     DISTORTION = "Distortion"
 
 
+
+class QTComparisonState(str, Enum):
+    MATCHED = "Matched"
+    CHANGED = "Changed"
+    EXPECTED_UNKNOWN = "Expected Unknown"
+    OBSERVED_UNKNOWN = "Observed Unknown"
+    NOT_COMPARABLE = "Not Comparable"
+
+
 RAW_QT_STACK_LEVELS = (
     ("cycle_16y", "16Y"),
     ("quadrennial", "4Y"),
@@ -335,3 +344,58 @@ def raw_quarter_stack_relevance_tooltip(
             + ", ".join(item["level_labels"])
         )
     return "\n".join(lines)
+
+
+
+def compare_qt_context(
+    expected: dict | None,
+    observed: dict | None,
+) -> tuple[dict, ...]:
+    """Compare technician QT/AMDX interpretations without scoring them."""
+
+    expected_context = normalize_qt_context(expected)
+    observed_context = normalize_qt_context(observed)
+    rows = []
+    for level_id, label in QT_LEVELS:
+        expected_value = expected_context[level_id]
+        observed_value = observed_context[level_id]
+        if (
+            expected_value == QTPhase.NOT_APPLICABLE.value
+            and observed_value == QTPhase.NOT_APPLICABLE.value
+        ):
+            state = QTComparisonState.NOT_COMPARABLE
+        elif expected_value == QTPhase.NOT_APPLICABLE.value:
+            state = QTComparisonState.EXPECTED_UNKNOWN
+        elif observed_value == QTPhase.NOT_APPLICABLE.value:
+            state = QTComparisonState.OBSERVED_UNKNOWN
+        elif expected_value == observed_value:
+            state = QTComparisonState.MATCHED
+        else:
+            state = QTComparisonState.CHANGED
+        rows.append(
+            {
+                "level_id": level_id,
+                "label": label,
+                "expected": expected_value,
+                "observed": observed_value,
+                "state": state.value,
+            }
+        )
+    return tuple(rows)
+
+
+def qt_context_comparison_summary(
+    expected: dict | None,
+    observed: dict | None,
+) -> str:
+    rows = compare_qt_context(expected, observed)
+    meaningful = [
+        row for row in rows
+        if row["state"] != QTComparisonState.NOT_COMPARABLE.value
+    ]
+    if not meaningful:
+        return "No comparable QT / AMDX interpretation recorded"
+    return " · ".join(
+        f'{row["label"]}: {row["expected"]} → {row["observed"]} ({row["state"]})'
+        for row in meaningful
+    )

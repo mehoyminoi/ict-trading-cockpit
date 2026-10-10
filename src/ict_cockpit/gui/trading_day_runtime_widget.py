@@ -40,6 +40,7 @@ class TradingDayRuntimeWidget(QWidget):
     post_market_interpretation_submitted = Signal(str)
     post_market_review_submitted = Signal(str, str, bool)
     post_market_study_review_submitted = Signal(str, str)
+    post_market_observed_qt_submitted = Signal(object, str)
 
     def __init__(
         self,
@@ -105,6 +106,9 @@ class TradingDayRuntimeWidget(QWidget):
         self.post_market_review_widget.review_changed.connect(self.post_market_review_submitted.emit)
         self.post_market_review_widget.study_review_changed.connect(
             self.post_market_study_review_submitted.emit
+        )
+        self.post_market_review_widget.observed_qt_changed.connect(
+            self.post_market_observed_qt_submitted.emit
         )
 
         for mode in self.modes:

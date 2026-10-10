@@ -120,7 +120,7 @@ def test_schema_v32_adds_progression_certification_storage(tmp_path) -> None:
         ).fetchall()
     }
 
-    assert version == CURRENT_SCHEMA_VERSION == 33
+    assert version == CURRENT_SCHEMA_VERSION == 34
     assert {
         "trade_plan_id",
         "trade_plan_revision",
