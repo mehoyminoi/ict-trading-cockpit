@@ -120,7 +120,7 @@ def test_blocked_launcher_stages_lower_environment_without_start_or_history(
     launcher.competency_checkboxes["draw-on-liquidity"].setChecked(True)
 
     assert "BLOCKED" in launcher.eligibility_label.text()
-    assert launcher.stage_lower_button.isVisible() is True
+    assert launcher.stage_lower_button.isHidden() is False
     assert launcher.stage_recommended_lower_environment() is True
 
     assert launcher.selected_environment is RunEnvironment.REPLAY
@@ -151,7 +151,7 @@ def test_blocked_launcher_can_navigate_to_focused_progression_area(
     launcher = widget.process_run_launcher_widget
     launcher.environment_combo.setCurrentText(RunEnvironment.FORWARD_TEST.value)
 
-    assert launcher.review_progression_button.isVisible() is True
+    assert launcher.review_progression_button.isHidden() is False
     launcher.review_progression_button.click()
 
     assert widget.selected_section_id == "review-development"
@@ -176,11 +176,11 @@ def test_requirement_details_are_progressively_disclosed(tmp_path) -> None:
     launcher.environment_combo.setCurrentText(RunEnvironment.FORWARD_TEST.value)
 
     assert "Blocked by · Draw State" in launcher.eligibility_label.text()
-    assert launcher.requirement_details_button.isVisible() is True
-    assert launcher.requirement_details_label.isVisible() is False
+    assert launcher.requirement_details_button.isHidden() is False
+    assert launcher.requirement_details_label.isHidden() is True
 
     launcher.requirement_details_button.click()
-    assert launcher.requirement_details_label.isVisible() is True
+    assert launcher.requirement_details_label.isHidden() is False
     assert "Draw State" in launcher.requirement_details_label.text()
     assert "Requirement Not Satisfied" in launcher.requirement_details_label.text()
     connection.close()
@@ -238,6 +238,6 @@ def test_alpha_07_remains_nonrestrictive_without_lower_rung_staging(
     launcher.environment_combo.setCurrentText(RunEnvironment.LIVE.value)
 
     assert "NOT CONFIGURED" in launcher.eligibility_label.text()
-    assert launcher.stage_lower_button.isVisible() is False
-    assert launcher.review_progression_button.isVisible() is False
+    assert launcher.stage_lower_button.isHidden() is True
+    assert launcher.review_progression_button.isHidden() is True
     connection.close()
