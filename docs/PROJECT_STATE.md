@@ -6,10 +6,10 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `feature/context-maturity-e5-v0`
-- **Main baseline:** `c4606d48e1037a1d7ca9c9551b0eb7dc4047e678` — merged E4 acceptance and E5 frontier handoff
+- **Active branch:** `main`
+- **Main baseline:** `3232962144126bc4d48dbb84b21a21579228be35` — PR #57 merged operator-accepted E5 context policy substrate
 - **Implementation checkpoint:** `41f9d69c5b648873f6b95f2041e5daaeb2ea8508` — Add explicit snapshotted Trade Plan context rules and entry effects (E5)
-- **Current slice:** E5 — declarative Trade Plan context rules v0, accepted and ready to merge
+- **Current slice:** E6 — real provider integration (next; implementation not started)
 - **Schema:** v36
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** **401 passed** in 136.01s on 2026-10-10, clean exit (Python 3.12 / PySide6 6.8.3 / offscreen)
@@ -118,7 +118,7 @@ Milestones A, B, and C are complete. The learning/progression chain remains inta
 
 `Evidence -> Competency Synthesis -> Cross-Run Observation -> Development Direction -> targeted Study -> Evidence Maturity -> Trade Plan Progression Policy -> Explainable Eligibility -> historical attainment / regression-revalidation -> operator-loop guardrails`
 
-The current major frontier is **Milestone E — context maturity: QT/AMDX, external events, schedules, and distortions**. E1, E2, E3, and E4 are merged. E4 exposes stored context to the operator. E5 now provides explicit snapshotted context-policy evaluation and configured entry effects; real policy adoption remains deferred.
+The current major frontier is **Milestone E — context maturity: QT/AMDX, external events, schedules, and distortions**. E1, E2, E3, E4, and E5 are merged. E4 exposes stored context to the operator. E5 now provides explicit snapshotted context-policy evaluation and configured entry effects; real policy adoption remains deferred.
 
 Milestone D continues only for demonstrated operator friction. Film Night, gallery polish, broad TradingView integration, hardware controls, and broker execution remain downstream.
 
@@ -134,7 +134,7 @@ Milestone D continues only for demonstrated operator friction. Film Night, galle
 - full automated acceptance: **364 passed**, clean exit,
 - test-session Qt cleanup stops test-owned timers and disposes windows before draining events.
 
-## Last completed slice
+## Previous completed slice
 
 **E4 — compact operator context surfaces**, merged through PR #56 after operator acceptance on 2026-10-10.
 
@@ -161,9 +161,9 @@ Acceptance:
 - developer offscreen visual inspection at 1024×768 covers compact TDA, the dense Thesis controls, and expanded Review detail,
 - operator reported manual testing complete and acceptance granted on **2026-10-10**; the E4 checklist in `docs/SMOKE_TEST.md` is recorded as **PASS**.
 
-## Current task
+## Last completed slice
 
-**E5 — declarative Trade Plan context rules v0** is implemented on `feature/context-maturity-e5-v0` and operator accepted on 2026-10-10.
+**E5 — declarative Trade Plan context rules v0**, merged through PR #57 after all eight operator checks passed on 2026-10-10.
 
 Implemented behavior:
 
@@ -187,7 +187,11 @@ Validation:
 - developer offscreen fixture inspection confirmed clock boundaries, event availability, coverage unknowns, and configured entry blocking with cleared manual gates; visually inspected Watch and expanded Review at 1100×850,
 - operator acceptance is **PASS** on 2026-10-10; all eight E5 checks in `docs/SMOKE_TEST.md` are PASS, including the reported local full suite and normal Alpha 0.7 restore/workflow checks.
 
-Next action: merge the accepted E5 checkpoint and update the main handoff. The implementation-sequence next slice after accepted E5 is **E6 — real provider integration**, subject to the documented E6/E7 naming reconciliation. E5 v0 completes the policy substrate, not automatic adoption of every source-plan prose exclusion.
+## Current task
+
+**E6 — real provider integration** is next in the accepted implementation sequence; feature work has not started.
+
+Next action: reconcile the later E6/E7 narrative labels against the accepted sequence, assess a provider for normalized economic/schedule facts and historical coverage, then define a small adapter/cache/offline slice. Record coverage and failure semantics explicitly; do not infer event facts or account applicability from provider text. E5 v0 completes the policy substrate, not automatic adoption of every source-plan prose exclusion. Model-specific context predicates remain downstream.
 
 ## Explicitly deferred / open
 
