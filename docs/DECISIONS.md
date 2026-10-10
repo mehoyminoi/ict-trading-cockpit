@@ -558,3 +558,38 @@ Accepted behavior:
 - Alpha 0.7 remains without a real progression policy.
 
 **Rationale:** progression governance should constrain the correct transition while preserving historical truth, operator agency, downward movement, execution safety, and separation from trade authorization.
+
+
+## 2026-10-10 — Context facts, technician interpretation, and Trade Plan restrictions remain separate
+
+**Status:** Accepted
+
+Milestone E will mature context through distinct layers:
+
+- raw market-time/QT facts,
+- external event/schedule facts,
+- technician AMDX/XAMD interpretation,
+- expected-vs-observed Review comparison,
+- explicit Trade Plan context rules,
+- derived warnings/restrictions,
+- setup/trade authorization.
+
+Accepted consequences:
+
+- raw QT alignment never implies direction, probability, ranking, or authorization,
+- event presence never automatically implies No Trade,
+- holidays/early closes are not the same concept as QT structural Distortion,
+- expected-vs-observed mismatch is descriptive and does not automatically create competency evidence,
+- Replay/Historical event context must follow selected historical market time,
+- run context should preserve historical event/schedule provenance rather than be silently rewritten by later provider changes,
+- external event normalization is provider-neutral and preserves native/provider provenance,
+- red-folder maps to High impact only when the source explicitly supports that meaning,
+- Trade Plan context rules are the only layer allowed to turn context facts into warnings or entry restrictions,
+- v0 rule effects are Informational / Warning / Block New Entry / Stand Down Day,
+- context rules may be environment-sensitive,
+- unknown/unavailable context is distinct from no event,
+- provider selection is deferred until the normalized contract and rule semantics are stable,
+- Friday Asian Range no-Monday-high-impact-news is a validation case for generic context predicates, not event-service hardcoding,
+- justified schema migrations are allowed to preserve historical truth.
+
+**Rationale:** context should become richer without creating hidden directional inference, accidental authorization logic, or provider-coupled domain semantics.
