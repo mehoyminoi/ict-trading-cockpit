@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QListWidget,
     QPlainTextEdit,
     QPushButton,
+    QTabWidget,
     QVBoxLayout,
     QWidget,
 )
@@ -65,13 +66,18 @@ class CompetencyEvidenceReviewWidget(QWidget):
         )
         self.evidence_maturity_repository = evidence_maturity_repository
         self._evidence_by_id = {}
+        self.setObjectName("review.overview")
 
-        heading = QLabel("Competency Evidence")
+        heading = QLabel("Review / Development")
+        heading.setToolTip(
+            "Use Overview for orientation, then open only the work area needed."
+        )
         heading.setStyleSheet("font-weight: 600;")
 
         help_text = QLabel(
-            "Inspect accumulated evidence without converting it into a score or "
-            "automatic proficiency decision."
+            "Overview stays visible for orientation. Detailed work is grouped "
+            "below so evidence, interpretation, progression, and practice are "
+            "not exposed all at once."
         )
         help_text.setWordWrap(True)
 
@@ -84,18 +90,27 @@ class CompetencyEvidenceReviewWidget(QWidget):
             )
         self.competency_combo.currentIndexChanged.connect(self.refresh)
 
+        overview_heading = QLabel("Overview")
+        overview_heading.setStyleSheet("font-weight: 600;")
+        overview_heading.setToolTip(
+            "Compact read-only orientation assembled from existing saved state."
+        )
+
         self.summary_label = QLabel()
+        self.summary_label.setObjectName("review.overview.summary")
         self.summary_label.setWordWrap(True)
         self.summary_label.setFrameShape(QFrame.Shape.StyledPanel)
         self.summary_label.setContentsMargins(8, 6, 8, 6)
 
         self.evidence_list = QListWidget()
+        self.evidence_list.setObjectName("review.evidence.list")
         self.evidence_list.setMaximumHeight(150)
         self.evidence_list.currentItemChanged.connect(
             lambda _current, _previous: self._selection_changed()
         )
 
         self.detail_label = QLabel()
+        self.detail_label.setObjectName("review.evidence.detail")
         self.detail_label.setWordWrap(True)
         self.detail_label.setFrameShape(QFrame.Shape.StyledPanel)
         self.detail_label.setContentsMargins(8, 6, 8, 6)
@@ -105,6 +120,7 @@ class CompetencyEvidenceReviewWidget(QWidget):
         self.study_this_button.clicked.connect(self._request_targeted_study)
 
         self.cross_run_frame = QFrame()
+        self.cross_run_frame.setObjectName("review.cross_run_observation")
         self.cross_run_frame.setFrameShape(QFrame.Shape.StyledPanel)
         cross_run_layout = QVBoxLayout(self.cross_run_frame)
         cross_run_layout.setContentsMargins(8, 6, 8, 6)
@@ -112,6 +128,9 @@ class CompetencyEvidenceReviewWidget(QWidget):
 
         cross_run_heading = QLabel("Cross-Run Observation")
         cross_run_heading.setStyleSheet("font-weight: 600;")
+        cross_run_heading.setToolTip(
+            "Human-authored interpretation of what seems to be happening across reviewed runs."
+        )
         cross_run_layout.addWidget(cross_run_heading)
 
         cross_run_note = QLabel(
@@ -164,6 +183,7 @@ class CompetencyEvidenceReviewWidget(QWidget):
         cross_run_layout.addWidget(self.cross_run_status_label)
 
         self.development_frame = QFrame()
+        self.development_frame.setObjectName("review.development_direction")
         self.development_frame.setFrameShape(QFrame.Shape.StyledPanel)
         development_layout = QVBoxLayout(self.development_frame)
         development_layout.setContentsMargins(8, 6, 8, 6)
@@ -171,6 +191,9 @@ class CompetencyEvidenceReviewWidget(QWidget):
 
         development_heading = QLabel("Development Direction")
         development_heading.setStyleSheet("font-weight: 600;")
+        development_heading.setToolTip(
+            "Human-reviewed answer to: what deliberate work should happen next?"
+        )
         development_layout.addWidget(development_heading)
 
         development_note = QLabel(
@@ -219,6 +242,7 @@ class CompetencyEvidenceReviewWidget(QWidget):
         development_layout.addWidget(self.development_status_label)
 
         self.evidence_maturity_frame = QFrame()
+        self.evidence_maturity_frame.setObjectName("review.evidence_maturity")
         self.evidence_maturity_frame.setFrameShape(QFrame.Shape.StyledPanel)
         maturity_layout = QVBoxLayout(self.evidence_maturity_frame)
         maturity_layout.setContentsMargins(8, 6, 8, 6)
@@ -226,6 +250,9 @@ class CompetencyEvidenceReviewWidget(QWidget):
 
         maturity_heading = QLabel("Evidence Maturity Profile")
         maturity_heading.setStyleSheet("font-weight: 600;")
+        maturity_heading.setToolTip(
+            "Can this evidence set support a trustworthy decision at this progression boundary?"
+        )
         maturity_layout.addWidget(maturity_heading)
 
         maturity_help = QLabel(
@@ -289,21 +316,125 @@ class CompetencyEvidenceReviewWidget(QWidget):
         self.maturity_status_label.setWordWrap(True)
         maturity_layout.addWidget(self.maturity_status_label)
 
+        self.work_tabs = QTabWidget()
+        self.work_tabs.setObjectName("review.work_areas")
+        self.work_tabs.setDocumentMode(True)
+
+        self.evidence_page = QWidget()
+        self.evidence_page.setObjectName("review.evidence")
+        evidence_layout = QVBoxLayout(self.evidence_page)
+        evidence_layout.setContentsMargins(6, 6, 6, 6)
+        evidence_heading = QLabel("Evidence")
+        evidence_heading.setStyleSheet("font-weight: 600;")
+        evidence_heading.setToolTip(
+            "Reviewed observations and their run-level provenance."
+        )
+        evidence_layout.addWidget(evidence_heading)
+        evidence_layout.addWidget(self.evidence_list)
+        evidence_layout.addWidget(self.detail_label)
+        evidence_layout.addStretch()
+
+        self.interpretation_page = QWidget()
+        self.interpretation_page.setObjectName("review.interpretation")
+        interpretation_layout = QVBoxLayout(self.interpretation_page)
+        interpretation_layout.setContentsMargins(6, 6, 6, 6)
+        interpretation_heading = QLabel("Interpretation")
+        interpretation_heading.setStyleSheet("font-weight: 600;")
+        interpretation_heading.setToolTip(
+            "Human synthesis only: what seems to be happening and what work should happen next."
+        )
+        interpretation_layout.addWidget(interpretation_heading)
+        interpretation_layout.addWidget(self.cross_run_frame)
+        interpretation_layout.addWidget(self.development_frame)
+        interpretation_layout.addStretch()
+
+        self.progression_page = QWidget()
+        self.progression_page.setObjectName("review.progression")
+        self.progression_layout = QVBoxLayout(self.progression_page)
+        self.progression_layout.setContentsMargins(6, 6, 6, 6)
+        progression_heading = QLabel("Progression")
+        progression_heading.setStyleSheet("font-weight: 600;")
+        progression_heading.setToolTip(
+            "Evidence decision-usability and progression standing remain separate from Competency State."
+        )
+        self.progression_layout.addWidget(progression_heading)
+        self.progression_layout.addWidget(self.evidence_maturity_frame)
+        self.progression_layout.addStretch()
+
+        self.practice_page = QWidget()
+        self.practice_page.setObjectName("review.practice_launcher")
+        self.practice_layout = QVBoxLayout(self.practice_page)
+        self.practice_layout.setContentsMargins(6, 6, 6, 6)
+        practice_heading = QLabel("Practice / Launch")
+        practice_heading.setStyleSheet("font-weight: 600;")
+        practice_heading.setToolTip(
+            "Route deliberate Study/Rehearsal/Validation work without changing governance state."
+        )
+        practice_note = QLabel(
+            "Choose a competency above, then route targeted practice or start a "
+            "new Process Run. Practice does not itself change proficiency or eligibility."
+        )
+        practice_note.setWordWrap(True)
+        self.practice_layout.addWidget(practice_heading)
+        self.practice_layout.addWidget(practice_note)
+        self.practice_layout.addWidget(self.study_this_button)
+        self.practice_layout.addStretch()
+
+        self.work_tabs.addTab(self.evidence_page, "Evidence")
+        self.work_tabs.addTab(self.interpretation_page, "Interpretation")
+        self.work_tabs.addTab(self.progression_page, "Progression")
+        self.work_tabs.addTab(self.practice_page, "Practice & Launch")
+
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(5)
         layout.addWidget(heading)
         layout.addWidget(help_text)
         layout.addWidget(self.competency_combo)
+        layout.addWidget(overview_heading)
         layout.addWidget(self.summary_label)
-        layout.addWidget(self.evidence_list)
-        layout.addWidget(self.detail_label)
-        layout.addWidget(self.cross_run_frame)
-        layout.addWidget(self.development_frame)
-        layout.addWidget(self.evidence_maturity_frame)
-        layout.addWidget(self.study_this_button)
+        layout.addWidget(self.work_tabs, 1)
 
         self.refresh()
+
+    def set_practice_launcher_widget(self, widget: QWidget) -> None:
+        """Place the shared launcher inside the Practice / Launch work area."""
+
+        widget.setObjectName("review.practice_launcher.process_run_launcher")
+        self.practice_layout.insertWidget(
+            max(0, self.practice_layout.count() - 1),
+            widget,
+        )
+
+    def set_progression_standing_widget(self, widget: QWidget | None) -> None:
+        """Show current eligibility/attainment standing in the Progression area."""
+
+        current = getattr(self, "_progression_standing_widget", None)
+        if current is not None:
+            self.progression_layout.removeWidget(current)
+            current.setParent(None)
+        self._progression_standing_widget = widget
+        if widget is not None:
+            widget.setObjectName("review.progression_standing")
+            self.progression_layout.insertWidget(1, widget)
+
+    def select_work_area(self, name: str) -> bool:
+        """Select a stable Review / Development work area by label."""
+
+        target = name.strip().lower()
+        aliases = {
+            "evidence": self.evidence_page,
+            "interpretation": self.interpretation_page,
+            "progression": self.progression_page,
+            "practice": self.practice_page,
+            "practice & launch": self.practice_page,
+            "practice / launch": self.practice_page,
+        }
+        page = aliases.get(target)
+        if page is None:
+            return False
+        self.work_tabs.setCurrentWidget(page)
+        return True
 
     def refresh(self, *_args) -> None:
         competency_id = str(self.competency_combo.currentData() or "")

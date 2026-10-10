@@ -544,6 +544,73 @@ The current Alpha 0.7 plan cannot manually exercise a real configured crossing; 
 
 ---
 
+## Current branch acceptance — Operator-loop friction reduction v0
+
+Before merging `feature/operator-loop-friction-v0`, use this short acceptance pass.
+
+### A. Orientation
+
+- [PASS] Confirm Review / Development opens with a compact Overview and focused work-area tabs rather than one continuous wall of editors.
+  - Where: **Trade Plan > Review / Development**
+  - Look for: **Overview** plus **Evidence / Interpretation / Progression / Practice & Launch**
+  - Expected: Overview remains visible while only one detailed work area is active at a time.
+
+- [PASS] Confirm the selected competency remains the shared context across work areas.
+  - Where: **Trade Plan > Review / Development**, competency selector above Overview
+  - Look for: select one competency, then switch among the four work-area tabs
+  - Expected: the selected competency does not reset merely because you change work areas.
+
+### B. Evidence and Interpretation
+
+- [PASS] Confirm Evidence is easy to locate without scanning Interpretation or Progression controls.
+  - Where: **Review / Development > Evidence**
+  - Look for: evidence list and selected evidence detail
+  - Expected: Cross-Run Observation, Development Direction, and Evidence Maturity editors are not simultaneously visible in this area.
+
+- [PASS] Confirm human synthesis controls are grouped together.
+  - Where: **Review / Development > Interpretation**
+  - Look for: **Cross-Run Observation** and **Development Direction**
+  - Expected: both existing editors remain functional and their saved summaries still appear in Overview.
+
+### C. Progression
+
+- [PASS] Confirm Evidence Maturity is isolated in the Progression work area.
+  - Where: **Review / Development > Progression**
+  - Look for: **Evidence Maturity Profile**
+  - Expected: saved boundary/state/notes still load correctly and no progression/eligibility action is implied by editing maturity.
+
+- [PASS] Confirm Alpha 0.7 remains quiet because no real progression policy is configured.
+  - Where: **Review / Development > Progression**
+  - Look for: no synthetic progression-standing/regression controls under the normal Alpha 0.7 plan
+  - Expected: the UI does not invent readiness criteria, attainment, or regression state.
+
+### D. Practice / Launch
+
+- [PASS] Confirm targeted practice and the Process Run launcher are now in the same focused area.
+  - Where: **Review / Development > Practice & Launch**
+  - Look for: **Study this competency** and **New Process Run**
+  - Expected: the launcher is reachable without scrolling through Evidence/Interpretation/Progression editors.
+
+- [PASS] Confirm targeted **Study this competency** still prepares Historical Backtest / Study correctly.
+  - Where: select a competency, then **Practice & Launch > Study this competency**
+  - Look for: Historical Backtest selected, competency focus checked, study question ready for entry
+  - Expected: existing targeted Study routing behavior is unchanged.
+
+### E. Quiet guidance and regression
+
+- [PASS] Confirm technical headings expose quiet explanatory tooltips.
+  - Where: hover **Cross-Run Observation**, **Development Direction**, and **Evidence Maturity Profile**
+  - Look for: concise definitions that distinguish what each concept means
+  - Expected: definitions provide context without adding another permanent wall of text.
+
+- [PASS] Confirm the full automated suite is green and schema remains **v33**.
+  - Where: terminal / database check
+  - Look for: pytest green; `PRAGMA user_version` = 33
+  - Expected: this usability slice introduces no schema/domain/Trade Plan changes.
+
+
+---
+
 ## Reporting results
 
 Report results as:

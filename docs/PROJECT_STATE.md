@@ -6,15 +6,15 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `design/operator-loop-friction-v0`
-- **Main baseline:** `d2c4b9303ea4720370700ab02bd4c0cc2434e8df` — PR #47 merged Regression / downgrade semantics v0
+- **Active branch:** `feature/operator-loop-friction-v0`
+- **Main baseline:** `b85da6dde3e00af7cc12a593b0ae5e6a4da97eb2` — PR #48 merged operator-loop friction reduction v0 design
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Pre-C5 operator-loop friction reduction design
+- **Current slice:** Pre-C5 operator-loop friction reduction v0 implementation
 - **Schema:** v33
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** full suite green on 2026-10-10 for Regression / downgrade semantics v0
-- **Manual smoke test:** Regression / downgrade semantics v0 acceptance PASS — schema v33 confirmed, Alpha 0.7 remains NOT CONFIGURED/non-restrictive, historical-attainment semantics accepted, and learning-loop regressions manually checked. Operator explicitly reported Review / Development as functionally correct but cognitively taxing to navigate; testing/UI friction is now a first-class next discussion.
+- **Verified full test result:** full suite green on 2026-10-10 for operator-loop friction reduction v0
+- **Manual smoke test:** Operator-loop friction reduction v0 acceptance PASS — schema v33 confirmed, all guided checks passed, and the operator explicitly confirmed that the smoke test was materially easier to follow and navigate.
 
 ## Current completed slice — Competency / Proficiency substrate v0
 
@@ -135,29 +135,34 @@ C3 — Explainable Eligibility v0 is complete and merged.
 
 C4 — Regression / downgrade semantics v0 is complete and merged.
 
-The pre-C5 **operator-loop friction reduction v0 design is operator-accepted and ready for implementation** on `design/operator-loop-friction-v0`.
+The pre-C5 **operator-loop friction reduction v0** is **acceptance-complete and ready for PR/merge** on `feature/operator-loop-friction-v0`.
 
-Accepted implementation direction:
+Accepted implementation:
 
-- five Review / Development presentation areas:
-  - Overview,
+- always-visible compact Overview,
+- focused work areas:
   - Evidence,
   - Interpretation,
   - Progression,
-  - Practice / Launch,
-- compact read-only Overview from existing state,
-- progressive disclosure so dense editors are not all exposed simultaneously,
-- saved-state summaries remain visible when detailed controls are hidden,
-- quiet definitions/tooltips for technical governance terms,
-- stable UI anchor IDs for future guided navigation/testing,
-- smoke-test instructions move toward Where / Look for / Expected guidance,
-- full-text search deferred,
-- smoke-runner -> Cockpit deep-link/highlight plumbing deferred,
-- no schema/domain/Trade Plan changes.
+  - Practice & Launch,
+- only one detailed work area exposed at a time,
+- Cross-Run Observation + Development Direction grouped under Interpretation,
+- Evidence Maturity + future progression standing grouped under Progression,
+- targeted Study + Process Run launcher grouped under Practice & Launch,
+- quiet tooltips for major governance concepts,
+- stable UI anchors for future guided navigation/testing,
+- guided smoke instructions using Where / Look for / Expected,
+- schema unchanged at **v33**,
+- no domain/Trade Plan semantic changes.
 
-Next action: merge this design checkpoint, then implement the small usability slice before resuming C5.
+Validation:
 
-After acceptance of that implementation, resume:
+- full automated suite: **operator-confirmed green** on 2026-10-10,
+- focused friction-reduction smoke test: **fully PASS / ACCEPTED**,
+- schema **v33** manually confirmed,
+- subjective acceptance: operator explicitly reported the new smoke test was much easier to follow and navigate.
+
+After merge, return to:
 
 **C5 — Operator-loop integration and guardrails**
 
