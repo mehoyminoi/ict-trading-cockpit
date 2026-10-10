@@ -11,6 +11,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from ict_cockpit.database.competency_assessment_repository import (
+    CompetencyAssessmentRepository,
+)
 from ict_cockpit.database.competency_development_direction_repository import (
     CompetencyDevelopmentDirectionRepository,
 )
@@ -22,6 +25,9 @@ from ict_cockpit.database.competency_evidence_repository import (
 )
 from ict_cockpit.database.competency_evidence_maturity_repository import (
     CompetencyEvidenceMaturityRepository,
+)
+from ict_cockpit.database.progression_certification_repository import (
+    ProgressionCertificationRepository,
 )
 from ict_cockpit.gui.competency_evidence_review_widget import (
     CompetencyEvidenceReviewWidget,
@@ -42,6 +48,7 @@ class TradePlanWidget(QWidget):
     def __init__(
         self,
         trade_plan: TradePlanDefinition,
+        competency_assessment_repository: CompetencyAssessmentRepository | None = None,
         competency_evidence_repository: CompetencyEvidenceRepository | None = None,
         competency_development_direction_repository:
             CompetencyDevelopmentDirectionRepository | None = None,
@@ -49,9 +56,12 @@ class TradePlanWidget(QWidget):
             CompetencyCrossRunObservationRepository | None = None,
         competency_evidence_maturity_repository:
             CompetencyEvidenceMaturityRepository | None = None,
+        progression_certification_repository:
+            ProgressionCertificationRepository | None = None,
     ) -> None:
         super().__init__()
         self.trade_plan = trade_plan
+        self.competency_assessment_repository = competency_assessment_repository
         self.competency_evidence_repository = competency_evidence_repository
         self.competency_development_direction_repository = (
             competency_development_direction_repository
@@ -61,6 +71,9 @@ class TradePlanWidget(QWidget):
         )
         self.competency_evidence_maturity_repository = (
             competency_evidence_maturity_repository
+        )
+        self.progression_certification_repository = (
+            progression_certification_repository
         )
         self.competency_evidence_review_widget = None
 
@@ -110,6 +123,17 @@ class TradePlanWidget(QWidget):
             self.trading_day_shell_widget,
             trade_plan_revision=trade_plan.revision,
             competencies=trade_plan.competencies,
+            trade_plan=trade_plan,
+            competency_assessment_repository=(
+                self.competency_assessment_repository
+            ),
+            competency_evidence_repository=self.competency_evidence_repository,
+            competency_evidence_maturity_repository=(
+                self.competency_evidence_maturity_repository
+            ),
+            progression_certification_repository=(
+                self.progression_certification_repository
+            ),
             on_launched=self.focus_runtime,
         )
 
