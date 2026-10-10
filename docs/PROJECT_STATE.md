@@ -6,11 +6,11 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `design/operator-loop-integration-guardrails-v0`
-- **Main baseline:** `04b339c6b54f266f8037afaab5c8225bc440203d` — PR #49 merged operator-loop friction reduction v0
+- **Active branch:** `feature/operator-loop-integration-guardrails-v0`
+- **Main baseline:** `a73b916ab61ffc98a2dcd7d2659b570214913660` — PR #50 merged C5 operator-loop integration and guardrails v0 design
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** C5 design — Operator-loop integration and guardrails v0
+- **Current slice:** C5 implementation — Operator-loop integration and guardrails v0
 - **Schema:** v33
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** full suite green on 2026-10-10 for operator-loop friction reduction v0
@@ -137,25 +137,39 @@ C4 — Regression / downgrade semantics v0 is complete and merged.
 
 The pre-C5 operator-loop friction reduction v0 is complete and merged.
 
-The **C5 — Operator-loop integration and guardrails v0 design is operator-accepted and ready for implementation** on `design/operator-loop-integration-guardrails-v0`.
+**C5 — Operator-loop integration and guardrails v0** is implemented for validation on `feature/operator-loop-integration-guardrails-v0`.
 
-Accepted implementation direction:
+Implemented direction:
 
-- progression eligibility governs new upward environment starts only,
-- active runs are not auto-terminated/demoted by later progression changes,
-- progression remains separate from setup/trade authorization and never blocks exit/flatten,
-- temporary operating/safety restrictions remain outside C5 v0,
-- deterministic requirement-derived guidance is allowed; inferred coaching is not,
-- BLOCKED may stage the recommended lower environment but never auto-start it,
-- preserve semantically valid Study question/competency focus when staging downward,
-- Review / Development > Progression is the focused explanation surface,
-- Human Certification remains edited under Rules / Safety,
-- restore/resume does not re-run launch gating or duplicate attainment,
-- derive integration state on demand,
-- prefer no schema change from **v33**,
-- Alpha 0.7 remains without real progression thresholds/policy.
+- new derived `OperatorProgressionStatus` composes environment, purpose, boundary, eligibility, standing, lower-rung recommendation, deterministic guidance, and navigation target without persistence,
+- launcher shows concise progression status + boundary + blocker names,
+- detailed requirement results are progressively disclosed,
+- configured BLOCKED exposes **Stage recommended lower environment** without auto-start,
+- downward staging preserves existing launcher intent and creates no attainment/regression/demotion record,
+- configured BLOCKED exposes **Review Progression** navigation,
+- Review / Development > Progression now shows requirement-level results and deterministic Next guidance,
+- Human Certification remains edited only under Rules / Safety and Progression points there,
+- active-run behavior remains non-policing: later eligibility changes do not silently terminate/demote the current run,
+- existing deliberate AVAILABLE crossing remains the only attainment-creation point,
+- Alpha 0.7 remains NOT CONFIGURED/non-restrictive,
+- schema remains expected at **v33**.
 
-Next action: merge this C5 design checkpoint, then implement C5.1-C5.5.
+Automated additions:
+
+- derived C5 operator status,
+- lower-rung staging without run/history mutation,
+- blocked navigation to focused Progression area,
+- progressive requirement-detail disclosure,
+- active-run non-demotion after later eligibility loss,
+- Alpha 0.7 unchanged behavior.
+
+Next action:
+
+1. pull this branch,
+2. run the full automated suite,
+3. fix any regression,
+4. complete the guided C5 smoke section,
+5. merge only after acceptance.
 
 ## System guide maintenance
 
