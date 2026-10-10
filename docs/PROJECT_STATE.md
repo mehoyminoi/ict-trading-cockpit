@@ -6,11 +6,11 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `feature/operator-loop-integration-guardrails-v0`
-- **Main baseline:** `a73b916ab61ffc98a2dcd7d2659b570214913660` — PR #50 merged C5 operator-loop integration and guardrails v0 design
+- **Active branch:** `design/context-maturity-v0`
+- **Main baseline:** `73370bc42d0fed5308c52b7ea51017486a5cc8b2` — PR #51 merged C5 operator-loop integration and guardrails v0
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** C5 implementation — Operator-loop integration and guardrails v0
+- **Current slice:** Milestone E design — Context maturity: QT/AMDX, news, and distortions
 - **Schema:** v33
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** **340 passed** on 2026-10-10 for C5 operator-loop integration and guardrails v0
@@ -127,43 +127,44 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 ## Current task
 
-C1 — Evidence Maturity Profile v0 is complete and merged.
+Milestone C — Evidence Maturity and progression governance is complete and merged.
 
-C2 — Trade Plan Progression Policy substrate v0 is complete and merged.
+The active major roadmap frontier is:
 
-C3 — Explainable Eligibility v0 is complete and merged.
+**Milestone E — Context maturity: QT/AMDX, news, and distortions**
 
-C4 — Regression / downgrade semantics v0 is complete and merged.
+The Milestone E v0 design is **operator-accepted and ready for implementation** on `design/context-maturity-v0`.
 
-C5 — Operator-loop integration and guardrails v0 is **acceptance-complete and ready for merge**.
+Accepted sequence:
 
-Milestone C — **Evidence Maturity and progression governance** is therefore complete as an architectural milestone.
+1. E1 — Expected vs observed QT/AMDX review loop.
+2. E2 — Provider-neutral market-context event model.
+3. E3 — Historical context snapshots and deterministic Replay/Historical context.
+4. E4 — Compact operator context surfaces.
+5. E5 — Declarative Trade Plan context rules.
+6. E6 — Real provider integration after contracts stabilize.
+7. E7 — Generic model-specific context predicates.
 
-C5 accepted implementation:
+Accepted guardrails:
 
-- derived `OperatorProgressionStatus` composes environment, purpose, boundary, eligibility, standing, lower-rung recommendation, deterministic guidance, and navigation target without persisting mutable current truth,
-- launcher shows concise progression status, governing boundary, blocker names, and progressively disclosed requirement detail,
-- configured BLOCKED can stage the normal lower environment without auto-starting,
-- lower-rung staging preserves semantically valid intent and creates no attainment/regression/demotion event,
-- blocked launcher state can navigate directly to **Review / Development > Progression**,
-- Progression shows current eligibility, requirement results, Evidence Maturity, historical attainment/standing, and deterministic Next guidance,
-- Human Certification remains authoritatively edited only under Rules / Safety,
-- legitimately started runs are not silently terminated/demoted if progression support later changes,
-- deliberate configured AVAILABLE boundary crossing remains the only attainment-creation point,
-- restore/browse/staging do not create duplicate attainment,
-- progression remains separate from setup/trade authorization and cannot block exit/flatten,
-- temporary operating/safety restrictions remain a separate future layer,
-- Alpha 0.7 remains **NOT CONFIGURED** and non-restrictive,
-- schema remains **v33**.
+- raw QT/time facts remain separate from AMDX/XAMD interpretation,
+- external event/schedule facts remain separate from restrictions,
+- expected-vs-observed mismatch remains descriptive only,
+- event presence does not automatically mean No Trade,
+- QT structural Distortion remains distinct from schedule/event irregularity,
+- Replay/Historical use selected historical market time,
+- run-specific context preserves source/provenance,
+- only Trade Plan context rules may create warnings or entry restrictions,
+- rule effects: Informational / Warning / Block New Entry / Stand Down Day,
+- rules may be environment-sensitive,
+- unknown context is distinct from no event,
+- provider architecture remains generic,
+- real provider selection is deferred,
+- Friday Asian Range no-Monday-high-impact-news is a generic-predicate validation case,
+- schema migrations are permitted when required for honest historical snapshots,
+- TDA/Watch remain compact while Review carries full detail/provenance.
 
-Validation:
-
-- full automated suite: **340 passed**,
-- guided C5 smoke test: **fully PASS**,
-- schema **v33** manually confirmed,
-- no real Alpha 0.7 progression policy or readiness threshold was introduced.
-
-After merge, the next major roadmap milestone is **Milestone E — Context maturity: QT/AMDX, news, and distortions**. Milestone D — continuous operator-loop hardening remains parallel and should interrupt only for friction proven through actual use.
+Next action: merge this Milestone E design checkpoint, then implement E1 first.
 
 ## System guide maintenance
 
