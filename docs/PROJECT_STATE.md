@@ -6,11 +6,11 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `design/operator-loop-friction-v0`
-- **Main baseline:** `d2c4b9303ea4720370700ab02bd4c0cc2434e8df` — PR #47 merged Regression / downgrade semantics v0
+- **Active branch:** `feature/operator-loop-friction-v0`
+- **Main baseline:** `b85da6dde3e00af7cc12a593b0ae5e6a4da97eb2` — PR #48 merged operator-loop friction reduction v0 design
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Pre-C5 operator-loop friction reduction design
+- **Current slice:** Pre-C5 operator-loop friction reduction v0 implementation
 - **Schema:** v33
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** full suite green on 2026-10-10 for Regression / downgrade semantics v0
@@ -135,29 +135,39 @@ C3 — Explainable Eligibility v0 is complete and merged.
 
 C4 — Regression / downgrade semantics v0 is complete and merged.
 
-The pre-C5 **operator-loop friction reduction v0 design is operator-accepted and ready for implementation** on `design/operator-loop-friction-v0`.
+The pre-C5 **operator-loop friction reduction v0** is implemented for validation on `feature/operator-loop-friction-v0`.
 
-Accepted implementation direction:
+Implemented without schema/domain changes:
 
-- five Review / Development presentation areas:
-  - Overview,
+- compact Review / Development Overview remains visible for orientation,
+- four focused detailed work areas:
   - Evidence,
   - Interpretation,
   - Progression,
-  - Practice / Launch,
-- compact read-only Overview from existing state,
-- progressive disclosure so dense editors are not all exposed simultaneously,
-- saved-state summaries remain visible when detailed controls are hidden,
-- quiet definitions/tooltips for technical governance terms,
-- stable UI anchor IDs for future guided navigation/testing,
-- smoke-test instructions move toward Where / Look for / Expected guidance,
-- full-text search deferred,
-- smoke-runner -> Cockpit deep-link/highlight plumbing deferred,
-- no schema/domain/Trade Plan changes.
+  - Practice & Launch,
+- together with the always-visible Overview these form the accepted five-area presentation model,
+- Evidence contains only evidence list/detail,
+- Interpretation groups Cross-Run Observation + Development Direction,
+- Progression groups Evidence Maturity and future configured progression standing,
+- Practice & Launch now contains targeted Study routing + the shared Process Run launcher,
+- detailed editors are no longer all visible simultaneously,
+- quiet tooltips define major governance concepts,
+- stable UI anchors/object names were added for Overview, Evidence, Interpretation, Cross-Run Observation, Development Direction, Evidence Maturity, Progression, and Practice / Launch,
+- existing repositories/domain semantics remain unchanged,
+- schema remains **v33**,
+- a guided smoke checklist now uses **Where / Look for / Expected** instructions,
+- five focused automated tests cover work-area structure, one-area-at-a-time navigation, launcher placement, stable anchors, and unchanged schema.
 
-Next action: merge this design checkpoint, then implement the small usability slice before resuming C5.
+Next action:
 
-After acceptance of that implementation, resume:
+1. pull this branch,
+2. run the full automated suite,
+3. resolve any failures,
+4. complete the short **Operator-loop friction reduction v0** smoke section,
+5. assess whether Review / Development materially feels easier to navigate,
+6. merge only after acceptance.
+
+After this usability checkpoint, resume:
 
 **C5 — Operator-loop integration and guardrails**
 
