@@ -1,6 +1,6 @@
-# C5 — Operator-loop integration and guardrails v0 design candidate
+# C5 — Operator-loop integration and guardrails v0 design
 
-**Status:** Design candidate for operator review  
+**Status:** Accepted for v0 implementation  
 **Milestone:** C5 — Operator-loop integration and guardrails  
 **Schema expectation:** no change unless implementation proves otherwise
 
@@ -439,3 +439,21 @@ A successful C5 v0 should make this true:
 10. Treat restore/resume of an already-started run as historical continuation: no new launch gating and no duplicate Progression Attainment?
 11. Derive C5 integration state on demand with no new persisted current-status table and preferably no schema change from v33?
 12. After C5, leave real progression thresholds/policies unconfigured in Alpha 0.7 until separately and deliberately designed?
+
+
+## Accepted operator decisions
+
+All twelve C5 design points were accepted on 2026-10-10.
+
+1. Progression eligibility is a new-run/upward-transition guardrail, not an active-run kill switch.
+2. Once legitimately started, a run is not auto-terminated/demoted because progression state later changes.
+3. Progression remains separate from setup/trade authorization and never blocks exit/flatten.
+4. Temporary operating/safety restrictions remain outside C5 v0 while preserving the future composition boundary.
+5. Deterministic guidance from explicit requirement reasons is allowed; inferred coaching is not.
+6. When BLOCKED, offer Stage recommended lower environment; preselect only, never auto-start.
+7. Preserve semantically valid Study question/competency focus when staging downward; never create a regression/demotion event.
+8. Review / Development > Progression becomes the focused explanation surface, with launcher navigation to it.
+9. Human Certification remains authoritatively edited under Rules / Safety; Progression explains and points there.
+10. Restore/resume of an already-started run is historical continuation: no new launch gating and no duplicate attainment.
+11. Derive C5 integration state on demand; prefer no schema change from v33.
+12. Alpha 0.7 remains without real progression thresholds/policies after C5.
