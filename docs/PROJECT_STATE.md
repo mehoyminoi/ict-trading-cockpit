@@ -10,10 +10,11 @@ This is the starting point for a new development chat or developer handoff. Git 
 - **Main baseline:** `cf5c67e1d5df7b0345b370f7463a2f70bb8186e4` — PR #54 merged Milestone E2 provider-neutral market-context events
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Milestone E3 implementation — Historical market-context snapshots
+- **Implementation checkpoint:** `e965fbf9afabef1927a86227580fd436e7e8d1da` — Record E3 historical snapshot implementation checkpoint
+- **Current slice:** Milestone E3 acceptance — Historical market-context snapshots
 - **Schema:** v35
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** **356 passed** on 2026-10-10 for Milestone E2 provider-neutral market-context event model
+- **Verified full test result:** **364 passed** on 2026-10-10 for Milestone E3 historical market-context snapshots
 - **Manual smoke test:** Milestone E1 expected-vs-observed QT/AMDX acceptance **fully PASS** — schema v34 confirmed and all guided checks passed.
 
 ## Current completed slice — Competency / Proficiency substrate v0
@@ -135,7 +136,7 @@ E1 — Expected vs observed QT/AMDX review loop is complete and merged.
 
 E2 — Provider-neutral market-context event model is complete and merged.
 
-**E3 — Historical context snapshots and deterministic Replay/Historical event context** is implemented for validation on `feature/context-maturity-e3-v0`.
+**E3 — Historical context snapshots and deterministic Replay/Historical event context** is acceptance-complete and ready for merge on `feature/context-maturity-e3-v0`.
 
 Implemented E3 behavior:
 
@@ -174,13 +175,14 @@ Focused tests cover:
 - legacy/missing snapshot semantics,
 - schema v35 storage.
 
-Next action:
+Validation:
 
-1. pull latest `feature/context-maturity-e3-v0`,
-2. run the full automated suite,
-3. fix any regressions,
-4. if green, E3 can be accepted without a UI smoke pass because no operator-facing event surface exists yet,
-5. merge E3 before starting E4.
+- full automated suite: **364 passed**,
+- operator independently reported a green local full suite,
+- no new manual UI smoke pass required; E3 adds no operator-facing event surface,
+- schema **v35**, Trade Plan **Alpha 0.7**.
+
+Next action: merge E3, then start **E4 — compact operator context surfaces** from the merged main baseline. E4 exposes the stored context in TDA, Watch, and Review while preserving availability, timing, and provenance semantics. It requires focused operator acceptance before merge.
 
 ## System guide maintenance
 
