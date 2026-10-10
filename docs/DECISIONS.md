@@ -480,3 +480,31 @@ A future configured BLOCKED result may prevent upward transition, while downward
 Regression/demotion belongs to C4. Temporary operating/safety restrictions remain a separate layer.
 
 **Rationale:** this preserves explicit Trade Plan ownership, cross-revision provenance, and operator explainability without collapsing evidence, competency state, policy, eligibility, and operating restrictions into one score or lock.
+
+
+## 2026-10-09 — Progression attainment is historical truth separate from current eligibility
+
+**Status:** Accepted
+
+A previously cleared progression boundary remains a historical fact even if current eligibility later becomes BLOCKED.
+
+C4 distinguishes:
+
+- Competency State,
+- current Eligibility,
+- historical Progression Attainment,
+- Development Direction.
+
+An AVAILABLE -> BLOCKED transition under the same plan/policy may be detected as **Eligibility Loss**, but this does not automatically imply competency regression.
+
+**Confirmed Competency Regression** requires explicit human review.
+
+Trade Plan revision changes that require fresh contextual evidence are treated as **Revalidation Required** when the underlying competency may still be intact.
+
+Never-attained insufficiency is not regression. Voluntary downward movement is non-punitive and preserves prior attainment. Temporary news/risk/personal/account restrictions remain outside progression-regression semantics.
+
+Recovery uses the same published progression policy. C4 does not introduce a separate hidden recovery score.
+
+Even after human-confirmed regression, Competency State, Evidence Maturity, and Development Direction remain deliberate separate state changes in v0 rather than automatic mutations.
+
+**Rationale:** historical truth, skill state, present permission, and next-work intent are different concepts and must remain explainable rather than collapsing into one red/green progression state.
