@@ -533,3 +533,28 @@ Smoke-test instructions should increasingly specify **Where / Look for / Expecte
 Full-text Review / Development search and automatic smoke-runner -> Cockpit deep-link/highlight plumbing are deferred until the simpler structure is proven.
 
 **Rationale:** operator cognition is part of system safety and learning quality. Dense governance capability should not consume the working memory needed for analysis, learning, and deliberate decision-making.
+
+
+## 2026-10-10 — Progression gating applies at new upward environment starts, not continuous runtime policing
+
+**Status:** Accepted
+
+C5 integrates the progression-governance substrate into the operator loop.
+
+Accepted behavior:
+
+- progression eligibility governs new upward environment starts,
+- a legitimately started run is not auto-terminated or auto-demoted if progression state later changes,
+- progression eligibility remains distinct from setup/trade authorization,
+- progression logic must never block exit/flatten,
+- temporary operating/safety restrictions remain a separate future layer,
+- BLOCKED may expose deterministic guidance from explicit requirement reasons but must not create inferred coaching,
+- BLOCKED may stage the recommended lower environment but never auto-start it,
+- lower-rung staging preserves semantically valid Study question/competency focus where possible and creates no regression/demotion event,
+- Review / Development > Progression is the focused explanation surface,
+- Human Certification remains authoritatively edited under Rules / Safety,
+- restore/resume of an existing run does not re-run launch gating or create duplicate Progression Attainment,
+- C5 integration state is derived on demand rather than persisted as mutable truth,
+- Alpha 0.7 remains without a real progression policy.
+
+**Rationale:** progression governance should constrain the correct transition while preserving historical truth, operator agency, downward movement, execution safety, and separation from trade authorization.
