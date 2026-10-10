@@ -1155,9 +1155,17 @@ A Trading Run captures one event/schedule snapshot at start. Replay and Historic
 
 The **Market context** card presents that record in TDA, Watch, and Review. Its summary is compact; **Show context details** exposes query/reference/capture times, provider-native facts, run/Trade Plan provenance, and QT expectation/observed context. Watch's next recorded time follows explicit run market time, not today's clock for historical runs.
 
-The card is not a refreshed calendar feed. Past, cancelled, postponed, and released records remain available in detail. Outside the captured window, timing is explicitly unknown for the new context. Schedule facts remain separate from raw QT structure and technician interpretation. Restriction evaluation belongs to later declarative Trade Plan context rules.
+The card is not a refreshed calendar feed. Past, cancelled, postponed, and released records remain available in detail. Outside the captured window, timing is explicitly unknown for the new context. Schedule facts remain separate from raw QT structure and technician interpretation. E5 evaluates restrictions only through explicit Trade Plan context rules recorded with the run.
 
 ---
+
+## Current E5 context-policy behavior
+
+A configured plan can define conjunctive NY clock/event conditions, explicit environments, matched effects, unknown effects, and rationale. Each run keeps its rule definitions in schema v36; restore evaluates those stored definitions, not the current plan. The Market context card shows applicable effects and expands to reasons, event IDs, rule rationale, and applicability.
+
+Unknown calendar availability, partial coverage, missing time, and unknown selector/status facts remain explicit. A day snapshot can establish a positive event fact but cannot prove a clear whole week. Block New Entry and Stand Down Day contribute to candidate authorization alongside existing manual gates and setup criteria. Warnings and informational results grant no permission. Evaluation does not query a provider or mutate context; Stand Down Day does not automatically conclude a run or gate exits.
+
+Alpha 0.7 has no declarative context rules. Its manual trading-day gate remains in force. Publishing real automatic exclusions needs an explicit distinction between account applicability (live/eval/funded versus paper), run environment, and historical context coverage, then a new plan revision. The disposable E5 fixture is not published policy.
 
 # 28. Structured records and derived outputs
 

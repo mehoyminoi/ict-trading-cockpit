@@ -192,4 +192,20 @@ def build_market_context_view(
         ]
     if not records:
         detail.append("No event records stored.")
+    results = run.context_rule_results(market)
+    detail += ["", "Trade Plan context rules — evaluated from stored rules and explicit market time"]
+    if not results:
+        detail.append("No declarative context rules recorded; existing manual Trade Plan gates remain in force.")
+    for rule, result in zip(run.context_rule_snapshot, results):
+        effect = result.effect.value if result.effect else "No effect"
+        detail += [f"{result.name} [{result.rule_id}]: {result.state.value} / {effect}",
+                   f"Rule rationale: {rule['rationale']}",
+                   f"Applies in: {', '.join(rule['environments'])}",
+                   f"Matched effect / unknown effect: {rule['effect']} / {rule['unknown_effect']}",
+                   *result.reasons, f"Matching/potential event IDs: {', '.join(result.event_ids) or 'None'}"]
+    active = [result for result in results if result.effect is not None]
+    if active:
+        event_summary += " · Plan context: " + "; ".join(
+            f"{result.name}: {result.state.value} / {result.effect.value}" for result in active
+        )
     return MarketContextView(availability, temporal, event_summary, "\n".join(detail))

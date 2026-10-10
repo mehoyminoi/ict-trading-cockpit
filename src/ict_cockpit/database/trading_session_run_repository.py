@@ -93,8 +93,8 @@ class TradingSessionRunRepository:
                     authorization_policy_snapshot_json, authorization_gate_states_json,
                     market_time_context_json, market_context_snapshot_json,
                     qt_context_json, review_observed_qt_context_json,
-                    review_qt_context_note, study_context_json, run_purpose
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    review_qt_context_note, study_context_json, run_purpose, context_rule_snapshot_json
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                     trading_day_id = excluded.trading_day_id,
                     session_name = excluded.session_name,
@@ -127,7 +127,8 @@ class TradingSessionRunRepository:
                     review_observed_qt_context_json = excluded.review_observed_qt_context_json,
                     review_qt_context_note = excluded.review_qt_context_note,
                     study_context_json = excluded.study_context_json,
-                    run_purpose = excluded.run_purpose
+                    run_purpose = excluded.run_purpose,
+                    context_rule_snapshot_json = excluded.context_rule_snapshot_json
                 """,
                 (
                     session_run.id,
@@ -163,6 +164,7 @@ class TradingSessionRunRepository:
                     session_run.review_qt_context_note,
                     study_context_json,
                     session_run.purpose.value,
+                    json.dumps(session_run.context_rule_snapshot, sort_keys=True),
                 ),
             )
 
@@ -191,7 +193,7 @@ class TradingSessionRunRepository:
                    authorization_policy_snapshot_json, authorization_gate_states_json,
                    market_time_context_json, market_context_snapshot_json,
                    qt_context_json, review_observed_qt_context_json,
-                   review_qt_context_note, study_context_json, run_purpose
+                   review_qt_context_note, study_context_json, run_purpose, context_rule_snapshot_json
             FROM trading_session_run
             {where_clause}
         """
@@ -234,6 +236,7 @@ class TradingSessionRunRepository:
                 watch_point_id: WatchPointState(state)
                 for watch_point_id, state in json.loads(row[16]).items()
             },
+            context_rule_snapshot=json.loads(row[33] or "[]"),
             environment=RunEnvironment(row[17]),
             trade_plan_revision=row[18],
             review_interpretation_outcome=InterpretationOutcome(row[19]),

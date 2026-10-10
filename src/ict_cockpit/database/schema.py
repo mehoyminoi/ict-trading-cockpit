@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 35
+CURRENT_SCHEMA_VERSION = 36
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -113,6 +113,9 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 34:
             _migrate_version_34_to_35(connection)
             version = 35
+        if version == 35:
+            _migrate_version_35_to_36(connection)
+            version = 36
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -753,3 +756,11 @@ def _migrate_version_34_to_35(connection: sqlite3.Connection) -> None:
         "TEXT NOT NULL DEFAULT '{}'"
     )
     connection.execute("PRAGMA user_version = 35")
+
+
+def _migrate_version_35_to_36(connection: sqlite3.Connection) -> None:
+    connection.execute(
+        "ALTER TABLE trading_session_run "
+        "ADD COLUMN context_rule_snapshot_json TEXT NOT NULL DEFAULT '[]'"
+    )
+    connection.execute("PRAGMA user_version = 36")

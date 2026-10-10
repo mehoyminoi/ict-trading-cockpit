@@ -3,6 +3,8 @@ from datetime import datetime
 from enum import Enum
 from uuid import uuid4
 
+from ict_cockpit.context_rules import normalize_context_rules
+from ict_cockpit.analysis.context_policy import evaluate_context_rules
 from ict_cockpit.analysis.market_context_event import MarketContextSnapshot
 from ict_cockpit.analysis.market_time import temporal_relevance_for
 from ict_cockpit.analysis.quarter_theory import (
@@ -335,6 +337,7 @@ class TradingSessionRun:
     authorization_gate_states: dict[str, AuthorizationGateState] = field(default_factory=dict)
     market_time_context: dict = field(default_factory=dict)
     market_context_snapshot: dict = field(default_factory=dict)
+    context_rule_snapshot: list[dict] = field(default_factory=list)
     qt_context: dict[str, str] = field(default_factory=dict)
     study_context: StudyRunContext | None = None
 
@@ -369,6 +372,7 @@ class TradingSessionRun:
         self.selected_playbook_revision = self.selected_playbook_revision.strip()
         self.playbook_snapshot = dict(self.playbook_snapshot or {})
         self.authorization_policy_snapshot = [dict(item) for item in (self.authorization_policy_snapshot or [])]
+        self.context_rule_snapshot = [rule.to_dict() for rule in normalize_context_rules(self.context_rule_snapshot)]
         self.market_time_context = dict(self.market_time_context or {})
         self.market_context_snapshot = MarketContextSnapshot.from_dict(
             self.market_context_snapshot
@@ -568,6 +572,13 @@ class TradingSessionRun:
         candidate.set_watch_point_state(watch_point_id, state)
         self._touch()
 
+    def context_rule_results(self, market_time_context: dict | None = None):
+        return evaluate_context_rules(
+            self.context_rule_snapshot, environment=self.environment.value,
+            market_time_context=self.market_time_context if market_time_context is None else market_time_context,
+            market_context_snapshot=self.market_context_snapshot,
+        )
+
     def candidate_authorization(self, candidate_id: str) -> AuthorizationResult:
         candidate = self.setup_candidate_by_id(candidate_id)
         if candidate is None:
@@ -578,7 +589,10 @@ class TradingSessionRun:
                 detail="Trade Plan authorization gates are not snapshotted for this run.",
             )
 
-        blockers: list[str] = []
+        blockers: list[str] = [
+            f"Context rule {result.name}: {result.state.value} / {result.effect.value} ({'; '.join(result.reasons)})"
+            for result in self.context_rule_results() if result.blocks_new_entry
+        ]
         timed_window_ids = list(
             candidate.definition_snapshot.get("timed_window_ids", []) or []
         )

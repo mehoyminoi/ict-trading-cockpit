@@ -139,6 +139,7 @@ class TradePlanWidget(QWidget):
             live_watch_policy=trade_plan.live_watch_policy,
             playbooks=trade_plan.playbooks,
             authorization_gates=trade_plan.authorization_gates,
+            context_rules=trade_plan.context_rules,
             trade_plan_revision=trade_plan.revision,
         )
 

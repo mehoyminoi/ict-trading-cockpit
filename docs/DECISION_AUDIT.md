@@ -188,7 +188,7 @@ If an old source conflicts with this audit:
 | Regression / downgrade | Current eligibility, historical attainment, revalidation, and human-confirmed regression remain distinct. | CURRENT / IMPLEMENTED |
 | Operator-loop progression guardrails | Upward new-run transitions are gated; active runs are not continuously policed; lower-rung staging remains frictionless. | CURRENT / IMPLEMENTED |
 | Alpha 0.7 real progression policy | Still intentionally absent. | DEFERRED |
-| Temporary operating/safety restriction engine | Separate from progression governance. | DEFERRED |
+| Temporary operating/safety restriction engine | Separate from progression governance. E5 now evaluates explicitly configured context restrictions; other safety rules remain manual. | REFINED / E5 substrate implemented |
 | Numeric readiness score / automatic promotion-demotion | Not justified by current architecture. | DEFERRED |
 
 Milestone C is complete without publishing real progression thresholds in Alpha 0.7.
@@ -200,7 +200,17 @@ Milestone C is complete without publishing real progression thresholds in Alpha 
 |---|---|---|
 | E3 snapshot checkpoint | Schema v35 historical run context is accepted and merged through PR #55. | IMPLEMENTED |
 | E4 naming | The implementation sequence's compact operator context surface is current. The former narrative E4 heading described cross-cutting distortion/schedule boundaries; those distinctions remain intact. | REFINED / implemented and operator accepted 2026-10-10 |
-| Snapshot presentation | Read stored context; use explicit run time; never silently refresh a provider or convert facts to restrictions. | CURRENT / IMPLEMENTED |
+| Snapshot presentation | Read stored context and use explicit run time. E5 derives effects only through explicit snapshotted rules; facts alone never become restrictions. | REFINED / IMPLEMENTED |
 | Later E6/E7 labels | Narrative numbering and the implementation sequence differ for provider integration and model predicates. Resolve at that planning boundary without silently changing roadmap order. | OPEN |
 
 Older Requirements/Guide passages describing Milestone A-C as future work are historical inventory language. Verified implementation and the current Project State establish that A-C are complete and Milestone E is active.
+
+
+## 2026-10-10 — E5 policy boundary
+
+| Area | Current interpretation | Status |
+|---|---|---|
+| Context policy substrate | Plan-owned rules, explicit environment/unknown effects, read-only evaluation, run snapshots in v36, explanatory surfaces and candidate entry blockers. | IMPLEMENTED / operator acceptance pending |
+| Alpha 0.7 automatic exclusions | No declarative rules are published; manual gates remain authoritative. Account applicability cannot be inferred from run environment. | DEFERRED pending explicit account semantics and new plan revision |
+| Weekly event absence | Requires complete week coverage; day-only snapshots yield Unknown when no matching event is recorded. | CURRENT |
+| Real provider / model-specific predicates | Remain downstream; E5 does not silently resolve later E6/E7 numbering. | DEFERRED |

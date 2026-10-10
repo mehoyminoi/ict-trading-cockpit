@@ -20,7 +20,7 @@ class MarketContextWidget(QFrame):
         self.heading_label = QLabel("Market context")
         self.heading_label.setStyleSheet("font-weight: 600;")
         self.heading_label.setToolTip(
-            "Recorded facts only. This card does not evaluate Trade Plan restrictions or authorize entry."
+            "Stored context facts and explicit Trade Plan rule results. Entry also requires setup criteria and all authorization gates."
         )
         header.addWidget(self.heading_label)
         header.addStretch()
