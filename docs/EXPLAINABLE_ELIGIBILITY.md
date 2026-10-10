@@ -63,3 +63,13 @@ The progression boundary remains the canonical decision object.
 Current eligibility should be calculated on demand from current policy plus current evidence/governance state rather than persisted as one mutable AVAILABLE/BLOCKED flag.
 
 Future audit workflows may persist evaluation snapshots at meaningful events, but those snapshots should not become current truth.
+
+## Requirement sources
+
+Evidence Maturity State uses the boundary-aware competency maturity profile.
+
+Competency State uses the current competency assessment.
+
+Evidence Purpose Present uses reviewed competency evidence for the named competency and purpose.
+
+Human Certification should use dedicated progression-certification state. Certification is not an override; it is the source for a requirement the Trade Plan deliberately made human-verifiable.
