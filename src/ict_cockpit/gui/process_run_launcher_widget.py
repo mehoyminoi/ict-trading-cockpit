@@ -23,7 +23,7 @@ from ict_cockpit.analysis.trading_session_run import (
     default_purpose_for_environment,
 )
 from ict_cockpit.gui.trading_day_shell_widget import TradingDayShellWidget
-from ict_cockpit.trade_plan import CompetencyDefinition
+from ict_cockpit.trade_plan import CompetencyDefinition, TradePlanDefinition
 
 
 class ProcessRunLauncherWidget(QWidget):
@@ -40,12 +40,26 @@ class ProcessRunLauncherWidget(QWidget):
         *,
         trade_plan_revision: str,
         competencies: tuple[CompetencyDefinition, ...] = (),
+        trade_plan: TradePlanDefinition | None = None,
+        competency_assessment_repository=None,
+        competency_evidence_repository=None,
+        competency_evidence_maturity_repository=None,
+        progression_certification_repository=None,
         on_launched=None,
     ) -> None:
         super().__init__()
         self.trading_day_shell = trading_day_shell
         self.trade_plan_revision = trade_plan_revision.strip()
         self.competencies = tuple(competencies)
+        self.trade_plan = trade_plan
+        self.competency_assessment_repository = competency_assessment_repository
+        self.competency_evidence_repository = competency_evidence_repository
+        self.competency_evidence_maturity_repository = (
+            competency_evidence_maturity_repository
+        )
+        self.progression_certification_repository = (
+            progression_certification_repository
+        )
         self.competency_checkboxes: dict[str, QCheckBox] = {}
         self.on_launched = on_launched
 
@@ -236,17 +250,44 @@ class ProcessRunLauncherWidget(QWidget):
             f"Default purpose · {purpose.value}"
         )
 
-        eligibility = evaluate_environment_eligibility(environment)
+        eligibility = self._evaluate_selected_environment()
         detail = (
             f"Progression eligibility · {eligibility.status.value.upper()} · "
             f"{eligibility.detail}"
         )
+        if (
+            eligibility.progression is not None
+            and eligibility.progression.requirement_results
+        ):
+            requirement_lines = []
+            for item in eligibility.progression.requirement_results:
+                requirement_lines.append(
+                    f"{item.status.value.upper()}: {item.requirement_name} — "
+                    f"{item.detail}"
+                )
+            detail += "\n" + "\n".join(requirement_lines)
         if eligibility.recommended_environment is not None:
             detail += (
                 f" Recommended lower rung: "
                 f"{eligibility.recommended_environment.value}."
             )
         self.eligibility_label.setText(detail)
+
+    def _evaluate_selected_environment(self):
+        return evaluate_environment_eligibility(
+            self.selected_environment,
+            trade_plan=self.trade_plan,
+            competency_assessment_repository=(
+                self.competency_assessment_repository
+            ),
+            competency_evidence_repository=self.competency_evidence_repository,
+            competency_evidence_maturity_repository=(
+                self.competency_evidence_maturity_repository
+            ),
+            progression_certification_repository=(
+                self.progression_certification_repository
+            ),
+        )
 
     def _selected_historical_market_time(self) -> datetime:
         value = self.market_time_edit.dateTime()
@@ -313,6 +354,15 @@ class ProcessRunLauncherWidget(QWidget):
             return False
 
         environment = self.selected_environment
+        eligibility = self._evaluate_selected_environment()
+        if not eligibility.can_launch:
+            self.status_label.setText(
+                f"Cannot start {environment.value}: {eligibility.detail} "
+                f"Use the recommended lower environment or satisfy the "
+                f"configured Trade Plan requirements."
+            )
+            return False
+
         shell.run_environment = environment
         shell.run_purpose = default_purpose_for_environment(environment)
 
