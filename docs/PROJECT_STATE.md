@@ -129,64 +129,42 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 Milestone C — Evidence Maturity and progression governance is complete and merged.
 
-The active major roadmap frontier is now:
+The active major roadmap frontier is:
 
 **Milestone E — Context maturity: QT/AMDX, news, and distortions**
 
-A design candidate is recorded in `docs/CONTEXT_MATURITY.md`.
+The Milestone E v0 design is **operator-accepted and ready for implementation** on `design/context-maturity-v0`.
 
-Current proposed sequence:
+Accepted sequence:
 
-1. **E1 — Expected vs observed QT/AMDX review loop**
-   - preserve existing TDA QT context as expected/working interpretation,
-   - add separate observed Review state,
-   - descriptive level-by-level comparison,
-   - restart persistence,
-   - no automatic evidence creation.
+1. E1 — Expected vs observed QT/AMDX review loop.
+2. E2 — Provider-neutral market-context event model.
+3. E3 — Historical context snapshots and deterministic Replay/Historical context.
+4. E4 — Compact operator context surfaces.
+5. E5 — Declarative Trade Plan context rules.
+6. E6 — Real provider integration after contracts stabilize.
+7. E7 — Generic model-specific context predicates.
 
-2. **E2 — Provider-neutral market-context event model**
-   - economic/schedule context domain objects,
-   - source/provider provenance,
-   - normalized impact with native value preserved,
-   - deterministic fixture provider before real API integration.
+Accepted guardrails:
 
-3. **E3 — Historical context snapshots**
-   - Replay/Historical use selected historical date,
-   - runs preserve the event/schedule context actually used,
-   - provider revisions do not silently rewrite historical run context.
+- raw QT/time facts remain separate from AMDX/XAMD interpretation,
+- external event/schedule facts remain separate from restrictions,
+- expected-vs-observed mismatch remains descriptive only,
+- event presence does not automatically mean No Trade,
+- QT structural Distortion remains distinct from schedule/event irregularity,
+- Replay/Historical use selected historical market time,
+- run-specific context preserves source/provenance,
+- only Trade Plan context rules may create warnings or entry restrictions,
+- rule effects: Informational / Warning / Block New Entry / Stand Down Day,
+- rules may be environment-sensitive,
+- unknown context is distinct from no event,
+- provider architecture remains generic,
+- real provider selection is deferred,
+- Friday Asian Range no-Monday-high-impact-news is a generic-predicate validation case,
+- schema migrations are permitted when required for honest historical snapshots,
+- TDA/Watch remain compact while Review carries full detail/provenance.
 
-4. **E4 — Compact operator context surfaces**
-   - TDA summary,
-   - relevant/upcoming Watch context,
-   - full Review comparison/provenance.
-
-5. **E5 — Declarative Trade Plan context rules**
-   - facts -> explicit warning/restriction semantics,
-   - environment-sensitive applicability,
-   - unknown context distinct from no event.
-
-6. **E6 — Real provider integration**
-   - select vendor only after contracts stabilize.
-
-7. **E7 — Generic model-specific context predicates**
-   - Friday Asian Range no-Monday-high-impact-news condition as one validation case,
-   - no model-specific hardcoding in the event service.
-
-Primary design guardrails:
-
-- raw QT facts != AMDX/XAMD interpretation,
-- event/schedule facts != restriction,
-- high-impact event != automatic No Trade,
-- event-driven unusual context != QT structural Distortion,
-- expected-vs-observed mismatch != competency failure,
-- Trade Plan rules are the layer that may convert context into warnings/restrictions,
-- exit/flatten remains outside entry restriction,
-- Replay/Historical must be deterministic to selected market time,
-- external context must preserve provenance and uncertainty,
-- compact active UI, deeper Review detail,
-- schema migrations are allowed when required for honest historical reconstruction.
-
-Next action: operator review of the twenty Milestone E confirmation points before implementation planning.
+Next action: merge this Milestone E design checkpoint, then implement E1 first.
 
 ## System guide maintenance
 
