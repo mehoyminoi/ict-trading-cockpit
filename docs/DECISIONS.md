@@ -459,3 +459,24 @@ Future analytics may examine:
 The long-term objective is lifetime mastery while improving allocation of learning time.
 
 **Guardrail:** this does not justify numeric readiness scores, arbitrary current thresholds, or rushing progression. C2 only preserves the structured provenance needed for later analytics.
+
+
+## 2026-10-09 — Explainable Eligibility is derived from published progression policy
+
+**Status:** Accepted
+
+Eligibility is a deterministic derived result, not manually authored mutable truth.
+
+Top-level states remain AVAILABLE / NOT CONFIGURED / BLOCKED. Requirement-level results use SATISFIED / NOT SATISFIED / UNKNOWN. Unknown never silently passes.
+
+Missing required evidence is a normal NOT SATISFIED / INSUFFICIENT_EVIDENCE result. UNKNOWN is reserved for cases the system genuinely cannot evaluate safely.
+
+For v0, Evidence Purpose Present uses evidence from the current Trade Plan revision by default. Older-revision Evidence Maturity does not silently carry forward into a new policy context; it yields UNKNOWN until reviewed under the current revision.
+
+Human Certification is a revision-bound, auditable requirement source, not an override.
+
+A future configured BLOCKED result may prevent upward transition, while downward movement remains frictionless. Alpha 0.7 remains NOT CONFIGURED and non-restrictive until real progression policy is deliberately published.
+
+Regression/demotion belongs to C4. Temporary operating/safety restrictions remain a separate layer.
+
+**Rationale:** this preserves explicit Trade Plan ownership, cross-revision provenance, and operator explainability without collapsing evidence, competency state, policy, eligibility, and operating restrictions into one score or lock.
