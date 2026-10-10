@@ -6,12 +6,12 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `design/explainable-eligibility-v0`
-- **Main baseline:** `b8f42cb0582b227a0cd35724e45b8e2a5a1bb60d` — PR #43 merged Progression Policy substrate v0
+- **Active branch:** `feature/explainable-eligibility-v0`
+- **Main baseline:** `0a6eee1baac4bedf7aefa5c4c977669d00dca430` — PR #44 merged Explainable Eligibility v0 design
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Milestone C3 design — Explainable Eligibility v0
-- **Schema:** v31
+- **Current slice:** Milestone C3 — Explainable Eligibility v0 implementation
+- **Schema:** v32
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** 310 passed on 2026-10-09 for Progression Policy substrate v0
 - **Manual smoke test:** Progression Policy substrate v0 acceptance PASS — Alpha 0.7 remains NOT CONFIGURED, schema v31 confirmed, read-only policy representation, no eligibility enforcement, and regression checks manually verified.
@@ -131,30 +131,48 @@ C1 — Evidence Maturity Profile v0 is complete and merged.
 
 C2 — Trade Plan Progression Policy substrate v0 is complete and merged.
 
-C3 — Explainable Eligibility v0 design is **operator-accepted and ready for implementation** on `design/explainable-eligibility-v0`.
+C3 — Explainable Eligibility v0 is implemented for automated/manual validation on `feature/explainable-eligibility-v0`.
 
-Accepted C3 semantics:
+Implemented:
 
-- eligibility is derived deterministically from published Trade Plan policy plus current evidence/governance state,
-- top-level states remain AVAILABLE / NOT CONFIGURED / BLOCKED,
-- requirement-level states are SATISFIED / NOT SATISFIED / UNKNOWN,
-- current eligibility is derived on demand rather than stored as mutable truth,
-- missing evidence is NOT SATISFIED / INSUFFICIENT_EVIDENCE,
-- UNKNOWN is reserved for genuinely unevaluable cases,
-- Evidence Purpose Present uses current-Trade-Plan-revision evidence by default,
-- older-revision Evidence Maturity requires current-plan review,
-- Human Certification is dedicated, revision-bound, auditable state,
-- configured BLOCKED prevents only upward transition,
-- downward movement remains frictionless,
+- immutable requirement-level evaluation results,
+- immutable progression-boundary eligibility results,
+- AVAILABLE / NOT CONFIGURED / BLOCKED top-level semantics,
+- SATISFIED / NOT SATISFIED / UNKNOWN requirement-level semantics,
+- explicit reason categories:
+  - Requirement Not Satisfied,
+  - Insufficient Evidence,
+  - Cannot Evaluate,
+  - Human Certification Required,
+- deterministic evaluation of all four C2 requirement kinds,
+- environment-to-progression-boundary mapping,
+- current-Trade-Plan-revision filtering for Evidence Purpose Present,
+- older-revision Evidence Maturity -> UNKNOWN / current-plan review,
+- Competency State continuity without evaluator mutation,
+- dedicated `ProgressionCertification` state,
+- dedicated certification repository,
+- schema **v32** progression-certification storage,
+- Human Certification controls rendered only for configured Human Certification policy requirements,
+- launcher explanation of configured requirement results,
+- configured BLOCKED results prevent the gated upward environment from starting,
 - Alpha 0.7 remains NOT CONFIGURED and non-restrictive,
-- regression/demotion remains C4,
-- temporary operating/safety restrictions remain a separate layer.
+- no real readiness criteria or new Trade Plan revision.
 
-The future Trilium/video-study integration direction is also recorded in requirements: Cockpit should become the operating interface while Trilium can remain the rich knowledge repository, with capture-once/link-later semantics and no duplicate note entry.
+The evaluator derives current eligibility on demand; no mutable current-eligibility table was added.
 
-No runtime/schema/Trade Plan changes are on this design branch.
+Focused automated tests were added for schema/persistence, all-satisfied AVAILABLE, missing-evidence blocking, current-revision evidence scope, old-revision maturity UNKNOWN behavior, Human Certification, Alpha 0.7 non-restrictive behavior, and configured launcher blocking.
 
-Next action: merge the C3 design checkpoint, then implement Explainable Eligibility v0 without publishing real progression rules.
+Expected full-suite count from the previous 310-test baseline is **319** if all new tests and regressions pass.
+
+Next action:
+
+1. pull this branch,
+2. run the full automated suite,
+3. resolve any failures,
+4. complete the **Explainable Eligibility v0** section in `docs/SMOKE_TEST.md`,
+5. merge C3 only after acceptance.
+
+Do not publish real progression rules, change Alpha 0.7, implement regression/demotion, or fold temporary operating restrictions into progression eligibility during C3 validation.
 
 ## System guide maintenance
 
