@@ -39,7 +39,7 @@ This is intended to prevent a future chat from finishing a small convenience fea
 
 For example, a frontier statement should look like:
 
-> Milestone B — Review / Development synthesis is complete. The active frontier is Milestone C: boundary-aware Evidence Maturity -> Trade Plan progression policy -> explainable eligibility -> regression/downgrade semantics -> operator-loop integration. Older Film Night, visual-polish, chart-gallery, broad integration, and Live-Watch enhancement ideas remain downstream unless actual use makes them blocking.
+> Milestone C — Evidence Maturity and progression governance is complete through operator-loop integration/guardrails. The next major roadmap frontier is Milestone E: context maturity for QT/AMDX, news, and distortions. Milestone D remains a parallel friction-driven hardening stream. Older Film Night, visual-polish, chart-gallery, broad integration, and Live-Watch enhancement ideas remain downstream unless actual use makes them blocking.
 
 Update this statement whenever the project's center of gravity materially changes.
 
@@ -168,7 +168,7 @@ Use this prompt when starting a fresh ChatGPT development conversation:
 >
 > **Evidence -> Competency Synthesis -> Cross-Run Observation -> Development Direction -> targeted Study routing**
 >
-> The active frontier is Milestone C:
+> Milestone C is complete. The next major roadmap frontier is Milestone E, with Milestone D continuing only for proven operator friction:
 >
 > **boundary-aware Evidence Maturity -> Trade Plan progression policy -> explainable eligibility -> regression/downgrade semantics -> operator-loop integration -> later Live Execution governance**.
 >
