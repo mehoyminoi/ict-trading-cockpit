@@ -25,8 +25,14 @@ from ict_cockpit.database.competency_evidence_maturity_repository import (
     CompetencyEvidenceMaturityRepository,
 )
 from ict_cockpit.database.feedback_repository import FeedbackRepository
+from ict_cockpit.database.progression_attainment_repository import (
+    ProgressionAttainmentRepository,
+)
 from ict_cockpit.database.progression_certification_repository import (
     ProgressionCertificationRepository,
+)
+from ict_cockpit.database.progression_regression_review_repository import (
+    ProgressionRegressionReviewRepository,
 )
 from ict_cockpit.database.study_find_repository import StudyFindRepository
 from ict_cockpit.database.summary_template_repository import (
@@ -115,6 +121,16 @@ class MainWindow(QMainWindow):
                 study_find_repository.connection
             )
         )
+        self.progression_attainment_repository = (
+            ProgressionAttainmentRepository(
+                study_find_repository.connection
+            )
+        )
+        self.progression_regression_review_repository = (
+            ProgressionRegressionReviewRepository(
+                study_find_repository.connection
+            )
+        )
         self.summary_template_repository = SummaryTemplateRepository(
             study_find_repository.connection
         )
@@ -143,6 +159,12 @@ class MainWindow(QMainWindow):
             ),
             progression_certification_repository=(
                 self.progression_certification_repository
+            ),
+            progression_attainment_repository=(
+                self.progression_attainment_repository
+            ),
+            progression_regression_review_repository=(
+                self.progression_regression_review_repository
             ),
         )
         # Backward-compatible references retained while Process Map tests and
