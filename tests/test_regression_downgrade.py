@@ -361,3 +361,35 @@ def test_review_development_distinguishes_attainment_from_current_block(
     assert any("Historical attainment" in text for text in labels)
     assert any("Current eligibility · BLOCKED" in text for text in labels)
     connection.close()
+
+
+
+def test_voluntary_step_down_preserves_prior_attainment(tmp_path) -> None:
+    get_app()
+    connection = create_connection(tmp_path / "test.db")
+    initialize_schema(connection)
+    repository = ProgressionAttainmentRepository(connection)
+    plan = configured_plan()
+    available = available_result(plan)
+    repository.record_if_absent(
+        attainment_from_result(plan, available, id="kept-attainment")
+    )
+
+    widget = TradePlanWidget(
+        plan,
+        competency_assessment_repository=AssessmentRepo(
+            assessment(plan, CompetencyState.PROFICIENT)
+        ),
+        progression_attainment_repository=repository,
+    )
+    launcher = widget.process_run_launcher_widget
+    launcher.environment_combo.setCurrentText(
+        RunEnvironment.HISTORICAL_BACKTEST.value
+    )
+    launcher.study_question_input.setText("Intentional refresh")
+
+    assert launcher.begin_process_run() is True
+    records = repository.list_for_plan(plan.id)
+    assert len(records) == 1
+    assert records[0].id == "kept-attainment"
+    connection.close()
