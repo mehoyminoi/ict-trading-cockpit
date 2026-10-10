@@ -1268,3 +1268,37 @@ Whole-plan revision change must not automatically reset unchanged competencies. 
 If a competency definition materially changes, historical evidence remains valid for the old definition but must not silently certify the new one. New competencies do not inherit historical evidence/proficiency automatically.
 
 Long-term analytics should preserve enough provenance to study learning velocity, time-to-proficiency, progression friction, revalidation, competency-family/genre transfer, and diminishing returns. These are analytics goals, not current readiness thresholds.
+
+
+## Study sources, knowledge repository, and Ah-ha capture
+
+Future Study-mode design should reduce duplicate documentation between Cockpit and the technician's long-form knowledge repository.
+
+Proposed ownership boundary:
+
+- Cockpit owns structured study/process state, Trade Plan candidates, competency links, evidence provenance, Development Direction, progression context, and actionable learning workflow.
+- The external knowledge repository may remain the canonical home for rich long-form notes, transcripts, screenshots, annotations, and narrative study material.
+- Video sources and repository notes should be linkable as source artifacts rather than requiring content duplication.
+
+Future Cockpit concepts should include a lightweight **Study Capture / Learning Inbox** for low-friction capture while watching videos or reviewing notes.
+
+A captured learning item may record source reference, video timestamp or repository-note reference, short observation, tags, and relationships such as:
+- existing competency,
+- candidate/new competency,
+- Playbook or Trade Plan revision candidate,
+- Study question,
+- Cross-Run Observation support,
+- terminology/reference note,
+- general research item.
+
+Important guardrail: instructional notes, video insights, "Ah-ha" moments, gems, or mentor/ICT statements are **learning inputs**, not competency evidence by themselves. They may create a study target or revision proposal; proficiency evidence still comes from deliberate reviewed performance/observation.
+
+The preferred workflow is **capture once, classify/promote later** rather than entering the same insight independently in both Cockpit and the knowledge repository.
+
+Future integration levels may progress from:
+1. stable source links/deep links,
+2. one-click export/import or synchronized metadata,
+3. local API integration when feasible,
+4. optional source-aware search/retrieval from the repository.
+
+Cockpit should aim to become the technician's operating interface without requiring replacement of a mature external knowledge base.
