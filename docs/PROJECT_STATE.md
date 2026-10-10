@@ -13,8 +13,8 @@ This is the starting point for a new development chat or developer handoff. Git 
 - **Current slice:** Milestone C4 — Regression / downgrade semantics v0 implementation
 - **Schema:** v33
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** full suite green on 2026-10-09 for Explainable Eligibility v0; previous numeric checkpoint 310 passed for C2
-- **Manual smoke test:** Explainable Eligibility v0 acceptance PASS — Alpha 0.7 remains NOT CONFIGURED/non-restrictive, schema v32 confirmed, learning-loop regressions checked, and configured-policy evaluator behavior covered by automated tests.
+- **Verified full test result:** full suite green on 2026-10-10 for Regression / downgrade semantics v0
+- **Manual smoke test:** Regression / downgrade semantics v0 acceptance PASS — schema v33 confirmed, Alpha 0.7 remains NOT CONFIGURED/non-restrictive, historical-attainment semantics accepted, and learning-loop regressions manually checked. Operator explicitly reported Review / Development as functionally correct but cognitively taxing to navigate; testing/UI friction is now a first-class next discussion.
 
 ## Current completed slice — Competency / Proficiency substrate v0
 
@@ -133,52 +133,39 @@ C2 — Trade Plan Progression Policy substrate v0 is complete and merged.
 
 C3 — Explainable Eligibility v0 is complete and merged.
 
-C4 — Regression / downgrade semantics v0 is implemented for automated/manual validation on `feature/regression-downgrade-semantics-v0`.
+C4 — Regression / downgrade semantics v0 is **acceptance-complete and ready for PR/merge** on `feature/regression-downgrade-semantics-v0`.
 
-Implemented:
+Accepted implementation:
 
-- immutable `ProgressionAttainment` history,
-- attainment snapshots preserve the C3 requirement-level eligibility explanation,
-- attainment records only when a configured AVAILABLE boundary is deliberately crossed by starting the higher-rung Process Run,
-- one historical attainment per Trade Plan revision + boundary + policy in v0,
-- derived progression standing distinguishes:
-  - Not Yet Attained,
-  - Available / Not Yet Attained,
-  - Attained / Currently Available,
-  - Eligibility Loss Detected,
-  - Revalidation Required,
-  - Historical Attainment / Current Policy Not Configured,
-- same-plan/policy attained -> BLOCKED is eligibility loss, not automatic competency regression,
-- cross-revision attained -> BLOCKED is Revalidation Required,
-- dedicated human-authored `ProgressionRegressionReview`,
-- accepted human classifications:
-  - Revalidation Required,
-  - Confirmed Competency Regression,
-  - Evidence / Governance Reassessment,
-  - Certification Withdrawn,
-  - Needs Study / Unresolved,
-- optional supporting competency-evidence IDs on Regression Review,
-- schema **v33** attainment + regression-review storage,
-- Review / Development configured-policy UI separates historical attainment from current eligibility and provides human review when required,
+- immutable Progression Attainment history,
+- attainment only on deliberate crossing of a configured AVAILABLE boundary,
+- requirement-level eligibility snapshot preserved with attainment,
+- current standing separates historical attainment from current eligibility,
+- same-plan/policy attained -> BLOCKED = Eligibility Loss Detected,
+- cross-revision attained -> BLOCKED = Revalidation Required,
+- never-attained BLOCKED is not regression,
+- human-authored Regression / Revalidation Review,
+- optional supporting evidence links,
 - no automatic Competency State, Evidence Maturity, or Development Direction mutation,
-- voluntary lower-rung operation leaves attainment untouched,
+- voluntary step-down preserves attainment,
 - temporary operating restrictions remain separate,
-- Alpha 0.7 remains NOT CONFIGURED and therefore creates no attainment.
+- schema **v33**,
+- Alpha 0.7 remains unchanged and unconfigured.
 
-Focused automated C4 tests were added for schema/persistence, immutable attainment, never-attained behavior, eligibility-loss detection, cross-revision revalidation, review persistence, deliberate-crossing attainment, Alpha 0.7 non-attainment, and operator-facing standing separation.
+Validation:
 
-The System Guide now documents C3 eligibility versus C4 historical attainment/regression semantics.
+- full automated suite: **operator-confirmed green** on 2026-10-10,
+- focused C4 smoke test: **fully PASS / ACCEPTED**,
+- schema **v33** manually confirmed,
+- operator noted that Review / Development is functionally correct but increasingly taxing to navigate and verify manually.
 
-Next action:
+After merge, C4 is complete.
 
-1. pull this branch,
-2. run the full automated suite,
-3. resolve any failures,
-4. confirm schema **v33**,
-5. complete the **Regression / downgrade semantics v0** section in `docs/SMOKE_TEST.md`,
-6. merge C4 only after acceptance.
+Before C5 implementation, explicitly discuss and prioritize low-risk friction reduction for dense Review / Development and smoke-testing surfaces. This should preserve architecture while improving orientation, discoverability, progressive disclosure, and test guidance.
 
-Do not publish real progression rules, change Alpha 0.7, add automatic demotion, infer skill decay from time, or fold temporary operating restrictions into progression regression during C4 validation.
+Then proceed to:
+
+**C5 — Operator-loop integration and guardrails**
 
 ## System guide maintenance
 
