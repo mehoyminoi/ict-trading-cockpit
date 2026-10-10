@@ -131,31 +131,30 @@ C1 — Evidence Maturity Profile v0 is complete and merged.
 
 C2 — Trade Plan Progression Policy substrate v0 is complete and merged.
 
-The active frontier is **C3 — Explainable Eligibility evaluation** on `design/explainable-eligibility-v0`.
+C3 — Explainable Eligibility v0 design is **operator-accepted and ready for implementation** on `design/explainable-eligibility-v0`.
 
-A design candidate is being recorded in `docs/EXPLAINABLE_ELIGIBILITY.md`.
+Accepted C3 semantics:
 
-Current proposed C3 direction:
-
-- eligibility is derived deterministically from current Trade Plan policy plus current evidence/governance state,
+- eligibility is derived deterministically from published Trade Plan policy plus current evidence/governance state,
 - top-level states remain AVAILABLE / NOT CONFIGURED / BLOCKED,
-- requirement-level results use SATISFIED / NOT SATISFIED / UNKNOWN,
-- no percentage, weighting, or partial-credit readiness score,
-- NOT CONFIGURED remains non-restrictive for Alpha 0.7,
-- a future configured BLOCKED result should prevent only the upward transition,
-- movement downward remains frictionless,
-- current eligibility should be derived on demand rather than stored as mutable truth,
-- ordinary missing evidence is NOT SATISFIED / INSUFFICIENT_EVIDENCE,
-- UNKNOWN is reserved for genuinely unevaluable conditions,
-- Evidence Purpose Present should default to current-Trade-Plan-revision evidence,
-- older-revision Evidence Maturity should require current-plan review rather than silently carrying forward,
-- Human Certification needs explicit revision-bound provenance state,
+- requirement-level states are SATISFIED / NOT SATISFIED / UNKNOWN,
+- current eligibility is derived on demand rather than stored as mutable truth,
+- missing evidence is NOT SATISFIED / INSUFFICIENT_EVIDENCE,
+- UNKNOWN is reserved for genuinely unevaluable cases,
+- Evidence Purpose Present uses current-Trade-Plan-revision evidence by default,
+- older-revision Evidence Maturity requires current-plan review,
+- Human Certification is dedicated, revision-bound, auditable state,
+- configured BLOCKED prevents only upward transition,
+- downward movement remains frictionless,
+- Alpha 0.7 remains NOT CONFIGURED and non-restrictive,
 - regression/demotion remains C4,
 - temporary operating/safety restrictions remain a separate layer.
 
-No runtime/schema/Trade Plan changes are on this design branch yet.
+The future Trilium/video-study integration direction is also recorded in requirements: Cockpit should become the operating interface while Trilium can remain the rich knowledge repository, with capture-once/link-later semantics and no duplicate note entry.
 
-Next action: operator review of the C3 design questions before implementation.
+No runtime/schema/Trade Plan changes are on this design branch.
+
+Next action: merge the C3 design checkpoint, then implement Explainable Eligibility v0 without publishing real progression rules.
 
 ## System guide maintenance
 
