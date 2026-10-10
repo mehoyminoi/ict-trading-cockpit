@@ -137,28 +137,25 @@ C4 — Regression / downgrade semantics v0 is complete and merged.
 
 The pre-C5 operator-loop friction reduction v0 is complete and merged.
 
-The active frontier is now:
+The **C5 — Operator-loop integration and guardrails v0 design is operator-accepted and ready for implementation** on `design/operator-loop-integration-guardrails-v0`.
 
-**C5 — Operator-loop integration and guardrails v0**
+Accepted implementation direction:
 
-A design candidate is recorded in `docs/OPERATOR_LOOP_INTEGRATION_GUARDRAILS.md`.
-
-Primary design direction:
-
-- progression eligibility governs **new upward environment starts**, not continuous active-run policing,
-- a legitimately started run is not auto-terminated/demoted if progression state later changes,
-- progression remains separate from setup/trade authorization and can never block exit/flatten,
-- temporary operating/safety restrictions remain a separate future layer,
-- BLOCKED should provide deterministic explanation and lower-rung routing, not inferred coaching,
-- lower-rung staging never auto-starts and never creates a regression/demotion event,
-- Review / Development > Progression becomes the focused explanation surface,
-- Human Certification remains edited authoritatively under Rules / Safety,
-- restore/resume does not create duplicate attainment or re-run launch gating,
-- current C5 integration state should be derived on demand,
+- progression eligibility governs new upward environment starts only,
+- active runs are not auto-terminated/demoted by later progression changes,
+- progression remains separate from setup/trade authorization and never blocks exit/flatten,
+- temporary operating/safety restrictions remain outside C5 v0,
+- deterministic requirement-derived guidance is allowed; inferred coaching is not,
+- BLOCKED may stage the recommended lower environment but never auto-start it,
+- preserve semantically valid Study question/competency focus when staging downward,
+- Review / Development > Progression is the focused explanation surface,
+- Human Certification remains edited under Rules / Safety,
+- restore/resume does not re-run launch gating or duplicate attainment,
+- derive integration state on demand,
 - prefer no schema change from **v33**,
-- Alpha 0.7 remains without real progression policy.
+- Alpha 0.7 remains without real progression thresholds/policy.
 
-Next action: operator review of the twelve C5 design confirmation points before implementation.
+Next action: merge this C5 design checkpoint, then implement C5.1-C5.5.
 
 ## System guide maintenance
 
