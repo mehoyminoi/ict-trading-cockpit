@@ -1,6 +1,6 @@
-# Operator-loop friction reduction — v0 design candidate
+# Operator-loop friction reduction — v0 design
 
-**Status:** Design candidate for operator review  
+**Status:** Accepted for v0 implementation  
 **Scope:** Pre-C5 usability hardening; no domain-model changes
 
 ## Purpose
@@ -303,3 +303,19 @@ A successful v0 should make this true:
 8. Defer full-text Review / Development search until after the simpler sectioning/navigation is tested?
 9. Defer automatic smoke-runner -> Cockpit deep-link/highlight plumbing until stable anchors exist and basic layout is proven?
 10. Treat this as a small pre-C5 usability slice with no schema/domain changes, then return to C5 operator-loop integration?
+
+
+## Accepted operator decisions
+
+All ten friction-reduction design points were accepted on 2026-10-10.
+
+1. Use five presentation areas: Overview / Evidence / Interpretation / Progression / Practice & Launch.
+2. Keep Overview compact and read-only, showing existing state only.
+3. Default to Overview plus one active work area rather than exposing all editors simultaneously.
+4. Keep saved-state summaries visible when detailed editors are hidden.
+5. Add quiet definitions/tooltips for technical governance terms.
+6. Add stable UI anchor IDs now to support later guided testing/navigation.
+7. Update smoke-test wording to include Where / Look for / Expected guidance.
+8. Defer full-text Review / Development search until simpler sectioning/navigation is tested.
+9. Defer automatic smoke-runner -> Cockpit deep-link/highlight plumbing until stable anchors exist and the basic layout is proven.
+10. Treat this as a small pre-C5 usability slice with no schema/domain changes, then return to C5.
