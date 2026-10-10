@@ -130,6 +130,9 @@ class TradingDayShellWidget(QWidget):
         self.runtime.post_market_study_review_submitted.connect(
             self._update_study_review
         )
+        self.runtime.post_market_observed_qt_submitted.connect(
+            self._update_observed_qt_review
+        )
 
         self.tda_nav_frame = QFrame()
         self.tda_nav_frame.setFrameShape(QFrame.Shape.StyledPanel)
@@ -472,6 +475,19 @@ class TradingDayShellWidget(QWidget):
         run = self.active_trading_run
         if run is not None:
             run.update_post_market_review(process_adherence=process_adherence, takeaway=takeaway, film_night=film_night)
+            self._save_and_reload(run)
+
+    def _update_observed_qt_review(
+        self,
+        observed_context: dict,
+        note: str,
+    ) -> None:
+        run = self.active_trading_run
+        if run is not None:
+            run.set_review_observed_qt_context(
+                observed_context,
+                note,
+            )
             self._save_and_reload(run)
 
     def _update_study_review(self, outcome: str, note: str) -> None:
