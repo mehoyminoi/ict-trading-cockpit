@@ -812,7 +812,7 @@ The fixture window has no database or feed connection. Scenario/Mode selectors c
 
 ## Current branch acceptance — E5 declarative context rules
 
-Operator acceptance is **NOT TESTED**. These scenarios use unpublished fixture rules; Alpha 0.7 retains its manual trading-day gate and no automatic exclusions.
+Operator acceptance is **PASS** on 2026-10-10: all eight E5 checks were marked PASS and pushed in operator commit `2e76e9dedf0dc85e059bdf94181d62a5fbc12617`. These scenarios use unpublished fixture rules; Alpha 0.7 retains its manual trading-day gate and no automatic exclusions.
 
 Run `pytest`, then launch:
 

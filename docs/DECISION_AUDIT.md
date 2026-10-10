@@ -210,7 +210,7 @@ Older Requirements/Guide passages describing Milestone A-C as future work are hi
 
 | Area | Current interpretation | Status |
 |---|---|---|
-| Context policy substrate | Plan-owned rules, explicit environment/unknown effects, read-only evaluation, run snapshots in v36, explanatory surfaces and candidate entry blockers. | IMPLEMENTED / operator acceptance pending |
+| Context policy substrate | Plan-owned rules, explicit environment/unknown effects, read-only evaluation, run snapshots in v36, explanatory surfaces and candidate entry blockers. | IMPLEMENTED / operator accepted 2026-10-10 |
 | Alpha 0.7 automatic exclusions | No declarative rules are published; manual gates remain authoritative. Account applicability cannot be inferred from run environment. | DEFERRED pending explicit account semantics and new plan revision |
 | Weekly event absence | Requires complete week coverage; day-only snapshots yield Unknown when no matching event is recorded. | CURRENT |
 | Real provider / model-specific predicates | Remain downstream; E5 does not silently resolve later E6/E7 numbering. | DEFERRED |

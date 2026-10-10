@@ -9,11 +9,11 @@ This is the starting point for a new development chat or developer handoff. Git 
 - **Active branch:** `feature/context-maturity-e5-v0`
 - **Main baseline:** `c4606d48e1037a1d7ca9c9551b0eb7dc4047e678` — merged E4 acceptance and E5 frontier handoff
 - **Implementation checkpoint:** `41f9d69c5b648873f6b95f2041e5daaeb2ea8508` — Add explicit snapshotted Trade Plan context rules and entry effects (E5)
-- **Current slice:** E5 — declarative Trade Plan context rules v0, implemented; operator acceptance pending
+- **Current slice:** E5 — declarative Trade Plan context rules v0, accepted and ready to merge
 - **Schema:** v36
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** **401 passed** in 136.01s on 2026-10-10, clean exit (Python 3.12 / PySide6 6.8.3 / offscreen)
-- **Manual acceptance:** E1 fully PASS. E3 required no new UI smoke pass. E4 focused operator smoke is **PASS**, per operator report of completed manual testing and acceptance on 2026-10-10. E5 focused operator acceptance is **NOT TESTED**.
+- **Manual acceptance:** E1 fully PASS. E3 required no new UI smoke pass. E4 focused operator smoke is **PASS**, per operator report of completed manual testing and acceptance on 2026-10-10. E5 focused operator acceptance is **PASS**, with all eight checklist checks pushed in `2e76e9dedf0dc85e059bdf94181d62a5fbc12617` on 2026-10-10.
 
 ## Completed foundation — Competency / Proficiency substrate v0
 
@@ -163,7 +163,7 @@ Acceptance:
 
 ## Current task
 
-**E5 — declarative Trade Plan context rules v0** is implemented on `feature/context-maturity-e5-v0` for operator acceptance.
+**E5 — declarative Trade Plan context rules v0** is implemented on `feature/context-maturity-e5-v0` and operator accepted on 2026-10-10.
 
 Implemented behavior:
 
@@ -185,9 +185,9 @@ Validation:
 - full automated suite: **401 passed in 136.01s**, clean exit on 2026-10-10 (Python 3.12 / PySide6 6.8.3 / offscreen),
 - focused E3/E4/E5 regressions: **45 passed**; smoke-document round-trip: **4 passed**,
 - developer offscreen fixture inspection confirmed clock boundaries, event availability, coverage unknowns, and configured entry blocking with cleared manual gates; visually inspected Watch and expanded Review at 1100×850,
-- operator acceptance is **NOT TESTED**; focused E5 checklist is in `docs/SMOKE_TEST.md`.
+- operator acceptance is **PASS** on 2026-10-10; all eight E5 checks in `docs/SMOKE_TEST.md` are PASS, including the reported local full suite and normal Alpha 0.7 restore/workflow checks.
 
-Next action: pull E5, run the full suite locally, exercise its disposable fixture and normal Alpha 0.7 restore/workflow checklist, then record operator acceptance before merge. The implementation-sequence next slice after accepted E5 is **E6 — real provider integration**, subject to the documented E6/E7 naming reconciliation. E5 v0 completes the policy substrate, not automatic adoption of every source-plan prose exclusion.
+Next action: merge the accepted E5 checkpoint and update the main handoff. The implementation-sequence next slice after accepted E5 is **E6 — real provider integration**, subject to the documented E6/E7 naming reconciliation. E5 v0 completes the policy substrate, not automatic adoption of every source-plan prose exclusion.
 
 ## Explicitly deferred / open
 

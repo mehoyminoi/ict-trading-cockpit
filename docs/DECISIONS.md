@@ -612,7 +612,7 @@ Rendering and restore read the persisted snapshot. Neither refreshes a provider,
 
 ## 2026-10-10 — E5 makes context policy explicit and historical
 
-**Status:** Implemented v0; focused operator acceptance pending
+**Status:** Accepted v0; all eight focused operator checks passed and were pushed on 2026-10-10
 
 **Decision:** Context rules are immutable versioned Trade Plan definitions, snapshotted into each Trading Run in schema v36. Rules specify conjunctive clock/event conditions, environments, matched effect, unknown effect, and rationale. Evaluation is read-only and uses normalized stored facts and explicit market time. Blocking effects participate in candidate entry authorization independently of manually cleared gates; informational/warning effects never grant authorization.
 
