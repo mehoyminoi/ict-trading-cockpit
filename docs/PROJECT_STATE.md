@@ -6,14 +6,14 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `main`
-- **Main baseline:** `818b906058e6d493671847fd76566e89ede33c37` — PR #56 merged accepted E4 compact operator context surfaces
-- **Implementation checkpoint:** `c9d49ef5bbfffcd157b3456cd0155b6ae16f56a7` — Present stored market context across TDA Watch and Review (E4)
-- **Current slice:** E5 — declarative Trade Plan context rules (next; implementation not started)
-- **Schema:** v35
+- **Active branch:** `feature/context-maturity-e5-v0`
+- **Main baseline:** `c4606d48e1037a1d7ca9c9551b0eb7dc4047e678` — merged E4 acceptance and E5 frontier handoff
+- **Implementation checkpoint:** `41f9d69c5b648873f6b95f2041e5daaeb2ea8508` — Add explicit snapshotted Trade Plan context rules and entry effects (E5)
+- **Current slice:** E5 — declarative Trade Plan context rules v0, implemented; operator acceptance pending
+- **Schema:** v36
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** **373 passed** in 132.53s on 2026-10-10, clean exit (Python 3.12 / PySide6 6.8.3 / offscreen)
-- **Manual acceptance:** E1 fully PASS. E3 required no new UI smoke pass. E4 focused operator smoke is **PASS**, per operator report of completed manual testing and acceptance on 2026-10-10.
+- **Verified full test result:** **401 passed** in 136.01s on 2026-10-10, clean exit (Python 3.12 / PySide6 6.8.3 / offscreen)
+- **Manual acceptance:** E1 fully PASS. E3 required no new UI smoke pass. E4 focused operator smoke is **PASS**, per operator report of completed manual testing and acceptance on 2026-10-10. E5 focused operator acceptance is **NOT TESTED**.
 
 ## Completed foundation — Competency / Proficiency substrate v0
 
@@ -118,7 +118,7 @@ Milestones A, B, and C are complete. The learning/progression chain remains inta
 
 `Evidence -> Competency Synthesis -> Cross-Run Observation -> Development Direction -> targeted Study -> Evidence Maturity -> Trade Plan Progression Policy -> Explainable Eligibility -> historical attainment / regression-revalidation -> operator-loop guardrails`
 
-The current major frontier is **Milestone E — context maturity: QT/AMDX, external events, schedules, and distortions**. E1, E2, E3, and E4 are merged. E4 exposes the stored context to the operator; it does not introduce context-policy evaluation.
+The current major frontier is **Milestone E — context maturity: QT/AMDX, external events, schedules, and distortions**. E1, E2, E3, and E4 are merged. E4 exposes stored context to the operator. E5 now provides explicit snapshotted context-policy evaluation and configured entry effects; real policy adoption remains deferred.
 
 Milestone D continues only for demonstrated operator friction. Film Night, gallery polish, broad TradingView integration, hardware controls, and broker execution remain downstream.
 
@@ -163,17 +163,42 @@ Acceptance:
 
 ## Current task
 
-**E5 — declarative Trade Plan context rules** is the next implementation slice; feature work has not started.
+**E5 — declarative Trade Plan context rules v0** is implemented on `feature/context-maturity-e5-v0` for operator acceptance.
 
-Next action: review the accepted E5 contract and authoritative Trade Plan rules, then define a small declarative policy slice covering conditions, environment applicability, and explicit unknown-context semantics. Do not invent trading restrictions, warning horizons, or authorization thresholds. Schema remains v35 and the published Trade Plan remains Alpha 0.7 until a justified revision is implemented.
+Implemented behavior:
+
+- immutable plan-owned rule definitions with IDs, rationale, explicit environments, conjunctive conditions, matched effect, and unknown effect,
+- NY weekday/strict-after clock predicates and normalized event-presence selectors (category/type/impact/affected market) over futures-day or calendar-week windows,
+- Matched / Not Matched / Unknown / Not Applicable results; informational, warning, block-entry, and stand-down-day effects are explicit,
+- positive recorded event facts can establish presence; a negative event result requires full requested-window coverage,
+- unavailable calendar, missing time/coverage/selectors, tentative/unknown status, and incomplete NFP-week coverage remain unknown,
+- cancelled/postponed events do not satisfy presence; released events remain relevant to day/week rules,
+- schema **v36** stores each run's context rules; v35 runs migrate to empty rules without invented policy,
+- candidate entry authorization adds configured context blockers independently of manual gate clearance; warnings never grant permission,
+- compact TDA/Watch/Review effects and expandable rule rationale, applicability, reasons, and event IDs,
+- pure evaluation: no provider queries, wall-clock fallback, snapshot rewriting, or evaluation-time mutation,
+- disposable fixtures: `python tools/context_policy_demo.py`, with frozen time and unpublished fixture-only policy,
+- published **Alpha 0.7 remains unchanged** with no declarative context rules; existing manual gates remain in force.
+
+Validation:
+
+- full automated suite: **401 passed in 136.01s**, clean exit on 2026-10-10 (Python 3.12 / PySide6 6.8.3 / offscreen),
+- focused E3/E4/E5 regressions: **45 passed**; smoke-document round-trip: **4 passed**,
+- developer offscreen fixture inspection confirmed clock boundaries, event availability, coverage unknowns, and configured entry blocking with cleared manual gates; visually inspected Watch and expanded Review at 1100×850,
+- operator acceptance is **NOT TESTED**; focused E5 checklist is in `docs/SMOKE_TEST.md`.
+
+Next action: pull E5, run the full suite locally, exercise its disposable fixture and normal Alpha 0.7 restore/workflow checklist, then record operator acceptance before merge. The implementation-sequence next slice after accepted E5 is **E6 — real provider integration**, subject to the documented E6/E7 naming reconciliation. E5 v0 completes the policy substrate, not automatic adoption of every source-plan prose exclusion.
 
 ## Explicitly deferred / open
 
 - no real calendar provider selected or wired into normal application startup,
 - no within-run snapshot refresh/version history,
-- no warnings, restrictions, authorization changes, readiness scores, or automatic competency evidence,
-- no full intraday session × 90-minute interpretation grid in E4,
-- `CONTEXT_MATURITY.md` has inconsistent later E6/E7 numbering between narrative sections and the implementation sequence. Reconcile that when planning those slices; it does not block E4/E5 and is not permission to reorder the roadmap.
+- no published automatic Alpha 0.7 context policy: the example allows paper trading on live/eval/funded no-trade days, and run environment is not account type; actual adoption needs explicit account applicability and a new plan revision,
+- exact normalized event types, full-week calendar coverage, and any event duration/buffer must be explicitly configured rather than inferred from titles or provider folder colors,
+- rule results are derived on demand; no decision-time policy-result audit log is persisted in E5,
+- no no-code rule editor, automatic run conclusion/stand-down transition, exit/flatten restriction, order submission, readiness score, or automatic competency evidence,
+- no full intraday session × 90-minute interpretation grid,
+- `CONTEXT_MATURITY.md` has inconsistent later E6/E7 numbering between narrative sections and the implementation sequence. Reconcile that at the next planning boundary without silently reordering the roadmap.
 
 ## System guide maintenance
 
