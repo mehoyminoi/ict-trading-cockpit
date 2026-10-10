@@ -324,10 +324,16 @@ class ProcessRunLauncherWidget(QWidget):
             if blocked_names
             else ""
         )
+        recommended_text = (
+            f"\nRecommended lower rung · "
+            f"{progression_status.recommended_environment.value}"
+            if progression_status.recommended_environment is not None
+            else ""
+        )
         self.eligibility_label.setText(
             f"Progression eligibility · {eligibility.status.value.upper()}\n"
             f"Boundary · {boundary_text}\n"
-            f"{eligibility.detail}{blocker_summary}"
+            f"{eligibility.detail}{blocker_summary}{recommended_text}"
         )
         self.progression_guidance_label.setText(
             f"Next · {progression_status.action_guidance}"
