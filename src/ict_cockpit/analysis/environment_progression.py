@@ -34,6 +34,15 @@ class ProgressionRequirementReason(str, Enum):
     HUMAN_CERTIFICATION_REQUIRED = "Human Certification Required"
 
 
+class ProgressionStandingStatus(str, Enum):
+    NOT_ATTAINED = "Not Yet Attained"
+    AVAILABLE_NOT_ATTAINED = "Available · Not Yet Attained"
+    ATTAINED_AVAILABLE = "Attained · Currently Available"
+    ELIGIBILITY_LOSS_DETECTED = "Eligibility Loss Detected"
+    REVALIDATION_REQUIRED = "Revalidation Required"
+    HISTORICAL_ATTAINMENT = "Historical Attainment · Current Policy Not Configured"
+
+
 @dataclass(frozen=True)
 class ProgressionRequirementResult:
     requirement_id: str
@@ -59,6 +68,16 @@ class ProgressionEligibilityResult:
     requirement_results: tuple[ProgressionRequirementResult, ...] = field(
         default_factory=tuple
     )
+
+
+@dataclass(frozen=True)
+class ProgressionStanding:
+    boundary: ProgressionBoundary
+    status: ProgressionStandingStatus
+    detail: str
+    current_eligibility: ProgressionEligibilityResult
+    prior_attainment: Any = None
+    review_required: bool = False
 
 
 @dataclass(frozen=True)
@@ -507,4 +526,155 @@ def evaluate_environment_eligibility(
         detail=progression.detail,
         recommended_environment=recommended,
         progression=progression,
+    )
+
+
+
+def progression_eligibility_to_dict(
+    result: ProgressionEligibilityResult,
+) -> dict:
+    """Serialize a derived C3 result for immutable historical provenance."""
+
+    return {
+        "trade_plan_id": result.trade_plan_id,
+        "trade_plan_revision": result.trade_plan_revision,
+        "policy_id": result.policy_id,
+        "boundary": result.boundary.value,
+        "status": result.status.value,
+        "detail": result.detail,
+        "requirement_results": [
+            {
+                "requirement_id": item.requirement_id,
+                "requirement_name": item.requirement_name,
+                "requirement_kind": item.requirement_kind,
+                "competency_id": item.competency_id,
+                "status": item.status.value,
+                "reason": item.reason.value if item.reason is not None else "",
+                "detail": item.detail,
+                "expected_values": list(item.expected_values),
+                "observed_value": item.observed_value,
+                "source_provenance": item.source_provenance,
+            }
+            for item in result.requirement_results
+        ],
+    }
+
+
+def derive_progression_standing(
+    *,
+    trade_plan: TradePlanDefinition,
+    eligibility: ProgressionEligibilityResult,
+    progression_attainment_repository: Any = None,
+) -> ProgressionStanding:
+    """Compare current eligibility with immutable historical attainment.
+
+    This comparison may identify eligibility loss or revalidation work, but it
+    never infers competency regression.
+    """
+
+    if progression_attainment_repository is None:
+        return ProgressionStanding(
+            boundary=eligibility.boundary,
+            status=(
+                ProgressionStandingStatus.AVAILABLE_NOT_ATTAINED
+                if eligibility.status is EnvironmentEligibilityStatus.AVAILABLE
+                else ProgressionStandingStatus.NOT_ATTAINED
+            ),
+            detail="Progression attainment history is unavailable.",
+            current_eligibility=eligibility,
+        )
+
+    prior = progression_attainment_repository.latest_for_boundary(
+        trade_plan.id,
+        eligibility.boundary,
+    )
+
+    if prior is None:
+        status = (
+            ProgressionStandingStatus.AVAILABLE_NOT_ATTAINED
+            if eligibility.status is EnvironmentEligibilityStatus.AVAILABLE
+            else ProgressionStandingStatus.NOT_ATTAINED
+        )
+        detail = (
+            "This boundary is available but has not yet been deliberately crossed."
+            if status is ProgressionStandingStatus.AVAILABLE_NOT_ATTAINED
+            else "No historical attainment is recorded for this boundary."
+        )
+        return ProgressionStanding(
+            boundary=eligibility.boundary,
+            status=status,
+            detail=detail,
+            current_eligibility=eligibility,
+        )
+
+    if eligibility.status is EnvironmentEligibilityStatus.NOT_CONFIGURED:
+        return ProgressionStanding(
+            boundary=eligibility.boundary,
+            status=ProgressionStandingStatus.HISTORICAL_ATTAINMENT,
+            detail=(
+                f"Historical attainment exists under Trade Plan "
+                f"{prior.trade_plan_revision}, while the current boundary has "
+                "no configured progression policy."
+            ),
+            current_eligibility=eligibility,
+            prior_attainment=prior,
+        )
+
+    same_governing_context = (
+        prior.trade_plan_revision == trade_plan.revision
+        and prior.policy_id == eligibility.policy_id
+    )
+
+    if eligibility.status is EnvironmentEligibilityStatus.AVAILABLE:
+        if same_governing_context:
+            return ProgressionStanding(
+                boundary=eligibility.boundary,
+                status=ProgressionStandingStatus.ATTAINED_AVAILABLE,
+                detail=(
+                    "This boundary was previously attained under the current "
+                    "Trade Plan policy and is currently available."
+                ),
+                current_eligibility=eligibility,
+                prior_attainment=prior,
+            )
+        return ProgressionStanding(
+            boundary=eligibility.boundary,
+            status=ProgressionStandingStatus.AVAILABLE_NOT_ATTAINED,
+            detail=(
+                f"A historical attainment exists under Trade Plan "
+                f"{prior.trade_plan_revision}, but the current revision/policy "
+                "has not yet been deliberately attained."
+            ),
+            current_eligibility=eligibility,
+            prior_attainment=prior,
+        )
+
+    if same_governing_context:
+        return ProgressionStanding(
+            boundary=eligibility.boundary,
+            status=ProgressionStandingStatus.ELIGIBILITY_LOSS_DETECTED,
+            detail=(
+                "This boundary was previously attained under the same Trade Plan "
+                "policy, but current eligibility is now BLOCKED. This is an "
+                "eligibility-loss condition, not an automatic competency-regression "
+                "conclusion."
+            ),
+            current_eligibility=eligibility,
+            prior_attainment=prior,
+            review_required=True,
+        )
+
+    return ProgressionStanding(
+        boundary=eligibility.boundary,
+        status=ProgressionStandingStatus.REVALIDATION_REQUIRED,
+        detail=(
+            f"Historical attainment exists under Trade Plan "
+            f"{prior.trade_plan_revision}, but the current Trade Plan "
+            f"{trade_plan.revision} does not currently satisfy this boundary. "
+            "Fresh contextual validation/review is required; prior competency "
+            "knowledge is not erased."
+        ),
+        current_eligibility=eligibility,
+        prior_attainment=prior,
+        review_required=True,
     )
