@@ -424,3 +424,32 @@ Started runs preserve historical provenance and are not silently terminated or d
 Alpha 0.7 intentionally remains without a real progression policy. Milestone C therefore completes the **machinery and governance semantics**, not the future policy thresholds themselves.
 
 The next major roadmap frontier is Milestone E — Context maturity: QT/AMDX, news, and distortions. Milestone D remains a parallel friction-driven hardening stream.
+
+
+## 2026-10-10 — Milestone E1 expected-vs-observed QT review
+
+Milestone E began by maturing the existing QT/AMDX substrate rather than immediately adding external news ingestion.
+
+E1 preserved the run-time TDA QT/AMDX interpretation as **expected/working context** and added a separate **observed Review context**.
+
+The resulting structure is:
+
+```text
+TDA expected QT / AMDX
+        ↓ preserved
+Watch / market unfolds
+        ↓
+Post-Market observed QT / AMDX
+        ↓
+descriptive comparison
+```
+
+Comparison is deliberately non-numeric and uses Matched / Changed / Expected Unknown / Observed Unknown / Not Comparable.
+
+Observed Review state persists independently and does not overwrite the original TDA expectation. Time-derived QT roles remain factual/read-only. A mismatch does not automatically create competency evidence.
+
+Schema advanced to v34 for observed Review context and its optional human note.
+
+Operator acceptance completed with 348 automated tests passing and the guided smoke test fully PASS.
+
+The operator also clarified an important future UI requirement: the mature system must preserve full intraday QT depth—including four sessions per day and four 90-minute cycles per session—without becoming a large form. This is now a durable requirement for later Milestone E interaction design.
