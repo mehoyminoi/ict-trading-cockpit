@@ -1,10 +1,17 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any
 
 from ict_cockpit.analysis.trading_session_run import (
     RunEnvironment,
     RunPurpose,
     default_purpose_for_environment,
+)
+from ict_cockpit.progression import ProgressionBoundary
+from ict_cockpit.trade_plan import (
+    ProgressionRequirementKind,
+    ProgressionRequirementOperator,
+    TradePlanDefinition,
 )
 
 
@@ -14,6 +21,46 @@ class EnvironmentEligibilityStatus(str, Enum):
     BLOCKED = "Blocked"
 
 
+class ProgressionRequirementStatus(str, Enum):
+    SATISFIED = "Satisfied"
+    NOT_SATISFIED = "Not Satisfied"
+    UNKNOWN = "Unknown / Cannot Evaluate"
+
+
+class ProgressionRequirementReason(str, Enum):
+    REQUIREMENT_NOT_SATISFIED = "Requirement Not Satisfied"
+    INSUFFICIENT_EVIDENCE = "Insufficient Evidence"
+    CANNOT_EVALUATE = "Cannot Evaluate"
+    HUMAN_CERTIFICATION_REQUIRED = "Human Certification Required"
+
+
+@dataclass(frozen=True)
+class ProgressionRequirementResult:
+    requirement_id: str
+    requirement_name: str
+    requirement_kind: str
+    competency_id: str
+    status: ProgressionRequirementStatus
+    detail: str
+    expected_values: tuple[str, ...] = field(default_factory=tuple)
+    observed_value: str = ""
+    reason: ProgressionRequirementReason | None = None
+    source_provenance: str = ""
+
+
+@dataclass(frozen=True)
+class ProgressionEligibilityResult:
+    trade_plan_id: str
+    trade_plan_revision: str
+    boundary: ProgressionBoundary
+    status: EnvironmentEligibilityStatus
+    detail: str
+    policy_id: str = ""
+    requirement_results: tuple[ProgressionRequirementResult, ...] = field(
+        default_factory=tuple
+    )
+
+
 @dataclass(frozen=True)
 class EnvironmentEligibility:
     environment: RunEnvironment
@@ -21,25 +68,399 @@ class EnvironmentEligibility:
     status: EnvironmentEligibilityStatus
     detail: str
     recommended_environment: RunEnvironment | None = None
+    progression: ProgressionEligibilityResult | None = None
 
     @property
     def can_launch(self) -> bool:
-        """Launch remains allowed until an explicit Trade Plan gate exists."""
+        """A configured BLOCKED result prevents upward launch."""
 
         return self.status is not EnvironmentEligibilityStatus.BLOCKED
 
 
+_ENVIRONMENT_BOUNDARY = {
+    RunEnvironment.REPLAY: ProgressionBoundary.STUDY_TO_REHEARSAL,
+    RunEnvironment.FORWARD_TEST: ProgressionBoundary.REHEARSAL_TO_VALIDATION,
+    RunEnvironment.LIVE: ProgressionBoundary.VALIDATION_TO_EXECUTION,
+}
+
+_RECOMMENDED_LOWER = {
+    RunEnvironment.REPLAY: RunEnvironment.HISTORICAL_BACKTEST,
+    RunEnvironment.FORWARD_TEST: RunEnvironment.REPLAY,
+    RunEnvironment.LIVE: RunEnvironment.FORWARD_TEST,
+}
+
+
+def progression_boundary_for_environment(
+    environment: RunEnvironment | str,
+) -> ProgressionBoundary | None:
+    environment = RunEnvironment(environment)
+    return _ENVIRONMENT_BOUNDARY.get(environment)
+
+
+def _compare_expected(
+    observed: str,
+    operator: ProgressionRequirementOperator,
+    expected_values: tuple[str, ...],
+) -> bool:
+    if operator is ProgressionRequirementOperator.IS:
+        return observed == expected_values[0]
+    if operator is ProgressionRequirementOperator.IS_ONE_OF:
+        return observed in expected_values
+    raise ValueError(f"unsupported comparison operator: {operator.value}")
+
+
+def _unknown_result(requirement, detail: str, *, provenance: str = ""):
+    return ProgressionRequirementResult(
+        requirement_id=requirement.id,
+        requirement_name=requirement.name,
+        requirement_kind=requirement.requirement_kind.value,
+        competency_id=requirement.competency_id,
+        status=ProgressionRequirementStatus.UNKNOWN,
+        reason=ProgressionRequirementReason.CANNOT_EVALUATE,
+        detail=detail,
+        expected_values=requirement.expected_values,
+        source_provenance=provenance,
+    )
+
+
+def _evaluate_requirement(
+    *,
+    trade_plan: TradePlanDefinition,
+    boundary: ProgressionBoundary,
+    requirement,
+    competency_assessment_repository: Any = None,
+    competency_evidence_repository: Any = None,
+    competency_evidence_maturity_repository: Any = None,
+    progression_certification_repository: Any = None,
+) -> ProgressionRequirementResult:
+    kind = requirement.requirement_kind
+
+    if kind is ProgressionRequirementKind.COMPETENCY_STATE:
+        if competency_assessment_repository is None:
+            return _unknown_result(
+                requirement,
+                "Competency State source is unavailable.",
+            )
+        assessment = competency_assessment_repository.get(
+            trade_plan.id,
+            requirement.competency_id,
+        )
+        if assessment is None:
+            return ProgressionRequirementResult(
+                requirement_id=requirement.id,
+                requirement_name=requirement.name,
+                requirement_kind=kind.value,
+                competency_id=requirement.competency_id,
+                status=ProgressionRequirementStatus.NOT_SATISFIED,
+                reason=ProgressionRequirementReason.INSUFFICIENT_EVIDENCE,
+                detail="No competency assessment is recorded.",
+                expected_values=requirement.expected_values,
+                observed_value="Not assessed",
+                source_provenance="CompetencyAssessment",
+            )
+        observed = assessment.state.value
+        passed = _compare_expected(
+            observed,
+            requirement.operator,
+            requirement.expected_values,
+        )
+        return ProgressionRequirementResult(
+            requirement_id=requirement.id,
+            requirement_name=requirement.name,
+            requirement_kind=kind.value,
+            competency_id=requirement.competency_id,
+            status=(
+                ProgressionRequirementStatus.SATISFIED
+                if passed
+                else ProgressionRequirementStatus.NOT_SATISFIED
+            ),
+            reason=(
+                None
+                if passed
+                else ProgressionRequirementReason.REQUIREMENT_NOT_SATISFIED
+            ),
+            detail=(
+                f"Competency State is {observed}."
+                if passed
+                else f"Competency State is {observed}; policy expectation is not met."
+            ),
+            expected_values=requirement.expected_values,
+            observed_value=observed,
+            source_provenance=(
+                f"CompetencyAssessment · stored plan revision "
+                f"{assessment.trade_plan_revision}"
+            ),
+        )
+
+    if kind is ProgressionRequirementKind.EVIDENCE_MATURITY_STATE:
+        if competency_evidence_maturity_repository is None:
+            return _unknown_result(
+                requirement,
+                "Evidence Maturity source is unavailable.",
+            )
+        profile = competency_evidence_maturity_repository.get(
+            trade_plan.id,
+            requirement.competency_id,
+            boundary.value,
+        )
+        if profile is None:
+            return ProgressionRequirementResult(
+                requirement_id=requirement.id,
+                requirement_name=requirement.name,
+                requirement_kind=kind.value,
+                competency_id=requirement.competency_id,
+                status=ProgressionRequirementStatus.NOT_SATISFIED,
+                reason=ProgressionRequirementReason.INSUFFICIENT_EVIDENCE,
+                detail="No Evidence Maturity profile is recorded for this boundary.",
+                expected_values=requirement.expected_values,
+                observed_value="No profile",
+                source_provenance="CompetencyEvidenceMaturityProfile",
+            )
+        if profile.trade_plan_revision != trade_plan.revision:
+            return ProgressionRequirementResult(
+                requirement_id=requirement.id,
+                requirement_name=requirement.name,
+                requirement_kind=kind.value,
+                competency_id=requirement.competency_id,
+                status=ProgressionRequirementStatus.UNKNOWN,
+                reason=ProgressionRequirementReason.CANNOT_EVALUATE,
+                detail=(
+                    "Evidence Maturity was last reviewed under Trade Plan "
+                    f"{profile.trade_plan_revision}; current-plan review is required "
+                    f"for {trade_plan.revision}."
+                ),
+                expected_values=requirement.expected_values,
+                observed_value=profile.maturity_state.value,
+                source_provenance=(
+                    f"CompetencyEvidenceMaturityProfile · "
+                    f"{profile.trade_plan_revision}"
+                ),
+            )
+        observed = profile.maturity_state.value
+        passed = _compare_expected(
+            observed,
+            requirement.operator,
+            requirement.expected_values,
+        )
+        return ProgressionRequirementResult(
+            requirement_id=requirement.id,
+            requirement_name=requirement.name,
+            requirement_kind=kind.value,
+            competency_id=requirement.competency_id,
+            status=(
+                ProgressionRequirementStatus.SATISFIED
+                if passed
+                else ProgressionRequirementStatus.NOT_SATISFIED
+            ),
+            reason=(
+                None
+                if passed
+                else ProgressionRequirementReason.REQUIREMENT_NOT_SATISFIED
+            ),
+            detail=(
+                f"Evidence Maturity is {observed}."
+                if passed
+                else f"Evidence Maturity is {observed}; policy expectation is not met."
+            ),
+            expected_values=requirement.expected_values,
+            observed_value=observed,
+            source_provenance=(
+                f"CompetencyEvidenceMaturityProfile · {trade_plan.revision}"
+            ),
+        )
+
+    if kind is ProgressionRequirementKind.EVIDENCE_PURPOSE_PRESENT:
+        if competency_evidence_repository is None:
+            return _unknown_result(
+                requirement,
+                "Competency evidence source is unavailable.",
+            )
+        purpose = requirement.expected_values[0]
+        evidence = competency_evidence_repository.list_for_competency(
+            trade_plan.id,
+            requirement.competency_id,
+        )
+        qualifying = [
+            item
+            for item in evidence
+            if item.trade_plan_revision == trade_plan.revision
+            and item.run_purpose == purpose
+        ]
+        if qualifying:
+            run_count = len({item.trading_run_id for item in qualifying})
+            return ProgressionRequirementResult(
+                requirement_id=requirement.id,
+                requirement_name=requirement.name,
+                requirement_kind=kind.value,
+                competency_id=requirement.competency_id,
+                status=ProgressionRequirementStatus.SATISFIED,
+                detail=(
+                    f"{len(qualifying)} current-plan {purpose} evidence record(s) "
+                    f"across {run_count} run(s) are present."
+                ),
+                expected_values=requirement.expected_values,
+                observed_value=f"{len(qualifying)} record(s)",
+                source_provenance=(
+                    f"CompetencyEvidence · Trade Plan {trade_plan.revision}"
+                ),
+            )
+        return ProgressionRequirementResult(
+            requirement_id=requirement.id,
+            requirement_name=requirement.name,
+            requirement_kind=kind.value,
+            competency_id=requirement.competency_id,
+            status=ProgressionRequirementStatus.NOT_SATISFIED,
+            reason=ProgressionRequirementReason.INSUFFICIENT_EVIDENCE,
+            detail=(
+                f"No reviewed {purpose} evidence is recorded for this competency "
+                f"under Trade Plan {trade_plan.revision}."
+            ),
+            expected_values=requirement.expected_values,
+            observed_value="0 record(s)",
+            source_provenance=(
+                f"CompetencyEvidence · Trade Plan {trade_plan.revision}"
+            ),
+        )
+
+    if kind is ProgressionRequirementKind.HUMAN_CERTIFICATION:
+        if progression_certification_repository is None:
+            return _unknown_result(
+                requirement,
+                "Human Certification source is unavailable.",
+            )
+        certification = progression_certification_repository.get(
+            trade_plan.id,
+            trade_plan.revision,
+            boundary,
+            requirement.id,
+        )
+        if certification is None or not certification.confirmed:
+            return ProgressionRequirementResult(
+                requirement_id=requirement.id,
+                requirement_name=requirement.name,
+                requirement_kind=kind.value,
+                competency_id=requirement.competency_id,
+                status=ProgressionRequirementStatus.NOT_SATISFIED,
+                reason=ProgressionRequirementReason.HUMAN_CERTIFICATION_REQUIRED,
+                detail="Required human certification has not been confirmed.",
+                expected_values=requirement.expected_values,
+                observed_value="Not confirmed",
+                source_provenance=(
+                    f"ProgressionCertification · Trade Plan {trade_plan.revision}"
+                ),
+            )
+        return ProgressionRequirementResult(
+            requirement_id=requirement.id,
+            requirement_name=requirement.name,
+            requirement_kind=kind.value,
+            competency_id=requirement.competency_id,
+            status=ProgressionRequirementStatus.SATISFIED,
+            detail="Required human certification is confirmed.",
+            expected_values=requirement.expected_values,
+            observed_value="Confirmed",
+            source_provenance=(
+                f"ProgressionCertification · Trade Plan {trade_plan.revision}"
+            ),
+        )
+
+    return _unknown_result(
+        requirement,
+        f"Requirement kind {kind.value} is not supported by this evaluator.",
+    )
+
+
+def evaluate_progression_boundary(
+    *,
+    trade_plan: TradePlanDefinition,
+    boundary: ProgressionBoundary | str,
+    competency_assessment_repository: Any = None,
+    competency_evidence_repository: Any = None,
+    competency_evidence_maturity_repository: Any = None,
+    progression_certification_repository: Any = None,
+) -> ProgressionEligibilityResult:
+    boundary = ProgressionBoundary(boundary)
+    policy = trade_plan.progression_policy_by_boundary(boundary)
+
+    if policy is None:
+        return ProgressionEligibilityResult(
+            trade_plan_id=trade_plan.id,
+            trade_plan_revision=trade_plan.revision,
+            boundary=boundary,
+            status=EnvironmentEligibilityStatus.NOT_CONFIGURED,
+            detail=(
+                "No Trade Plan progression policy is published for this boundary. "
+                "Readiness is unknown, not proven."
+            ),
+        )
+
+    results = tuple(
+        _evaluate_requirement(
+            trade_plan=trade_plan,
+            boundary=boundary,
+            requirement=requirement,
+            competency_assessment_repository=competency_assessment_repository,
+            competency_evidence_repository=competency_evidence_repository,
+            competency_evidence_maturity_repository=(
+                competency_evidence_maturity_repository
+            ),
+            progression_certification_repository=(
+                progression_certification_repository
+            ),
+        )
+        for requirement in policy.requirements
+    )
+
+    blocked = [
+        item
+        for item in results
+        if item.status is not ProgressionRequirementStatus.SATISFIED
+    ]
+    if not blocked:
+        status = EnvironmentEligibilityStatus.AVAILABLE
+        detail = (
+            f"All {len(results)} configured progression requirement(s) are satisfied."
+        )
+    else:
+        status = EnvironmentEligibilityStatus.BLOCKED
+        unsatisfied = sum(
+            item.status is ProgressionRequirementStatus.NOT_SATISFIED
+            for item in blocked
+        )
+        unknown = sum(
+            item.status is ProgressionRequirementStatus.UNKNOWN
+            for item in blocked
+        )
+        parts = []
+        if unsatisfied:
+            parts.append(f"{unsatisfied} not satisfied")
+        if unknown:
+            parts.append(f"{unknown} cannot evaluate")
+        detail = (
+            "Configured progression policy is blocked: "
+            + ", ".join(parts)
+            + "."
+        )
+
+    return ProgressionEligibilityResult(
+        trade_plan_id=trade_plan.id,
+        trade_plan_revision=trade_plan.revision,
+        policy_id=policy.id,
+        boundary=boundary,
+        status=status,
+        detail=detail,
+        requirement_results=results,
+    )
+
+
 def evaluate_environment_eligibility(
     environment: RunEnvironment | str,
+    *,
+    trade_plan: TradePlanDefinition | None = None,
+    competency_assessment_repository: Any = None,
+    competency_evidence_repository: Any = None,
+    competency_evidence_maturity_repository: Any = None,
+    progression_certification_repository: Any = None,
 ) -> EnvironmentEligibility:
-    """Describe progression readiness without inventing proficiency thresholds.
-
-    Historical Backtest is the foundation environment and is always available.
-    Higher environments remain explicitly Not Configured until the Trade Plan
-    publishes progression criteria. Future policy evaluation can return Blocked
-    with concrete reasons and a recommended lower rung.
-    """
-
     environment = RunEnvironment(environment)
     purpose = default_purpose_for_environment(environment)
 
@@ -54,19 +475,36 @@ def evaluate_environment_eligibility(
             ),
         )
 
-    recommended = {
-        RunEnvironment.REPLAY: RunEnvironment.HISTORICAL_BACKTEST,
-        RunEnvironment.FORWARD_TEST: RunEnvironment.REPLAY,
-        RunEnvironment.LIVE: RunEnvironment.FORWARD_TEST,
-    }[environment]
+    boundary = _ENVIRONMENT_BOUNDARY[environment]
+    recommended = _RECOMMENDED_LOWER[environment]
 
+    if trade_plan is None:
+        return EnvironmentEligibility(
+            environment=environment,
+            purpose=purpose,
+            status=EnvironmentEligibilityStatus.NOT_CONFIGURED,
+            detail=(
+                "No Trade Plan progression criteria are published for this "
+                "environment yet. Readiness is therefore unknown, not proven."
+            ),
+            recommended_environment=recommended,
+        )
+
+    progression = evaluate_progression_boundary(
+        trade_plan=trade_plan,
+        boundary=boundary,
+        competency_assessment_repository=competency_assessment_repository,
+        competency_evidence_repository=competency_evidence_repository,
+        competency_evidence_maturity_repository=(
+            competency_evidence_maturity_repository
+        ),
+        progression_certification_repository=progression_certification_repository,
+    )
     return EnvironmentEligibility(
         environment=environment,
         purpose=purpose,
-        status=EnvironmentEligibilityStatus.NOT_CONFIGURED,
-        detail=(
-            "No Trade Plan progression criteria are published for this environment yet. "
-            "Readiness is therefore unknown, not proven."
-        ),
+        status=progression.status,
+        detail=progression.detail,
         recommended_environment=recommended,
+        progression=progression,
     )
