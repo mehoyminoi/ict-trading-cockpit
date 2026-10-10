@@ -6,10 +6,10 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `feature/context-maturity-e4-v0`
-- **Main baseline:** `9d1fb5d0181a9ed50675c95aeb189156c99c5af7` — PR #55 merged E3 historical market-context snapshots and Qt test cleanup
+- **Active branch:** `main`
+- **Main baseline:** `818b906058e6d493671847fd76566e89ede33c37` — PR #56 merged accepted E4 compact operator context surfaces
 - **Implementation checkpoint:** `c9d49ef5bbfffcd157b3456cd0155b6ae16f56a7` — Present stored market context across TDA Watch and Review (E4)
-- **Current slice:** E4 — compact operator context surfaces, accepted and ready to merge
+- **Current slice:** E5 — declarative Trade Plan context rules (next; implementation not started)
 - **Schema:** v35
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** **373 passed** in 132.53s on 2026-10-10, clean exit (Python 3.12 / PySide6 6.8.3 / offscreen)
@@ -118,11 +118,11 @@ Milestones A, B, and C are complete. The learning/progression chain remains inta
 
 `Evidence -> Competency Synthesis -> Cross-Run Observation -> Development Direction -> targeted Study -> Evidence Maturity -> Trade Plan Progression Policy -> Explainable Eligibility -> historical attainment / regression-revalidation -> operator-loop guardrails`
 
-The current major frontier is **Milestone E — context maturity: QT/AMDX, external events, schedules, and distortions**. E1, E2, and E3 are merged. E4 now exposes the stored context to the operator; it does not introduce context-policy evaluation.
+The current major frontier is **Milestone E — context maturity: QT/AMDX, external events, schedules, and distortions**. E1, E2, E3, and E4 are merged. E4 exposes the stored context to the operator; it does not introduce context-policy evaluation.
 
 Milestone D continues only for demonstrated operator friction. Film Night, gallery polish, broad TradingView integration, hardware controls, and broker execution remain downstream.
 
-## Last completed slice
+## Previous completed slice
 
 **E3 — historical context snapshots**, merged through PR #55:
 
@@ -134,9 +134,9 @@ Milestone D continues only for demonstrated operator friction. Film Night, galle
 - full automated acceptance: **364 passed**, clean exit,
 - test-session Qt cleanup stops test-owned timers and disposes windows before draining events.
 
-## Current task
+## Last completed slice
 
-**E4 — compact operator context surfaces** is implemented and operator accepted on `feature/context-maturity-e4-v0`.
+**E4 — compact operator context surfaces**, merged through PR #56 after operator acceptance on 2026-10-10.
 
 Implemented behavior:
 
@@ -161,7 +161,11 @@ Acceptance:
 - developer offscreen visual inspection at 1024×768 covers compact TDA, the dense Thesis controls, and expanded Review detail,
 - operator reported manual testing complete and acceptance granted on **2026-10-10**; the E4 checklist in `docs/SMOKE_TEST.md` is recorded as **PASS**.
 
-Next action: merge the accepted E4 checkpoint and update the main handoff. The next implementation slice after accepted E4 is **E5 — declarative Trade Plan context rules**.
+## Current task
+
+**E5 — declarative Trade Plan context rules** is the next implementation slice; feature work has not started.
+
+Next action: review the accepted E5 contract and authoritative Trade Plan rules, then define a small declarative policy slice covering conditions, environment applicability, and explicit unknown-context semantics. Do not invent trading restrictions, warning horizons, or authorization thresholds. Schema remains v35 and the published Trade Plan remains Alpha 0.7 until a justified revision is implemented.
 
 ## Explicitly deferred / open
 
