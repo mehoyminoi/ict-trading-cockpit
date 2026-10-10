@@ -6,12 +6,12 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `design/context-maturity-v0`
-- **Main baseline:** `73370bc42d0fed5308c52b7ea51017486a5cc8b2` — PR #51 merged C5 operator-loop integration and guardrails v0
+- **Active branch:** `feature/context-maturity-e1-v0`
+- **Main baseline:** `1ad555d86f2a674aac781e671bb8421463c51274` — PR #52 merged Milestone E context maturity v0 design
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Milestone E design — Context maturity: QT/AMDX, news, and distortions
-- **Schema:** v33
+- **Current slice:** Milestone E1 implementation — Expected vs observed QT/AMDX review loop
+- **Schema:** v34
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** **340 passed** on 2026-10-10 for C5 operator-loop integration and guardrails v0
 - **Manual smoke test:** C5 operator-loop integration and guardrails v0 acceptance **fully PASS** — schema v33 confirmed and all guided checks passed.
@@ -129,42 +129,51 @@ Older Film Night, responsive-gallery, visual-polish, broad TradingView-integrati
 
 Milestone C — Evidence Maturity and progression governance is complete and merged.
 
-The active major roadmap frontier is:
+Milestone E v0 architecture is accepted and merged.
 
-**Milestone E — Context maturity: QT/AMDX, news, and distortions**
+**E1 — Expected vs observed QT/AMDX review loop** is implemented for validation on `feature/context-maturity-e1-v0`.
 
-The Milestone E v0 design is **operator-accepted and ready for implementation** on `design/context-maturity-v0`.
+Implemented E1 behavior:
 
-Accepted sequence:
+- existing Trading Run `qt_context` remains the expected/working TDA interpretation,
+- separate `review_observed_qt_context` preserves hindsight/observed interpretation,
+- separate Review context note records human explanation without software inference,
+- expected and observed values compare descriptively level-by-level,
+- comparison states are:
+  - Matched,
+  - Changed,
+  - Expected Unknown,
+  - Observed Unknown,
+  - Not Comparable,
+- no numeric score or automatic competency evidence is created,
+- time-derived QT roles remain factual and are enforced/read-only in observed Review,
+- Post-Market Market Review contains the new expected-vs-observed surface,
+- existing Market Review vs Process Review separation is unchanged,
+- observed Review state persists through the Trading Run repository and restart,
+- schema advances to **v34** with:
+  - `review_observed_qt_context_json`,
+  - `review_qt_context_note`.
 
-1. E1 — Expected vs observed QT/AMDX review loop.
-2. E2 — Provider-neutral market-context event model.
-3. E3 — Historical context snapshots and deterministic Replay/Historical context.
-4. E4 — Compact operator context surfaces.
-5. E5 — Declarative Trade Plan context rules.
-6. E6 — Real provider integration after contracts stabilize.
-7. E7 — Generic model-specific context predicates.
+Focused automated coverage includes:
 
-Accepted guardrails:
+- comparison-state semantics,
+- schema v34 migration,
+- expected TDA context not being rewritten,
+- repository round-trip,
+- UI signal/persistence path,
+- Review rehydration,
+- no automatic run evidence creation,
+- preservation of time-derived month role.
 
-- raw QT/time facts remain separate from AMDX/XAMD interpretation,
-- external event/schedule facts remain separate from restrictions,
-- expected-vs-observed mismatch remains descriptive only,
-- event presence does not automatically mean No Trade,
-- QT structural Distortion remains distinct from schedule/event irregularity,
-- Replay/Historical use selected historical market time,
-- run-specific context preserves source/provenance,
-- only Trade Plan context rules may create warnings or entry restrictions,
-- rule effects: Informational / Warning / Block New Entry / Stand Down Day,
-- rules may be environment-sensitive,
-- unknown context is distinct from no event,
-- provider architecture remains generic,
-- real provider selection is deferred,
-- Friday Asian Range no-Monday-high-impact-news is a generic-predicate validation case,
-- schema migrations are permitted when required for honest historical snapshots,
-- TDA/Watch remain compact while Review carries full detail/provenance.
+Next action:
 
-Next action: merge this Milestone E design checkpoint, then implement E1 first.
+1. pull `feature/context-maturity-e1-v0`,
+2. run the full automated suite,
+3. fix any regressions,
+4. complete the guided E1 smoke section,
+5. merge only after acceptance.
+
+Do not begin E2 external-context/event work until E1 is accepted.
 
 ## System guide maintenance
 
