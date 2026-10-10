@@ -453,3 +453,28 @@ Schema advanced to v34 for observed Review context and its optional human note.
 Operator acceptance completed with 348 automated tests passing and the guided smoke test fully PASS.
 
 The operator also clarified an important future UI requirement: the mature system must preserve full intraday QT depth—including four sessions per day and four 90-minute cycles per session—without becoming a large form. This is now a durable requirement for later Milestone E interaction design.
+
+
+## 2026-10-10 — Milestone E2 provider-neutral market context
+
+E2 introduced the external-context domain boundary without selecting a permanent vendor.
+
+The accepted contract separates:
+
+- Economic,
+- Holiday,
+- Early Close,
+- Market Schedule,
+- Other Context
+
+and normalizes impact to Low / Medium / High / Unknown while preserving provider-native impact and provenance.
+
+A provider adapter must explicitly map its own vocabulary. Terms such as "red folder" therefore have no hidden built-in meaning.
+
+The event object remains factual context only. It does not contain Trade Plan warning, stand-down, authorization, or block-entry state.
+
+A provider protocol plus deterministic in-memory provider established the integration seam for future API/import/manual adapters.
+
+E2 required no schema migration; schema remains v34. Historical run-specific event snapshots are intentionally deferred to E3.
+
+Acceptance completed with the full automated suite green at 356 passed.
