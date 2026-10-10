@@ -81,6 +81,20 @@ class ProgressionStanding:
 
 
 @dataclass(frozen=True)
+class OperatorProgressionStatus:
+    """Derived C5 presentation state for one environment transition."""
+
+    environment: RunEnvironment
+    purpose: RunPurpose
+    boundary: ProgressionBoundary | None
+    eligibility: "EnvironmentEligibility"
+    standing: ProgressionStanding | None = None
+    recommended_environment: RunEnvironment | None = None
+    action_guidance: str = ""
+    navigation_target: str = ""
+
+
+@dataclass(frozen=True)
 class EnvironmentEligibility:
     environment: RunEnvironment
     purpose: RunPurpose
@@ -687,4 +701,130 @@ def derive_progression_standing(
         current_eligibility=eligibility,
         prior_attainment=prior,
         review_required=True,
+    )
+
+
+
+def derive_operator_progression_status(
+    environment: RunEnvironment | str,
+    *,
+    trade_plan: TradePlanDefinition | None = None,
+    competency_assessment_repository: Any = None,
+    competency_evidence_repository: Any = None,
+    competency_evidence_maturity_repository: Any = None,
+    progression_certification_repository: Any = None,
+    progression_attainment_repository: Any = None,
+) -> OperatorProgressionStatus:
+    """Compose existing progression facts into one non-persisted operator view.
+
+    C5 deliberately derives this state on demand. It does not introduce a new
+    readiness score, policy, or mutable current-status record.
+    """
+
+    environment = RunEnvironment(environment)
+    eligibility = evaluate_environment_eligibility(
+        environment,
+        trade_plan=trade_plan,
+        competency_assessment_repository=competency_assessment_repository,
+        competency_evidence_repository=competency_evidence_repository,
+        competency_evidence_maturity_repository=(
+            competency_evidence_maturity_repository
+        ),
+        progression_certification_repository=(
+            progression_certification_repository
+        ),
+    )
+    boundary = progression_boundary_for_environment(environment)
+
+    standing = None
+    if (
+        boundary is not None
+        and eligibility.progression is not None
+        and trade_plan is not None
+    ):
+        standing = derive_progression_standing(
+            trade_plan=trade_plan,
+            eligibility=eligibility.progression,
+            progression_attainment_repository=(
+                progression_attainment_repository
+            ),
+        )
+
+    guidance = ""
+    navigation_target = ""
+    if environment is RunEnvironment.HISTORICAL_BACKTEST:
+        guidance = (
+            "Foundation Study does not require an upward progression boundary."
+        )
+    elif eligibility.status is EnvironmentEligibilityStatus.AVAILABLE:
+        guidance = (
+            "This configured boundary is available for a deliberate new-run "
+            "transition."
+        )
+    elif eligibility.status is EnvironmentEligibilityStatus.NOT_CONFIGURED:
+        guidance = (
+            "No progression policy governs this boundary. Alpha behavior remains "
+            "non-restrictive; availability is not proof of readiness."
+        )
+    else:
+        navigation_target = "review.progression"
+        reasons = [
+            item.reason
+            for item in (
+                eligibility.progression.requirement_results
+                if eligibility.progression is not None
+                else ()
+            )
+            if item.reason is not None
+        ]
+        if ProgressionRequirementReason.HUMAN_CERTIFICATION_REQUIRED in reasons:
+            guidance = (
+                "Human Certification is required under the current Trade Plan. "
+                "Review the requirement in Progression and manage certification "
+                "under Rules / Safety."
+            )
+        elif ProgressionRequirementReason.CANNOT_EVALUATE in reasons:
+            guidance = (
+                "One or more requirements cannot currently be evaluated. Review "
+                "their source/provenance before relying on progression."
+            )
+        elif ProgressionRequirementReason.INSUFFICIENT_EVIDENCE in reasons:
+            guidance = (
+                "Required evidence is missing or insufficient. Continue in a "
+                "lower environment or review the requirement in Progression."
+            )
+        else:
+            guidance = (
+                "One or more configured progression requirements are not "
+                "satisfied. Review them before the next upward transition."
+            )
+
+        if standing is not None:
+            if (
+                standing.status
+                is ProgressionStandingStatus.REVALIDATION_REQUIRED
+            ):
+                guidance = (
+                    "Historical attainment remains recorded, but the current "
+                    "Trade Plan requires fresh validation/review."
+                )
+            elif (
+                standing.status
+                is ProgressionStandingStatus.ELIGIBILITY_LOSS_DETECTED
+            ):
+                guidance = (
+                    "This boundary was previously attained under the same policy "
+                    "but is currently blocked. Review the loss of support before "
+                    "the next upward transition."
+                )
+
+    return OperatorProgressionStatus(
+        environment=environment,
+        purpose=eligibility.purpose,
+        boundary=boundary,
+        eligibility=eligibility,
+        standing=standing,
+        recommended_environment=eligibility.recommended_environment,
+        action_guidance=guidance,
+        navigation_target=navigation_target,
     )
