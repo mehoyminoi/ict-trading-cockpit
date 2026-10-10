@@ -291,3 +291,17 @@ def test_schema_v35_adds_market_context_snapshot_storage(tmp_path) -> None:
     assert version == CURRENT_SCHEMA_VERSION == 35
     assert "market_context_snapshot_json" in columns
     connection.close()
+
+
+
+def test_run_without_historical_event_snapshot_stays_not_configured() -> None:
+    run = TradingRun(
+        "day-1",
+        "Trading Run 1",
+        "process-1",
+    )
+
+    snapshot = MarketContextSnapshot.from_dict(run.market_context_snapshot)
+
+    assert snapshot.status is MarketContextSnapshotStatus.NOT_CONFIGURED
+    assert snapshot.events == ()
