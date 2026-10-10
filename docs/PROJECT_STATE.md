@@ -13,7 +13,7 @@ This is the starting point for a new development chat or developer handoff. Git 
 - **Current slice:** Milestone E1 implementation — Expected vs observed QT/AMDX review loop
 - **Schema:** v34
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** **340 passed** on 2026-10-10 for C5 operator-loop integration and guardrails v0
+- **Verified full test result:** **348 passed** on 2026-10-10 for Milestone E1 expected-vs-observed QT/AMDX
 - **Manual smoke test:** C5 operator-loop integration and guardrails v0 acceptance **fully PASS** — schema v33 confirmed and all guided checks passed.
 
 ## Current completed slice — Competency / Proficiency substrate v0
@@ -202,3 +202,20 @@ At minimum update:
 Append durable design decisions to `docs/DECISIONS.md`.
 
 See `docs/HANDOFF.md` for the complete handoff procedure.
+
+
+## E1 operator note — intraday QT depth
+
+**Intraday QT depth requirement recorded.**
+
+The E1 QT/AMDX surface is sufficient for current testing, but the future working version must preserve and expose the full intraday hierarchy—including four sessions per futures day and four 90-minute cycles per session—without forcing the operator through a large repetitive form.
+
+The durable requirement is now in `PROJECT_REQUIREMENTS.md`, with Milestone E design guidance in `CONTEXT_MATURITY.md`.
+
+Preferred future direction: derive factual state automatically, focus the active layer, progressively disclose deeper hierarchy, use compact visual/nested views, and allow edit-by-exception. Completeness in the data model must not require simultaneous exposure of every intraday field.
+
+Current E1 validation status:
+
+- full automated suite: **348 passed**,
+- guided smoke test: completed and saved locally by the operator,
+- smoke acceptance record still needs to be committed/pushed before merge.
