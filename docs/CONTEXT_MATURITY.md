@@ -360,7 +360,7 @@ The Trade Plan revision remains on the Trading Run itself, so the stored event s
 
 Schema advances to **v35** with `market_context_snapshot_json`.
 
-## E4 — Distortion and schedule context
+## Distortion and schedule context boundaries (applies across Milestone E)
 
 "Distortion" currently exists in the QT substrate for known temporal structure such as fifth-week monthly distortion.
 
@@ -639,10 +639,18 @@ Smallest useful slice.
 
 ### E4 — Operator context surface
 
-- compact TDA context card,
-- quiet Watch relevance,
-- Review provenance/detail,
-- progressive disclosure.
+Implemented as a shared read-only context card across TDA, Watch, and Review:
+
+- compact snapshot availability/counts and raw QT / AMDX separation,
+- Watch selects the next recorded event time using run market time, with no warning horizon or assumed event duration,
+- full stored events and schedule facts remain accessible, including cancelled/postponed/released records,
+- schedule facts do not override raw clock/session facts or imply QT structural distortion,
+- explicit missing/outside-window timing,
+- bounded, expandable full provenance detail,
+- no provider query on render, timer refresh, mode change, or restore,
+- no event refresh or Trade Plan rule evaluation,
+- schema v35 and Trade Plan Alpha 0.7 unchanged,
+- focused operator acceptance required; deterministic fixtures are available through `tools/context_surface_demo.py`.
 
 ### E5 — Declarative Trade Plan context rules
 

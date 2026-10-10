@@ -192,3 +192,15 @@ If an old source conflicts with this audit:
 | Numeric readiness score / automatic promotion-demotion | Not justified by current architecture. | DEFERRED |
 
 Milestone C is complete without publishing real progression thresholds in Alpha 0.7.
+
+
+## 2026-10-10 — Milestone E continuation audit
+
+| Area | Current interpretation | Status |
+|---|---|---|
+| E3 snapshot checkpoint | Schema v35 historical run context is accepted and merged through PR #55. | IMPLEMENTED |
+| E4 naming | The implementation sequence's compact operator context surface is current. The former narrative E4 heading described cross-cutting distortion/schedule boundaries; those distinctions remain intact. | REFINED / implementation pending operator acceptance |
+| Snapshot presentation | Read stored context; use explicit run time; never silently refresh a provider or convert facts to restrictions. | CURRENT / IMPLEMENTED |
+| Later E6/E7 labels | Narrative numbering and the implementation sequence differ for provider integration and model predicates. Resolve at that planning boundary without silently changing roadmap order. | OPEN |
+
+Older Requirements/Guide passages describing Milestone A-C as future work are historical inventory language. Verified implementation and the current Project State establish that A-C are complete and Milestone E is active.
