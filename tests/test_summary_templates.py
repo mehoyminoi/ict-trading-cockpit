@@ -41,7 +41,7 @@ def test_schema_v27_adds_versioned_summary_template_storage(tmp_path) -> None:
         ).fetchall()
     }
 
-    assert version == CURRENT_SCHEMA_VERSION == 33
+    assert version == CURRENT_SCHEMA_VERSION == 34
     assert "summary_template" in tables
     assert "summary_template_active" in tables
     connection.close()
