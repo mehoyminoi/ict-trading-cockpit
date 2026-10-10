@@ -106,6 +106,8 @@ class TradePlanWidget(QWidget):
             progression_regression_review_repository
         )
         self.competency_evidence_review_widget = None
+        self.review_development_layout = None
+        self.progression_governance_widget = None
 
         self.title_label = QLabel(f"{trade_plan.name} — {trade_plan.revision}")
         self.title_label.setStyleSheet("font-size: 18px; font-weight: 600;")
@@ -205,11 +207,10 @@ class TradePlanWidget(QWidget):
 
     def _section_changed(self, row: int) -> None:
         self.stack.setCurrentIndex(row)
-        if (
-            self.selected_section_id == "review-development"
-            and self.competency_evidence_review_widget is not None
-        ):
-            self.competency_evidence_review_widget.refresh()
+        if self.selected_section_id == "review-development":
+            if self.competency_evidence_review_widget is not None:
+                self.competency_evidence_review_widget.refresh()
+            self._refresh_progression_governance_panel()
         process_active = self.selected_section_id == "process"
         self.title_label.setVisible(not process_active)
         self.subtitle_label.setVisible(not process_active)
@@ -261,6 +262,7 @@ class TradePlanWidget(QWidget):
 
         page = QWidget()
         layout = QVBoxLayout(page)
+        self.review_development_layout = layout
         layout.setContentsMargins(6, 6, 6, 6)
         layout.setSpacing(6)
 
@@ -416,6 +418,22 @@ class TradePlanWidget(QWidget):
             "progression requirement."
         )
         self.process_run_launcher_widget._sync_environment_ui()
+        self._refresh_progression_governance_panel()
+
+    def _refresh_progression_governance_panel(self) -> None:
+        if (
+            not self.trade_plan.progression_policies
+            or self.review_development_layout is None
+            or self.progression_governance_widget is None
+        ):
+            return
+        replacement = self._build_progression_governance_panel()
+        self.review_development_layout.replaceWidget(
+            self.progression_governance_widget,
+            replacement,
+        )
+        self.progression_governance_widget.deleteLater()
+        self.progression_governance_widget = replacement
 
     def _build_progression_governance_panel(self) -> QWidget:
         panel = QFrame()
@@ -619,7 +637,10 @@ class TradePlanWidget(QWidget):
         layout.addWidget(competency_summary)
 
         if self.trade_plan.progression_policies:
-            layout.addWidget(self._build_progression_governance_panel())
+            self.progression_governance_widget = (
+                self._build_progression_governance_panel()
+            )
+            layout.addWidget(self.progression_governance_widget)
 
         if self.competency_evidence_repository is not None:
             self.competency_evidence_review_widget = CompetencyEvidenceReviewWidget(
