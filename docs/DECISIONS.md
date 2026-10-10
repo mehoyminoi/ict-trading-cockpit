@@ -508,3 +508,28 @@ Recovery uses the same published progression policy. C4 does not introduce a sep
 Even after human-confirmed regression, Competency State, Evidence Maturity, and Development Direction remain deliberate separate state changes in v0 rather than automatic mutations.
 
 **Rationale:** historical truth, skill state, present permission, and next-work intent are different concepts and must remain explainable rather than collapsing into one red/green progression state.
+
+
+## 2026-10-10 — Review / Development should preserve depth while reducing simultaneous exposure
+
+**Status:** Accepted
+
+Review / Development is becoming cognitively expensive because too many legitimate controls and concepts are visible at once.
+
+The accepted presentation model is:
+
+- Overview
+- Evidence
+- Interpretation
+- Progression
+- Practice / Launch
+
+This is a presentation-only reorganization. Existing domain objects, repositories, progression semantics, competency state, evidence maturity, attainment, regression review, and Trade Plan ownership do not change.
+
+Overview is compact and read-only. Detailed work areas use progressive disclosure. Saved-state summaries remain visible while editors are hidden. Technical terms should provide quiet contextual definitions. Major areas receive stable UI anchor IDs to support future guided testing/navigation.
+
+Smoke-test instructions should increasingly specify **Where / Look for / Expected** so manual acceptance does not require scanning the full interface.
+
+Full-text Review / Development search and automatic smoke-runner -> Cockpit deep-link/highlight plumbing are deferred until the simpler structure is proven.
+
+**Rationale:** operator cognition is part of system safety and learning quality. Dense governance capability should not consume the working memory needed for analysis, learning, and deliberate decision-making.

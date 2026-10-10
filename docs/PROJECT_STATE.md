@@ -6,11 +6,11 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `feature/regression-downgrade-semantics-v0`
-- **Main baseline:** `5f0ecc25fee8e9c65f8a4b86043dc3fbefaa4e1c` — PR #46 merged Regression / downgrade semantics v0 design
+- **Active branch:** `design/operator-loop-friction-v0`
+- **Main baseline:** `d2c4b9303ea4720370700ab02bd4c0cc2434e8df` — PR #47 merged Regression / downgrade semantics v0
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Milestone C4 — Regression / downgrade semantics v0 implementation
+- **Current slice:** Pre-C5 operator-loop friction reduction design
 - **Schema:** v33
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** full suite green on 2026-10-10 for Regression / downgrade semantics v0
@@ -133,37 +133,31 @@ C2 — Trade Plan Progression Policy substrate v0 is complete and merged.
 
 C3 — Explainable Eligibility v0 is complete and merged.
 
-C4 — Regression / downgrade semantics v0 is **acceptance-complete and ready for PR/merge** on `feature/regression-downgrade-semantics-v0`.
+C4 — Regression / downgrade semantics v0 is complete and merged.
 
-Accepted implementation:
+The pre-C5 **operator-loop friction reduction v0 design is operator-accepted and ready for implementation** on `design/operator-loop-friction-v0`.
 
-- immutable Progression Attainment history,
-- attainment only on deliberate crossing of a configured AVAILABLE boundary,
-- requirement-level eligibility snapshot preserved with attainment,
-- current standing separates historical attainment from current eligibility,
-- same-plan/policy attained -> BLOCKED = Eligibility Loss Detected,
-- cross-revision attained -> BLOCKED = Revalidation Required,
-- never-attained BLOCKED is not regression,
-- human-authored Regression / Revalidation Review,
-- optional supporting evidence links,
-- no automatic Competency State, Evidence Maturity, or Development Direction mutation,
-- voluntary step-down preserves attainment,
-- temporary operating restrictions remain separate,
-- schema **v33**,
-- Alpha 0.7 remains unchanged and unconfigured.
+Accepted implementation direction:
 
-Validation:
+- five Review / Development presentation areas:
+  - Overview,
+  - Evidence,
+  - Interpretation,
+  - Progression,
+  - Practice / Launch,
+- compact read-only Overview from existing state,
+- progressive disclosure so dense editors are not all exposed simultaneously,
+- saved-state summaries remain visible when detailed controls are hidden,
+- quiet definitions/tooltips for technical governance terms,
+- stable UI anchor IDs for future guided navigation/testing,
+- smoke-test instructions move toward Where / Look for / Expected guidance,
+- full-text search deferred,
+- smoke-runner -> Cockpit deep-link/highlight plumbing deferred,
+- no schema/domain/Trade Plan changes.
 
-- full automated suite: **operator-confirmed green** on 2026-10-10,
-- focused C4 smoke test: **fully PASS / ACCEPTED**,
-- schema **v33** manually confirmed,
-- operator noted that Review / Development is functionally correct but increasingly taxing to navigate and verify manually.
+Next action: merge this design checkpoint, then implement the small usability slice before resuming C5.
 
-After merge, C4 is complete.
-
-Before C5 implementation, explicitly discuss and prioritize low-risk friction reduction for dense Review / Development and smoke-testing surfaces. This should preserve architecture while improving orientation, discoverability, progressive disclosure, and test guidance.
-
-Then proceed to:
+After acceptance of that implementation, resume:
 
 **C5 — Operator-loop integration and guardrails**
 
