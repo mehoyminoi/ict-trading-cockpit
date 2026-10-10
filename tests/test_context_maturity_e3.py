@@ -288,7 +288,8 @@ def test_schema_v35_adds_market_context_snapshot_storage(tmp_path) -> None:
         ).fetchall()
     }
 
-    assert version == CURRENT_SCHEMA_VERSION == 35
+    assert version == CURRENT_SCHEMA_VERSION
+    assert version >= 35
     assert "market_context_snapshot_json" in columns
     connection.close()
 

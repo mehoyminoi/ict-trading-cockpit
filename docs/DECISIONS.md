@@ -608,3 +608,16 @@ Rendering and restore read the persisted snapshot. Neither refreshes a provider,
 **Rationale:** E3 established historical provenance. E4 makes that provenance usable without introducing a fresh-feed illusion or smuggling future E5 rules into presentation.
 
 **Consequences:** details expansion is transient UI state. The dense Premarket Thesis station and expanded details allow scrolling so controls remain reachable; other compact Focus navigation is retained. Schema remains v35 and Trade Plan Alpha 0.7 is unchanged. Real provider integration, snapshot revision history, and declarative context rules remain later work.
+
+
+## 2026-10-10 — E5 makes context policy explicit and historical
+
+**Status:** Accepted v0; all eight focused operator checks passed and were pushed on 2026-10-10
+
+**Decision:** Context rules are immutable versioned Trade Plan definitions, snapshotted into each Trading Run in schema v36. Rules specify conjunctive clock/event conditions, environments, matched effect, unknown effect, and rationale. Evaluation is read-only and uses normalized stored facts and explicit market time. Blocking effects participate in candidate entry authorization independently of manually cleared gates; informational/warning effects never grant authorization.
+
+**Rationale:** A missing calendar cannot honestly mean no news. An incomplete day snapshot cannot prove a clear week. Explicit selectors avoid provider-native text inference. Stored definitions preserve the rules governing historical runs when the current plan changes.
+
+**Consequences:** TDA, Watch, and Review explain result states, effects, reasons, and event IDs. Exits/flatten remain outside entry authorization. Stand Down Day does not conclude the run automatically. Alpha 0.7 remains published unchanged, with its existing manual trading-day gate and no automatic context policy. The example's live/eval/funded versus paper distinction cannot be inferred from run environments; actual policy adoption needs explicit account applicability, configured normalization/coverage, and a new plan revision. No warning buffers, FOMC duration, NFP coverage, readiness thresholds, real provider, or no-code policy editor are invented.
+
+**Supersedes:** E4's presentation-only boundary only for explicitly configured snapshotted rules; unconfigured Alpha 0.7 behavior and historical event snapshot ownership remain intact.

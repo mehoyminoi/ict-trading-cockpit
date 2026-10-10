@@ -660,6 +660,14 @@ Implemented as a shared read-only context card across TDA, Watch, and Review:
 - unknown-context semantics,
 - no hardcoded provider assumptions.
 
+E5 v0 now provides immutable plan-owned definitions and a pure evaluator. Rule terms are conjunctive: explicit NY weekday/strict-after clock conditions and normalized event-presence selectors over a futures day or calendar week. Event category, type, impact, and affected-market selectors are provider-neutral; neither titles nor native folder colors are inferred.
+
+Results distinguish Matched, Not Matched, Unknown, and Not Applicable. Matched and unknown effects are both explicit: Informational, Warning, Block New Entry, or Stand Down Day. Cancelled/postponed events do not satisfy presence; released events retain day/week relevance; tentative/unknown records and missing selector facts remain unknown. A positive recorded event can establish presence in partial coverage, but absence requires complete query coverage. A day-only snapshot cannot establish a clear NFP week.
+
+Rules are captured at run start and persisted in schema v36. Existing runs migrate to an empty rule list. Derived results use stored rules/facts and explicit market time; no provider query, wall-clock fallback, or evaluation-time mutation is introduced. TDA/Watch/Review expose rule results and reasons; configured blocking effects contribute to candidate entry authorization alongside every existing gate and setup criterion. No exit/flatten or order-submission path is added or gated. Stand Down Day is a rule effect, not an automatic run transition or sticky lockout.
+
+Alpha 0.7 remains unchanged with no declarative context rules. The attached example distinguishes live/eval/funded accounts from paper; the current run environment is not an account type. Publishing real automatic exclusions therefore requires explicit account applicability and a new plan revision. Exact normalized types and usable day/week calendar coverage must also be configured; no FOMC duration or event buffer is invented. `tools/context_policy_demo.py` exercises unpublished disposable fixture rules. All eight focused E5 operator acceptance checks passed and were pushed on 2026-10-10.
+
 ### E6 — Real provider integration
 
 Only after E2-E5 contracts are stable.

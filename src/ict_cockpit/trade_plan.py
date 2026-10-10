@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from enum import Enum
 
+from ict_cockpit.context_rules import ContextRuleDefinition, normalize_context_rules
 from ict_cockpit.process_blueprint import ProcessBlueprint
 from ict_cockpit.progression import ProgressionBoundary
 
@@ -545,6 +546,7 @@ class TradePlanDefinition:
     competencies: tuple[CompetencyDefinition, ...] = field(default_factory=tuple)
     authorization_gates: tuple[AuthorizationGateDefinition, ...] = field(default_factory=tuple)
     progression_policies: tuple[ProgressionPolicyDefinition, ...] = field(default_factory=tuple)
+    context_rules: tuple[ContextRuleDefinition, ...] = field(default_factory=tuple)
     live_watch_policy: LiveWatchPolicyDefinition = field(default_factory=LiveWatchPolicyDefinition)
 
     def __post_init__(self) -> None:
@@ -556,6 +558,7 @@ class TradePlanDefinition:
             raise ValueError("trade plan revision cannot be empty")
         if not self.sections:
             raise ValueError("trade plan must contain at least one section")
+        object.__setattr__(self, "context_rules", normalize_context_rules(self.context_rules))
         section_ids = [section.id for section in self.sections]
         if len(section_ids) != len(set(section_ids)):
             raise ValueError("trade plan section ids must be unique")
@@ -626,3 +629,6 @@ class TradePlanDefinition:
 
     def authorization_snapshot(self) -> list[dict]:
         return [gate.to_dict() for gate in self.authorization_gates]
+
+    def context_rule_snapshot(self) -> list[dict]:
+        return [rule.to_dict() for rule in self.context_rules]

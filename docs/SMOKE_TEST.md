@@ -810,6 +810,44 @@ The fixture window has no database or feed connection. Scenario/Mode selectors c
 
 ---
 
+## Current branch acceptance — E5 declarative context rules
+
+Operator acceptance is **PASS** on 2026-10-10: all eight E5 checks were marked PASS and pushed in operator commit `2e76e9dedf0dc85e059bdf94181d62a5fbc12617`. These scenarios use unpublished fixture rules; Alpha 0.7 retains its manual trading-day gate and no automatic exclusions.
+
+Run `pytest`, then launch:
+
+```bash
+python tools/context_policy_demo.py
+```
+
+The fixture has no database, real calendar, or orders. It freezes historical market time in every environment. Rules apply only in fixture **Live**; that fixture setting is not inferred account policy.
+
+### A. Clock rule and entry effect
+
+- [PASS] In **Live / Watch**, cycle **Clock before cutoff / Clock exactly cutoff / Clock after cutoff**.
+  - Expected: before/exactly 11:00 have no context effect; after 11:00 shows Matched / Block New Entry, and the Fixture setup is BLOCKED despite cleared manual gates and its satisfied criterion. Scroll or inspect the compact situation brief for the candidate status.
+- [PASS] Select **Clock warning**.
+  - Expected: Matched / Warning; the otherwise-clear fixture setup is AUTHORIZED. Set Trading day permitted to Pending or Blocked and confirm it becomes BLOCKED; a warning never clears another gate.
+
+### B. Event availability and coverage
+
+- [PASS] Cycle **Event matched / Event empty / Event unavailable / Unknown blocks**.
+  - Expected: respectively Matched / Block New Entry; Not Matched / no effect; Unknown / Warning; Unknown / Block New Entry. No unavailable context is presented as a clear calendar.
+- [PASS] Select **Week coverage unknown**, then expand context details.
+  - Expected: Unknown / Warning with incomplete calendar-week coverage reason; the day snapshot cannot prove a clear week.
+
+### C. Applicability, detail, and existing behavior
+
+- [PASS] Select **Clock after cutoff**, switch from Live to Replay, Historical Backtest, and Forward Test.
+  - Expected: Not Applicable / No effect in details, and the otherwise-clear fixture setup is AUTHORIZED. The fixture rule explicitly lists Live; real account applicability remains unconfigured.
+- [PASS] Inspect **TDA / Watch / Review** and **Show context details** for a matching or unknown rule.
+  - Expected: stable compact navigation and bounded read-only detail; plan revision E5 fixture (unpublished), rule ID/rationale/environments, matched/unknown effects, market-time reasons and event IDs. Review does not use today's wall clock or silently refresh the snapshot.
+- [PASS] Select **Legacy rules**, then start/restore a normal Alpha 0.7 run.
+  - Expected: no declarative rule effects; existing manual gates/criteria remain in force. Legacy runs have empty rules. Existing persisted context and Review workflows remain usable after v36 migration.
+- [PASS] Full automated suite is green locally; schema **v36**, published Trade Plan **Alpha 0.7**. Record this focused pass before merge.
+
+---
+
 ## Reporting results
 
 Report results as:

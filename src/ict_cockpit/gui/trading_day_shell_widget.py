@@ -25,6 +25,7 @@ from ict_cockpit.analysis.market_time import (
 from ict_cockpit.analysis.quarter_theory import apply_time_derived_qt_context
 from ict_cockpit.analysis.trading_day import TradingDay, TradingDayLifecycleStatus
 from ict_cockpit.analysis.trading_day_session import TradingDaySession, TradingDayStatus
+from ict_cockpit.context_rules import ContextRuleDefinition, normalize_context_rules
 from ict_cockpit.analysis.trading_session_run import (
     RunEnvironment,
     RunPurpose,
@@ -50,6 +51,7 @@ class TradingDayShellWidget(QWidget):
         playbooks: tuple[PlaybookDefinition, ...] = (),
         authorization_gates: tuple[AuthorizationGateDefinition, ...] = (),
         *,
+        context_rules: tuple[ContextRuleDefinition, ...] = (),
         run_environment: RunEnvironment = RunEnvironment.LIVE,
         trade_plan_revision: str = "",
         market_context_event_provider: MarketContextEventProvider | None = None,
@@ -59,6 +61,7 @@ class TradingDayShellWidget(QWidget):
         self.live_watch_policy = live_watch_policy or LiveWatchPolicyDefinition()
         self.playbooks = tuple(playbooks)
         self.authorization_gates = tuple(authorization_gates)
+        self.context_rules = normalize_context_rules(context_rules)
         self.run_environment = RunEnvironment(run_environment)
         self.run_purpose = default_purpose_for_environment(self.run_environment)
         self.trade_plan_revision = trade_plan_revision.strip()
@@ -358,6 +361,7 @@ class TradingDayShellWidget(QWidget):
             purpose=self.run_purpose,
             trade_plan_revision=self.trade_plan_revision,
             authorization_policy_snapshot=[gate.to_dict() for gate in self.authorization_gates],
+            context_rule_snapshot=[rule.to_dict() for rule in self.context_rules],
             market_time_context=market_time_context,
             market_context_snapshot=market_context_snapshot.to_dict(),
             qt_context=initial_qt_context,
