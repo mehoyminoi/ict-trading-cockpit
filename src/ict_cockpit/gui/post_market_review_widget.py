@@ -19,6 +19,7 @@ from ict_cockpit.analysis.quarter_theory import (
     QTPhase,
     compare_qt_context,
     qt_context_summary,
+    qt_interpretation_provenance,
     raw_quarter_contextual_summary,
     raw_quarter_stack_relevance_summary,
     raw_quarter_stack_summary,
@@ -336,6 +337,10 @@ class PostMarketReviewWidget(QWidget):
             self.qt_expected_label.setText(
                 "Expected / TDA · " + qt_context_summary(trading_run.qt_context)
             )
+            provenance = qt_interpretation_provenance(
+                trading_run.qt_context,
+                trading_run.market_time_context,
+            )
             for level_id, combo in self.observed_qt_combos.items():
                 combo.setCurrentText(
                     trading_run.review_observed_qt_context.get(
@@ -343,6 +348,14 @@ class PostMarketReviewWidget(QWidget):
                         QTPhase.NOT_APPLICABLE.value,
                     )
                 )
+                combo.setEnabled(provenance.get(level_id) != "Derived")
+                if provenance.get(level_id) == "Derived":
+                    combo.setToolTip(
+                        "This QT / AMDX role is derived from market time and "
+                        "is not a technician-entered observed interpretation."
+                    )
+                else:
+                    combo.setToolTip("")
             self.qt_review_note_input.setText(
                 trading_run.review_qt_context_note
             )
@@ -448,6 +461,8 @@ class PostMarketReviewWidget(QWidget):
                 "Expected / TDA · No QT / AMDX interpretation recorded"
             )
             for combo in self.observed_qt_combos.values():
+                combo.setEnabled(True)
+                combo.setToolTip("")
                 combo.setCurrentText(QTPhase.NOT_APPLICABLE.value)
             self.qt_review_note_input.clear()
             self.qt_comparison_list.clear()
