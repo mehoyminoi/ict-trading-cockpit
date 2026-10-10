@@ -4,9 +4,15 @@ from ict_cockpit.analysis.quarter_theory import (
     QTComparisonState,
     compare_qt_context,
 )
+from ict_cockpit.analysis.trading_day import TradingDay
+from ict_cockpit.analysis.trading_day_session import TradingDaySession
 from ict_cockpit.analysis.trading_session_run import TradingRun
 from ict_cockpit.database.connection import create_connection
 from ict_cockpit.database.schema import CURRENT_SCHEMA_VERSION, initialize_schema
+from ict_cockpit.database.trading_day_repository import TradingDayRepository
+from ict_cockpit.database.trading_day_session_repository import (
+    TradingDaySessionRepository,
+)
 from ict_cockpit.database.trading_session_run_repository import (
     TradingSessionRunRepository,
 )
@@ -101,8 +107,19 @@ def test_observed_qt_review_round_trips_through_repository(tmp_path) -> None:
     connection = create_connection(tmp_path / "test.db")
     initialize_schema(connection)
     repository = TradingSessionRunRepository(connection)
+    day_repository = TradingDayRepository(connection)
+    process_repository = TradingDaySessionRepository(connection)
 
-    run = TradingRun("day-1", "Trading Run 1", "process-1")
+    day = TradingDay(futures_day_label="2026-10-10")
+    process = TradingDaySession(
+        blueprint_revision="Alpha 0.2",
+        mode_ids=["tda", "live-watch", "post-market"],
+        current_mode_id="post-market",
+    )
+    process_repository.save(process)
+    day_repository.save(day)
+
+    run = TradingRun(day.id, "Trading Run 1", process.id)
     run.set_qt_context({"week": "A", "day": "M", "session": "D"})
     run.set_review_observed_qt_context(
         {"week": "A", "day": "D", "session": "D"},
