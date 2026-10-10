@@ -1337,3 +1337,28 @@ What evidence/action would clear the block?
 ```
 
 This requirement belongs primarily to later operator-loop/UI hardening, but current domain models should preserve the explainability and transition provenance needed to support it.
+
+
+## Smoke-test and dense-surface operator guidance
+
+Manual acceptance testing is part of product development and should not become a cognitive scavenger hunt.
+
+As Review / Development and other governance surfaces become denser, the Cockpit should support low-friction verification and orientation without changing the underlying domain model.
+
+Future UI/test-support options should include:
+
+- a **guided smoke-test mode** that presents one verification step at a time,
+- direct navigation/deep-linking from a smoke-test item to the relevant Cockpit section or control,
+- temporary highlight/focus of the control, phrase, or state being verified,
+- stable UI/control identifiers so tests can point to exact targets even as layout evolves,
+- collapsible sections and progressive disclosure in dense governance surfaces,
+- clear section headings, state chips, breadcrumbs, and visual grouping,
+- search/filter within Review / Development,
+- a compact "current state / why / next action" summary before detailed controls,
+- optional test-only overlays or annotations that identify where a requirement is visible,
+- smoke-test wording that refers to stable concepts and labels rather than forcing the operator to scan for incidental prose,
+- preserving existing architecture and semantics while improving discoverability.
+
+The objective is to reduce working-memory load and the temptation to skip or half-effort acceptance testing. Testing friction is itself product feedback: if an experienced operator cannot quickly locate a state or explanation during verification, the production surface likely also needs clearer information architecture.
+
+This should be addressed opportunistically during later UI/operator-loop hardening, with small low-risk improvements allowed earlier when they materially improve testing without derailing architectural milestones.

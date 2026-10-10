@@ -34,7 +34,7 @@ def test_schema_v28_adds_competency_evidence_storage(tmp_path) -> None:
         ).fetchall()
     }
 
-    assert version == CURRENT_SCHEMA_VERSION == 32
+    assert version == CURRENT_SCHEMA_VERSION == 33
     assert {
         "trade_plan_id",
         "trade_plan_revision",

@@ -488,6 +488,62 @@ Synthetic policies are exercised by automated tests because Alpha 0.7 intentiona
 
 ---
 
+## Current branch acceptance — Regression / downgrade semantics v0
+
+Before merging `feature/regression-downgrade-semantics-v0`, use this section for the focused C4 acceptance pass.
+
+### A. Alpha 0.7 remains behaviorally unchanged
+
+- [PASS] Confirm the application opens normally after migration to schema **v33**.
+- [PASS] Confirm Trade Plan remains **Alpha 0.7** with no real progression policy.
+- [PASS] Confirm Replay, Forward Test, and Live still report **NOT CONFIGURED** and remain non-restrictive under Alpha 0.7.
+- [PASS] Confirm no Progression Attainment is created merely by viewing/cycling launcher environments.
+
+### B. Historical attainment semantics
+
+The current Alpha 0.7 plan cannot manually exercise a real configured crossing; synthetic configured policies are covered by automated tests.
+
+- [PASS] Confirm operator-facing language does not imply that current eligibility rewrites historical attainment.
+- [PASS] Confirm the system continues to distinguish:
+  - Competency State,
+  - current Eligibility,
+  - historical Progression Attainment,
+  - Development Direction.
+- [PASS] Confirm no automatic Competency State, Evidence Maturity, or Development Direction mutation appears.
+
+### C. Regression / revalidation semantics
+
+- [PASS] Confirm Review / Development remains usable and no regression/revalidation controls appear under Alpha 0.7 when there is no configured progression policy.
+- [PASS] Confirm terminology does not equate a generic BLOCKED result with competency regression.
+- [PASS] Confirm temporary news/risk/personal/account restrictions are not presented as progression regression.
+- [PASS] Confirm no time-based skill decay, severity score, readiness percentage, or automatic demotion has appeared.
+
+### D. Existing learning loop regression
+
+- [PASS] Confirm Evidence Maturity still loads/saves by competency + boundary.
+- [PASS] Confirm Cross-Run Observation and Development Direction remain usable.
+- [PASS] Confirm targeted **Study this competency** routing still stages Historical Backtest / Study.
+- [PASS] Confirm existing Trade Plan sections and Process runtime remain navigable.
+  - Technically functional but quite taxing to actually interact with.
+
+### E. Automated C4 coverage
+
+- [PASS] Full automated suite is green immediately before merge.
+  - Expected focused coverage includes:
+    - schema v33 storage,
+    - immutable attainment recorded once per plan revision + boundary + policy,
+    - never-attained BLOCKED is not regression,
+    - same-policy attained -> BLOCKED yields Eligibility Loss Detected,
+    - cross-revision attained -> BLOCKED yields Revalidation Required,
+    - Regression Review persistence,
+    - no automatic Competency State mutation,
+    - attainment recorded only when an AVAILABLE boundary is deliberately crossed,
+    - Alpha 0.7 NOT CONFIGURED launch creates no attainment,
+    - Review / Development distinguishes historical attainment from current BLOCKED eligibility.
+
+
+---
+
 ## Reporting results
 
 Report results as:

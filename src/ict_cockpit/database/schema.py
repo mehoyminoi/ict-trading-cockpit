@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 32
+CURRENT_SCHEMA_VERSION = 33
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -104,6 +104,9 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 31:
             _migrate_version_31_to_32(connection)
             version = 32
+        if version == 32:
+            _migrate_version_32_to_33(connection)
+            version = 33
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -654,3 +657,68 @@ def _migrate_version_31_to_32(connection: sqlite3.Connection) -> None:
         ")"
     )
     connection.execute("PRAGMA user_version = 32")
+
+
+
+def _migrate_version_32_to_33(connection: sqlite3.Connection) -> None:
+    connection.execute(
+        """
+        CREATE TABLE progression_attainment (
+            id TEXT PRIMARY KEY,
+            trade_plan_id TEXT NOT NULL,
+            trade_plan_revision TEXT NOT NULL,
+            progression_boundary TEXT NOT NULL,
+            policy_id TEXT NOT NULL,
+            eligibility_snapshot_json TEXT NOT NULL,
+            attained_environment TEXT NOT NULL,
+            attained_at TEXT NOT NULL,
+            source TEXT NOT NULL DEFAULT 'Process Run Launcher',
+            note TEXT NOT NULL DEFAULT '',
+            UNIQUE (
+                trade_plan_id,
+                trade_plan_revision,
+                progression_boundary,
+                policy_id
+            )
+        )
+        """
+    )
+    connection.execute(
+        "CREATE INDEX idx_progression_attainment_plan_boundary "
+        "ON progression_attainment("
+        "trade_plan_id, progression_boundary, attained_at"
+        ")"
+    )
+    connection.execute(
+        """
+        CREATE TABLE progression_regression_review (
+            trade_plan_id TEXT NOT NULL,
+            trade_plan_revision TEXT NOT NULL,
+            progression_boundary TEXT NOT NULL,
+            prior_attainment_id TEXT NOT NULL,
+            eligibility_snapshot_json TEXT NOT NULL,
+            classification TEXT NOT NULL,
+            note TEXT NOT NULL DEFAULT '',
+            supporting_evidence_ids_json TEXT NOT NULL DEFAULT '[]',
+            source TEXT NOT NULL DEFAULT 'Review / Development',
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            PRIMARY KEY (
+                trade_plan_id,
+                trade_plan_revision,
+                progression_boundary,
+                prior_attainment_id
+            ),
+            FOREIGN KEY (prior_attainment_id)
+                REFERENCES progression_attainment(id)
+                ON DELETE RESTRICT
+        )
+        """
+    )
+    connection.execute(
+        "CREATE INDEX idx_progression_regression_review_plan_boundary "
+        "ON progression_regression_review("
+        "trade_plan_id, trade_plan_revision, progression_boundary"
+        ")"
+    )
+    connection.execute("PRAGMA user_version = 33")
