@@ -13,8 +13,8 @@ This is the starting point for a new development chat or developer handoff. Git 
 - **Current slice:** Pre-C5 operator-loop friction reduction v0 implementation
 - **Schema:** v33
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** full suite green on 2026-10-10 for Regression / downgrade semantics v0
-- **Manual smoke test:** Regression / downgrade semantics v0 acceptance PASS — schema v33 confirmed, Alpha 0.7 remains NOT CONFIGURED/non-restrictive, historical-attainment semantics accepted, and learning-loop regressions manually checked. Operator explicitly reported Review / Development as functionally correct but cognitively taxing to navigate; testing/UI friction is now a first-class next discussion.
+- **Verified full test result:** full suite green on 2026-10-10 for operator-loop friction reduction v0
+- **Manual smoke test:** Operator-loop friction reduction v0 acceptance PASS — schema v33 confirmed, all guided checks passed, and the operator explicitly confirmed that the smoke test was materially easier to follow and navigate.
 
 ## Current completed slice — Competency / Proficiency substrate v0
 
@@ -135,39 +135,34 @@ C3 — Explainable Eligibility v0 is complete and merged.
 
 C4 — Regression / downgrade semantics v0 is complete and merged.
 
-The pre-C5 **operator-loop friction reduction v0** is implemented for validation on `feature/operator-loop-friction-v0`.
+The pre-C5 **operator-loop friction reduction v0** is **acceptance-complete and ready for PR/merge** on `feature/operator-loop-friction-v0`.
 
-Implemented without schema/domain changes:
+Accepted implementation:
 
-- compact Review / Development Overview remains visible for orientation,
-- four focused detailed work areas:
+- always-visible compact Overview,
+- focused work areas:
   - Evidence,
   - Interpretation,
   - Progression,
   - Practice & Launch,
-- together with the always-visible Overview these form the accepted five-area presentation model,
-- Evidence contains only evidence list/detail,
-- Interpretation groups Cross-Run Observation + Development Direction,
-- Progression groups Evidence Maturity and future configured progression standing,
-- Practice & Launch now contains targeted Study routing + the shared Process Run launcher,
-- detailed editors are no longer all visible simultaneously,
-- quiet tooltips define major governance concepts,
-- stable UI anchors/object names were added for Overview, Evidence, Interpretation, Cross-Run Observation, Development Direction, Evidence Maturity, Progression, and Practice / Launch,
-- existing repositories/domain semantics remain unchanged,
-- schema remains **v33**,
-- a guided smoke checklist now uses **Where / Look for / Expected** instructions,
-- five focused automated tests cover work-area structure, one-area-at-a-time navigation, launcher placement, stable anchors, and unchanged schema.
+- only one detailed work area exposed at a time,
+- Cross-Run Observation + Development Direction grouped under Interpretation,
+- Evidence Maturity + future progression standing grouped under Progression,
+- targeted Study + Process Run launcher grouped under Practice & Launch,
+- quiet tooltips for major governance concepts,
+- stable UI anchors for future guided navigation/testing,
+- guided smoke instructions using Where / Look for / Expected,
+- schema unchanged at **v33**,
+- no domain/Trade Plan semantic changes.
 
-Next action:
+Validation:
 
-1. pull this branch,
-2. run the full automated suite,
-3. resolve any failures,
-4. complete the short **Operator-loop friction reduction v0** smoke section,
-5. assess whether Review / Development materially feels easier to navigate,
-6. merge only after acceptance.
+- full automated suite: **operator-confirmed green** on 2026-10-10,
+- focused friction-reduction smoke test: **fully PASS / ACCEPTED**,
+- schema **v33** manually confirmed,
+- subjective acceptance: operator explicitly reported the new smoke test was much easier to follow and navigate.
 
-After this usability checkpoint, resume:
+After merge, return to:
 
 **C5 — Operator-loop integration and guardrails**
 
