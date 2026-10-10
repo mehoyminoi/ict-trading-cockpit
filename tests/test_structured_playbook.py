@@ -105,7 +105,7 @@ def test_schema_v27_keeps_competency_assessment_storage(tmp_path) -> None:
         for row in connection.execute("PRAGMA table_info(trading_session_run)").fetchall()
     }
     version = connection.execute("PRAGMA user_version").fetchone()[0]
-    assert version == CURRENT_SCHEMA_VERSION == 31
+    assert version == CURRENT_SCHEMA_VERSION == 32
     assert "setup_candidates_json" in columns
     assert "authorization_policy_snapshot_json" in columns
     assert "study_context_json" in columns

@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 31
+CURRENT_SCHEMA_VERSION = 32
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -101,6 +101,9 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 30:
             _migrate_version_30_to_31(connection)
             version = 31
+        if version == 31:
+            _migrate_version_31_to_32(connection)
+            version = 32
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -620,3 +623,34 @@ def _migrate_version_30_to_31(connection: sqlite3.Connection) -> None:
         "ON competency_evidence_maturity(trade_plan_id, competency_id)"
     )
     connection.execute("PRAGMA user_version = 31")
+
+
+
+def _migrate_version_31_to_32(connection: sqlite3.Connection) -> None:
+    connection.execute(
+        """
+        CREATE TABLE progression_certification (
+            trade_plan_id TEXT NOT NULL,
+            trade_plan_revision TEXT NOT NULL,
+            progression_boundary TEXT NOT NULL,
+            requirement_id TEXT NOT NULL,
+            confirmed INTEGER NOT NULL DEFAULT 0,
+            note TEXT NOT NULL DEFAULT '',
+            confirmed_at TEXT NOT NULL DEFAULT '',
+            updated_at TEXT NOT NULL,
+            PRIMARY KEY (
+                trade_plan_id,
+                trade_plan_revision,
+                progression_boundary,
+                requirement_id
+            )
+        )
+        """
+    )
+    connection.execute(
+        "CREATE INDEX idx_progression_certification_plan_boundary "
+        "ON progression_certification("
+        "trade_plan_id, trade_plan_revision, progression_boundary"
+        ")"
+    )
+    connection.execute("PRAGMA user_version = 32")
