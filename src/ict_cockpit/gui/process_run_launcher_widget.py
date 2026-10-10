@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
 
 from ict_cockpit.analysis.environment_progression import (
     EnvironmentEligibilityStatus,
+    derive_operator_progression_status,
     evaluate_environment_eligibility,
     progression_eligibility_to_dict,
 )
@@ -50,6 +51,7 @@ class ProcessRunLauncherWidget(QWidget):
         progression_certification_repository=None,
         progression_attainment_repository=None,
         on_launched=None,
+        on_review_progression=None,
     ) -> None:
         super().__init__()
         self.trading_day_shell = trading_day_shell
@@ -67,6 +69,8 @@ class ProcessRunLauncherWidget(QWidget):
         self.progression_attainment_repository = progression_attainment_repository
         self.competency_checkboxes: dict[str, QCheckBox] = {}
         self.on_launched = on_launched
+        self.on_review_progression = on_review_progression
+        self._progression_status = None
 
         frame = QFrame()
         frame.setFrameShape(QFrame.Shape.StyledPanel)
@@ -107,6 +111,48 @@ class ProcessRunLauncherWidget(QWidget):
         self.eligibility_label.setFrameShape(QFrame.Shape.StyledPanel)
         self.eligibility_label.setContentsMargins(8, 6, 8, 6)
         frame_layout.addWidget(self.eligibility_label)
+
+        self.progression_guidance_label = QLabel()
+        self.progression_guidance_label.setWordWrap(True)
+        frame_layout.addWidget(self.progression_guidance_label)
+
+        self.requirement_details_button = QPushButton("Show requirement details")
+        self.requirement_details_button.setCheckable(True)
+        self.requirement_details_button.setVisible(False)
+        frame_layout.addWidget(self.requirement_details_button)
+
+        self.requirement_details_label = QLabel()
+        self.requirement_details_label.setWordWrap(True)
+        self.requirement_details_label.setVisible(False)
+        self.requirement_details_label.setFrameShape(QFrame.Shape.StyledPanel)
+        self.requirement_details_label.setContentsMargins(8, 6, 8, 6)
+        frame_layout.addWidget(self.requirement_details_label)
+        self.requirement_details_button.toggled.connect(
+            self.requirement_details_label.setVisible
+        )
+        self.requirement_details_button.toggled.connect(
+            lambda checked: self.requirement_details_button.setText(
+                "Hide requirement details"
+                if checked
+                else "Show requirement details"
+            )
+        )
+
+        guardrail_actions = QHBoxLayout()
+        self.stage_lower_button = QPushButton("Stage recommended lower environment")
+        self.stage_lower_button.setVisible(False)
+        self.stage_lower_button.clicked.connect(
+            self.stage_recommended_lower_environment
+        )
+        guardrail_actions.addWidget(self.stage_lower_button)
+
+        self.review_progression_button = QPushButton("Review Progression")
+        self.review_progression_button.setVisible(False)
+        self.review_progression_button.clicked.connect(
+            self._request_progression_review
+        )
+        guardrail_actions.addWidget(self.review_progression_button)
+        frame_layout.addLayout(guardrail_actions)
 
         market_time_row = QHBoxLayout()
         self.market_time_label = QLabel("Replay market time · New York")
@@ -255,28 +301,125 @@ class ProcessRunLauncherWidget(QWidget):
             f"Default purpose · {purpose.value}"
         )
 
-        eligibility = self._evaluate_selected_environment()
-        detail = (
-            f"Progression eligibility · {eligibility.status.value.upper()} · "
-            f"{eligibility.detail}"
+        progression_status = self._derive_selected_progression_status()
+        self._progression_status = progression_status
+        eligibility = progression_status.eligibility
+        boundary_text = (
+            progression_status.boundary.value
+            if progression_status.boundary is not None
+            else "Foundation / no boundary required"
         )
+        blocked_names = []
+        if (
+            eligibility.progression is not None
+            and eligibility.status is EnvironmentEligibilityStatus.BLOCKED
+        ):
+            blocked_names = [
+                item.requirement_name
+                for item in eligibility.progression.requirement_results
+                if item.status.value != "Satisfied"
+            ]
+        blocker_summary = (
+            "\nBlocked by · " + ", ".join(blocked_names)
+            if blocked_names
+            else ""
+        )
+        recommended_text = (
+            f"\nRecommended lower rung · "
+            f"{progression_status.recommended_environment.value}"
+            if progression_status.recommended_environment is not None
+            else ""
+        )
+        self.eligibility_label.setText(
+            f"Progression eligibility · {eligibility.status.value.upper()}\n"
+            f"Boundary · {boundary_text}\n"
+            f"{eligibility.detail}{blocker_summary}{recommended_text}"
+        )
+        self.progression_guidance_label.setText(
+            f"Next · {progression_status.action_guidance}"
+            if progression_status.action_guidance
+            else ""
+        )
+
+        requirement_lines = []
         if (
             eligibility.progression is not None
             and eligibility.progression.requirement_results
         ):
-            requirement_lines = []
             for item in eligibility.progression.requirement_results:
-                requirement_lines.append(
-                    f"{item.status.value.upper()}: {item.requirement_name} — "
-                    f"{item.detail}"
+                reason = (
+                    f" · {item.reason.value}"
+                    if item.reason is not None
+                    else ""
                 )
-            detail += "\n" + "\n".join(requirement_lines)
-        if eligibility.recommended_environment is not None:
-            detail += (
-                f" Recommended lower rung: "
-                f"{eligibility.recommended_environment.value}."
+                requirement_lines.append(
+                    f"{item.status.value.upper()}{reason}: "
+                    f"{item.requirement_name} — {item.detail}"
+                )
+        self.requirement_details_label.setText("\n".join(requirement_lines))
+        has_details = bool(requirement_lines)
+        self.requirement_details_button.setVisible(has_details)
+        if not has_details:
+            self.requirement_details_button.setChecked(False)
+            self.requirement_details_label.setVisible(False)
+
+        blocked = eligibility.status is EnvironmentEligibilityStatus.BLOCKED
+        self.stage_lower_button.setVisible(
+            blocked and progression_status.recommended_environment is not None
+        )
+        self.review_progression_button.setVisible(
+            blocked and bool(progression_status.navigation_target)
+        )
+
+    def _derive_selected_progression_status(self):
+        return derive_operator_progression_status(
+            self.selected_environment,
+            trade_plan=self.trade_plan,
+            competency_assessment_repository=(
+                self.competency_assessment_repository
+            ),
+            competency_evidence_repository=self.competency_evidence_repository,
+            competency_evidence_maturity_repository=(
+                self.competency_evidence_maturity_repository
+            ),
+            progression_certification_repository=(
+                self.progression_certification_repository
+            ),
+            progression_attainment_repository=(
+                self.progression_attainment_repository
+            ),
+        )
+
+    def stage_recommended_lower_environment(self) -> bool:
+        """Stage the normal lower rung without starting or mutating history."""
+
+        status = self._derive_selected_progression_status()
+        lower = status.recommended_environment
+        if (
+            status.eligibility.status
+            is not EnvironmentEligibilityStatus.BLOCKED
+            or lower is None
+        ):
+            self.status_label.setText(
+                "No blocked upward transition has a lower environment to stage."
             )
-        self.eligibility_label.setText(detail)
+            return False
+
+        self.environment_combo.setCurrentText(lower.value)
+        self.status_label.setText(
+            f"Staged {lower.value}. Review the preserved run intent, then "
+            "explicitly click Begin Process Run when ready. No progression, "
+            "regression, or attainment record was created."
+        )
+        return True
+
+    def _request_progression_review(self) -> None:
+        if self.on_review_progression is None:
+            self.status_label.setText(
+                "Progression review navigation is unavailable in this context."
+            )
+            return
+        self.on_review_progression()
 
     def _evaluate_selected_environment(self):
         return evaluate_environment_eligibility(

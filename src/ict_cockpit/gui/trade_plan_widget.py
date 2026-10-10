@@ -40,6 +40,7 @@ from ict_cockpit.database.progression_regression_review_repository import (
     ProgressionRegressionReviewRepository,
 )
 from ict_cockpit.analysis.environment_progression import (
+    derive_operator_progression_status,
     derive_progression_standing,
     environment_for_progression_boundary,
     evaluate_environment_eligibility,
@@ -170,6 +171,7 @@ class TradePlanWidget(QWidget):
                 self.progression_attainment_repository
             ),
             on_launched=self.focus_runtime,
+            on_review_progression=self.focus_progression_review,
         )
 
         self._section_ids: list[str] = []
@@ -227,6 +229,19 @@ class TradePlanWidget(QWidget):
             return
         self.section_list.setCurrentRow(process_row)
         self.process_tabs.setCurrentWidget(self.trading_day_shell_widget)
+
+    def focus_progression_review(self) -> None:
+        """Navigate to the focused Review / Development progression surface."""
+
+        try:
+            review_row = self._section_ids.index("review-development")
+        except ValueError:
+            return
+        self.section_list.setCurrentRow(review_row)
+        if self.competency_evidence_review_widget is not None:
+            self.competency_evidence_review_widget.select_work_area(
+                "Progression"
+            )
 
     def _prepare_targeted_study(self, competency_id: str) -> None:
         if self.process_run_launcher_widget.prepare_targeted_study(competency_id):
@@ -484,6 +499,62 @@ class TradePlanWidget(QWidget):
             )
             current.setWordWrap(True)
             card_layout.addWidget(current)
+
+            operator_status = derive_operator_progression_status(
+                environment,
+                trade_plan=self.trade_plan,
+                competency_assessment_repository=(
+                    self.competency_assessment_repository
+                ),
+                competency_evidence_repository=self.competency_evidence_repository,
+                competency_evidence_maturity_repository=(
+                    self.competency_evidence_maturity_repository
+                ),
+                progression_certification_repository=(
+                    self.progression_certification_repository
+                ),
+                progression_attainment_repository=(
+                    self.progression_attainment_repository
+                ),
+            )
+            if operator_status.action_guidance:
+                action = QLabel(
+                    f"Next · {operator_status.action_guidance}"
+                )
+                action.setWordWrap(True)
+                card_layout.addWidget(action)
+
+            if (
+                eligibility.progression is not None
+                and eligibility.progression.requirement_results
+            ):
+                requirements_heading = QLabel("Requirement results")
+                requirements_heading.setStyleSheet("font-weight: 600;")
+                card_layout.addWidget(requirements_heading)
+                for result in eligibility.progression.requirement_results:
+                    reason = (
+                        f" · {result.reason.value}"
+                        if result.reason is not None
+                        else ""
+                    )
+                    requirement_line = QLabel(
+                        f"• {result.status.value}{reason} · "
+                        f"{result.requirement_name}\n{result.detail}"
+                    )
+                    requirement_line.setWordWrap(True)
+                    card_layout.addWidget(requirement_line)
+                    if (
+                        result.requirement_kind
+                        == ProgressionRequirementKind.HUMAN_CERTIFICATION.value
+                        and result.status.value != "Satisfied"
+                    ):
+                        certification_help = QLabel(
+                            "Manage Human Certification under "
+                            "Rules / Safety > Progression Policy."
+                        )
+                        certification_help.setWordWrap(True)
+                        card_layout.addWidget(certification_help)
+
             if standing.prior_attainment is not None:
                 attained = QLabel(
                     f"Historical attainment · "

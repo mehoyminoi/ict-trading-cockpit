@@ -1,20 +1,20 @@
 # ICT Trading Cockpit — Current Project State
 
-**Last handoff update:** 2026-10-09
+**Last handoff update:** 2026-10-10
 
 This is the starting point for a new development chat or developer handoff. Git remains the source of truth for code; this file records the verified project checkpoint and the reasoning context needed to continue without reconstructing chat history.
 
 ## Repository state
 
-- **Active branch:** `design/operator-loop-integration-guardrails-v0`
-- **Main baseline:** `04b339c6b54f266f8037afaab5c8225bc440203d` — PR #49 merged operator-loop friction reduction v0
+- **Active branch:** `feature/operator-loop-integration-guardrails-v0`
+- **Main baseline:** `a73b916ab61ffc98a2dcd7d2659b570214913660` — PR #50 merged C5 operator-loop integration and guardrails v0 design
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** C5 design — Operator-loop integration and guardrails v0
+- **Current slice:** C5 implementation — Operator-loop integration and guardrails v0
 - **Schema:** v33
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** full suite green on 2026-10-10 for operator-loop friction reduction v0
-- **Manual smoke test:** Operator-loop friction reduction v0 acceptance PASS — schema v33 confirmed, all guided checks passed, and the operator explicitly confirmed that the smoke test was materially easier to follow and navigate.
+- **Verified full test result:** **340 passed** on 2026-10-10 for C5 operator-loop integration and guardrails v0
+- **Manual smoke test:** C5 operator-loop integration and guardrails v0 acceptance **fully PASS** — schema v33 confirmed and all guided checks passed.
 
 ## Current completed slice — Competency / Proficiency substrate v0
 
@@ -135,27 +135,35 @@ C3 — Explainable Eligibility v0 is complete and merged.
 
 C4 — Regression / downgrade semantics v0 is complete and merged.
 
-The pre-C5 operator-loop friction reduction v0 is complete and merged.
+C5 — Operator-loop integration and guardrails v0 is **acceptance-complete and ready for merge**.
 
-The **C5 — Operator-loop integration and guardrails v0 design is operator-accepted and ready for implementation** on `design/operator-loop-integration-guardrails-v0`.
+Milestone C — **Evidence Maturity and progression governance** is therefore complete as an architectural milestone.
 
-Accepted implementation direction:
+C5 accepted implementation:
 
-- progression eligibility governs new upward environment starts only,
-- active runs are not auto-terminated/demoted by later progression changes,
-- progression remains separate from setup/trade authorization and never blocks exit/flatten,
-- temporary operating/safety restrictions remain outside C5 v0,
-- deterministic requirement-derived guidance is allowed; inferred coaching is not,
-- BLOCKED may stage the recommended lower environment but never auto-start it,
-- preserve semantically valid Study question/competency focus when staging downward,
-- Review / Development > Progression is the focused explanation surface,
-- Human Certification remains edited under Rules / Safety,
-- restore/resume does not re-run launch gating or duplicate attainment,
-- derive integration state on demand,
-- prefer no schema change from **v33**,
-- Alpha 0.7 remains without real progression thresholds/policy.
+- derived `OperatorProgressionStatus` composes environment, purpose, boundary, eligibility, standing, lower-rung recommendation, deterministic guidance, and navigation target without persisting mutable current truth,
+- launcher shows concise progression status, governing boundary, blocker names, and progressively disclosed requirement detail,
+- configured BLOCKED can stage the normal lower environment without auto-starting,
+- lower-rung staging preserves semantically valid intent and creates no attainment/regression/demotion event,
+- blocked launcher state can navigate directly to **Review / Development > Progression**,
+- Progression shows current eligibility, requirement results, Evidence Maturity, historical attainment/standing, and deterministic Next guidance,
+- Human Certification remains authoritatively edited only under Rules / Safety,
+- legitimately started runs are not silently terminated/demoted if progression support later changes,
+- deliberate configured AVAILABLE boundary crossing remains the only attainment-creation point,
+- restore/browse/staging do not create duplicate attainment,
+- progression remains separate from setup/trade authorization and cannot block exit/flatten,
+- temporary operating/safety restrictions remain a separate future layer,
+- Alpha 0.7 remains **NOT CONFIGURED** and non-restrictive,
+- schema remains **v33**.
 
-Next action: merge this C5 design checkpoint, then implement C5.1-C5.5.
+Validation:
+
+- full automated suite: **340 passed**,
+- guided C5 smoke test: **fully PASS**,
+- schema **v33** manually confirmed,
+- no real Alpha 0.7 progression policy or readiness threshold was introduced.
+
+After merge, the next major roadmap milestone is **Milestone E — Context maturity: QT/AMDX, news, and distortions**. Milestone D — continuous operator-loop hardening remains parallel and should interrupt only for friction proven through actual use.
 
 ## System guide maintenance
 

@@ -78,13 +78,15 @@ The accepted human synthesis chain is:
 -> **Development Direction**
 -> **targeted Study routing**
 
-The active frontier is Milestone C — Evidence Maturity and progression governance:
+Milestone C — Evidence Maturity and progression governance is complete:
 
 **C1 Evidence Maturity Profile**
 -> **C2 Progression Policy model**
 -> **C3 Explainable Eligibility evaluation**
 -> **C4 Regression / downgrade semantics**
 -> **C5 Operator-loop integration and guardrails**
+
+The next major roadmap frontier is **Milestone E — Context maturity: QT/AMDX, news, and distortions**. Milestone D remains parallel and should be activated only by friction observed through actual operator use.
 
 Evidence Maturity is boundary-aware from v0 and is keyed conceptually by:
 

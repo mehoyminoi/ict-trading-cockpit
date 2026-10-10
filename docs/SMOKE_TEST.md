@@ -611,6 +611,85 @@ Before merging `feature/operator-loop-friction-v0`, use this short acceptance pa
 
 ---
 
+## Current branch acceptance — C5 operator-loop integration and guardrails v0
+
+Before merging `feature/operator-loop-integration-guardrails-v0`, use this focused acceptance pass.
+
+### A. Alpha 0.7 remains unchanged
+
+- [PASS] Confirm normal Alpha 0.7 Replay, Forward Test, and Live remain **NOT CONFIGURED** and launchable.
+  - Where: **Trade Plan > Review / Development > Practice & Launch**
+  - Look for: select Replay, Forward Test, and Live in the Process Run launcher
+  - Expected: each says **NOT CONFIGURED**; no Stage lower / Review Progression action appears; no real progression threshold has been introduced.
+
+- [PASS] Confirm Historical Backtest remains the foundation Study environment.
+  - Where: **Practice & Launch**, select Historical Backtest
+  - Look for: boundary text
+  - Expected: **Foundation / no boundary required** and the normal focused Study-question requirement remains.
+
+### B. Configured BLOCKED behavior is covered without changing Alpha 0.7
+
+Synthetic configured-policy behavior is primarily covered by automated tests because Alpha 0.7 deliberately publishes no real progression policy.
+
+- [PASS] Confirm operator-facing language remains conceptually clear.
+  - Where: **Practice & Launch** progression status
+  - Look for: progression eligibility, boundary, concise Next guidance, optional requirement details
+  - Expected: progression is described as environment-transition permission, not trade/setup authorization or a readiness score.
+
+- [PASS] Confirm requirement detail is progressive disclosure rather than another permanent wall of text.
+  - Where: configured-policy automated/UI test coverage
+  - Look for: **Show requirement details**
+  - Expected: concise blocker names remain visible; detailed requirement reasoning is hidden until requested.
+
+### C. Lower-rung routing
+
+- [PASS] Confirm blocked progression can stage the normal lower environment without starting a run.
+  - Where: configured-policy automated coverage
+  - Look for: **Stage recommended lower environment**
+  - Expected: Replay blocked -> Study, Forward blocked -> Replay, Live blocked -> Forward; environment is preselected only.
+
+- [PASS] Confirm staging downward preserves semantically valid run intent.
+  - Where: configured-policy automated coverage
+  - Look for: Study question / competency focus before and after staging
+  - Expected: valid intent remains; no Progression Attainment, regression/demotion, or automatic Process Run is created.
+
+### D. Focused Progression explanation
+
+- [PASS] Confirm the launcher can route a blocked operator directly to the Progression work area.
+  - Where: configured-policy automated coverage
+  - Look for: **Review Progression**
+  - Expected: navigation lands at **Trade Plan > Review / Development > Progression**.
+
+- [PASS] Confirm Progression keeps historical and current concepts separate.
+  - Where: **Review / Development > Progression**
+  - Look for: Evidence Maturity, current eligibility, requirement results, historical attainment/standing where applicable
+  - Expected: Eligibility Loss / Revalidation remains distinct from Competency State and does not imply automatic competency regression.
+
+- [PASS] Confirm Human Certification remains authored only under Rules / Safety.
+  - Where: configured Human Certification coverage
+  - Look for: Progression explains the requirement and points to **Rules / Safety > Progression Policy**
+  - Expected: no duplicate editable certification control appears in Review / Development.
+
+### E. Runtime and persistence guardrails
+
+- [PASS] Confirm a legitimately started run is not silently terminated or demoted if progression support later changes.
+  - Where: automated C5 coverage
+  - Look for: active Forward run after synthetic assessment changes from passing to blocked
+  - Expected: the same run remains active with its original environment/provenance; the changed eligibility governs the next upward transition.
+
+- [PASS] Confirm progression gating does not create duplicate attainment by browsing or staging.
+  - Where: automated C4/C5 coverage
+  - Look for: attainment repository before/after browsing/staging
+  - Expected: attainment is created only by a deliberate configured AVAILABLE boundary crossing.
+
+- [PASS] Confirm full automated suite is green and schema remains **v33**.
+  - Where: terminal / database check
+  - Look for: pytest green; `PRAGMA user_version` = 33
+  - Expected: C5 adds integration/presentation wiring only; no new mutable current-status persistence.
+
+
+---
+
 ## Reporting results
 
 Report results as:
