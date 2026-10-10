@@ -1302,3 +1302,38 @@ Future integration levels may progress from:
 4. optional source-aware search/retrieval from the repository.
 
 Cockpit should aim to become the technician's operating interface without requiring replacement of a mature external knowledge base.
+
+
+## Guided visual process state and friction lubrication
+
+Later UI maturity should make dense process/governance logic feel familiar, navigable, and low-friction even when the operator is cognitively tired.
+
+A useful reference model is the clarity of revision/state workflows in engineering PDM systems combined with the familiarity, discoverability, and engagement-oriented interaction patterns of consumer software — without importing manipulative attention mechanics.
+
+Priority UI goals:
+
+- maintain a highly visual, interactive map of the current process position,
+- clearly show what state the operator is in,
+- clearly show available next transitions,
+- clearly explain why a gated transition is unavailable,
+- clearly show what specific action/evidence/review would make that transition available,
+- expose definitions and terms contextually without forcing navigation away from the task,
+- use progressive disclosure so technical depth is available without overwhelming the active surface,
+- use tooltips, inline definitions, hover/click detail, state chips, path highlighting, and other quiet context aids where appropriate,
+- preserve operator orientation across check-in, checkout, state change, revision control, progression, revalidation, and recovery workflows,
+- minimize working-memory burden and avoid requiring the operator to remember hidden rules or terminology.
+
+The target experience is not merely "usable." The Cockpit should become a familiar operating environment where the operator can reserve cognitive capacity for market understanding, learning, and skill formation rather than interface reconstruction.
+
+For restrictive/gating surfaces especially, the UI should explain rather than merely deny:
+
+```text
+Where am I?
+What does this state mean?
+Why can't I progress?
+What requirement is blocking me?
+What can I do next?
+What evidence/action would clear the block?
+```
+
+This requirement belongs primarily to later operator-loop/UI hardening, but current domain models should preserve the explainability and transition provenance needed to support it.

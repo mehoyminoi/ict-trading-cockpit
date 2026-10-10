@@ -6,11 +6,11 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `feature/explainable-eligibility-v0`
-- **Main baseline:** `0a6eee1baac4bedf7aefa5c4c977669d00dca430` — PR #44 merged Explainable Eligibility v0 design
+- **Active branch:** `design/regression-downgrade-semantics-v0`
+- **Main baseline:** `4ec04c67d4d57aeed9d6c10d7f762605d2ba3299` — PR #45 merged Explainable Eligibility v0
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Milestone C3 — Explainable Eligibility v0 implementation
+- **Current slice:** Milestone C4 design — Regression / downgrade semantics v0
 - **Schema:** v32
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** full suite green on 2026-10-09 for Explainable Eligibility v0; previous numeric checkpoint 310 passed for C2
@@ -131,56 +131,28 @@ C1 — Evidence Maturity Profile v0 is complete and merged.
 
 C2 — Trade Plan Progression Policy substrate v0 is complete and merged.
 
-C3 — Explainable Eligibility v0 is **acceptance-complete and ready for PR/merge** on `feature/explainable-eligibility-v0`.
+C3 — Explainable Eligibility v0 is complete and merged.
 
-Accepted implementation:
+C4 — Regression / downgrade semantics v0 design is **operator-accepted and ready for implementation** on `design/regression-downgrade-semantics-v0`.
 
-- immutable requirement-level evaluation results,
-- immutable progression-boundary eligibility results,
-- AVAILABLE / NOT CONFIGURED / BLOCKED top-level semantics,
-- SATISFIED / NOT SATISFIED / UNKNOWN requirement-level semantics,
-- explicit reason categories:
-  - Requirement Not Satisfied,
-  - Insufficient Evidence,
-  - Cannot Evaluate,
-  - Human Certification Required,
-- deterministic evaluation of all four C2 requirement kinds,
-- environment-to-progression-boundary mapping,
-- current-Trade-Plan-revision filtering for Evidence Purpose Present,
-- older-revision Evidence Maturity -> UNKNOWN / current-plan review,
-- Competency State continuity without evaluator mutation,
-- dedicated `ProgressionCertification` state and repository,
-- schema **v32**,
-- revision-bound Human Certification persistence,
-- Human Certification controls only for configured Human Certification requirements,
-- launcher explanation of configured requirement results,
-- configured BLOCKED results prevent only the gated upward environment from starting,
-- Alpha 0.7 remains NOT CONFIGURED and non-restrictive,
-- current eligibility is derived on demand rather than stored as mutable truth,
-- no real readiness criteria or new Trade Plan revision.
+Accepted C4 semantics:
 
-Validation:
+- historical Progression Attainment is separate from current Eligibility,
+- attainment is recorded only on deliberate crossing of an AVAILABLE boundary,
+- eligibility loss does not automatically mean competency regression,
+- confirmed competency regression requires human review,
+- new-revision contextual requirements can trigger Revalidation Required without erasing proficiency,
+- never-attained insufficiency is not regression,
+- voluntary downward movement is non-punitive and preserves attainment,
+- temporary operating restrictions remain outside C4 progression-regression semantics,
+- recovery reuses the same transparent progression policy,
+- no automatic Competency State, Evidence Maturity, or Development Direction mutation.
 
-- full automated suite: **operator-confirmed green** on 2026-10-09,
-- focused **Explainable Eligibility v0** smoke test: **fully PASS / ACCEPTED**,
-- schema **v32** manually confirmed.
+A later UI requirement is also recorded: highly visual, interactive process/state/revision/progression maps should explain current position, blocked transitions, terminology, and next actions with progressive disclosure and low working-memory burden. This is especially important for gates that may feel restrictive in the moment.
 
-After merge, C3 is complete.
+No runtime/schema/Trade Plan changes are on this design branch.
 
-Next architectural slice:
-
-**C4 — Regression / downgrade semantics**
-
-C4 should begin as design/governance work. It must define what happens when previously satisfied progression/eligibility conditions are no longer satisfied, while preserving the distinction between:
-
-- competency knowledge/proficiency,
-- current-plan contextual validation,
-- evidence maturity,
-- progression eligibility,
-- temporary operating restrictions,
-- deliberate frictionless movement downward.
-
-C4 must not assume that one blocked evaluation means the technician has "lost" a competency, and should distinguish true regression from temporary pause, stale/insufficient evidence, plan revision revalidation, and operator-chosen downgrade.
+Next action: merge the C4 design checkpoint, then implement Progression Attainment + Regression Review substrate without publishing real progression rules.
 
 ## System guide maintenance
 
