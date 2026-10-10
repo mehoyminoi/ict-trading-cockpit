@@ -1,6 +1,6 @@
-# Regression / Downgrade Semantics — v0 Design Candidate
+# Regression / Downgrade Semantics — v0 Design
 
-**Status:** Design candidate for operator review  
+**Status:** Accepted for v0 implementation  
 **Milestone:** C4 — Regression / downgrade semantics
 
 ## Purpose
@@ -499,3 +499,19 @@ Do not yet implement:
 8. Should temporary news/risk/personal/account restrictions remain entirely outside C4 progression regression semantics?
 9. After confirmed regression/revalidation work, should recovery use the same transparent Trade Plan progression policy rather than a separate recovery/readiness mechanism?
 10. Do you agree that even a human-confirmed competency regression should **not automatically mutate Competency State or Development Direction** in v0; those changes remain deliberate separate actions?
+
+
+## Accepted operator decisions
+
+All ten C4 confirmation points were accepted on 2026-10-09.
+
+1. Historical Progression Attainment is separate from current Eligibility.
+2. Attainment is recorded only when an AVAILABLE boundary is deliberately crossed, not merely observed as available.
+3. Same-plan/policy AVAILABLE -> BLOCKED may be labeled Eligibility Loss Detected, but not automatically Competency Regression.
+4. Confirmed Competency Regression requires explicit human review.
+5. New-revision fresh-evidence requirements are Revalidation Required when the underlying competency may still be intact.
+6. Never-attained insufficiency is not regression.
+7. Voluntary downward movement is non-punitive, preserves attainment, and does not reduce Competency State automatically.
+8. Temporary news/risk/personal/account restrictions remain outside C4 progression-regression semantics.
+9. Recovery uses the same transparent Trade Plan progression policy; no separate recovery/readiness score is introduced.
+10. Even human-confirmed competency regression does not auto-mutate Competency State or Development Direction in v0.
