@@ -650,7 +650,7 @@ Implemented as a shared read-only context card across TDA, Watch, and Review:
 - no provider query on render, timer refresh, mode change, or restore,
 - no event refresh or Trade Plan rule evaluation,
 - schema v35 and Trade Plan Alpha 0.7 unchanged,
-- focused operator acceptance required; deterministic fixtures are available through `tools/context_surface_demo.py`.
+- focused operator acceptance completed and granted on 2026-10-10; deterministic fixtures remain available through `tools/context_surface_demo.py`.
 
 ### E5 — Declarative Trade Plan context rules
 

@@ -9,11 +9,11 @@ This is the starting point for a new development chat or developer handoff. Git 
 - **Active branch:** `feature/context-maturity-e4-v0`
 - **Main baseline:** `9d1fb5d0181a9ed50675c95aeb189156c99c5af7` — PR #55 merged E3 historical market-context snapshots and Qt test cleanup
 - **Implementation checkpoint:** `c9d49ef5bbfffcd157b3456cd0155b6ae16f56a7` — Present stored market context across TDA Watch and Review (E4)
-- **Current slice:** E4 — compact operator context surfaces, pending operator acceptance
+- **Current slice:** E4 — compact operator context surfaces, accepted and ready to merge
 - **Schema:** v35
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** **373 passed** in 132.53s on 2026-10-10, clean exit (Python 3.12 / PySide6 6.8.3 / offscreen)
-- **Manual acceptance:** E1 fully PASS. E3 required no new UI smoke pass. E4 focused operator smoke is **NOT TESTED**.
+- **Manual acceptance:** E1 fully PASS. E3 required no new UI smoke pass. E4 focused operator smoke is **PASS**, per operator report of completed manual testing and acceptance on 2026-10-10.
 
 ## Completed foundation — Competency / Proficiency substrate v0
 
@@ -136,7 +136,7 @@ Milestone D continues only for demonstrated operator friction. Film Night, galle
 
 ## Current task
 
-**E4 — compact operator context surfaces** is implemented for operator validation on `feature/context-maturity-e4-v0`.
+**E4 — compact operator context surfaces** is implemented and operator accepted on `feature/context-maturity-e4-v0`.
 
 Implemented behavior:
 
@@ -159,10 +159,9 @@ Acceptance:
 - final full automated suite: **373 passed**, clean exit,
 - automated coverage includes availability/legacy honesty, historical time, timezone normalization, event statuses, simultaneous events, explicit unknown/outside-window timing, full Review provenance, plain-text rendering, progressive disclosure, normal runtime transitions, passive refresh, and repository-backed restore without provider re-query,
 - developer offscreen visual inspection at 1024×768 covers compact TDA, the dense Thesis controls, and expanded Review detail,
-- operator acceptance is still **NOT TESTED**; use the E4 section in `docs/SMOKE_TEST.md`,
-- do not merge E4 until the focused operator pass is recorded.
+- operator reported manual testing complete and acceptance granted on **2026-10-10**; the E4 checklist in `docs/SMOKE_TEST.md` is recorded as **PASS**.
 
-Next action: pull E4, run pytest, exercise the fixture and normal application checklist, record acceptance, then merge. The next implementation slice after accepted E4 is **E5 — declarative Trade Plan context rules**.
+Next action: merge the accepted E4 checkpoint and update the main handoff. The next implementation slice after accepted E4 is **E5 — declarative Trade Plan context rules**.
 
 ## Explicitly deferred / open
 

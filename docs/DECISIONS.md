@@ -597,7 +597,7 @@ Accepted consequences:
 
 ## 2026-10-10 — E4 presents stored context without refreshing or interpreting policy
 
-**Status:** Accepted v0 implementation within the existing Milestone E presentation contract; operator acceptance pending
+**Status:** Accepted v0 implementation within the existing Milestone E presentation contract; operator reported manual testing complete and acceptance granted on 2026-10-10
 
 TDA, Watch, and Review share a read-only compact context card with bounded detail. Availability is always visible. Normal startup without a provider remains Not Configured; fixtures are isolated from production data.
 

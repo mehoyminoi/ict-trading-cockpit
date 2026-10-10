@@ -199,7 +199,7 @@ Milestone C is complete without publishing real progression thresholds in Alpha 
 | Area | Current interpretation | Status |
 |---|---|---|
 | E3 snapshot checkpoint | Schema v35 historical run context is accepted and merged through PR #55. | IMPLEMENTED |
-| E4 naming | The implementation sequence's compact operator context surface is current. The former narrative E4 heading described cross-cutting distortion/schedule boundaries; those distinctions remain intact. | REFINED / implementation pending operator acceptance |
+| E4 naming | The implementation sequence's compact operator context surface is current. The former narrative E4 heading described cross-cutting distortion/schedule boundaries; those distinctions remain intact. | REFINED / implemented and operator accepted 2026-10-10 |
 | Snapshot presentation | Read stored context; use explicit run time; never silently refresh a provider or convert facts to restrictions. | CURRENT / IMPLEMENTED |
 | Later E6/E7 labels | Narrative numbering and the implementation sequence differ for provider integration and model predicates. Resolve at that planning boundary without silently changing roadmap order. | OPEN |
 
