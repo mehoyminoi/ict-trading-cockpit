@@ -6,11 +6,11 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `feature/context-maturity-e1-v0`
-- **Main baseline:** `1ad555d86f2a674aac781e671bb8421463c51274` — PR #52 merged Milestone E context maturity v0 design
+- **Active branch:** `feature/context-maturity-e2-v0`
+- **Main baseline:** `b7ad07f3a29b7f3e3aa1f569a999aacc111f39ab` — PR #53 merged Milestone E1 expected-observed QT/AMDX review
 - **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
 - **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Current slice:** Milestone E1 implementation — Expected vs observed QT/AMDX review loop
+- **Current slice:** Milestone E2 implementation — Provider-neutral market-context event model
 - **Schema:** v34
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** **348 passed** on 2026-10-10 for Milestone E1 expected-vs-observed QT/AMDX
@@ -131,50 +131,60 @@ Milestone C — Evidence Maturity and progression governance is complete and mer
 
 Milestone E v0 architecture is accepted and merged.
 
-**E1 — Expected vs observed QT/AMDX review loop** is **acceptance-complete and ready for merge** on `feature/context-maturity-e1-v0`.
+E1 — Expected vs observed QT/AMDX review loop is complete and merged.
 
-Implemented E1 behavior:
+**E2 — Provider-neutral market-context event model** is implemented for validation on `feature/context-maturity-e2-v0`.
 
-- existing Trading Run `qt_context` remains the expected/working TDA interpretation,
-- separate `review_observed_qt_context` preserves hindsight/observed interpretation,
-- separate Review context note records human explanation without software inference,
-- expected and observed values compare descriptively level-by-level,
-- comparison states are:
-  - Matched,
-  - Changed,
-  - Expected Unknown,
-  - Observed Unknown,
-  - Not Comparable,
-- no numeric score or automatic competency evidence is created,
-- time-derived QT roles remain factual and are enforced/read-only in observed Review,
-- Post-Market Market Review contains the new expected-vs-observed surface,
-- existing Market Review vs Process Review separation is unchanged,
-- observed Review state persists through the Trading Run repository and restart,
-- schema advances to **v34** with:
-  - `review_observed_qt_context_json`,
-  - `review_qt_context_note`.
+Implemented E2 behavior:
 
-Focused automated coverage includes:
+- provider-neutral immutable `MarketContextEvent`,
+- categories:
+  - Economic,
+  - Holiday,
+  - Early Close,
+  - Market Schedule,
+  - Other Context,
+- normalized impact:
+  - Low,
+  - Medium,
+  - High,
+  - Unknown,
+- event status:
+  - Scheduled,
+  - Tentative,
+  - Postponed,
+  - Cancelled,
+  - Released,
+  - Unknown,
+- source/provider ID and native provider impact are preserved,
+- affected market/currency context is preserved without assuming one asset class,
+- actual / forecast / previous values remain provider text rather than premature numeric normalization,
+- scheduled timestamps must be timezone-aware,
+- adapter-facing `MarketContextEventProvider` protocol,
+- deterministic `InMemoryMarketContextEventProvider` for fixtures/testing,
+- provider impact normalization requires an explicit adapter mapping,
+- "red folder" has no built-in meaning in the domain layer,
+- event records contain facts only — no warning, restriction, authorization, or stand-down state,
+- schema remains **v34**; run-specific historical snapshots are deferred to E3.
 
-- comparison-state semantics,
-- schema v34 migration,
-- expected TDA context not being rewritten,
-- repository round-trip,
-- UI signal/persistence path,
-- Review rehydration,
-- no automatic run evidence creation,
-- preservation of time-derived month role.
+Focused tests cover:
 
-Validation:
+- serialization/provenance round-trip,
+- timezone-aware schedule enforcement,
+- explicit provider impact mapping,
+- distinct economic/holiday/early-close categories,
+- absence of hidden restriction/authorization semantics,
+- deterministic provider time-window querying,
+- ambiguous query rejection,
+- no E2 schema change.
 
-- full automated suite: **348 passed**,
-- guided E1 smoke test: **fully PASS**,
-- schema **v34** confirmed,
-- expected TDA interpretation remained historically intact,
-- observed Review state persisted across restart,
-- no automatic competency evidence was created.
+Next action:
 
-Next action: merge E1, then begin **E2 — Provider-neutral market-context event model**.
+1. pull latest `feature/context-maturity-e2-v0`,
+2. run the full automated suite,
+3. fix any regressions,
+4. if green, merge E2 without a UI smoke pass because E2 is domain/provider-contract only,
+5. begin E3 historical context snapshots only after E2 acceptance.
 
 ## System guide maintenance
 
