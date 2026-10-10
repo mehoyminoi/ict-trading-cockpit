@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
 from ict_cockpit.analysis.trading_day_session import TradingDaySession, TradingDayStatus, TransitionOutcome
 from ict_cockpit.analysis.trading_session_run import TradingRun
 from ict_cockpit.gui.live_watch_widget import LiveWatchWidget
+from ict_cockpit.gui.market_context_widget import MarketContextWidget
 from ict_cockpit.gui.post_market_review_widget import PostMarketReviewWidget
 from ict_cockpit.gui.qt_context_widget import QTContextWidget
 from ict_cockpit.gui.tda_station_runner_widget import TDAStationRunnerWidget
@@ -84,6 +85,7 @@ class TradingDayRuntimeWidget(QWidget):
 
         self.tda_station_runner_widget = TDAStationRunnerWidget(blueprint)
         self.qt_context_widget = QTContextWidget()
+        self.market_context_widget = MarketContextWidget()
         self.qt_context_widget.context_changed.connect(self.qt_context_changed.emit)
         self.tda_watch_point_widget = TDAWatchPointWidget(self.playbooks)
         self.tda_watch_point_widget.add_requested.connect(self._add_tda_watch_point)
@@ -145,6 +147,7 @@ class TradingDayRuntimeWidget(QWidget):
         layout.addWidget(self.title_label)
         layout.addWidget(self.summary_label)
         layout.addLayout(self.mode_rail)
+        layout.addWidget(self.market_context_widget)
         # Premarket Thesis QT/model/watch-point decisions are station-critical work.
         # Keep them above the Focus viewport so they cannot be hidden below the
         # scroll boundary on compact displays.
@@ -334,6 +337,15 @@ class TradingDayRuntimeWidget(QWidget):
         )
         self._refresh_tda_watch_point_editor()
 
+        self.refresh_market_context()
+
+    def refresh_market_context(self, market_time_context: dict | None = None) -> None:
+        self.market_context_widget.load_run_context(
+            self.trading_run,
+            mode_id=self.current_mode.id,
+            market_time_context=market_time_context,
+        )
+
     def start_new(self) -> None:
         self.tda_station_runner_widget.start_new()
         self.qt_context_widget.clear_context()
@@ -408,6 +420,7 @@ class TradingDayRuntimeWidget(QWidget):
         current_index = self.session.current_mode_index
         current_mode = self.current_mode
         self.mode_stack.setCurrentWidget(self.mode_pages[current_mode.id])
+        self.refresh_market_context()
         self._refresh_tda_watch_point_editor()
 
         if current_mode.id == "live-watch" and self.trading_run is not None:

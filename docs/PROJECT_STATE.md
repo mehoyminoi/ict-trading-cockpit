@@ -6,18 +6,16 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `feature/context-maturity-e3-v0`
-- **Main baseline:** `cf5c67e1d5df7b0345b370f7463a2f70bb8186e4` — PR #54 merged Milestone E2 provider-neutral market-context events
-- **Competency / Proficiency v0 merge:** `98266e5f6423f91484d1ff687795f6f1b829220a` — PR #26
-- **Smoke-test runner v0 merge:** `2356240fb0cd5749682e49b1f9895fe919ab8af4` — PR #27
-- **Implementation checkpoint:** `e965fbf9afabef1927a86227580fd436e7e8d1da` — Record E3 historical snapshot implementation checkpoint
-- **Current slice:** Milestone E3 acceptance — Historical market-context snapshots
+- **Active branch:** `feature/context-maturity-e4-v0`
+- **Main baseline:** `9d1fb5d0181a9ed50675c95aeb189156c99c5af7` — PR #55 merged E3 historical market-context snapshots and Qt test cleanup
+- **Implementation checkpoint:** `c9d49ef5bbfffcd157b3456cd0155b6ae16f56a7` — Present stored market context across TDA Watch and Review (E4)
+- **Current slice:** E4 — compact operator context surfaces, accepted and ready to merge
 - **Schema:** v35
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** **364 passed** on 2026-10-10 for Milestone E3 historical market-context snapshots
-- **Manual smoke test:** Milestone E1 expected-vs-observed QT/AMDX acceptance **fully PASS** — schema v34 confirmed and all guided checks passed.
+- **Verified full test result:** **373 passed** in 132.53s on 2026-10-10, clean exit (Python 3.12 / PySide6 6.8.3 / offscreen)
+- **Manual acceptance:** E1 fully PASS. E3 required no new UI smoke pass. E4 focused operator smoke is **PASS**, per operator report of completed manual testing and acceptance on 2026-10-10.
 
-## Current completed slice — Competency / Proficiency substrate v0
+## Completed foundation — Competency / Proficiency substrate v0
 
 Implemented/established in this slice:
 
@@ -116,74 +114,62 @@ The runner remains a convenience layer over Markdown, not a second acceptance-da
 
 ## Current architectural frontier
 
-The recovered development trajectory is now explicit:
+Milestones A, B, and C are complete. The learning/progression chain remains intact:
 
-`targeted Study -> competency evidence -> Replay integration -> Forward validation -> progression/eligibility -> Live Execution`
+`Evidence -> Competency Synthesis -> Cross-Run Observation -> Development Direction -> targeted Study -> Evidence Maturity -> Trade Plan Progression Policy -> Explainable Eligibility -> historical attainment / regression-revalidation -> operator-loop guardrails`
 
-Competency / Proficiency v0 is complete. The project had already deliberately shifted away from additional Live-Watch embellishment toward the Study/Lab learning and progression loop.
+The current major frontier is **Milestone E — context maturity: QT/AMDX, external events, schedules, and distortions**. E1, E2, and E3 are merged. E4 now exposes the stored context to the operator; it does not introduce context-policy evaluation.
 
-Review / Development synthesis and an Evidence Maturity Profile remain important future consumers/governors, but they should be built only after the competency-evidence substrate is trustworthy.
+Milestone D continues only for demonstrated operator friction. Film Night, gallery polish, broad TradingView integration, hardware controls, and broker execution remain downstream.
 
-Older Film Night, responsive-gallery, visual-polish, broad TradingView-integration, hardware-controller, and Live-Watch enhancement discussions are downstream ideas unless actual use makes one blocking.
+## Last completed slice
+
+**E3 — historical context snapshots**, merged through PR #55:
+
+- run-start event/schedule snapshot persisted in schema v35,
+- selected historical futures-day queries for Replay/Study,
+- Available-empty / Not Configured / Unavailable remain distinct,
+- restore reads stored context rather than re-querying a provider,
+- provider revisions do not silently rewrite historical runs,
+- full automated acceptance: **364 passed**, clean exit,
+- test-session Qt cleanup stops test-owned timers and disposes windows before draining events.
 
 ## Current task
 
-Milestone C — Evidence Maturity and progression governance is complete and merged.
+**E4 — compact operator context surfaces** is implemented and operator accepted on `feature/context-maturity-e4-v0`.
 
-Milestone E v0 architecture is accepted and merged.
+Implemented behavior:
 
-E1 — Expected vs observed QT/AMDX review loop is complete and merged.
+- one shared read-only Market context card in TDA, Watch, and Review,
+- visible snapshot availability and event/schedule counts without treating missing context as a successful empty query,
+- TDA summary keeps raw QT facts separate from AMDX expectation,
+- Watch shows the next recorded event time relative to the run's market timestamp, with simultaneous events accounted for; no arbitrary warning horizon or event-duration window,
+- cancelled, postponed, and already released events are not advertised as upcoming; all stored records remain inspectable,
+- recorded schedule facts remain distinct from economic events and QT structural distortion,
+- outside-window or missing market-time context is explicit,
+- bounded expandable detail includes run/Trade Plan provenance, QT expectation/observed Review state, snapshot query/reference/capture times, and all provider/native event fields,
+- rendering, passive timer refresh, mode changes, and restored runs never query a provider or mutate the stored snapshot,
+- normal compact Focus navigation remains unchanged outside Premarket Thesis; the dense Thesis station and expanded context detail permit scrolling,
+- stable UI anchors under `process.market_context`,
+- disposable fixture window: `python tools/context_surface_demo.py`,
+- schema remains **v35**; Trade Plan remains **Alpha 0.7**.
 
-E2 — Provider-neutral market-context event model is complete and merged.
+Acceptance:
 
-**E3 — Historical context snapshots and deterministic Replay/Historical event context** is acceptance-complete and ready for merge on `feature/context-maturity-e3-v0`.
+- final full automated suite: **373 passed**, clean exit,
+- automated coverage includes availability/legacy honesty, historical time, timezone normalization, event statuses, simultaneous events, explicit unknown/outside-window timing, full Review provenance, plain-text rendering, progressive disclosure, normal runtime transitions, passive refresh, and repository-backed restore without provider re-query,
+- developer offscreen visual inspection at 1024×768 covers compact TDA, the dense Thesis controls, and expanded Review detail,
+- operator reported manual testing complete and acceptance granted on **2026-10-10**; the E4 checklist in `docs/SMOKE_TEST.md` is recorded as **PASS**.
 
-Implemented E3 behavior:
+Next action: merge the accepted E4 checkpoint and update the main handoff. The next implementation slice after accepted E4 is **E5 — declarative Trade Plan context rules**.
 
-- run-level `MarketContextSnapshot` is captured once when a Trading Run starts,
-- snapshot state distinguishes:
-  - Available,
-  - Not Configured,
-  - Unavailable,
-- Available with zero events remains distinct from provider failure/unavailability,
-- snapshot preserves:
-  - provider,
-  - query bounds,
-  - reference market timestamp,
-  - market-time source,
-  - capture timestamp,
-  - normalized events,
-  - event/provider provenance,
-- query window uses the Cockpit futures day from 18:00 ET to the next 18:00 ET,
-- Replay/Historical use the selected historical run timestamp to choose that futures-day event window,
-- present-day events are not substituted into historical runs,
-- restored runs read the stored snapshot rather than silently re-querying the provider,
-- later provider revisions therefore do not rewrite historical run context,
-- existing/legacy runs without captured context remain honestly Not Configured rather than being fabricated as an empty successful query,
-- Live/Forward use the same run-start snapshot contract,
-- no warning/restriction/authorization semantics are introduced,
-- schema advances to **v35** with `market_context_snapshot_json`.
+## Explicitly deferred / open
 
-Focused tests cover:
-
-- 18:00-to-18:00 futures-day query boundaries,
-- Not Configured vs Available-empty distinction,
-- provider failure -> Unavailable,
-- historical Replay date selection,
-- no silent provider revision rewrite,
-- repository round-trip/provenance,
-- legacy/missing snapshot semantics,
-- schema v35 storage.
-
-Validation:
-
-- full automated suite: **364 passed**,
-- operator independently reported a green local full suite,
-- headless verification exposed a test-session Qt cleanup stall after all assertions passed; teardown now stops test-owned timers and disposes windows before draining queued events,
-- no new manual UI smoke pass required; E3 adds no operator-facing event surface,
-- schema **v35**, Trade Plan **Alpha 0.7**.
-
-Next action: merge E3, then start **E4 — compact operator context surfaces** from the merged main baseline. E4 exposes the stored context in TDA, Watch, and Review while preserving availability, timing, and provenance semantics. It requires focused operator acceptance before merge.
+- no real calendar provider selected or wired into normal application startup,
+- no within-run snapshot refresh/version history,
+- no warnings, restrictions, authorization changes, readiness scores, or automatic competency evidence,
+- no full intraday session × 90-minute interpretation grid in E4,
+- `CONTEXT_MATURITY.md` has inconsistent later E6/E7 numbering between narrative sections and the implementation sequence. Reconcile that when planning those slices; it does not block E4/E5 and is not permission to reorder the roadmap.
 
 ## System guide maintenance
 

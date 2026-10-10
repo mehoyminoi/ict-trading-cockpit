@@ -593,3 +593,18 @@ Accepted consequences:
 - justified schema migrations are allowed to preserve historical truth.
 
 **Rationale:** context should become richer without creating hidden directional inference, accidental authorization logic, or provider-coupled domain semantics.
+
+
+## 2026-10-10 — E4 presents stored context without refreshing or interpreting policy
+
+**Status:** Accepted v0 implementation within the existing Milestone E presentation contract; operator reported manual testing complete and acceptance granted on 2026-10-10
+
+TDA, Watch, and Review share a read-only compact context card with bounded detail. Availability is always visible. Normal startup without a provider remains Not Configured; fixtures are isolated from production data.
+
+Watch uses explicit run market time to select the next recorded event time, retaining simultaneous-event visibility and schedule facts for the captured day. It does not invent an event-duration window or a warning threshold. Cancelled, postponed, and released records remain in full detail but are not presented as upcoming. When market time is absent or outside the snapshot window, the surface says so instead of claiming no remaining events.
+
+Rendering and restore read the persisted snapshot. Neither refreshes a provider, rewrites event facts, evaluates context policy, nor mutates authorization or competency evidence.
+
+**Rationale:** E3 established historical provenance. E4 makes that provenance usable without introducing a fresh-feed illusion or smuggling future E5 rules into presentation.
+
+**Consequences:** details expansion is transient UI state. The dense Premarket Thesis station and expanded details allow scrolling so controls remain reachable; other compact Focus navigation is retained. Schema remains v35 and Trade Plan Alpha 0.7 is unchanged. Real provider integration, snapshot revision history, and declarative context rules remain later work.

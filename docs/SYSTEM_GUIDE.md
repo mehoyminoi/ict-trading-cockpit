@@ -1149,6 +1149,16 @@ The intended model is structured context, not merely a calendar widget.
 
 ---
 
+## Current E3/E4 event-context behavior
+
+A Trading Run captures one event/schedule snapshot at start. Replay and Historical Backtest choose its query window from their selected historical futures day. Available with no matching events, Not Configured, and Unavailable are different states. Restoring the run reads its stored snapshot.
+
+The **Market context** card presents that record in TDA, Watch, and Review. Its summary is compact; **Show context details** exposes query/reference/capture times, provider-native facts, run/Trade Plan provenance, and QT expectation/observed context. Watch's next recorded time follows explicit run market time, not today's clock for historical runs.
+
+The card is not a refreshed calendar feed. Past, cancelled, postponed, and released records remain available in detail. Outside the captured window, timing is explicitly unknown for the new context. Schedule facts remain separate from raw QT structure and technician interpretation. Restriction evaluation belongs to later declarative Trade Plan context rules.
+
+---
+
 # 28. Structured records and derived outputs
 
 Authoritative records live in structured data.

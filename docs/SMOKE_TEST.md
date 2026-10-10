@@ -755,6 +755,61 @@ Before merging `feature/context-maturity-e1-v0`, use this focused acceptance pas
 
 ---
 
+## Current branch acceptance — E4 compact operator context surfaces
+
+Operator reported manual testing complete and acceptance granted on **2026-10-10**. The E4 checklist below is recorded as **PASS** based on that report; developer automated and offscreen checks are separate evidence.
+
+Run `pytest`, then use the normal application and the disposable fixture window:
+
+```bash
+python tools/context_surface_demo.py
+```
+
+The fixture window has no database or feed connection. Scenario/Mode selectors create disposable Replay runs at **2026-10-06 10:15 ET**. Event titles explicitly say Fixture; they are not an actual calendar for that date.
+
+### A. Compact presentation and reachability
+
+- [PASS] Confirm the card is compact with details initially hidden in TDA.
+  - Where: fixture **Available / TDA**, **Market context** above Focus/Deck
+  - Look for: Available; two events and one schedule fact; raw QT distinct from AMDX expectation
+  - Expected: no extra input or acknowledgement required; existing station navigation remains usable.
+- [PASS] Confirm all Premarket Thesis controls remain reachable at your usual window size.
+  - Where: normal application or fixture, **Deck > Premarket Thesis**, then Focus
+  - Look for: existing QT selectors, Models in Play, day-specific watch-point controls, station content, and fixed process actions
+  - Expected: vertical scrolling can reach lower controls; expand/collapse **Show context details** without losing navigation.
+
+### B. Availability honesty
+
+- [PASS] Cycle the fixture through **Available empty / Not Configured / Unavailable / Legacy**.
+  - Where: fixture Scenario selector
+  - Look for: Available empty says the query completed with no matching events; Not Configured/Legacy and Unavailable say context is unknown
+  - Expected: unknown context never reads as a normal schedule or a successful empty calendar. Unavailable details contain the deliberate fixture outage; Legacy detail has no fabricated provider/query/capture provenance.
+- [PASS] Confirm normal startup without a configured provider displays **Not Configured**.
+  - Where: normal application, a new Replay/Historical or Forward/Live run
+  - Expected: no fixture events leak into production runs and existing launch/authorization behavior is unchanged.
+
+### C. Quiet Watch timing
+
+- [PASS] Select fixture **Available / Watch**.
+  - Look for: next recorded **Fixture FOMC 14:00 ET**; **Fixture early close 16:00 ET** is a separate schedule fact
+  - Expected: the past 08:30 CPI remains in details rather than being presented as upcoming. Times follow the fixture's historical date, not the current day. No event automatically declares stand-down or entry permission.
+
+### D. Historical detail and Review
+
+- [PASS] Select fixture **Available / Review**, then **Show context details**.
+  - Look for: run ID/environment/Trade Plan Alpha 0.7, raw QT, expected/observed interpretation, snapshot status/provider, 18:00-to-18:00 query bounds, historical reference time, capture time, and all three events with native/source provenance
+  - Expected: detail is read-only, scrollable, and bounded; existing Market Review / Process Review and expected-vs-observed controls remain intact. Event/schedule facts do not become QT distortion or restrictions.
+- [PASS] Confirm restored normal-application context stays attached to the same run.
+  - Where: start or restore a run in the normal application, view details, restart the application, restore that run
+  - Expected: snapshot status/provider/query/reference/capture provenance and stored event records are unchanged. A legacy run remains unknown. Details may reopen collapsed; that is transient UI state.
+
+### E. Acceptance checkpoint
+
+- [PASS] Full automated suite is green locally; schema remains **v35**, Trade Plan **Alpha 0.7**.
+- [PASS] Record PASS/FAIL/QUESTION for the checks above before E4 merge.
+
+---
+
 ## Reporting results
 
 Report results as:

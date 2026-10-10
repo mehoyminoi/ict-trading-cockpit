@@ -164,6 +164,9 @@ class TradingDayShellWidget(QWidget):
         self.runtime_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.runtime_scroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.runtime_scroll.setWidget(self.runtime_frame)
+        self.runtime.market_context_widget.details_button.toggled.connect(
+            self._sync_runtime_scroll_policy
+        )
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(6, 6, 6, 6)
@@ -260,6 +263,7 @@ class TradingDayShellWidget(QWidget):
     def _refresh_market_time_display(self) -> None:
         context = self._current_market_time_context()
         if not context:
+            self.runtime.refresh_market_context(context)
             self.market_time_label.setText("Market time · Not configured")
             return
 
@@ -287,6 +291,7 @@ class TradingDayShellWidget(QWidget):
                     self.runtime.tda_station_runner_widget.session,
                     self.blueprint,
                 )
+        self.runtime.refresh_market_context(context)
         captured = str(context.get("captured_at", ""))
         clock = captured[11:16] if len(captured) >= 16 else captured
         session = str(context.get("session", "Closed"))
@@ -593,6 +598,19 @@ class TradingDayShellWidget(QWidget):
             self.tda_next_button.setText("Mark Station Complete & Continue →")
             self.tda_next_button.setEnabled(True)
 
+    def _sync_runtime_scroll_policy(self, _expanded: bool = False) -> None:
+        runner = self.runtime.tda_station_runner_widget
+        compact_focus = (
+            self.active_trading_run is not None
+            and self.runtime.current_mode.id == "tda"
+            and runner.view_tabs.currentWidget() is runner.focus_page
+            and runner.current_station_id != "tda-thesis"
+            and not self.runtime.market_context_widget.details_button.isChecked()
+        )
+        self.runtime_scroll.setVerticalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAlwaysOff if compact_focus else Qt.ScrollBarPolicy.ScrollBarAsNeeded
+        )
+
     def _update_view(self) -> None:
         self._refresh_history()
         day_complete = self.trading_day.status is TradingDayLifecycleStatus.COMPLETE
@@ -614,9 +632,7 @@ class TradingDayShellWidget(QWidget):
         tda_focus_active = active and self.runtime.current_mode.id == "tda" and runner.view_tabs.currentWidget() is runner.focus_page
         self.tda_nav_frame.setVisible(tda_focus_active)
         self._sync_tda_nav()
-        self.runtime_scroll.setVerticalScrollBarPolicy(
-            Qt.ScrollBarPolicy.ScrollBarAlwaysOff if tda_focus_active else Qt.ScrollBarPolicy.ScrollBarAsNeeded
-        )
+        self._sync_runtime_scroll_policy()
         self.run_history_label.setVisible(not active)
         self.run_history.setVisible(not active)
         can_start_another = not day_complete and self.active_trading_run is None and bool(self.trading_runs)
