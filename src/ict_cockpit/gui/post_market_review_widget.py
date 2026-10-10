@@ -15,6 +15,9 @@ from PySide6.QtWidgets import (
 )
 
 from ict_cockpit.analysis.quarter_theory import (
+    QT_LEVELS,
+    QTPhase,
+    compare_qt_context,
     qt_context_summary,
     raw_quarter_contextual_summary,
     raw_quarter_stack_relevance_summary,
@@ -37,10 +40,12 @@ class PostMarketReviewWidget(QWidget):
     interpretation_changed = Signal(str)
     review_changed = Signal(str, str, bool)
     study_review_changed = Signal(str, str)
+    observed_qt_changed = Signal(object, str)
 
     def __init__(self, blueprint: ProcessBlueprint) -> None:
         super().__init__()
         self._loading = False
+        self._expected_qt_context: dict[str, str] = {}
         self._station_names = {
             station.id: station.name
             for mode in blueprint.modes
@@ -113,6 +118,52 @@ class PostMarketReviewWidget(QWidget):
         compare_layout.addWidget(tda_frame, 1)
         compare_layout.addWidget(live_frame, 1)
         layout.addLayout(compare_layout)
+
+        self.qt_review_frame = QFrame()
+        self.qt_review_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        qt_review_layout = QVBoxLayout(self.qt_review_frame)
+        qt_review_layout.setContentsMargins(10, 8, 10, 8)
+        qt_heading = QLabel("QT / AMDX — expected vs observed")
+        qt_heading.setStyleSheet("font-weight: 600;")
+        qt_help = QLabel(
+            "Record what the QT / AMDX interpretation looked like in hindsight. "
+            "This comparison is descriptive only; it does not score the run or "
+            "create competency evidence."
+        )
+        qt_help.setWordWrap(True)
+        self.qt_expected_label = QLabel()
+        self.qt_expected_label.setWordWrap(True)
+        qt_review_layout.addWidget(qt_heading)
+        qt_review_layout.addWidget(qt_help)
+        qt_review_layout.addWidget(self.qt_expected_label)
+
+        self.observed_qt_combos: dict[str, QComboBox] = {}
+        for level_id, label in QT_LEVELS:
+            row = QHBoxLayout()
+            row.addWidget(QLabel(f"{label} observed"))
+            combo = QComboBox()
+            combo.addItems([item.value for item in QTPhase])
+            combo.currentTextChanged.connect(self._emit_observed_qt_review)
+            self.observed_qt_combos[level_id] = combo
+            row.addWidget(combo, 1)
+            qt_review_layout.addLayout(row)
+
+        self.qt_review_note_input = QLineEdit()
+        self.qt_review_note_input.setPlaceholderText(
+            "Optional context note — what changed, when, or what remains unclear?"
+        )
+        self.qt_review_note_input.editingFinished.connect(
+            self._emit_observed_qt_review
+        )
+        qt_review_layout.addWidget(self.qt_review_note_input)
+
+        comparison_heading = QLabel("Descriptive comparison")
+        comparison_heading.setStyleSheet("font-weight: 600;")
+        qt_review_layout.addWidget(comparison_heading)
+        self.qt_comparison_list = QListWidget()
+        self.qt_comparison_list.setMaximumHeight(190)
+        qt_review_layout.addWidget(self.qt_comparison_list)
+        layout.addWidget(self.qt_review_frame)
 
         interpretation_frame = QFrame()
         interpretation_frame.setFrameShape(QFrame.Shape.StyledPanel)
@@ -281,6 +332,22 @@ class PostMarketReviewWidget(QWidget):
                 f"Current thesis: {trading_run.current_thesis_state.value}"
             )
 
+            self._expected_qt_context = dict(trading_run.qt_context)
+            self.qt_expected_label.setText(
+                "Expected / TDA · " + qt_context_summary(trading_run.qt_context)
+            )
+            for level_id, combo in self.observed_qt_combos.items():
+                combo.setCurrentText(
+                    trading_run.review_observed_qt_context.get(
+                        level_id,
+                        QTPhase.NOT_APPLICABLE.value,
+                    )
+                )
+            self.qt_review_note_input.setText(
+                trading_run.review_qt_context_note
+            )
+            self._refresh_qt_comparison()
+
             self.tda_snapshot_list.clear()
             populated_tda = 0
             qt_summary = qt_context_summary(trading_run.qt_context)
@@ -376,6 +443,14 @@ class PostMarketReviewWidget(QWidget):
         self._loading = True
         try:
             self.run_summary_label.setText("No Trading Run loaded")
+            self._expected_qt_context = {}
+            self.qt_expected_label.setText(
+                "Expected / TDA · No QT / AMDX interpretation recorded"
+            )
+            for combo in self.observed_qt_combos.values():
+                combo.setCurrentText(QTPhase.NOT_APPLICABLE.value)
+            self.qt_review_note_input.clear()
+            self.qt_comparison_list.clear()
             self.tda_snapshot_list.clear()
             self.live_changes_list.clear()
             self.interpretation_group.setExclusive(False)
@@ -400,6 +475,32 @@ class PostMarketReviewWidget(QWidget):
             self.show_market_review()
         finally:
             self._loading = False
+
+    def _observed_qt_payload(self) -> dict[str, str]:
+        return {
+            level_id: combo.currentText()
+            for level_id, combo in self.observed_qt_combos.items()
+        }
+
+    def _refresh_qt_comparison(self) -> None:
+        self.qt_comparison_list.clear()
+        for row in compare_qt_context(
+            self._expected_qt_context,
+            self._observed_qt_payload(),
+        ):
+            self.qt_comparison_list.addItem(
+                f'{row["label"]} · {row["expected"]} → '
+                f'{row["observed"]} · {row["state"]}'
+            )
+
+    def _emit_observed_qt_review(self, *_args) -> None:
+        if self._loading:
+            return
+        self._refresh_qt_comparison()
+        self.observed_qt_changed.emit(
+            self._observed_qt_payload(),
+            self.qt_review_note_input.text().strip(),
+        )
 
     def _selected_interpretation(self) -> InterpretationOutcome:
         for state, button in self.interpretation_buttons.items():
