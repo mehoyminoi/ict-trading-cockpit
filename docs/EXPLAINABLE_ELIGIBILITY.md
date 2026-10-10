@@ -73,3 +73,17 @@ Competency State uses the current competency assessment.
 Evidence Purpose Present uses reviewed competency evidence for the named competency and purpose.
 
 Human Certification should use dedicated progression-certification state. Certification is not an override; it is the source for a requirement the Trade Plan deliberately made human-verifiable.
+
+## Cross-revision evidence semantics
+
+Competency knowledge can survive a Trade Plan revision while current-plan contextual validation may still be required.
+
+For Evidence Purpose Present, proposed v0 scope is **CURRENT TRADE PLAN REVISION**.
+
+Older evidence remains visible historical evidence and may still support broader competency knowledge, but it does not automatically satisfy a later revision's contextual-validation requirement.
+
+Later, after competency-definition fingerprinting exists, policy can add broader explicit evidence scopes. Matching competency IDs alone is not enough to infer unchanged meaning.
+
+For Evidence Maturity, a profile reviewed under an older Trade Plan revision should return UNKNOWN / CANNOT EVALUATE for a current-plan policy until it is reviewed under the current revision.
+
+This does not reset Competency State.
