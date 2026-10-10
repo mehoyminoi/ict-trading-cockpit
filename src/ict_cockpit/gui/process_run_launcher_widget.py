@@ -309,10 +309,25 @@ class ProcessRunLauncherWidget(QWidget):
             if progression_status.boundary is not None
             else "Foundation / no boundary required"
         )
+        blocked_names = []
+        if (
+            eligibility.progression is not None
+            and eligibility.status is EnvironmentEligibilityStatus.BLOCKED
+        ):
+            blocked_names = [
+                item.requirement_name
+                for item in eligibility.progression.requirement_results
+                if item.status.value != "Satisfied"
+            ]
+        blocker_summary = (
+            "\nBlocked by · " + ", ".join(blocked_names)
+            if blocked_names
+            else ""
+        )
         self.eligibility_label.setText(
             f"Progression eligibility · {eligibility.status.value.upper()}\n"
             f"Boundary · {boundary_text}\n"
-            f"{eligibility.detail}"
+            f"{eligibility.detail}{blocker_summary}"
         )
         self.progression_guidance_label.setText(
             f"Next · {progression_status.action_guidance}"
