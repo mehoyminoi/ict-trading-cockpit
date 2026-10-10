@@ -1,9 +1,12 @@
 from PySide6.QtWidgets import (
+    QCheckBox,
     QFrame,
     QHBoxLayout,
     QLabel,
+    QLineEdit,
     QListWidget,
     QListWidgetItem,
+    QPushButton,
     QScrollArea,
     QStackedWidget,
     QTabWidget,
@@ -35,8 +38,10 @@ from ict_cockpit.gui.competency_evidence_review_widget import (
 from ict_cockpit.gui.process_blueprint_widget import ProcessBlueprintWidget
 from ict_cockpit.gui.process_run_launcher_widget import ProcessRunLauncherWidget
 from ict_cockpit.gui.trading_day_shell_widget import TradingDayShellWidget
+from ict_cockpit.progression import ProgressionCertification
 from ict_cockpit.trade_plan import (
     PlaybookDefinition,
+    ProgressionRequirementKind,
     TradePlanDefinition,
     TradePlanSectionDefinition,
 )
@@ -292,6 +297,58 @@ class TradePlanWidget(QWidget):
                     )
                     line.setWordWrap(True)
                     card_layout.addWidget(line)
+                    if (
+                        requirement.requirement_kind
+                        is ProgressionRequirementKind.HUMAN_CERTIFICATION
+                        and self.progression_certification_repository is not None
+                    ):
+                        certification = (
+                            self.progression_certification_repository.get(
+                                self.trade_plan.id,
+                                self.trade_plan.revision,
+                                policy.boundary,
+                                requirement.id,
+                            )
+                        )
+                        certification_checkbox = QCheckBox(
+                            "Human certification confirmed"
+                        )
+                        certification_checkbox.setChecked(
+                            bool(
+                                certification is not None
+                                and certification.confirmed
+                            )
+                        )
+                        certification_note = QLineEdit()
+                        certification_note.setPlaceholderText(
+                            "Certification note (optional)"
+                        )
+                        if certification is not None:
+                            certification_note.setText(certification.note)
+                        certification_status = QLabel()
+                        certification_status.setWordWrap(True)
+                        save_certification = QPushButton(
+                            "Save Human Certification"
+                        )
+                        save_certification.clicked.connect(
+                            lambda _checked=False,
+                            boundary=policy.boundary,
+                            requirement_id=requirement.id,
+                            checkbox=certification_checkbox,
+                            note_input=certification_note,
+                            status_label=certification_status:
+                                self._save_progression_certification(
+                                    boundary,
+                                    requirement_id,
+                                    checkbox,
+                                    note_input,
+                                    status_label,
+                                )
+                        )
+                        card_layout.addWidget(certification_checkbox)
+                        card_layout.addWidget(certification_note)
+                        card_layout.addWidget(save_certification)
+                        card_layout.addWidget(certification_status)
                 layout.addWidget(card)
 
         layout.addSpacing(8)
@@ -305,6 +362,32 @@ class TradePlanWidget(QWidget):
         layout.addStretch()
         scroll.setWidget(page)
         return scroll
+
+    def _save_progression_certification(
+        self,
+        boundary,
+        requirement_id: str,
+        checkbox: QCheckBox,
+        note_input: QLineEdit,
+        status_label: QLabel,
+    ) -> None:
+        if self.progression_certification_repository is None:
+            status_label.setText("Certification persistence is unavailable.")
+            return
+        item = ProgressionCertification(
+            trade_plan_id=self.trade_plan.id,
+            trade_plan_revision=self.trade_plan.revision,
+            boundary=boundary,
+            requirement_id=requirement_id,
+            confirmed=checkbox.isChecked(),
+            note=note_input.text(),
+        )
+        self.progression_certification_repository.save(item)
+        status_label.setText(
+            "Certification saved for this exact Trade Plan revision and "
+            "progression requirement."
+        )
+        self.process_run_launcher_widget._sync_environment_ui()
 
     def _build_review_development_page(
         self, section: TradePlanSectionDefinition
