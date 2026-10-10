@@ -480,7 +480,13 @@ class TradingSessionRun:
         return candidate
 
     def set_qt_context(self, context: dict | None) -> None:
-        self.qt_context = normalize_qt_context(context)
+        # Keep time-derived QT roles factual at the domain boundary. The UI
+        # already renders these roles read-only, but direct/domain callers must
+        # not be able to leave the Trading Run in a contradictory state.
+        self.qt_context = apply_time_derived_qt_context(
+            context,
+            self.market_time_context,
+        )
         self._touch()
 
     def set_review_observed_qt_context(
