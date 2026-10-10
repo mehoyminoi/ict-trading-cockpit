@@ -4,7 +4,10 @@ from enum import Enum
 from uuid import uuid4
 
 from ict_cockpit.analysis.market_time import temporal_relevance_for
-from ict_cockpit.analysis.quarter_theory import normalize_qt_context
+from ict_cockpit.analysis.quarter_theory import (
+    apply_time_derived_qt_context,
+    normalize_qt_context,
+)
 
 
 MARKET_SESSION_NAMES = ("Asia", "London", "NYAM", "NYPM")
@@ -366,8 +369,9 @@ class TradingSessionRun:
         self.authorization_policy_snapshot = [dict(item) for item in (self.authorization_policy_snapshot or [])]
         self.market_time_context = dict(self.market_time_context or {})
         self.qt_context = normalize_qt_context(self.qt_context)
-        self.review_observed_qt_context = normalize_qt_context(
-            self.review_observed_qt_context
+        self.review_observed_qt_context = apply_time_derived_qt_context(
+            self.review_observed_qt_context,
+            self.market_time_context,
         )
         self.review_qt_context_note = self.review_qt_context_note.strip()
         if self.study_context is not None and not isinstance(
@@ -484,7 +488,10 @@ class TradingSessionRun:
         context: dict | None,
         note: str | None = None,
     ) -> None:
-        self.review_observed_qt_context = normalize_qt_context(context)
+        self.review_observed_qt_context = apply_time_derived_qt_context(
+            context,
+            self.market_time_context,
+        )
         if note is not None:
             self.review_qt_context_note = note.strip()
         self._touch()
