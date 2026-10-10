@@ -670,3 +670,24 @@ All twenty Milestone E design points were accepted on 2026-10-10.
 18. Use Friday Asian Range no-Monday-high-impact-news as a validation case for generic model-specific context predicates.
 19. Permit schema migrations when required for honest historical snapshots.
 20. Keep active UI compact: summary in TDA, relevant/upcoming in Watch, full comparison/provenance in Review.
+
+
+## Intraday QT depth and interaction budget
+
+The current E1 expected-vs-observed surface is accepted as sufficient for testing, but it is not the final intraday QT interaction model.
+
+Future working versions must preserve the deeper intraday structure, including:
+
+- four sessions per futures day,
+- four 90-minute cycles per session,
+- nested expected/observed QT / AMDX interpretation at those levels where meaningful.
+
+The data model should be capable of representing that structure even when the UI does not expose every cell at once.
+
+The interaction constraint is equally important:
+
+> Capturing more QT structure must not make the Cockpit feel like completing a medical intake form.
+
+Future design work should therefore explore compact, visual, context-aware interaction patterns before adding more persistent fields. Candidate patterns include current-layer focus, nested timeline views, compact session/cycle strips, click-to-expand hierarchy, inferred factual state, carry-forward/inheritance, and edit-by-exception.
+
+Pruning is allowed when an input is redundant, derivable, or not decision-relevant. Historical truth and analytical usefulness should be preserved in the underlying structure even when operator input is reduced.
