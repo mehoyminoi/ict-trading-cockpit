@@ -1587,9 +1587,76 @@ This is a future analytics layer. It does not justify current readiness percenta
 
 ---
 
+
+# 37D. Operator-loop progression guardrails
+
+C5 completes the Milestone C progression-governance loop by defining **where** progression is enforced and how the operator recovers from a block.
+
+Progression eligibility is a **new-run / upward-environment transition guardrail**:
+
+```text
+Study -> Replay
+Replay -> Forward
+Forward -> Live
+```
+
+For a configured boundary:
+
+- **AVAILABLE** permits the deliberate upward launch and that crossing may record immutable Progression Attainment,
+- **BLOCKED** prevents the upward launch, explains the exact failing/unknown requirements, and keeps lower-rung operation available,
+- **NOT CONFIGURED** remains explicitly ungoverned by progression policy; under Alpha 0.7 this is deliberately non-restrictive and creates no attainment.
+
+The launcher is the enforcement point for starting a higher environment. Progression eligibility is **not** a continuous runtime kill switch.
+
+Once a run has legitimately started:
+
+- later progression changes do not terminate it,
+- later progression changes do not silently demote its environment,
+- run provenance remains historical truth,
+- a future new upward transition is evaluated again under current policy.
+
+Progression remains separate from trade/setup authorization:
+
+```text
+Progression Eligibility
+= may I start/use this higher environment?
+
+Trade / Setup Authorization
+= may I enter this trade now?
+```
+
+A progression AVAILABLE result does not authorize a trade. A trade/setup Clear result does not grant progression eligibility. Exit/flatten remains outside both entry and progression gating.
+
+When configured progression is BLOCKED, Cockpit may provide deterministic assistance derived from the explicit requirement state:
+
+- show the governing boundary,
+- show concise blocker names,
+- reveal requirement detail on demand,
+- stage the recommended lower environment without auto-starting,
+- route directly to **Review / Development > Progression**.
+
+This assistance is not inferred coaching and does not mutate Competency State, Evidence Maturity, Development Direction, regression classification, or historical attainment.
+
+The normal lower route is:
+
+```text
+Replay blocked   -> Historical Backtest / Study
+Forward blocked  -> Replay / Rehearsal
+Live blocked     -> Forward / Validation
+```
+
+Voluntary or staged downward movement is non-punitive.
+
+Human Certification remains authored under **Rules / Safety > Progression Policy**. Review / Development > Progression explains the requirement and current result without creating a second authoritative edit path.
+
+Current C5 integration state is derived on demand. No persisted readiness/current-status table or numeric score is introduced.
+
+Milestone C is complete with this operator-loop integration. Alpha 0.7 still publishes no real progression policy, so its Replay/Forward/Live boundaries remain NOT CONFIGURED until a later Trade Plan revision deliberately defines real requirements.
+
+
 # 38. The current architectural frontier
 
-The current accepted frontier is:
+The learning/progression chain is now structurally complete through Milestone C:
 
 ```text
 Targeted Study
@@ -1605,7 +1672,7 @@ Progression / Eligibility
 Live Execution
 ```
 
-Review / Development increasingly consumes the evidence produced along this path.
+The next major roadmap frontier is **Context maturity — QT/AMDX, news, and distortions**. Continuous operator-loop hardening remains parallel and should be driven by friction observed during real use rather than generic polish.
 
 Do not let older detailed feature discussions silently displace this frontier.
 
