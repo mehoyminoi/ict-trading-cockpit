@@ -441,17 +441,17 @@ Before merging `feature/explainable-eligibility-v0`, use this section for the fo
 
 ### A. Alpha 0.7 behavior remains unchanged
 
-- [NOT TESTED] Open the Lab / Replay launcher and cycle through Replay, Forward Test, and Live.
+- [PASS] Open the Lab / Replay launcher and cycle through Replay, Forward Test, and Live.
   - Expected: each still reports **NOT CONFIGURED** under Trade Plan Alpha 0.7.
   - Expected: NOT CONFIGURED remains non-restrictive; no new progression lock appears.
-- [NOT TESTED] Confirm Historical Backtest / Study remains **AVAILABLE** as the foundation environment.
-- [NOT TESTED] Confirm Trade Plan revision remains **Alpha 0.7** and no actual progression criteria were added.
+- [PASS] Confirm Historical Backtest / Study remains **AVAILABLE** as the foundation environment.
+- [PASS] Confirm Trade Plan revision remains **Alpha 0.7** and no actual progression criteria were added.
 
 ### B. Eligibility explanation semantics
 
-- [NOT TESTED] Confirm the launcher still clearly labels progression eligibility separately from trade/setup authorization.
-- [NOT TESTED] Confirm no readiness percentage, weighted score, traffic-light score, automatic Competency State mutation, automatic Evidence Maturity mutation, or automatic Development Direction mutation appears.
-- [NOT TESTED] Confirm the operator-facing language preserves:
+- [PASS] Confirm the launcher still clearly labels progression eligibility separately from trade/setup authorization.
+- [PASS] Confirm no readiness percentage, weighted score, traffic-light score, automatic Competency State mutation, automatic Evidence Maturity mutation, or automatic Development Direction mutation appears.
+- [PASS] Confirm the operator-facing language preserves:
   - AVAILABLE,
   - NOT CONFIGURED,
   - BLOCKED,
@@ -459,23 +459,23 @@ Before merging `feature/explainable-eligibility-v0`, use this section for the fo
 
 ### C. Human Certification substrate
 
-- [NOT TESTED] Confirm the application opens normally after migration to schema **v32**.
+- [PASS] Confirm the application opens normally after migration to schema **v32**.
   - Expected: the new progression-certification persistence does not disrupt existing data.
-- [NOT TESTED] Confirm Alpha 0.7 does not show a Human Certification editor because it has no configured progression-policy requirements.
+- [PASS] Confirm Alpha 0.7 does not show a Human Certification editor because it has no configured progression-policy requirements.
   - Expected: certification controls only exist when an actual Human Certification requirement is present in a configured policy.
 
 ### D. Existing learning loop regression
 
-- [NOT TESTED] Confirm Evidence Maturity still loads/saves by competency + boundary.
-- [NOT TESTED] Confirm Cross-Run Observation and Development Direction remain usable.
-- [NOT TESTED] Confirm targeted **Study this competency** routing still stages Historical Backtest / Study correctly.
-- [NOT TESTED] Confirm existing Trade Plan sections and Process runtime remain navigable.
+- [PASS] Confirm Evidence Maturity still loads/saves by competency + boundary.
+- [PASS] Confirm Cross-Run Observation and Development Direction remain usable.
+- [PASS] Confirm targeted **Study this competency** routing still stages Historical Backtest / Study correctly.
+- [PASS] Confirm existing Trade Plan sections and Process runtime remain navigable.
 
 ### E. Automated evaluator coverage
 
 Synthetic policies are exercised by automated tests because Alpha 0.7 intentionally has no real progression policy.
 
-- [NOT TESTED] Full automated suite is green immediately before merge.
+- [PASS] Full automated suite is green immediately before merge.
   - Expected focused coverage includes:
     - configured AVAILABLE when every requirement is satisfied,
     - configured BLOCKED for missing evidence,
