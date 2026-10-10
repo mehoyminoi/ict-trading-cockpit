@@ -35,7 +35,7 @@ def test_schema_v31_adds_boundary_aware_evidence_maturity_storage(tmp_path) -> N
         ).fetchall()
     }
 
-    assert version == CURRENT_SCHEMA_VERSION == 32
+    assert version == CURRENT_SCHEMA_VERSION == 33
     assert {
         "trade_plan_id",
         "trade_plan_revision",
