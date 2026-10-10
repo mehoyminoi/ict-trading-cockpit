@@ -218,3 +218,22 @@ def test_qt_review_input_does_not_create_run_evidence_automatically() -> None:
     review.observed_qt_combos["day"].setCurrentText("M")
 
     assert run.evidence == []
+
+
+
+def test_time_derived_month_is_not_reinterpreted_in_observed_review() -> None:
+    run = TradingRun(
+        "day-1",
+        "Trading Run 1",
+        "process-1",
+        market_time_context={"calendar_month_phase": "M"},
+        qt_context={"month": "M", "day": "A"},
+    )
+
+    run.set_review_observed_qt_context(
+        {"month": "D", "day": "D"},
+        "Observed day changed.",
+    )
+
+    assert run.review_observed_qt_context["month"] == "M"
+    assert run.review_observed_qt_context["day"] == "D"
