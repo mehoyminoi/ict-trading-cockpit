@@ -94,7 +94,7 @@ def test_c5_operator_status_is_derived_not_persisted(tmp_path) -> None:
     assert status.recommended_environment is RunEnvironment.REPLAY
     assert status.navigation_target == "review.progression"
     assert "requirements are not satisfied" in status.action_guidance.lower()
-    assert CURRENT_SCHEMA_VERSION == 33
+    assert CURRENT_SCHEMA_VERSION == 34
     connection.close()
 
 
