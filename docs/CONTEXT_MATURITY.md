@@ -250,6 +250,38 @@ But normalized impact must preserve provider provenance and must not pretend eve
 
 "Red folder" should map to **High impact** only when the provider/source meaning is explicit.
 
+### E2 implemented contract
+
+The first provider-neutral event contract uses:
+
+- `MarketContextEventCategory`
+  - Economic
+  - Holiday
+  - Early Close
+  - Market Schedule
+  - Other Context
+- `MarketContextImpact`
+  - Low
+  - Medium
+  - High
+  - Unknown
+- `MarketContextEventStatus`
+  - Scheduled
+  - Tentative
+  - Postponed
+  - Cancelled
+  - Released
+  - Unknown
+- immutable `MarketContextEvent` records with provider/native provenance,
+- an adapter-facing `MarketContextEventProvider` protocol,
+- a deterministic `InMemoryMarketContextEventProvider` for tests and contract development.
+
+Normalized impact is **not inferred from provider vocabulary**. An adapter must supply an explicit mapping. Therefore terms such as "red folder" have no built-in domain meaning and become High only when the source adapter explicitly maps them that way.
+
+The event object contains context facts only. It has no warning, stand-down, authorization, or block-entry state. Those remain future Trade Plan context-rule concerns.
+
+E2 itself introduces no database migration; schema remains v34. Historical run snapshots belong to E3.
+
 ## E3 — Historical context snapshots
 
 Live context and historical context must behave differently but use the same domain substrate.
