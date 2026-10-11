@@ -52,6 +52,7 @@ from ict_cockpit.gui.competency_evidence_review_widget import (
 from ict_cockpit.gui.process_blueprint_widget import ProcessBlueprintWidget
 from ict_cockpit.gui.process_run_launcher_widget import ProcessRunLauncherWidget
 from ict_cockpit.gui.trading_day_shell_widget import TradingDayShellWidget
+from ict_cockpit.gui.context_import_widget import ContextImportWidget
 from ict_cockpit.progression import (
     ProgressionCertification,
     ProgressionRegressionReview,
@@ -85,6 +86,7 @@ class TradePlanWidget(QWidget):
             ProgressionAttainmentRepository | None = None,
         progression_regression_review_repository:
             ProgressionRegressionReviewRepository | None = None,
+        context_capture_repository=None,
     ) -> None:
         super().__init__()
         self.trade_plan = trade_plan
@@ -151,6 +153,10 @@ class TradePlanWidget(QWidget):
         self.process_tabs = QTabWidget()
         self.process_tabs.addTab(self.process_blueprint_widget, "Process Map")
         self.process_tabs.addTab(self.trading_day_shell_widget, "Run Trading Day")
+        self.context_import_widget = None
+        if context_capture_repository is not None:
+            self.context_import_widget = ContextImportWidget(context_capture_repository, self.trading_day_shell_widget)
+            self.process_tabs.addTab(self.context_import_widget, "Calendar captures")
         self.process_tabs.currentChanged.connect(self._process_tab_changed)
 
         self.process_run_launcher_widget = ProcessRunLauncherWidget(

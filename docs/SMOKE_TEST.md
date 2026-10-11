@@ -848,6 +848,56 @@ The fixture has no database, real calendar, or orders. It freezes historical mar
 
 ---
 
+## Current branch acceptance — E6 local Forex Factory JSON captures
+
+**Operator acceptance: PASS** on 2026-10-10. All nine results were pushed in `df4cac894f7e697bf65793c5f031265af5bdd9d4`; the operator reported **425 passed** for the local automated suite. Developer automated/offscreen validation is separate from these checks. Schema **v37**, published Trade Plan **Alpha 0.7**. Review/merge remains pending for `feature/context-maturity-e6-import-v0`.
+
+For a disposable database and synthetic export files:
+
+```bash
+python tools/context_import_demo.py
+```
+
+The terminal prints a sandbox directory and the exact restart command. It contains `fixture.json`, `revised.json`, `wrong-week.json`, and `malformed.json`; these are synthetic, not a calendar for that date. The window opens **Trade Plan > Process > Calendar captures** with Sunday **2026-10-04** selected. Replay launch is staged at **2026-10-06 10:15 ET**. Captures are never pre-imported or preselected by the demo. Reuse the printed `--data-dir` command for restart checks.
+
+- [PASS] Preview is separate from save and selection.
+  - Where: **Calendar captures > Preview JSON export…**, choose the sandbox's `fixture.json`.
+  - Look for: three native records, declared UTC week October 4–10, import time, file reference, digest, mapping/adapter revisions, and explicit limitations.
+  - Expected: preview has not created a saved capture or selected a provider. **Save capture** stores it; **Use selected capture for new runs** is still a separate action. Navigation does not start a run from this tab.
+- [PASS] Malformed and wrong-week files are rejected atomically.
+  - Where: keep week **2026-10-04**, preview `wrong-week.json`, then `malformed.json`.
+  - Look for: an explicit import error; Save disabled; no extra saved capture.
+  - Expected: failed import does not become an empty successful calendar or replace the source selected for new runs.
+- [PASS] Explicit selection supplies the shared run loop.
+  - Where: choose the saved fixture capture and click **Use selected capture for new runs**; go to **Review / Development > Practice & Launch**, select Replay at **2026-10-06 10:15**, then **Begin Process Run**.
+  - Look for: TDA **Market context** shows captured records and source completeness unverified. Expand details.
+  - Expected: capture ID, import time, declared week, and native rows belong to this run. Native High impact is preserved; status, precision, type, and affected-market applicability remain unknown. Manual gates remain authoritative.
+- [PASS] Watch does not turn uncertain export clocks or bank holidays into exact day facts.
+  - Where: follow the normal TDA transition (complete stations or record the deliberate incomplete override), then Watch; inspect details.
+  - Look for: uncertain timing and source schedule applicability; native clock values remain inspectable in details.
+  - Expected: no precise upcoming event or confirmed futures closure is inferred from these rows. No automatic stand-down, warning policy, entry permission, or readiness score appears.
+- [PASS] Review preserves source and run provenance.
+  - Where: **Finish Live Watch / Enter Review > Show context details**.
+  - Look for: Replay / Rehearsal, Alpha 0.7, requested futures-day bounds, historical market reference, separate source import/capture provenance, original native rows and limitations.
+  - Expected: TDA expectation and observed Review remain separate; viewing context does not refresh the source or create competency evidence.
+- [PASS] A second capture does not rewrite a started run.
+  - Where: return to **Calendar captures**, preview/save `revised.json`, and select it for future runs; return to the existing run's Review.
+  - Look for: the earlier capture ID and earlier previous values remain in the started run; both captures remain in the dropdown.
+  - Expected: later import/selection affects only future starts. Duplicate titles remain distinct capture-local rows; neither import claims provider occurrence continuity.
+- [PASS] Restart restores run context and leaves new-run source selection explicit.
+  - Where: close the demo; restart using the printed command with the same sandbox directory.
+  - Look for: the same restorable run/source snapshot and both saved captures; new-run selection reads Not Configured.
+  - Expected: restore uses saved facts without provider query. Explicitly choosing Not Configured for future starts does not remove historical context. A selected capture queried for **2026-10-13** yields Unavailable with its attempted provenance, rather than Available empty.
+- [PASS] The real export format and normal application remain usable.
+  - Where: optionally download Forex Factory **Weekly Export > JSON**, then use normal **Calendar captures** with that file's actual Sunday UTC week.
+  - Look for: successful preview of native rows and source limitations; XML/CSV/ICS are not supported in this slice.
+  - Expected: compare representative rows to the saved file; a historical calendar page does not imply a historical weekly download. Without explicit selection, normal new runs remain Not Configured. If real-source checking is skipped, retain NOT TESTED or document the limitation.
+- [PASS] Full local automated suite passes; v37 and Alpha 0.7 are verified.
+  - Where: `python -m pytest`, normal startup/restoration, database schema if convenient.
+  - Expected: no regression in TDA/Watch/Review, progression, manual authorization, or previously saved runs. Record the exact local result and any concerns before merge.
+
+---
+
 ## Reporting results
 
 Report results as:

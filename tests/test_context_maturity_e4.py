@@ -42,6 +42,7 @@ def event(title, at, *, category=Category.ECONOMIC, status=EventStatus.SCHEDULED
         normalized_event_type="FIXTURE",
         title=title,
         scheduled_at=at,
+        timing_precision="Exact",
         source_timezone="America/New_York",
         impact=MarketContextImpact.HIGH,
         provider_native_impact="fixture-high",

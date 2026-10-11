@@ -51,6 +51,7 @@ from ict_cockpit.database.trading_session_run_repository import (
     TradingSessionRunRepository,
 )
 from ict_cockpit.default_trade_plan import build_default_trade_plan
+from ict_cockpit.database.context_capture_repository import ContextCaptureRepository
 from ict_cockpit.gui.feedback_dialog import FeedbackDialog
 from ict_cockpit.gui.study_find_review_widget import StudyFindReviewWidget
 from ict_cockpit.gui.study_find_widget import StudyFindWidget
@@ -142,8 +143,10 @@ class MainWindow(QMainWindow):
         self.resize(1120, 760)
 
         self.trade_plan = build_default_trade_plan()
+        self.context_capture_repository = ContextCaptureRepository(study_find_repository.connection)
         self.trade_plan_widget = TradePlanWidget(
             self.trade_plan,
+            context_capture_repository=self.context_capture_repository,
             competency_assessment_repository=(
                 self.competency_assessment_repository
             ),

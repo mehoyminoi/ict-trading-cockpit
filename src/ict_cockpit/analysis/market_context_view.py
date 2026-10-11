@@ -9,6 +9,7 @@ from ict_cockpit.analysis.market_context_event import (
     MarketContextEventStatus,
     MarketContextSnapshot,
     MarketContextSnapshotStatus,
+    MarketContextTimingPrecision,
     parse_event_datetime,
 )
 from ict_cockpit.analysis.market_time import MARKET_TIMEZONE
@@ -53,6 +54,8 @@ def _timestamp(value: str) -> str:
 
 def _event_caption(event: MarketContextEvent) -> str:
     local = event.scheduled_datetime.astimezone(MARKET_TIMEZONE)
+    if event.timing_precision is not MarketContextTimingPrecision.EXACT:
+        return f"{event.title} [timing {event.timing_precision.value}; {event.status.value}]"
     return (
         f"{event.title} {local:%H:%M} ET "
         f"[{event.impact.value}; {event.status.value}]"
@@ -85,6 +88,8 @@ def build_market_context_view(
             f"Available · {len(other)} event(s), {len(schedule)} schedule fact(s) captured"
             if records else "Available · provider query completed with no matching events"
         )
+        if not snapshot.coverage.complete:
+            availability += " · source completeness unverified"
     else:
         availability = f"{snapshot.status.value} · event and schedule context unknown"
     availability += " · run-start snapshot"
@@ -118,6 +123,7 @@ def build_market_context_view(
         upcoming = [
             item for item in other
             if item.scheduled_datetime >= now
+            and item.timing_precision is MarketContextTimingPrecision.EXACT
             and item.status not in {
                 MarketContextEventStatus.CANCELLED,
                 MarketContextEventStatus.POSTPONED,
@@ -134,12 +140,20 @@ def build_market_context_view(
             if simultaneous > 1:
                 event_summary += f" (+{simultaneous - 1} at the same time; see details)"
         else:
-            event_summary = "No upcoming event times in this snapshot."
-        active_schedule = [item for item in schedule if item.status is not MarketContextEventStatus.CANCELLED]
+            event_summary = "No verified upcoming exact event times in this snapshot."
+        uncertain = [item for item in records if item.timing_precision is not MarketContextTimingPrecision.EXACT]
+        if uncertain:
+            event_summary += f" · {len(uncertain)} record(s) have uncertain timing; inspect source details."
+        active_schedule = [item for item in schedule
+                           if item.status is not MarketContextEventStatus.CANCELLED
+                           and item.timing_precision is MarketContextTimingPrecision.EXACT
+                           and start <= item.scheduled_datetime <= end]
         if active_schedule:
             event_summary += f" · Schedule fact: {_event_caption(active_schedule[0])}"
             if len(active_schedule) > 1:
                 event_summary += f" (+{len(active_schedule) - 1}; see details)"
+        elif any(item.timing_precision is not MarketContextTimingPrecision.EXACT for item in schedule):
+            event_summary += " · Source schedule rows have uncertain day/time applicability; see details."
         else:
             event_summary += " · No non-cancelled schedule exceptions captured."
 
@@ -172,16 +186,31 @@ def build_market_context_view(
         f"Snapshot market-time source: {snapshot.market_time_source or 'Not recorded'}",
         f"Snapshot captured at: {_timestamp(snapshot.captured_at)}",
         f"Snapshot detail: {snapshot.detail or 'Not recorded'}",
+        f"Source completeness: {'Explicit complete claim' if snapshot.coverage.complete else 'Unknown / incomplete'}",
+        f"Source coverage bounds: {snapshot.coverage.start or 'Not recorded'} → {snapshot.coverage.end or 'Not recorded'}",
+        f"Source coverage basis: {snapshot.coverage.basis}",
+        f"Source coverage scope: {snapshot.coverage.to_dict()}",
         "",
         "Event and schedule facts do not imply QT structural distortion or entry permission.",
     ]
+    p = snapshot.source_provenance
+    detail += [f"Source capture ID: {p.capture_id or 'Not recorded'}",
+               f"SHA-256: {p.content_sha256 or 'Not recorded'}",
+               f"Source reference: {p.source_reference or 'Not recorded'}",
+               f"Source imported at: {_timestamp(p.imported_at)}",
+               f"Declared source window: {p.declared_start or 'Not recorded'} → {p.declared_end or 'Not recorded'}",
+               f"Timezone basis: {p.timezone_basis or 'Not recorded'}",
+               f"Adapter / mapping revision: {p.adapter_revision or 'Not recorded'} / {p.mapping_revision or 'Not recorded'}",
+               f"Source knowledge basis: {p.knowledge_basis}", *p.limitations]
     for item in records:
         detail += [
             "",
             f"{item.title} · {item.category.value} · {item.impact.value} · {item.status.value}",
-            f"Scheduled: {_timestamp(item.scheduled_at)} · original: {item.scheduled_at}",
+            f"Source clock: {_timestamp(item.scheduled_at)} · original: {item.scheduled_at} · precision: {item.timing_precision.value}",
             f"Provider / source event: {item.provider} / {item.source_event_id or 'Not recorded'}",
             f"Event ID / type: {item.id} / {item.normalized_event_type or 'Not recorded'}",
+            f"Identity basis: {item.identity_basis}",
+            f"Native record: {item.native_record or 'Not recorded'}",
             f"Source timezone: {item.source_timezone or 'Not recorded'}",
             f"Native impact: {item.provider_native_impact or 'Not recorded'}",
             f"Affected markets: {', '.join(item.affected_markets) or 'Not recorded'}",

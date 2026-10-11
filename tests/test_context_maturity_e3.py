@@ -55,6 +55,7 @@ def event(
         normalized_event_type=title.upper().replace(" ", "_"),
         title=title,
         scheduled_at=scheduled_at,
+        timing_precision="Exact",
         source_timezone="America/New_York",
         impact=MarketContextImpact.HIGH,
         provider_native_impact="fixture-high",

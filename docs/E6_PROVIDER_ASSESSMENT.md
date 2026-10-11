@@ -1,6 +1,6 @@
 # E6 — Economic-calendar provider assessment
 
-**Status:** Provider preference accepted; implementation proposal and unresolved contract questions below are not yet accepted implementation decisions.
+**Status:** Assessment history retained; operator authorized the free import direction. JSON v0 is implemented and operator accepted on the feature branch, with review/merge pending. See implementation follow-through below for current scope.
 
 **Baseline:** `59a9b984b398a10f54847315569b8179a37b38e6`, schema v36, Trade Plan Alpha 0.7.
 
@@ -84,7 +84,7 @@ Official pricing/plan documentation and publicly served pricing-page markup were
 
 Other low-price advertisements were checked without treating headline prices as entitlement. FCS's public pricing markup excludes the economic calendar from Forex Starter and Forex Enterprise and includes it in Forex Corporate ($119/month); its endpoint text says Enterprise-or-higher, so the inconsistency needs clarification. OHLC.dev advertises [specialized APIs from $5/month](https://ohlc.dev/pricing) and an economic-calendar product, but the linked RapidAPI calendar pricing was not readable and the exact calendar subscription/entitlement was not verified. Neither is a confirmed cheap recommendation. OHLC.dev and OHLC.io are distinct domains; do not combine their prices/contracts.
 
-**Current recommendation (proposed):** preserve a zero-subscription Forex Factory import path and evaluate FMP Starter first if a paid API is desired. Finnhub and EODHD are higher-cost alternatives for comparison. No claim is made that the cheaper feeds resolve every Forex Factory contract gap. Avoid annual commitment before verifying the endpoint's required behavior and actual billing quote. First refine the provider-independent capture/coverage/uncertainty contract; provider validation then determines the small capture-to-run slice. No new operator upload or purchase is required for this assessment.
+**Assessment recommendation:** preserve a zero-subscription Forex Factory import path and evaluate FMP Starter first if a paid API is desired. Finnhub and EODHD are higher-cost alternatives for comparison. No claim is made that the cheaper feeds resolve every Forex Factory contract gap. Avoid annual commitment before verifying the endpoint's required behavior and actual billing quote. First refine the provider-independent capture/coverage/uncertainty contract; provider validation then determines the small capture-to-run slice. No new operator upload or purchase is required for this assessment.
 
 ## Fit and gaps against the existing contracts
 
@@ -103,11 +103,11 @@ Other low-price advertisements were checked without treating headline prices as 
 
 E3 currently records requested bounds as snapshot bounds after a successful `events_between` tuple response. E5 uses those bounds for absence decisions. Before normal startup consumes a real provider, the contract must represent actual coverage and source limitations rather than promote an HTTP success or empty list into full coverage.
 
-## Proposed Forex Factory fallback vertical slice
+## Original proposed Forex Factory vertical slice
 
 **Supported weekly export -> validated local import -> immutable source capture -> run snapshot -> existing TDA/Watch/Review.**
 
-Start with local export import so real source-format behavior can be tested without account credentials, purchase, polling, or an assumed historical API. JSON and operator-supplied XML have now been compared. Select a format and explicit uncertainty handling together; do not select XML merely because it is parseable or JSON merely because it has offsets. Optional paired captures must preserve separate acquisition provenance and must not assume different downloads represent one source revision. This remains a proposal, not an accepted implementation design.
+Start with local export import so real source-format behavior can be tested without account credentials, purchase, polling, or an assumed historical API. JSON and operator-supplied XML have now been compared. Select a format and explicit uncertainty handling together; do not select XML merely because it is parseable or JSON merely because it has offsets. Optional paired captures must preserve separate acquisition provenance and must not assume different downloads represent one source revision. This records the assessment-stage proposal. The operator subsequently authorized the free import direction; the implemented JSON v0 scope and remaining limits are recorded below.
 
 The narrow contract should preserve:
 
@@ -136,11 +136,17 @@ Unknown source status, imprecise timing, incomplete scope, failed parsing, missi
 - Operator checks compare imported details against the source and exercise TDA -> Watch -> Review -> restart.
 - Full automated suite and focused manual acceptance precede implementation merge.
 
-## Open before adapter implementation
+## Assessment questions and v0 disposition
 
-1. Select a supported format and document honest timing/timezone semantics. XML inspection is complete for the supplied sample; All Day precision loss is confirmed. Tentative handling, provider-wide XML timezone rules, and ICS/CSV capabilities remain unverified. Further format inspection is optional if the first slice explicitly preserves these unknowns.
-2. Define coverage scope, timing precision, source-status uncertainty, and local identity in the domain/snapshot contract; permit a justified migration rather than forcing those facts into a detail string.
-3. Define which explicit source labels may map to normalized event types, and version that mapping independently of trading policy.
+1. Resolved for v0: JSON retains explicit offsets, with timing precision Unknown. Other format adapters are deferred. XML inspection is complete for the supplied sample; All Day precision loss is confirmed. Tentative handling, provider-wide XML timezone rules, and ICS/CSV capabilities remain unverified. Further format inspection is optional if the first slice explicitly preserves these unknowns.
+2. Implemented in v0: explicit coverage/scope, timing precision, source-status uncertainty, capture-local identity, and immutable provenance; schema v37 provides separate capture storage.
+3. Open: normalized event-type mappings remain blank in v0. Native impact/category mapping has an explicit revision and introduces no trading policy.
 4. Verify account-supported paid or historical access only if needed. Do not substitute today's export for missing historical context.
 
-No adapter, schema migration, automatic download, readiness rule, account-applicability policy, or Trade Plan revision was introduced by this assessment.
+No adapter, schema migration, automatic download, readiness rule, account-applicability policy, or Trade Plan revision was introduced by the assessment itself.
+
+## Implementation follow-through — E6 JSON import v0
+
+The operator authorized proceeding with the recommended free import direction. The first adapter now uses JSON's explicit offsets while keeping timing precision Unknown; the XML sample is still assessment evidence, not a supported import format. Schema v37 adds immutable source-capture storage, and **Trade Plan > Process > Calendar captures** supports preview, save, and explicit future-run selection. Captures store original JSON/digest, declared UTC week, import/file provenance, native rows, local IDs, adapter/mapping revisions, and limitations. Selection is not automatic after restart, and later imports do not refresh or rewrite existing runs.
+
+Requested dates are separate from completeness/selector-scope claims. The Forex Factory adapter never certifies absence or historical as-of knowledge. Out-of-week requests are Unavailable; uncertain week rows are retained with unknown day applicability. Watch does not treat their clock values as precise upcoming events or their holidays as confirmed futures-day schedule exceptions. No normalized NFP/CPI/FOMC mapping, paid dependency, runtime polling, freshness cutoff, or automatic Alpha 0.7 policy is introduced. All nine operator checks in `SMOKE_TEST.md` are PASS on 2026-10-10, recorded in `df4cac894f7e697bf65793c5f031265af5bdd9d4`; the local automated suite was reported as 425 passed. Review/merge remains pending.

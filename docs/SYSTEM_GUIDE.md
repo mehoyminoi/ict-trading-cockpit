@@ -1167,6 +1167,14 @@ Unknown calendar availability, partial coverage, missing time, and unknown selec
 
 Alpha 0.7 has no declarative context rules. Its manual trading-day gate remains in force. Publishing real automatic exclusions needs an explicit distinction between account applicability (live/eval/funded versus paper), run environment, and historical context coverage, then a new plan revision. The disposable E5 fixture is not published policy.
 
+## E6 local calendar captures
+
+**Trade Plan > Process > Calendar captures** previews and saves a supported Forex Factory weekly JSON export. The declared UTC week is operator supplied, and a saved capture preserves its native rows, original file content/digest, import time, and adapter/mapping revisions. Choose **Use selected capture for new runs** explicitly. Selection resets on restart; stored captures remain available for inspection and selection. Existing runs retain their own snapshot through TDA, Watch, Review, and restore.
+
+A source capture and a run snapshot have different ownership: importing a later file creates a new immutable capture, while starting a run preserves the selected capture's provenance alongside the run's requested futures day and market reference. No network refresh occurs during rendering or restore.
+
+Availability does not certify source completeness. Negative event conclusions require explicit provider coverage for the entire rule window and selector scope. Forex Factory export precision, lifecycle status, normalized type, affected-market mapping, completeness, and historical as-of knowledge remain unknown. All declared source-week rows are retained because filtering uncertain clock values could drop relevant All Day records. Watch therefore exposes these limitations without advertising precise upcoming times or confirmed day schedule exceptions. Alpha 0.7's manual gates remain authoritative.
+
 # 28. Structured records and derived outputs
 
 Authoritative records live in structured data.

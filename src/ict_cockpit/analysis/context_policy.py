@@ -9,7 +9,7 @@ from ict_cockpit.context_rules import (
 )
 from ict_cockpit.analysis.market_context_event import (
     MarketContextEventStatus as EventStatus, MarketContextImpact, MarketContextSnapshot,
-    MarketContextSnapshotStatus, futures_day_event_window, parse_event_datetime,
+    MarketContextSnapshotStatus, MarketContextTimingPrecision, futures_day_event_window, parse_event_datetime,
 )
 
 
@@ -74,7 +74,8 @@ def _condition(condition, market, snapshot):
     matches, uncertain = [], []
     for event in snapshot.events:
         stamp = event.scheduled_datetime
-        if not start <= stamp <= end or not query_start <= stamp <= query_end:
+        exact = event.timing_precision is MarketContextTimingPrecision.EXACT
+        if exact and not start <= stamp <= end:
             continue
         if event.status in {EventStatus.CANCELLED, EventStatus.POSTPONED}:
             continue
@@ -87,7 +88,7 @@ def _condition(condition, market, snapshot):
         if condition.affected_markets and event.affected_markets and not set(condition.affected_markets).intersection(event.affected_markets):
             continue
         unknown = (
-            event.status in {EventStatus.UNKNOWN, EventStatus.TENTATIVE}
+            not exact or event.status in {EventStatus.UNKNOWN, EventStatus.TENTATIVE}
             or (condition.event_types and not event.normalized_event_type)
             or (condition.impacts and event.impact is MarketContextImpact.UNKNOWN)
             or (condition.affected_markets and not event.affected_markets)
@@ -96,10 +97,10 @@ def _condition(condition, market, snapshot):
     if matches:
         return ContextMatch.MATCHED, "Matching normalized event facts are recorded.", tuple(matches)
     if uncertain:
-        return ContextMatch.UNKNOWN, "Potential matching events have unknown selectors or status.", tuple(uncertain)
-    if query_start > start or query_end < end:
-        return ContextMatch.UNKNOWN, f"Snapshot does not cover the complete {condition.event_window.value.lower()}.", ()
-    return ContextMatch.NOT_MATCHED, "Complete snapshot window contains no matching event facts.", ()
+        return ContextMatch.UNKNOWN, "Potential matching events have unknown timing, selectors or status.", tuple(uncertain)
+    if not snapshot.coverage.covers(condition, start, end):
+        return ContextMatch.UNKNOWN, f"Source completeness/scope does not cover the complete {condition.event_window.value.lower()}.", ()
+    return ContextMatch.NOT_MATCHED, "Explicit source coverage contains no matching event facts.", ()
 
 
 def evaluate_context_rules(rules, *, environment, market_time_context, market_context_snapshot):

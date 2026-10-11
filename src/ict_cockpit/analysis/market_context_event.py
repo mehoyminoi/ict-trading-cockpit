@@ -5,6 +5,8 @@ from datetime import datetime
 from enum import Enum
 from typing import Mapping, Protocol, Sequence
 
+from ict_cockpit.analysis.context_source import ContextCoverage, ContextSourceProvenance
+
 
 class MarketContextEventCategory(str, Enum):
     ECONOMIC = "Economic"
@@ -27,6 +29,13 @@ class MarketContextEventStatus(str, Enum):
     POSTPONED = "Postponed"
     CANCELLED = "Cancelled"
     RELEASED = "Released"
+    UNKNOWN = "Unknown"
+
+
+class MarketContextTimingPrecision(str, Enum):
+    EXACT = "Exact"
+    DATE_ONLY = "Date Only"
+    TENTATIVE = "Tentative"
     UNKNOWN = "Unknown"
 
 
@@ -56,6 +65,9 @@ class MarketContextEvent:
     source_updated_at: str = ""
     captured_at: str = ""
     provenance_reference: str = ""
+    timing_precision: MarketContextTimingPrecision = MarketContextTimingPrecision.UNKNOWN
+    identity_basis: str = "Provider/local identity supplied by adapter"
+    native_record: str = ""
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "id", self.id.strip())
@@ -131,6 +143,7 @@ class MarketContextEvent:
                 "status",
                 MarketContextEventStatus(self.status),
             )
+        object.__setattr__(self, "timing_precision", MarketContextTimingPrecision(self.timing_precision))
 
     @property
     def scheduled_datetime(self) -> datetime:
@@ -156,6 +169,9 @@ class MarketContextEvent:
             "source_updated_at": self.source_updated_at,
             "captured_at": self.captured_at,
             "provenance_reference": self.provenance_reference,
+            "timing_precision": self.timing_precision.value,
+            "identity_basis": self.identity_basis,
+            "native_record": self.native_record,
         }
 
     @classmethod
@@ -197,6 +213,9 @@ class MarketContextEvent:
             provenance_reference=str(
                 payload.get("provenance_reference", "")
             ),
+            timing_precision=payload.get("timing_precision", MarketContextTimingPrecision.UNKNOWN.value),
+            identity_basis=str(payload.get("identity_basis", "Legacy identity basis not recorded")),
+            native_record=str(payload.get("native_record", "")),
         )
 
 
@@ -232,12 +251,35 @@ class MarketContextEventProvider(Protocol):
     def provider_name(self) -> str:
         ...
 
-    def events_between(
+    def query_context(
         self,
         start: datetime,
         end: datetime,
-    ) -> tuple[MarketContextEvent, ...]:
+    ) -> "MarketContextQueryResult":
         ...
+
+
+@dataclass(frozen=True)
+class MarketContextQueryResult:
+    events: tuple[MarketContextEvent, ...] = ()
+    coverage: ContextCoverage = field(default_factory=ContextCoverage)
+    source_provenance: ContextSourceProvenance = field(default_factory=ContextSourceProvenance)
+
+    def __post_init__(self):
+        object.__setattr__(self, "events", tuple(
+            event if isinstance(event, MarketContextEvent) else MarketContextEvent.from_dict(event)
+            for event in self.events
+        ))
+        if not isinstance(self.coverage, ContextCoverage):
+            object.__setattr__(self, "coverage", ContextCoverage.from_dict(self.coverage))
+        if not isinstance(self.source_provenance, ContextSourceProvenance):
+            object.__setattr__(self, "source_provenance", ContextSourceProvenance.from_dict(self.source_provenance))
+
+
+class MarketContextQueryUnavailable(ValueError):
+    def __init__(self, message, source_provenance):
+        super().__init__(message)
+        self.source_provenance = source_provenance
 
 
 class InMemoryMarketContextEventProvider:
@@ -256,6 +298,13 @@ class InMemoryMarketContextEventProvider:
     @property
     def provider_name(self) -> str:
         return self._provider_name
+
+    def query_context(self, start, end):
+        return MarketContextQueryResult(
+            events=self.events_between(start, end),
+            coverage=ContextCoverage(start.isoformat(), end.isoformat(), True,
+                ("*",), ("*",), ("*",), ("*",), "Complete deterministic in-memory fixture"),
+        )
 
     def events_between(
         self,
@@ -303,6 +352,8 @@ class MarketContextSnapshot:
     captured_at: str
     events: tuple[MarketContextEvent, ...] = field(default_factory=tuple)
     detail: str = ""
+    coverage: ContextCoverage = field(default_factory=ContextCoverage)
+    source_provenance: ContextSourceProvenance = field(default_factory=ContextSourceProvenance)
 
     def __post_init__(self) -> None:
         if isinstance(self.status, str):
@@ -326,6 +377,10 @@ class MarketContextSnapshot:
         )
         object.__setattr__(self, "captured_at", self.captured_at.strip())
         object.__setattr__(self, "detail", self.detail.strip())
+        if not isinstance(self.coverage, ContextCoverage):
+            object.__setattr__(self, "coverage", ContextCoverage.from_dict(self.coverage))
+        if not isinstance(self.source_provenance, ContextSourceProvenance):
+            object.__setattr__(self, "source_provenance", ContextSourceProvenance.from_dict(self.source_provenance))
         object.__setattr__(
             self,
             "events",
@@ -348,6 +403,8 @@ class MarketContextSnapshot:
             "captured_at": self.captured_at,
             "events": [item.to_dict() for item in self.events],
             "detail": self.detail,
+            "coverage": self.coverage.to_dict(),
+            "source_provenance": self.source_provenance.to_dict(),
         }
 
     @classmethod
@@ -373,6 +430,8 @@ class MarketContextSnapshot:
                 for item in list(source.get("events", []) or [])
             ),
             detail=str(source.get("detail", "")),
+            coverage=ContextCoverage.from_dict(source.get("coverage")),
+            source_provenance=ContextSourceProvenance.from_dict(source.get("source_provenance")),
         )
 
 
@@ -452,7 +511,14 @@ def capture_market_context_snapshot(
         )
 
     try:
-        events = provider.events_between(query_start, query_end)
+        if hasattr(provider, "query_context"):
+            result = provider.query_context(query_start, query_end)
+            if not isinstance(result, MarketContextQueryResult):
+                raise ValueError("Provider must return a MarketContextQueryResult")
+        else:
+            # Transitional adapters preserve availability, never claim completeness.
+            result = MarketContextQueryResult(events=provider.events_between(query_start, query_end))
+        events = result.events
     except Exception as exc:
         return MarketContextSnapshot(
             status=MarketContextSnapshotStatus.UNAVAILABLE,
@@ -463,6 +529,7 @@ def capture_market_context_snapshot(
             market_time_source=source,
             captured_at=captured_at,
             detail=f"Provider query unavailable: {exc}",
+            source_provenance=getattr(exc, "source_provenance", ContextSourceProvenance()),
         )
 
     return MarketContextSnapshot(
@@ -474,6 +541,8 @@ def capture_market_context_snapshot(
         market_time_source=source,
         captured_at=captured_at,
         events=events,
+        coverage=result.coverage,
+        source_provenance=result.source_provenance,
         detail=(
             "Provider query completed with no matching events."
             if not events
