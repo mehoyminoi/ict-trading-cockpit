@@ -946,7 +946,7 @@ The terminal prints the directory and restart command. The demo uses synthetic m
   - Expected: Alpha 0.7 has no new automatic news policy. Missing older rule fields preserve run-wide scope and no not-matched effect; source completeness/precision remain honest.
 - [NOT TESTED] Full local automated suite passes; v37 and Alpha 0.7 remain unchanged.
   - Where: `python -m pytest`, normal startup/restoration, database schema if convenient.
-  - Expected: exact local result recorded, no regression in stored runs, candidate gates, progression or context capture workflow. Record the exact result for the updated fixture regression test separately from the earlier developer result of 452 passed on both Python 3.10 and 3.12.
+  - Expected: exact local result recorded, no regression in stored runs, candidate gates, progression or context capture workflow. Developer result after the Custom fixture correction is **453 passed** on both Python 3.10 and 3.12; operator result must be recorded separately.
 
 ---
 
