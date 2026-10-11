@@ -900,7 +900,7 @@ The terminal prints a sandbox directory and the exact restart command. It contai
 
 ## Current branch acceptance — E7 model/playbook context predicates
 
-**Operator acceptance: pending — check 236 needs retest after the Custom fixture correction.** Schema **v37**, published Trade Plan **Alpha 0.7**. E7 is implemented on `feature/context-maturity-e7-v0`; developer checks do not replace these nine operator checks. The Friday Asian Range Monday relationship and policy adoption remain open.
+**Operator acceptance: pending — 7 PASS / 1 QUESTION / 1 NOT TESTED**, recorded in `8f1ad50c6a62c37c1b331ad0ca84a7542b33aa87` on 2026-10-11. Checks 242 and 243 remain open. Schema **v37**, published Trade Plan **Alpha 0.7**. E7 is implemented on `feature/context-maturity-e7-v0`; developer checks do not replace these nine operator checks. The Friday Asian Range Monday relationship and policy adoption remain open.
 
 Launch a separate acceptance database from the repository root:
 
@@ -914,7 +914,7 @@ The terminal prints the directory and restart command. The demo uses synthetic m
   - Where: default **Monday event present**, follow the normal TDA transition into Watch (complete the stations or record the deliberate incomplete override).
   - Look for: **Fixture Friday model** has Not Matched / Block New Entry; **Other fixture model** and **Custom fixture** retain their own authorization results.
   - **Custom fixture** appears in Watch's **Setups in Play** with a synthetic TDA IF/THEN watch point. The reference-model summary counts only the two Playbooks. If using the earlier demo, update and select a new fixture; restoring an older saved fixture preserves its original missing watch point.
-  - Operator reported check 236 showed only the two Playbooks. Developer reproduced the missing Custom card and corrected the sandbox's missing TDA watch point; operator retest is pending. Retain FAIL until the corrected fixture is verified.
+  - The earlier missing Custom card was reproduced and corrected by seeding its required TDA watch point. Operator retest is PASS in the results checkpoint above; this supersedes the earlier FAIL/pending-retest wording.
   - Expected: the absence prerequisite is contradicted by the Monday event. Clear manual gates cannot bypass the targeted block, and other candidates do not inherit it. Details show Playbook scope and capture-local/event IDs, not title-based strategy matching.
 - [PASS] Proven absence grants no manual permission.
   - Where: **Complete Monday empty**; expand context details and inspect Watch authorization.
@@ -922,10 +922,12 @@ The terminal prints the directory and restart command. The demo uses synthetic m
   - Expected: the initially clear fixture gates permit its synthetic candidate. Setting **Trading day permitted** to Pending or Blocked prevents entry despite the satisfied predicate; changing back to Clear remains an operator action. No competency/readiness or model-definition state is changed.
 - [PASS] Unknown is preserved, with explicit warning versus blocking behavior.
   - Where: **Incomplete coverage**, **Unknown timing**, **Not Configured**, then **Unknown blocks**.
+  - Locator: keep **Replay**, click **Show context details**, then scroll inside that text box to **Candidate context: Fixture Friday model**. Read the result beneath that heading; the earlier general rule result may be Not Applicable. Scenario changes create new fixtures; do not click Restore during this comparison.
   - Look for: Unknown / Warning for the first three; Unknown / Block New Entry for the last.
   - Expected: no missing or uncertain source is called no-news. Warning adds no permission and never clears a manual gate. Unknown blocks affects only the targeted Playbook candidate; other/custom candidates retain their own gates and criteria.
 - [PASS] Calendar relationship is explicit and explainable.
   - Where: **Following Monday unverified > Show context details**.
+  - Locator: under **Candidate context: Fixture Friday model**, expect **Unknown / Warning** and **Event window (America/New_York)** bounds on **2026-10-12**. The separate **Source coverage bounds** line correctly remains on **2026-10-05**.
   - Look for: resolved NY bounds on October 12 and Unknown because the synthetic source only guarantees October 5.
   - Expected: current-week evidence does not prove next-week absence. The fixture's explicit offset is visible and is not adopted as the real Friday Asian Range rule.
 - [PASS] Candidate/environment exclusion precedes missing data.
@@ -940,14 +942,17 @@ The terminal prints the directory and restart command. The demo uses synthetic m
   - Where: in Review, **Save fixture**; change to **Complete Monday empty** or **Legacy rules**, then **Restore saved fixture**. Close and reopen with the same command and directory; click Restore again.
   - Look for: the original saved run ID, Review state, candidate revision, Monday event and blocking result.
   - Expected: current scenario/definition changes do not replace stored rules or facts. The label identifies restored state; scenario controls describe new fixtures. No provider query occurs during restore.
+  - Operator reopened the original saved database using explicit `--data-dir`; Restore became enabled and returned to Review. The original saved run ID had not been recorded, so identity continuity remains QUESTION. Repeating a bare launch had opened different sandboxes; this was not evidence of a restoration failure.
 - [NOT TESTED] Legacy/manual operating behavior remains intact.
   - Where: **Legacy rules**, then normal application startup and restore of an earlier E6 run/capture.
+  - The Legacy fixture check needs no restart. A demo launch starts a new unsaved Monday-event fixture; Restore is explicit. Earlier E6 captures belong to the normal application or their original E6 sandbox, rather than the E7 fixture database.
   - Look for: no declarative fixture effects in the legacy scenario; normal Alpha 0.7 gates, capture selection and existing TDA/Watch/Review behavior.
   - Expected: Alpha 0.7 has no new automatic news policy. Missing older rule fields preserve run-wide scope and no not-matched effect; source completeness/precision remain honest.
   - Normal application opened. Calendar captures contained only Not Configured, so earlier E6 capture/run restoration could not be checked.
 - [PASS] Full local automated suite passes; v37 and Alpha 0.7 remain unchanged.
   - Where: `python -m pytest`, normal startup/restoration, database schema if convenient.
-  - Expected: exact local result recorded, no regression in stored runs, candidate gates, progression or context capture workflow. Developer result after the Custom fixture correction is **453 passed** on both Python 3.10 and 3.12; operator result must be recorded separately.
+  - Expected: exact local result recorded, no regression in stored runs, candidate gates, progression or context capture workflow. Prior developer full result after the Custom fixture correction was **453 passed** on both Python 3.10 and 3.12; later focused support verification was **33 passed** on both versions.
+  - Operator result on 2026-10-11: **Python 3.10.12, pytest 9.1.1, pluggy 1.6.0; 454 collected, 454 passed**. Recorded at `8f1ad50c6a62c37c1b331ad0ca84a7542b33aa87`, whose source/tests match parent `25ac4e5dd062fdab2539abf0c5d76317ddf5b322`. Elapsed time and PySide6 version were not supplied.
 
 ---
 
