@@ -442,7 +442,7 @@ Example:
 
 This behavior should be explicit in the Trade Plan rule.
 
-## E6 — Model-specific context conditions
+## E7 — Model-specific context conditions
 
 Context should support model/playbook-specific conditions without hardcoding each strategy into event infrastructure.
 
@@ -470,7 +470,7 @@ Context predicate
 Applicability / warning / restriction
 ```
 
-## E7 — Review and evidence provenance
+## Review and evidence provenance (applies across Milestone E)
 
 Review should eventually be able to show, for the completed run:
 
@@ -671,6 +671,8 @@ Alpha 0.7 remains unchanged with no declarative context rules. The attached exam
 ### E6 — Real provider integration
 
 Only after E2-E5 contracts are stable.
+
+The operator's preferred source is Forex Factory. See `E6_PROVIDER_ASSESSMENT.md` for verified weekly-export behavior, historical limitations, and the proposed first import/capture slice. Provider preference does not yet select an adapter format or certify coverage/status semantics.
 
 - select provider,
 - implement adapter,

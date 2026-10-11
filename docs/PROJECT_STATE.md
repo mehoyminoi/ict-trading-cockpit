@@ -6,13 +6,14 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `main`
+- **Active branch:** `design/context-maturity-e6-provider-assessment-v0` (documentation/assessment only)
 - **Main baseline:** `3232962144126bc4d48dbb84b21a21579228be35` — PR #57 merged operator-accepted E5 context policy substrate
 - **Implementation checkpoint:** `41f9d69c5b648873f6b95f2041e5daaeb2ea8508` — Add explicit snapshotted Trade Plan context rules and entry effects (E5)
-- **Current slice:** E6 — real provider integration (next; implementation not started)
+- **Current slice:** E6 — preferred-provider assessment; implementation not started
 - **Schema:** v36
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** **401 passed** in 136.01s on 2026-10-10, clean exit (Python 3.12 / PySide6 6.8.3 / offscreen)
+- **Fresh baseline verification:** `main` at `59a9b984b398a10f54847315569b8179a37b38e6`; **401 passed in 136.84s**, clean exit, Python 3.12.14 / PySide6 6.8.3 / pytest 9.1.1 / offscreen. Subsequent assessment changes are documentation only.
 - **Manual acceptance:** E1 fully PASS. E3 required no new UI smoke pass. E4 focused operator smoke is **PASS**, per operator report of completed manual testing and acceptance on 2026-10-10. E5 focused operator acceptance is **PASS**, with all eight checklist checks pushed in `2e76e9dedf0dc85e059bdf94181d62a5fbc12617` on 2026-10-10.
 
 ## Completed foundation — Competency / Proficiency substrate v0
@@ -189,20 +190,22 @@ Validation:
 
 ## Current task
 
-**E6 — real provider integration** is next in the accepted implementation sequence; feature work has not started.
+**E6 — real provider integration** is current in the accepted implementation sequence; adapter feature work has not started.
 
-Next action: reconcile the later E6/E7 narrative labels against the accepted sequence, assess a provider for normalized economic/schedule facts and historical coverage, then define a small adapter/cache/offline slice. Record coverage and failure semantics explicitly; do not infer event facts or account applicability from provider text. E5 v0 completes the policy substrate, not automatic adoption of every source-plan prose exclusion. Model-specific context predicates remain downstream.
+The operator selected **Forex Factory** as the first-choice calendar source, paid or unpaid. `E6_PROVIDER_ASSESSMENT.md` records verified official weekly-export behavior and a proposed local-import/capture/snapshot vertical slice. JSON lacks native event identity, status, update/coverage metadata, and explicit timing precision. The Last Week calendar's JSON link returned this week's export. Arbitrary-date/as-of access is not verified; other supported export formats remain to be inspected.
+
+Next action: compare supported exports, resolve explicit timing/status/coverage/identity semantics, and define the smallest real-source import/capture-to-run loop. The local-import-first scope is a proposal, not accepted implementation design. Record coverage and failure semantics explicitly; do not infer event facts or account applicability from provider text. E5 v0 completes the policy substrate, not automatic adoption of every source-plan prose exclusion. Model-specific predicates remain E7 downstream.
 
 ## Explicitly deferred / open
 
-- no real calendar provider selected or wired into normal application startup,
+- Forex Factory is preferred; no real calendar adapter is implemented or wired into normal application startup,
 - no within-run snapshot refresh/version history,
 - no published automatic Alpha 0.7 context policy: the example allows paper trading on live/eval/funded no-trade days, and run environment is not account type; actual adoption needs explicit account applicability and a new plan revision,
 - exact normalized event types, full-week calendar coverage, and any event duration/buffer must be explicitly configured rather than inferred from titles or provider folder colors,
 - rule results are derived on demand; no decision-time policy-result audit log is persisted in E5,
 - no no-code rule editor, automatic run conclusion/stand-down transition, exit/flatten restriction, order submission, readiness score, or automatic competency evidence,
 - no full intraday session × 90-minute interpretation grid,
-- `CONTEXT_MATURITY.md` has inconsistent later E6/E7 numbering between narrative sections and the implementation sequence. Reconcile that at the next planning boundary without silently reordering the roadmap.
+- E6/E7 narrative numbering is reconciled to the accepted sequence: provider integration before model predicates; Review/evidence provenance remains cross-cutting. Provider contract gaps and proposed scope remain explicit in `E6_PROVIDER_ASSESSMENT.md`.
 
 ## System guide maintenance
 

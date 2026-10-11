@@ -621,3 +621,18 @@ Rendering and restore read the persisted snapshot. Neither refreshes a provider,
 **Consequences:** TDA, Watch, and Review explain result states, effects, reasons, and event IDs. Exits/flatten remain outside entry authorization. Stand Down Day does not conclude the run automatically. Alpha 0.7 remains published unchanged, with its existing manual trading-day gate and no automatic context policy. The example's live/eval/funded versus paper distinction cannot be inferred from run environments; actual policy adoption needs explicit account applicability, configured normalization/coverage, and a new plan revision. No warning buffers, FOMC duration, NFP coverage, readiness thresholds, real provider, or no-code policy editor are invented.
 
 **Supersedes:** E4's presentation-only boundary only for explicitly configured snapshotted rules; unconfigured Alpha 0.7 behavior and historical event snapshot ownership remain intact.
+
+
+## 2026-10-10 — E6 provider preference and sequence reconciliation
+
+**Status:** Operator provider preference accepted; sequence clarified from the current Project State and accepted implementation sequence.
+
+**Decision:** Forex Factory is the first-choice economic-calendar source because the operator already uses it and has an account; paid or unpaid access may be assessed. Trading Economics remains an evaluated alternative, not a selected dependency. Account membership does not imply a documented API or historical entitlement.
+
+E6 means real provider integration. E7 means model-specific context predicates. Review/evidence provenance is cross-cutting context work rather than a conflicting E7 slice. The narrative headings in `CONTEXT_MATURITY.md` are reconciled to that sequence without changing roadmap order.
+
+**Rationale:** honor the explicit operator source preference and remove known handoff ambiguity before provider implementation.
+
+**Consequences:** `E6_PROVIDER_ASSESSMENT.md` records supported weekly-export observations and open contract gaps. Its local-import-first implementation scope is proposed, not operator accepted. No provider is wired into normal startup, no data access is purchased, and no automatic context policy is published.
+
+**Supersedes:** the ambiguous narrative E6/E7 numbering only; the accepted implementation sequence and context-layering boundaries remain intact.
