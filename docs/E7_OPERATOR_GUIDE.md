@@ -18,9 +18,13 @@ python tools/context_predicate_demo.py --data-dir /tmp/ict-e7-acceptance
 
 The **Database** line identifies the open file. **Copy restart command** gives the command to reopen it. Running the script without `--data-dir` creates a different sandbox each time.
 
+Every launch starts at **Monday event present** with a new unsaved fixture, even when reopening the same database. **Restore saved fixture** explicitly loads saved state. Changing the scenario alone does not save it. If the Copy button causes difficulty, keep the printed **Restart:** command from the terminal and type that same command with its `--data-dir` path.
+
 To reach Watch, click **Finish TDA / Enter Live Watch**. If the synthetic stations are incomplete, choose **File Incomplete Anyway**. To reach Review, click **Finish Live Watch / Enter Review**. Stop there for these checks; save before completing or concluding the run.
 
 For candidate effects, read **Fixture Friday model** in Watch's **Setups in Play** and its candidate section under **Show context details**. The general rule summary can show Not Applicable for a rule scoped to a candidate.
+
+For **238/239**, you can stay in TDA with **Replay** selected. Click **Show context details** and scroll **inside the text box** toward the bottom to **Candidate context: Fixture Friday model**. Its next line gives the outcome/effect. For 239, **Source coverage bounds** should say October 5, while the candidate's **Event window (America/New_York)** says October 12 and the outcome stays **Unknown / Warning**.
 
 ## Short check cards
 
@@ -40,11 +44,17 @@ For candidate effects, read **Fixture Friday model** in Watch's **Setups in Play
 
 1. Select **Replay** and **Monday event present**. Enter Watch, then Review.
 2. Click **Save fixture**. The message must say **Saved fixture run …**. Note that run ID.
-3. Click **Copy restart command** and keep the copied command before closing.
+3. Keep the printed **Restart:** command, or use **Copy restart command**, before closing. It must include the same `--data-dir` path.
 4. Select **Legacy rules**, then click **Restore saved fixture**. Check the saved ID, Review screen and Friday's original **Not Matched / Block New Entry** details.
 5. Close the demo. From the repository root, execute the command copied in step 3.
 6. Compare the **Database** path with the original. Click **Restore saved fixture**. Check the same three results again.
 
 If Restore is gray, this open database has no saved fixture. Stop and report the launch command and database path. That alone does not establish a broken restore. Do not repeat earlier tests or mark restart PASS until the saved database is identified.
+
+## Check 243 uses a separate application/database
+
+Select **Legacy rules** in the E7 demo and look for **No declarative context rules recorded; existing manual Trade Plan gates remain in force.** No restart is needed for that part.
+
+Earlier E6 data must be checked in its original sandbox or the normal application. From the repository root on Linux, launch the normal application with `PYTHONPATH=src python -m ict_cockpit.main`. Go to **Trade Plan → Process → Calendar captures** and open the saved-capture dropdown. Entries beginning **Week …** identify saved captures; **Not Configured** alone means this database has none. Normal startup or inspecting a saved capture alone does not establish restoration of an earlier run. If the earlier data is unavailable, keep 243 **NOT TESTED** and note the observed portion rather than reconstructing missing operator history.
 
 Automated tests verify the detailed calendar, scope, compatibility and stored-state combinations. These operator checks verify that the actual workflow and explanations are usable. A confusing instruction or unidentifiable database is useful feedback to fix, not a reason to guess a result.
