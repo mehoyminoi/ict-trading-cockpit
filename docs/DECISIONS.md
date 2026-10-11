@@ -621,3 +621,40 @@ Rendering and restore read the persisted snapshot. Neither refreshes a provider,
 **Consequences:** TDA, Watch, and Review explain result states, effects, reasons, and event IDs. Exits/flatten remain outside entry authorization. Stand Down Day does not conclude the run automatically. Alpha 0.7 remains published unchanged, with its existing manual trading-day gate and no automatic context policy. The example's live/eval/funded versus paper distinction cannot be inferred from run environments; actual policy adoption needs explicit account applicability, configured normalization/coverage, and a new plan revision. No warning buffers, FOMC duration, NFP coverage, readiness thresholds, real provider, or no-code policy editor are invented.
 
 **Supersedes:** E4's presentation-only boundary only for explicitly configured snapshotted rules; unconfigured Alpha 0.7 behavior and historical event snapshot ownership remain intact.
+
+
+## 2026-10-10 — E6 provider preference and sequence reconciliation
+
+**Status:** Operator provider preference accepted; sequence clarified from the current Project State and accepted implementation sequence.
+
+**Decision:** Forex Factory is the first-choice economic-calendar source because the operator already uses it and has an account; paid or unpaid access may be assessed. Trading Economics remains an evaluated alternative, not a selected dependency. Account membership does not imply a documented API or historical entitlement.
+
+E6 means real provider integration. E7 means model-specific context predicates. Review/evidence provenance is cross-cutting context work rather than a conflicting E7 slice. The narrative headings in `CONTEXT_MATURITY.md` are reconciled to that sequence without changing roadmap order.
+
+**Rationale:** honor the explicit operator source preference and remove known handoff ambiguity before provider implementation.
+
+**Consequences:** `E6_PROVIDER_ASSESSMENT.md` records supported weekly-export observations and open contract gaps. Its local-import-first implementation scope is proposed, not operator accepted. No provider is wired into normal startup, no data access is purchased, and no automatic context policy is published.
+
+**Supersedes:** the ambiguous narrative E6/E7 numbering only; the accepted implementation sequence and context-layering boundaries remain intact.
+
+## 2026-10-10 — E6 alternative providers accepted for assessment
+
+**Status:** Accepted operator source-selection flexibility; provider/implementation selection remains open.
+
+**Decision:** Consider alternate calendar sources when they make implementation easier or safer. Forex Factory remains the operator's familiar first choice, but is not an exclusive dependency.
+
+**Rationale:** verified export limitations justify evaluating a better documented identity/timing/provenance contract before adapter work.
+
+**Consequences:** `E6_PROVIDER_ASSESSMENT.md` compares Trading Economics, FMP, and scoped official BLS/Fed/CME schedules. Trading Economics is an engineering recommendation for capability validation, not an accepted paid dependency or proof of historical as-of coverage. No purchase, provider wiring, automatic source fallback, or Trade Plan rule change is authorized by this assessment decision.
+
+**Refines:** the earlier Forex Factory preference; it does not change E6/E7 order or historical snapshot ownership.
+
+## 2026-10-10 — E6 recurring-cost constraint
+
+**Status:** Accepted operator budget constraint; acquisition/implementation choice remains open.
+
+**Decision:** Trading Economics at approximately $200/month is unaffordable and must not be assumed as an E6 dependency. A smaller recurring fee may be acceptable, but no exact maximum, plan purchase, or annual commitment has been accepted.
+
+**Consequences:** assess endpoint-specific entitlements and billing frequency rather than headline provider prices. `E6_PROVIDER_ASSESSMENT.md` retains the free Forex Factory export path and records lower-cost FMP, Finnhub, and EODHD candidates. FMP is a proposed first paid candidate, not an accepted subscription or proof of safer feed semantics. Preserve the provider-independent uncertainty/provenance architecture.
+
+**Supersedes:** the earlier recommendation to validate Trading Economics first under an unknown budget. The technical field comparison remains useful history, not the current acquisition priority.

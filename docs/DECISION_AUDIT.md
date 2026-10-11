@@ -201,7 +201,7 @@ Milestone C is complete without publishing real progression thresholds in Alpha 
 | E3 snapshot checkpoint | Schema v35 historical run context is accepted and merged through PR #55. | IMPLEMENTED |
 | E4 naming | The implementation sequence's compact operator context surface is current. The former narrative E4 heading described cross-cutting distortion/schedule boundaries; those distinctions remain intact. | REFINED / implemented and operator accepted 2026-10-10 |
 | Snapshot presentation | Read stored context and use explicit run time. E5 derives effects only through explicit snapshotted rules; facts alone never become restrictions. | REFINED / IMPLEMENTED |
-| Later E6/E7 labels | Narrative numbering and the implementation sequence differ for provider integration and model predicates. Resolve at that planning boundary without silently changing roadmap order. | OPEN |
+| Later E6/E7 labels | E6 is real provider integration; E7 is model predicates. Review/evidence provenance is cross-cutting. Narrative headings are reconciled to the accepted sequence at the E6 planning boundary. | REFINED / numbering resolved |
 
 Older Requirements/Guide passages describing Milestone A-C as future work are historical inventory language. Verified implementation and the current Project State establish that A-C are complete and Milestone E is active.
 
@@ -213,4 +213,17 @@ Older Requirements/Guide passages describing Milestone A-C as future work are hi
 | Context policy substrate | Plan-owned rules, explicit environment/unknown effects, read-only evaluation, run snapshots in v36, explanatory surfaces and candidate entry blockers. | IMPLEMENTED / operator accepted 2026-10-10 |
 | Alpha 0.7 automatic exclusions | No declarative rules are published; manual gates remain authoritative. Account applicability cannot be inferred from run environment. | DEFERRED pending explicit account semantics and new plan revision |
 | Weekly event absence | Requires complete week coverage; day-only snapshots yield Unknown when no matching event is recorded. | CURRENT |
-| Real provider / model-specific predicates | Remain downstream; E5 does not silently resolve later E6/E7 numbering. | DEFERRED |
+| Real provider / model-specific predicates | E6 provider assessment is current; E7 model predicates remain downstream. Forex Factory is the operator's preferred source; adapter/coverage details are still open. | CURRENT assessment / implementation not started |
+
+
+## 2026-10-10 — E6 preferred source assessment
+
+| Area | Current interpretation | Status |
+|---|---|---|
+| Economic-calendar source | Forex Factory is preferred; alternatives accepted for easier/safer implementation. Trading Economics's earlier API recommendation is superseded by the rejected ~$200/month cost. Free export import and FMP Starter validation are proposed; no provider purchased/selected. | REFINED / cost constraint CURRENT |
+| Supported access | Official Weekly Export links are verified. JSON and operator-supplied XML are inspected; XML detail URLs repeat, timezone is unlabeled, and both formats lose observed All Day precision. ICS/CSV remain uninspected. | VERIFIED limited assessment |
+| Historical export | Last Week's JSON link still returned this week's data. No arbitrary-date or historical as-of API is verified. | OPEN |
+| First vertical slice | Provider-independent capture/coverage/uncertainty contract, then candidate validation and capture-to-run integration. Forex Factory local import remains a fallback proposal. | PROPOSED / implementation selection open |
+| Negative event conclusions | A successful export fetch is not sufficient to assert complete requested coverage. Missing status/timing/source scope remains honest. | CURRENT boundary / contract refinement open |
+
+See `E6_PROVIDER_ASSESSMENT.md`. Preference acceptance does not imply acceptance of the proposed implementation scope or automatic trading restrictions.
