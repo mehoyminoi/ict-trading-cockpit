@@ -221,7 +221,7 @@ Older Requirements/Guide passages describing Milestone A-C as future work are hi
 | Area | Current interpretation | Status |
 |---|---|---|
 | Economic-calendar source | Forex Factory is operator preferred, paid or unpaid. Trading Economics was a candidate, not a selected dependency. | CURRENT preference |
-| Supported access | Official Weekly Export links are verified. JSON fields and current-week behavior were inspected without login. Other export formats were not successfully inspected. | VERIFIED limited assessment |
+| Supported access | Official Weekly Export links are verified. JSON and operator-supplied XML are inspected; XML detail URLs repeat, timezone is unlabeled, and both formats lose observed All Day precision. ICS/CSV remain uninspected. | VERIFIED limited assessment |
 | Historical export | Last Week's JSON link still returned this week's data. No arbitrary-date or historical as-of API is verified. | OPEN |
 | First vertical slice | Local export import -> preserved capture -> run snapshot -> existing context surfaces, subject to explicit timing/status/coverage contract decisions. | PROPOSED |
 | Negative event conclusions | A successful export fetch is not sufficient to assert complete requested coverage. Missing status/timing/source scope remains honest. | CURRENT boundary / contract refinement open |
