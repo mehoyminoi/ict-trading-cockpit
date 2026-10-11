@@ -6,21 +6,23 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `main` (E6 accepted and merged)
-- **Main baseline:** `aaa931153f165b8ebb90c43126e00b6cd07beeeb` — Merge pull request #59, accepted E6 JSON capture/import v0. Assessment PR #58 merged as `0ca2acf6775622dfa5f755c5ed47a28ea197210a`; prior E5/E6 checkpoint was `59a9b984b398a10f54847315569b8179a37b38e6`.
+- **Active branch:** `feature/context-maturity-e7-v0` (implemented; focused operator acceptance pending)
+- **Main baseline:** `42e3b346245de17e61a062e29fa6cd082d2527bf` — Checkpoint merged E6 and explicit E7 context-predicate frontier. Accepted E6 PR #59 merged as `aaa931153f165b8ebb90c43126e00b6cd07beeeb`, after assessment PR #58 merged as `0ca2acf6775622dfa5f755c5ed47a28ea197210a`.
 - **Implementation checkpoint:** `130a50077bf18973aabb184cc9e588b57a62c71a` — Add immutable Forex Factory JSON captures and explicit provider coverage (E6). Branch starts from PR #58 assessment commit `2d9eed4c6acde448584a43fad923b1226de11ab1`; prior accepted feature is E5 `41f9d69c5b648873f6b95f2041e5daaeb2ea8508`.
 - **Compatibility checkpoint:** `bd546d51d2e2c88610eec16e448f7eeeb1d98c8f` — normalize UTC `Z` coverage bounds for supported Python 3.10 in validation/comparison; exercise both UTC representations through coverage serialization/restoration.
+- **E7 implementation checkpoint:** `70f9f6c1bb9ca8aafeec4ddedee80a0930fb355f` — Add playbook-scoped context predicates with explicit calendar windows (E7); reviewed in [draft PR #60](https://github.com/mehoyminoi/ict-trading-cockpit/pull/60).
 - **Operator acceptance checkpoint:** `df4cac894f7e697bf65793c5f031265af5bdd9d4` — Record E6 operator smoke-test results; all nine checks PASS on 2026-10-10.
 - **Last completed slice:** E6 — local Forex Factory JSON capture/import v0; operator accepted and merged
-- **Current task:** E7 — inspect and scope generic model/playbook context predicates before implementation.
+- **Current slice/task:** E7 generic model/playbook context predicates v0; run nine focused operator checks before review/merge.
 - **Schema:** v37
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** **425 passed in 171.70s on Python 3.10.22** and **425 passed in 157.09s on Python 3.12.14**, both clean exits on 2026-10-11 UTC, PySide6 6.8.3 / pytest 9.1.1 / offscreen. Focused E6: **24 passed in 1.15s** on Python 3.12.14. Previous implementation validation: 424 passed in 150.46s on Python 3.12.14; focused E3/E4/E5/E6 76 passed in 2.32s; smoke-document round-trip 4 passed. Last accepted E5 result: 401 passed in 136.01s.
-- **Operator automated-test report:** **425 passed** after the compatibility correction; runtime and Python version were not supplied. This supersedes the earlier **1 failed / 423 passed in 252.09s** report at `test_coverage_requires_both_window_and_selector_scope` parsing a UTC `Z` literal. The same test-setup and production coverage-parser failures were reproduced on Python 3.10.22 and corrected in the compatibility checkpoint above.
-- **Fresh baseline verification:** `main` at `59a9b984b398a10f54847315569b8179a37b38e6`; **401 passed in 136.84s**, clean exit, Python 3.12.14 / PySide6 6.8.3 / pytest 9.1.1 / offscreen. Assessment changes in PR #58 were documentation only; the feature branch now contains E6 implementation. Fresh pre-code verification also passed 401 tests in 136.89s.
+- **Verified full test result:** **452 passed in 176.34s on Python 3.10.22** and **452 passed in 160.42s on Python 3.12.14**, both clean exits on 2026-10-11 UTC, PySide6 6.8.3 / pytest 9.1.1 / offscreen. Focused E5/E6/E7: **79 passed in 1.71s**; E7 adds **27 tests**. Smoke-document tests: **4 passed in 0.02s**. Prior accepted E6 suites: 425 passed in 171.70s on Python 3.10.22 and 425 passed in 157.09s on Python 3.12.14.
+- **Operator automated-test report:** latest accepted E6 result **425 passed** after the compatibility correction; runtime and Python version were not supplied. This supersedes the earlier 1 failed / 423 passed UTC `Z` parsing report. E7 operator automated/manual results are pending and must be recorded separately.
+- **Baseline verification:** merged E6 main tree exactly matched accepted feature checkpoint `9ae4d78920609c27ed0df4712398e3835fc3a3cd`. Main checkpoint `42e3b346` changed documentation only; its source/tests retain the accepted 425-test E6 implementation. E7 branches directly from that main checkpoint.
 - **Manual acceptance:** E1 fully PASS. E3 required no new UI smoke pass. E4 focused operator smoke is **PASS**, per operator report of completed manual testing and acceptance on 2026-10-10. E5 focused operator acceptance is **PASS**, with all eight checklist checks pushed in `2e76e9dedf0dc85e059bdf94181d62a5fbc12617` on 2026-10-10.
 
 - **E6 manual acceptance:** all nine focused operator checks **PASS**, verified in the pushed acceptance checkpoint above, including the real-export/normal-application check. Developer validation remains separate from operator acceptance.
+- **E7 manual acceptance:** nine focused operator checks **NOT TESTED** in `SMOKE_TEST.md`. Developer demo checks exercised all scenarios, scope isolation, save/rebuild/restore and Review restoration after database reopen; these are not operator acceptance.
 
 ## Completed foundation — Competency / Proficiency substrate v0
 
@@ -125,7 +127,7 @@ Milestones A, B, and C are complete. The learning/progression chain remains inta
 
 `Evidence -> Competency Synthesis -> Cross-Run Observation -> Development Direction -> targeted Study -> Evidence Maturity -> Trade Plan Progression Policy -> Explainable Eligibility -> historical attainment / regression-revalidation -> operator-loop guardrails`
 
-The current major frontier is **Milestone E — context maturity: QT/AMDX, external events, schedules, and distortions**. E1 through E6 are merged and accepted. E4 exposes stored context to the operator. E5 provides explicit snapshotted context-policy evaluation and configured entry effects; real policy adoption remains deferred. E6 supplies local calendar captures and honest provider claims. E7 generic model/playbook context predicates are the next planned slice; source uncertainty remains authoritative.
+The current major frontier is **Milestone E — context maturity: QT/AMDX, external events, schedules, and distortions**. E1 through E6 are merged and accepted. E4 exposes stored context to the operator. E5 provides explicit snapshotted context-policy evaluation and configured entry effects; real policy adoption remains deferred. E6 supplies local calendar captures and honest provider claims. E7 generic model/playbook context predicates v0 are implemented on the feature branch, awaiting focused operator acceptance; source uncertainty remains authoritative. Adopting a real model/news policy still requires explicit Trade Plan semantics and a new published revision.
 
 Milestone D continues only for demonstrated operator friction. Film Night, gallery polish, broad TradingView integration, hardware controls, and broker execution remain downstream.
 
@@ -196,27 +198,24 @@ Validation:
 
 ## Current task
 
-**E7 — generic model/playbook context predicates** is the current design/implementation frontier. E6 JSON capture/import v0 is accepted and merged through [PR #59](https://github.com/mehoyminoi/ict-trading-cockpit/pull/59), after assessment PR #58 merged and PR #59 was retargeted to main. All nine E6 smoke checks are PASS in `df4cac894f7e697bf65793c5f031265af5bdd9d4`. The merged main tree exactly matches the accepted E6 feature tree; the latest verified 425-test results remain applicable without a code change at merge.
-
-The operator accepted proceeding with the recommended free import direction. No paid subscription is assumed; Trading Economics at approximately $200/month remains excluded. FMP is an assessed future paid candidate, not a selected dependency. See `E6_PROVIDER_ASSESSMENT.md` for the source comparison and XML findings.
+**E7 — generic model/playbook context predicates v0** is implemented on `feature/context-maturity-e7-v0`, reviewed in [draft PR #60](https://github.com/mehoyminoi/ict-trading-cockpit/pull/60). Current task is the nine focused operator checks, followed by review/merge. E6 remains the last operator-accepted and merged feature; its assessment/implementation PRs #58/#59 are closed and merged.
 
 Implemented:
 
-- provider query result separates requested bounds from explicit completeness, coverage bounds, selector scope, and source basis,
-- negative rule results require complete coverage for the entire rule window and selector scope; legacy tuple responses and missing legacy coverage cannot certify absence,
-- explicit timing precision defaults Unknown, separate from native clock values and status,
-- schema v37 adds immutable source-capture storage with update/delete protection; migration preserves existing snapshot JSON,
-- local weekly JSON preview/import requires an operator-declared Sunday UTC week and validates every record atomically; malformed/empty/wrong-week files are rejected,
-- saved capture preserves original JSON/digest, file/import provenance, native fields, declared week, capture-local row IDs, adapter/mapping revisions, and limitations,
-- **Trade Plan > Process > Calendar captures** exposes preview, save, and explicit source selection for future runs,
-- missing requested weeks are Unavailable with attempted capture provenance; uncertain source-week rows are retained rather than filtered by unverified clocks,
-- compact context and details expose completeness/timing uncertainty; Watch does not present uncertain rows as exact upcoming times or confirmed day schedule exceptions,
-- later imports and source selection leave started/restored run snapshots unchanged; selection resets to Not Configured after restart while saved captures remain,
-- disposable manual sandbox: `python tools/context_import_demo.py`; printed `--data-dir` command reuses its separate database for restart checks.
+- plan-owned rules can target explicit known playbook IDs; an empty scope preserves run-wide legacy behavior,
+- candidate authorization uses stored Playbook source identity, with no effect leakage to other models or Custom setups,
+- Event Absent inverts known presence/absence only; Unknown remains Unknown,
+- selected NY calendar weekdays and an explicit relative calendar-week offset resolve inspectable windows, including DST civil-day boundaries,
+- negative conclusions require complete source coverage of every selected window and selector scope; Forex Factory captures never certify absence,
+- matched, not-matched and Unknown effects are separately configured; old not-matched behavior defaults to no effect,
+- Stand Down Day remains run-wide and is invalid for playbook-scoped rules,
+- shared TDA/Watch/Review details show scoped candidate revision, dates, outcome/effect and event IDs; rendering is read-only,
+- persisted rule/candidate/source snapshots survive database reopen and current-definition changes without a migration; schema v37 and Alpha 0.7 remain unchanged,
+- a disposable acceptance sandbox supports explicit save/restore and restart: `python tools/context_predicate_demo.py --data-dir /tmp/ict-e7-acceptance`.
 
-Validation: latest full suites **425 passed in 171.70s on Python 3.10.22** and **425 passed in 157.09s on Python 3.12.14**, both clean exits; focused E6 **24 passed in 1.15s** on Python 3.12.14. The operator's earlier 1 failed / 423 passed report exposed UTC `Z` parsing incompatible with Python 3.10; test setup and production coverage validation/comparison now use compatible offsets while preserving serialized bounds. The subsequent operator rerun reported **425 passed**. Before this correction, focused E3/E4/E5/E6 passed 76 tests and smoke-document round-trip passed 4 tests. Developer real-format/offscreen integration and sandbox startup/clean exit were exercised. The public JSON representation's 83 records imported and restored in a separate database; direct HTTP retrieval returned 403, so automatic network acquisition is not claimed. Main-window import/Watch/Review were visually inspected at its current minimum size of 1120×876; removing the new import tab leaves the same pre-existing minimum height. All nine operator E6 checks are **PASS** in `SMOKE_TEST.md`, pushed in the acceptance checkpoint above.
+Validation: full suites **452 passed in 176.34s on Python 3.10.22** and **452 passed in 160.42s on Python 3.12.14**, both clean exits. Focused E5/E6/E7 **79 passed in 1.71s**; smoke-document tests **4 passed in 0.02s**. New tests cover scoped/custom isolation, selected-day completeness, prior/following weeks, 23/25-hour DST days, explicit outcome effects, legacy-field defaults and historical database reopen. Developer demo checks exercised all nine scenarios and environment exclusions, save/rebuild/restore and Review restart; Watch/Review were inspected offscreen. All nine E7 operator checks are **NOT TESTED**.
 
-Next action: scope a small E7 slice for explicit playbook targeting, event presence/absence and calendar-day selection, because the snapshot, rule, and source-capture contracts are now accepted. Friday Asian Range's no-Monday-high-impact-news condition is an accepted validation use case, but preceding versus following Monday is not specified; any fixture must declare its week relationship and must not publish that assumption as a trading rule. Preserve explainable Unknown outcomes: an incomplete Forex Factory capture cannot certify event absence. E6 v0 provides captured context with honest limitations, not provider-certified timing, historical as-of reconstruction, or automatic Alpha 0.7 exclusions.
+Next action: run the focused operator checks before merge. After acceptance, settle the real Friday Asian Range Monday relationship, applicability and policy effects before adopting a model/news rule in a new Trade Plan revision. The accepted example does not specify preceding versus following Monday; fixtures explicitly declare current-week or following-week offsets and do not publish either assumption. Real Forex Factory completeness, timing/status, normalized type/market applicability and historical as-of knowledge remain unverified. No readiness thresholds, source refresh, automatic model definition changes, competency evidence or order operations are introduced.
 
 ## Explicitly deferred / open
 
