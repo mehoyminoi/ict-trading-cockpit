@@ -10,6 +10,7 @@ from ict_cockpit.context_rules import (
     ContextEffect as Effect, ContextEventWindow as Window, ContextRuleDefinition as Rule,
 )
 from ict_cockpit.analysis.context_policy import ContextMatch as Match, evaluate_context_rules
+from ict_cockpit.analysis.context_source import ContextCoverage
 from ict_cockpit.analysis.market_context_event import (
     MarketContextEvent as Event, MarketContextEventCategory as Category,
     MarketContextEventStatus as Status, MarketContextImpact as Impact,
@@ -33,13 +34,15 @@ def market(at="2026-10-09T11:01:00-04:00"):
 
 
 def snapshot(events=(), status=Availability.AVAILABLE, *, start="2026-10-08T18:00:00-04:00", end="2026-10-09T17:59:59.999999-04:00"):
-    return Snapshot(status, "Fixture", start, end, "2026-10-09T11:01:00-04:00", "Historical Reference", "2026-10-10T10:00:00-04:00", events).to_dict()
+    coverage = (ContextCoverage(start, end, True, ("*",), ("*",), ("*",), ("*",), "Complete synthetic test fixture")
+                if start and end else ContextCoverage())
+    return Snapshot(status, "Fixture", start, end, "2026-10-09T11:01:00-04:00", "Historical Reference", "2026-10-10T10:00:00-04:00", events, coverage=coverage).to_dict()
 
 
 def event(**kwargs):
     return Event(**{**dict(id="fixture", provider="Fixture", source_event_id="source", category=Category.ECONOMIC,
                  normalized_event_type="NFP", title="Unrelated title", scheduled_at="2026-10-09T08:30:00-04:00",
-                 impact=Impact.HIGH, status=Status.SCHEDULED, affected_markets=("USD",)), **kwargs})
+                 impact=Impact.HIGH, status=Status.SCHEDULED, affected_markets=("USD",), timing_precision="Exact"), **kwargs})
 
 
 def rule(*conditions, effect=Effect.BLOCK_NEW_ENTRY, unknown=Effect.WARNING, environments=("Live",)):
@@ -189,7 +192,7 @@ def test_rule_snapshot_roundtrip_survives_new_plan_and_explains_review_without_m
     assert "E5 fixture" in card.detail_text.toPlainText()
     assert "Fixture only" in card.detail_text.toPlainText()
     assert restored.__dict__ == before
-    assert conn.execute("PRAGMA user_version").fetchone()[0] == CURRENT_SCHEMA_VERSION == 36
+    assert conn.execute("PRAGMA user_version").fetchone()[0] == CURRENT_SCHEMA_VERSION == 37
     conn.close(); shell.close(); card.close()
 
 

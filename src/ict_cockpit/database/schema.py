@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 36
+CURRENT_SCHEMA_VERSION = 37
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -116,6 +116,9 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 35:
             _migrate_version_35_to_36(connection)
             version = 36
+        if version == 36:
+            _migrate_version_36_to_37(connection)
+            version = 37
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -764,3 +767,24 @@ def _migrate_version_35_to_36(connection: sqlite3.Connection) -> None:
         "ADD COLUMN context_rule_snapshot_json TEXT NOT NULL DEFAULT '[]'"
     )
     connection.execute("PRAGMA user_version = 36")
+
+
+def _migrate_version_36_to_37(connection: sqlite3.Connection) -> None:
+    # Existing snapshot JSON is preserved. Missing coverage/precision is read
+    # as unknown rather than fabricating a provider claim during migration.
+    connection.execute("""
+        CREATE TABLE context_source_capture (
+            id TEXT PRIMARY KEY,
+            imported_at TEXT NOT NULL,
+            payload_json TEXT NOT NULL
+        )
+    """)
+    connection.execute("""
+        CREATE TRIGGER context_capture_no_update BEFORE UPDATE ON context_source_capture
+        BEGIN SELECT RAISE(ABORT, 'Source captures are immutable'); END
+    """)
+    connection.execute("""
+        CREATE TRIGGER context_capture_no_delete BEFORE DELETE ON context_source_capture
+        BEGIN SELECT RAISE(ABORT, 'Source captures are immutable'); END
+    """)
+    connection.execute("PRAGMA user_version = 37")

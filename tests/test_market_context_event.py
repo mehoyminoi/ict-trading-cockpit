@@ -23,6 +23,7 @@ def economic_event(**overrides) -> MarketContextEvent:
         "normalized_event_type": "CPI",
         "title": "CPI",
         "scheduled_at": "2026-10-13T08:30:00-04:00",
+        "timing_precision": "Exact",
         "source_timezone": "America/New_York",
         "impact": MarketContextImpact.HIGH,
         "provider_native_impact": "red",
@@ -169,5 +170,5 @@ def test_e2_domain_model_does_not_change_schema(tmp_path) -> None:
 
     version = connection.execute("PRAGMA user_version").fetchone()[0]
 
-    assert version == CURRENT_SCHEMA_VERSION == 36
+    assert version == CURRENT_SCHEMA_VERSION == 37
     connection.close()

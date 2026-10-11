@@ -6,15 +6,17 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `design/context-maturity-e6-provider-assessment-v0` (documentation/assessment only)
-- **Main baseline:** `3232962144126bc4d48dbb84b21a21579228be35` — PR #57 merged operator-accepted E5 context policy substrate
-- **Implementation checkpoint:** `41f9d69c5b648873f6b95f2041e5daaeb2ea8508` — Add explicit snapshotted Trade Plan context rules and entry effects (E5)
-- **Current slice:** E6 — preferred-provider assessment; implementation not started
-- **Schema:** v36
+- **Active branch:** `feature/context-maturity-e6-import-v0` (implementation; operator acceptance pending)
+- **Main baseline:** `59a9b984b398a10f54847315569b8179a37b38e6` — canonical E5/E6 checkpoint; accepted E5 merge `3232962144126bc4d48dbb84b21a21579228be35`
+- **Implementation checkpoint:** E6 local source capture/JSON import on this branch; publication SHA pending. Branch starts from PR #58 assessment commit `2d9eed4c6acde448584a43fad923b1226de11ab1`; last accepted feature is E5 `41f9d69c5b648873f6b95f2041e5daaeb2ea8508`.
+- **Current slice:** E6 — local Forex Factory JSON capture/import v0; focused operator acceptance pending
+- **Schema:** v37
 - **Trade Plan revision:** Alpha 0.7
-- **Verified full test result:** **401 passed** in 136.01s on 2026-10-10, clean exit (Python 3.12 / PySide6 6.8.3 / offscreen)
-- **Fresh baseline verification:** `main` at `59a9b984b398a10f54847315569b8179a37b38e6`; **401 passed in 136.84s**, clean exit, Python 3.12.14 / PySide6 6.8.3 / pytest 9.1.1 / offscreen. Subsequent assessment changes are documentation only.
+- **Verified full test result:** **424 passed in 150.46s**, clean exit on 2026-10-11 UTC / 2026-10-10 operator date. Focused E3/E4/E5/E6 regressions: **76 passed in 2.32s**; smoke-document round-trip: **4 passed**. Last accepted E5 result **401 passed** in 136.01s. Fresh pre-code baseline: **401 passed in 136.89s**, clean exit, Python 3.12.14 / PySide6 6.8.3 / pytest 9.1.1 / offscreen.
+- **Fresh baseline verification:** `main` at `59a9b984b398a10f54847315569b8179a37b38e6`; **401 passed in 136.84s**, clean exit, Python 3.12.14 / PySide6 6.8.3 / pytest 9.1.1 / offscreen. Assessment changes in PR #58 were documentation only; the feature branch now contains E6 implementation. Fresh pre-code verification also passed 401 tests in 136.89s.
 - **Manual acceptance:** E1 fully PASS. E3 required no new UI smoke pass. E4 focused operator smoke is **PASS**, per operator report of completed manual testing and acceptance on 2026-10-10. E5 focused operator acceptance is **PASS**, with all eight checklist checks pushed in `2e76e9dedf0dc85e059bdf94181d62a5fbc12617` on 2026-10-10.
+
+- **E6 manual acceptance:** nine focused operator checks **NOT TESTED**; developer validation does not replace operator acceptance.
 
 ## Completed foundation — Competency / Proficiency substrate v0
 
@@ -190,24 +192,38 @@ Validation:
 
 ## Current task
 
-**E6 — real provider integration** is current in the accepted implementation sequence; adapter feature work has not started.
+**E6 — local Forex Factory JSON capture/import v0** is implemented on the feature branch and awaiting focused operator acceptance. Main remains at the accepted E5/E6 baseline. This feature branch includes the unmerged PR #58 assessment checkpoint; the implementation review is stacked on that branch.
 
-The operator selected **Forex Factory** as the first-choice calendar source, paid or unpaid. `E6_PROVIDER_ASSESSMENT.md` records verified official weekly-export behavior and a proposed local-import/capture/snapshot vertical slice. JSON lacks native event identity, status, update/coverage metadata, and explicit timing precision. The operator-supplied XML parses successfully (83 records); it adds detail URLs but no timezone label, and URLs repeat across occurrences. All 83 XML date/times match the earlier JSON when interpreted as UTC, a sample-level inference only. Both exports assign clock times to records displayed as All Day. The Last Week calendar's JSON link returned this week's export. Arbitrary-date/as-of access, Tentative representation, and ICS/CSV capabilities remain unverified.
+The operator accepted proceeding with the recommended free import direction. No paid subscription is assumed; Trading Economics at approximately $200/month remains excluded. FMP is an assessed future paid candidate, not a selected dependency. See `E6_PROVIDER_ASSESSMENT.md` for the source comparison and XML findings.
 
-The operator accepts alternate sources if they make implementation easier or safer, but explicitly rejects Trading Economics at approximately $200/month. That supersedes its earlier recommendation as the first API candidate. A smaller subscription may be acceptable; no exact ceiling or purchase is accepted. The cost-aware assessment records Forex Factory without a recurring data subscription, FMP Starter ($19/month equivalent billed annually, actual monthly quote to confirm), Finnhub Economic-1 ($50/month billed quarterly), and EODHD Fundamentals ($59.99/month). FMP is the proposed first paid API candidate; no authenticated alternative-provider feed is verified. Official BLS/Fed schedules are scoped supplements and CME product schedule facts remain separate from economic news.
+Implemented:
 
-Next action: define the provider-independent timing/status/coverage/identity contract, then validate the proposed free Forex Factory import or affordable API path before selecting the smallest real-source capture-to-run loop. The requested XML inspection is complete; no additional operator upload is required for these findings. Provider selection and local-import scope remain proposed, not accepted implementation design. Record coverage and failure semantics explicitly; do not infer event facts or account applicability from provider text. E5 v0 completes the policy substrate, not automatic adoption of every source-plan prose exclusion. Model-specific predicates remain E7 downstream.
+- provider query result separates requested bounds from explicit completeness, coverage bounds, selector scope, and source basis,
+- negative rule results require complete coverage for the entire rule window and selector scope; legacy tuple responses and missing legacy coverage cannot certify absence,
+- explicit timing precision defaults Unknown, separate from native clock values and status,
+- schema v37 adds immutable source-capture storage with update/delete protection; migration preserves existing snapshot JSON,
+- local weekly JSON preview/import requires an operator-declared Sunday UTC week and validates every record atomically; malformed/empty/wrong-week files are rejected,
+- saved capture preserves original JSON/digest, file/import provenance, native fields, declared week, capture-local row IDs, adapter/mapping revisions, and limitations,
+- **Trade Plan > Process > Calendar captures** exposes preview, save, and explicit source selection for future runs,
+- missing requested weeks are Unavailable with attempted capture provenance; uncertain source-week rows are retained rather than filtered by unverified clocks,
+- compact context and details expose completeness/timing uncertainty; Watch does not present uncertain rows as exact upcoming times or confirmed day schedule exceptions,
+- later imports and source selection leave started/restored run snapshots unchanged; selection resets to Not Configured after restart while saved captures remain,
+- disposable manual sandbox: `python tools/context_import_demo.py`; printed `--data-dir` command reuses its separate database for restart checks.
+
+Validation: final full suite **424 passed in 150.46s**, clean exit; focused E3/E4/E5/E6 **76 passed in 2.32s**, smoke-document round-trip **4 passed**. Developer real-format/offscreen integration and sandbox startup/clean exit were exercised. The public JSON representation's 83 records imported and restored in a separate database; direct HTTP retrieval returned 403, so automatic network acquisition is not claimed. Main-window import/Watch/Review were visually inspected at its current minimum size of 1120×876; removing the new import tab leaves the same pre-existing minimum height. Operator E6 checks are **NOT TESTED** in `SMOKE_TEST.md`.
+
+Next action: run the nine focused operator checks before merge; the implementation is ready for draft review. E5 remains the last operator-accepted slice. Model predicates remain E7 downstream. E6 v0 provides captured context with honest limitations, not provider-certified timing, historical as-of reconstruction, or automatic Alpha 0.7 exclusions.
 
 ## Explicitly deferred / open
 
-- Forex Factory is preferred; no real calendar adapter is implemented or wired into normal application startup,
+- Forex Factory local JSON import is implemented; network acquisition and XML/ICS/CSV adapters remain deferred,
 - no within-run snapshot refresh/version history,
 - no published automatic Alpha 0.7 context policy: the example allows paper trading on live/eval/funded no-trade days, and run environment is not account type; actual adoption needs explicit account applicability and a new plan revision,
 - exact normalized event types, full-week calendar coverage, and any event duration/buffer must be explicitly configured rather than inferred from titles or provider folder colors,
 - rule results are derived on demand; no decision-time policy-result audit log is persisted in E5,
 - no no-code rule editor, automatic run conclusion/stand-down transition, exit/flatten restriction, order submission, readiness score, or automatic competency evidence,
 - no full intraday session × 90-minute interpretation grid,
-- E6/E7 narrative numbering is reconciled to the accepted sequence: provider integration before model predicates; Review/evidence provenance remains cross-cutting. Provider contract gaps and proposed scope remain explicit in `E6_PROVIDER_ASSESSMENT.md`.
+- E6/E7 narrative numbering is reconciled to the accepted sequence: provider integration before model predicates; Review/evidence provenance remains cross-cutting. Provider limitations and implemented v0 scope remain explicit in `E6_PROVIDER_ASSESSMENT.md`.
 
 ## System guide maintenance
 

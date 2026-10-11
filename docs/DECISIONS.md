@@ -658,3 +658,17 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 **Consequences:** assess endpoint-specific entitlements and billing frequency rather than headline provider prices. `E6_PROVIDER_ASSESSMENT.md` retains the free Forex Factory export path and records lower-cost FMP, Finnhub, and EODHD candidates. FMP is a proposed first paid candidate, not an accepted subscription or proof of safer feed semantics. Preserve the provider-independent uncertainty/provenance architecture.
 
 **Supersedes:** the earlier recommendation to validate Trading Economics first under an unknown budget. The technical field comparison remains useful history, not the current acquisition priority.
+
+## 2026-10-10 — E6 local source captures and honest provider claims
+
+**Status:** Operator authorized proceeding with the recommended Forex Factory import path; implementation is awaiting focused operator acceptance.
+
+**Decision:** Start E6 with the supported weekly JSON export, manually imported and previewed outside active operation. JSON preserves explicit offsets; the inspected XML's unlabeled timezone is insufficient for this first adapter. Each import creates a separate immutable local capture with original JSON, byte digest, import/file provenance, declared UTC week, adapter/mapping revisions, native rows, and explicit limitations. Selection is deliberate for new runs and resets to Not Configured on restart. Existing run snapshots remain authoritative.
+
+**Rationale:** A successful query and its requested dates do not establish source completeness. The provider result now carries separate coverage bounds, completeness, explicit selector scope, and a source basis. Negative predicates require that claim to cover the entire rule window and scope. Positive exact facts may be recorded beyond the requested day when the source supplies week context. Missing legacy coverage/precision reads as Unknown without rewriting stored JSON during migration.
+
+**Consequences:** Schema v37 adds insert-only capture storage. Forex Factory's timing precision, status, normalized event types, market applicability, and completeness remain unverified. Native Low/Medium/High impact and Holiday category mappings are explicit and revisioned; currency labels do not silently become affected-market mappings. IDs identify capture-local rows, not provider occurrences across rescheduling. Uncertain-time rows from the declared source week are retained rather than discarded by clock filtering; Watch does not advertise them as precise upcoming times or confirmed day schedule exceptions. Out-of-week requests are Unavailable, with the attempted capture provenance retained. Imports do not establish historical as-of knowledge. Alpha 0.7 and its manual gates remain unchanged.
+
+**Deferred:** XML/ICS/CSV adapters, network acquisition, paid subscriptions, automatic latest-capture selection/freshness thresholds, within-run refresh, provider occurrence continuity, normalized model predicates, and published automatic trading exclusions.
+
+**Refines:** the E3 tuple provider seam and E5 query-bound absence assumption. Synthetic fixtures explicitly certify their own scope; real exports never inherit that claim.

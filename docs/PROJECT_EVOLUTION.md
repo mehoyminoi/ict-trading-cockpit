@@ -478,3 +478,9 @@ A provider protocol plus deterministic in-memory provider established the integr
 E2 required no schema migration; schema remains v34. Historical run-specific event snapshots are intentionally deferred to E3.
 
 Acceptance completed with the full automated suite green at 356 passed.
+
+## 2026-10-10 — E6 source capture/import boundary
+
+After E3 historical snapshots, E4 context presentation, and accepted E5 declarative rules, the operator selected the recommended free Forex Factory import direction. E6 v0 adds local weekly JSON preview/import, immutable source captures, explicit future-run selection, and persisted capture provenance in the existing operating loop. Schema v37 stores captures separately from Trading Runs.
+
+Real export inspection required refining the earlier tuple seam: requested dates are not completeness claims, native clocks are not certified precision, and currency labels/detail URLs do not establish market applicability or occurrence continuity. Source completeness, scope, timing/status uncertainty, and historical-knowledge limitations remain visible rather than becoming silent absence or permission. Alpha 0.7 remains unchanged, network/paid acquisition is deferred, and operator acceptance is pending. This advances the existing Milestone E frontier without changing roadmap order; E7 model predicates remain downstream.

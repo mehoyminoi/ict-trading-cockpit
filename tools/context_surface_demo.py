@@ -32,6 +32,7 @@ def fixture_events():
             id=title, provider="E4 fixture calendar", source_event_id=title,
             category=category, normalized_event_type="FIXTURE", title=title,
             scheduled_at=f"2026-10-06T{time}:00-04:00", source_timezone="America/New_York",
+            timing_precision="Exact",
             impact=MarketContextImpact.HIGH if category is Category.ECONOMIC else MarketContextImpact.UNKNOWN,
             status=MarketContextEventStatus.SCHEDULED,
             provider_native_impact="fixture-high" if category is Category.ECONOMIC else "",
