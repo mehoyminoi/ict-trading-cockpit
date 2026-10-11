@@ -107,9 +107,15 @@ class ContextPredicateDemo(QWidget):
                                                source_revision=model.revision, definition_snapshot=model.to_snapshot(),
                                                entry_condition_states={"fixture": True})
                                 for model in models if scenario != "Other playbook only" or model.id == "fixture-other"]
-        run.setup_candidates.append(SetupCandidate("Custom fixture", source_type="Custom", definition_snapshot={
+        tda_runner = self.shell.runtime.tda_station_runner_widget
+        tda_runner.session.add_watch_point("the synthetic custom condition appears", "observe the fixture only")
+        tda_runner.load_session(tda_runner.session)
+        custom = run.ensure_day_specific_candidate()
+        custom.name = "Custom fixture"
+        custom.definition_snapshot = {
             "entry_criteria": [{"id": "fixture", "name": "Fixture criterion"}], "required_entry_count": 1,
-        }, entry_condition_states={"fixture": True}))
+        }
+        custom.entry_condition_states = {"fixture": True}
         for gate in run.authorization_policy_snapshot:
             if gate["scope"] == "Run":
                 run.set_authorization_gate(gate["id"], "Clear")

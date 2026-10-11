@@ -900,7 +900,7 @@ The terminal prints a sandbox directory and the exact restart command. It contai
 
 ## Current branch acceptance — E7 model/playbook context predicates
 
-**Operator acceptance: NOT TESTED.** Schema **v37**, published Trade Plan **Alpha 0.7**. E7 is implemented on `feature/context-maturity-e7-v0`; developer checks do not replace these nine operator checks. The Friday Asian Range Monday relationship and policy adoption remain open.
+**Operator acceptance: pending — check 236 needs retest after the Custom fixture correction.** Schema **v37**, published Trade Plan **Alpha 0.7**. E7 is implemented on `feature/context-maturity-e7-v0`; developer checks do not replace these nine operator checks. The Friday Asian Range Monday relationship and policy adoption remain open.
 
 Launch a separate acceptance database from the repository root:
 
@@ -910,9 +910,11 @@ python tools/context_predicate_demo.py --data-dir /tmp/ict-e7-acceptance
 
 The terminal prints the directory and restart command. The demo uses synthetic models, source facts, completeness guarantees and effects; no real calendar or published rule is installed. Default reference is Friday **2026-10-09 10:15 ET**. Offset 0 explicitly selects Monday **October 5**; the following-Monday scenario explicitly selects **October 12**. Scenario/environment changes build a new unsaved fixture. Use **Save fixture** and **Restore saved fixture** explicitly; reuse the same `--data-dir` for restart checks. Save before concluding the run.
 
-- [NOT TESTED] Scoped effects reach only the targeted Playbook candidate.
+- [FAIL] Scoped effects reach only the targeted Playbook candidate.
   - Where: default **Monday event present**, follow the normal TDA transition into Watch (complete the stations or record the deliberate incomplete override).
   - Look for: **Fixture Friday model** has Not Matched / Block New Entry; **Other fixture model** and **Custom fixture** retain their own authorization results.
+  - **Custom fixture** appears in Watch's **Setups in Play** with a synthetic TDA IF/THEN watch point. The reference-model summary counts only the two Playbooks. If using the earlier demo, update and select a new fixture; restoring an older saved fixture preserves its original missing watch point.
+  - Operator reported check 236 showed only the two Playbooks. Developer reproduced the missing Custom card and corrected the sandbox's missing TDA watch point; operator retest is pending. Retain FAIL until the corrected fixture is verified.
   - Expected: the absence prerequisite is contradicted by the Monday event. Clear manual gates cannot bypass the targeted block, and other candidates do not inherit it. Details show Playbook scope and capture-local/event IDs, not title-based strategy matching.
 - [NOT TESTED] Proven absence grants no manual permission.
   - Where: **Complete Monday empty**; expand context details and inspect Watch authorization.
@@ -944,7 +946,7 @@ The terminal prints the directory and restart command. The demo uses synthetic m
   - Expected: Alpha 0.7 has no new automatic news policy. Missing older rule fields preserve run-wide scope and no not-matched effect; source completeness/precision remain honest.
 - [NOT TESTED] Full local automated suite passes; v37 and Alpha 0.7 remain unchanged.
   - Where: `python -m pytest`, normal startup/restoration, database schema if convenient.
-  - Expected: exact local result recorded, no regression in stored runs, candidate gates, progression or context capture workflow. Developer result is 452 passed on both Python 3.10 and 3.12; operator result must be recorded separately.
+  - Expected: exact local result recorded, no regression in stored runs, candidate gates, progression or context capture workflow. Record the exact result for the updated fixture regression test separately from the earlier developer result of 452 passed on both Python 3.10 and 3.12.
 
 ---
 

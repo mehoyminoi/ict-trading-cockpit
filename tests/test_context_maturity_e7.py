@@ -256,3 +256,45 @@ def test_restore_and_shared_surfaces_use_stored_scope_effects_and_candidate_revi
     assert restored.__dict__ == before
     assert conn.execute("PRAGMA user_version").fetchone()[0] == 37
     shell.market_time_timer.stop(); shell.close(); card.close(); conn.close()
+
+
+def test_acceptance_demo_renders_custom_candidate_and_restores_its_tda_watch_point(tmp_path, monkeypatch):
+    from pathlib import Path
+    from PySide6.QtWidgets import QLabel
+
+    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "tools"))
+    from context_predicate_demo import ContextPredicateDemo
+
+    conn = create_connection(tmp_path / "demo.db"); initialize_schema(conn)
+    demo = ContextPredicateDemo(conn)
+
+    def check_custom_fixture():
+        run = demo.shell.active_trading_run
+        watch = demo.shell.runtime.live_watch_widget
+        assert "Custom fixture" in [label.text() for label in watch.findChildren(QLabel)]
+        custom = next(item for item in run.setup_candidates if item.source_type == "Custom")
+        assert custom.source_id == "day-specific"
+        points = demo.shell.runtime.tda_station_runner_widget.session.watch_points
+        assert len(points) == 1
+        assert (custom.id, points[0].id) in watch.candidate_watch_point_combos
+        assert run.candidate_authorization(custom.id).status is AuthorizationStatus.AUTHORIZED
+        target = run.playbook_candidate("fixture-friday")
+        assert run.candidate_authorization(target.id).status is AuthorizationStatus.BLOCKED
+        return run.id, custom.id, points[0].id
+
+    try:
+        saved_identity = check_custom_fixture()
+        demo.save_fixture()
+        demo.scenario.setCurrentText("Complete Monday empty")
+        demo.restore_fixture()
+        assert check_custom_fixture() == saved_identity
+    finally:
+        demo.shell.market_time_timer.stop(); demo.close(); conn.close()
+
+    conn = create_connection(tmp_path / "demo.db")
+    demo = ContextPredicateDemo(conn)
+    try:
+        demo.restore_fixture()
+        assert check_custom_fixture() == saved_identity
+    finally:
+        demo.shell.market_time_timer.stop(); demo.close(); conn.close()
