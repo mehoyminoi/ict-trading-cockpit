@@ -3,6 +3,11 @@ from dataclasses import dataclass
 from datetime import datetime
 
 
+def _parse_coverage_datetime(value: str) -> datetime:
+    # Python 3.10 requires an explicit UTC offset instead of the ISO 'Z' suffix.
+    return datetime.fromisoformat(value.replace("Z", "+00:00"))
+
+
 @dataclass(frozen=True)
 class ContextCoverage:
     start: str = ""
@@ -23,8 +28,8 @@ class ContextCoverage:
                 raise ValueError("Coverage scopes must be collections of non-empty labels")
             object.__setattr__(self, name, tuple(values))
         if self.start or self.end:
-            start = datetime.fromisoformat(self.start)
-            end = datetime.fromisoformat(self.end)
+            start = _parse_coverage_datetime(self.start)
+            end = _parse_coverage_datetime(self.end)
             if start.utcoffset() is None or end.utcoffset() is None or end < start:
                 raise ValueError("Coverage requires ordered aware bounds")
         if self.complete and (not self.start or not self.end or not self.basis.strip()):
@@ -33,7 +38,7 @@ class ContextCoverage:
     def covers(self, condition, start, end):
         if not self.complete or not self.start or not self.end:
             return False
-        if datetime.fromisoformat(self.start) > start or datetime.fromisoformat(self.end) < end:
+        if _parse_coverage_datetime(self.start) > start or _parse_coverage_datetime(self.end) < end:
             return False
         # '*' is an explicit provider claim of all values in a dimension.
         # An empty scope never means all values.

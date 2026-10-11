@@ -129,11 +129,15 @@ def test_legacy_query_success_and_legacy_snapshot_are_not_completeness_claims():
         assert result.state is ContextMatch.UNKNOWN
 
 
-def test_coverage_requires_both_window_and_selector_scope():
+@pytest.mark.parametrize("suffix", ["Z", "+00:00"])
+def test_coverage_requires_both_window_and_selector_scope(suffix):
     condition = event_rule().conditions[0]
-    start, end = datetime.fromisoformat("2026-10-06T00:00:00Z"), datetime.fromisoformat("2026-10-07T00:00:00Z")
-    complete = ContextCoverage(start.isoformat(), end.isoformat(), True, ("*",), ("*",), ("High",), ("*",), "Synthetic source guarantee")
+    start, end = datetime.fromisoformat("2026-10-06T00:00:00+00:00"), datetime.fromisoformat("2026-10-07T00:00:00+00:00")
+    complete = ContextCoverage(f"2026-10-06T00:00:00{suffix}", f"2026-10-07T00:00:00{suffix}", True, ("*",), ("*",), ("High",), ("*",), "Synthetic source guarantee")
     assert complete.covers(condition, start, end)
+    restored = ContextCoverage.from_dict(complete.to_dict())
+    assert restored == complete
+    assert restored.covers(condition, start, end)
     assert not replace(complete, impacts=("Low",)).covers(condition, start, end)
     assert not replace(complete, event_types=()).covers(condition, start, end)
     assert not replace(complete, end=start.isoformat()).covers(condition, start, end)
