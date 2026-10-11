@@ -104,6 +104,8 @@ Smoke-document checks: **4 passed in 0.50s** on Python 3.12.14. All 244 smoke id
 
 ## Decisions for operator review
 
+- **Provisional operator feedback, 2026-10-11:** the pertinent-cycle/context direction is promising, but the PNG suggests too many buttons/clicks and too much effort interpreting the form. The embedded visualization failed, so layout and disclosure feedback remain inconclusive without hands-on use. Independent session/cycle interpretation received tentative assent; first-expectation comparison remains tentative. The separate Record action raised a clear motion/memory concern: forgetting it could leave missing data. Test automatic draft persistence with visible save/error state and no extra save obligation, while keeping persistence distinct from analytical completion. These are directions for a subsequent trial, not final requirements, design acceptance or production authorization. Retain the current preview as a baseline for comparison.
+
 - Does focusing one session/cycle with expandable day history support the technician's working sequence?
 - Is **first recorded expectation** a useful default Review baseline, with later revisions available explicitly?
 - Keep session-level and cycle-level interpretations independent, with no inheritance in the first slice?
