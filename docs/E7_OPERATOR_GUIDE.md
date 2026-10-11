@@ -1,6 +1,6 @@
 # E7 operator checks — practical guide
 
-Use this guide for the same checks **236–244** in `SMOKE_TEST.md`. Keep your existing results; resume at your current check. This guide changes the instructions, not the acceptance criteria.
+Use this guide on `feature/context-maturity-e7-v0` for the same checks **236–244** in `SMOKE_TEST.md`. Keep your existing results; resume at your current check. This guide changes the instructions, not the acceptance criteria.
 
 ## What the demo is testing
 
@@ -56,5 +56,25 @@ If Restore is gray, this open database has no saved fixture. Stop and report the
 Select **Legacy rules** in the E7 demo and look for **No declarative context rules recorded; existing manual Trade Plan gates remain in force.** No restart is needed for that part.
 
 Earlier E6 data must be checked in its original sandbox or the normal application. From the repository root on Linux, launch the normal application with `PYTHONPATH=src python -m ict_cockpit.main`. Go to **Trade Plan → Process → Calendar captures** and open the saved-capture dropdown. Entries beginning **Week …** identify saved captures; **Not Configured** alone means this database has none. Normal startup or inspecting a saved capture alone does not establish restoration of an earlier run. If the earlier data is unavailable, keep 243 **NOT TESTED** and note the observed portion rather than reconstructing missing operator history.
+
+### Controlled check when the original E6 data is unavailable
+
+This substitutes an identifiable old-version fixture for the missing old sandbox. It does not recover your earlier data. The tool creates two synthetic captures and a Replay run using accepted E6 source at `42e3b346245de17e61a062e29fa6cd082d2527bf`, then opens the normal current application on that database. It retains `e6-original.db` and `e6-origin.json` as the original database and provenance record. Your usual application database is separate.
+
+First, inspect **Legacy rules** in the E7 predicate demo as described above. Then close that demo and run:
+
+```bash
+python tools/e6_compatibility_demo.py --data-dir /tmp/ict-e6-e7-compatibility
+```
+
+First launch requires an empty directory. Later launches reuse the same database and do not recreate the run. If the accepted E6 commit is missing, run `git fetch origin` and retry. If a failed attempt left files, use a different empty directory; the tool refuses to replace existing files.
+
+1. **Restored Watch:** the normal application opens in Watch with **Silver Bullet Model**, Replay and Alpha 0.7. Manual gates are Pending and the candidate is Blocked. The permanent bottom label lists the original run and capture IDs; they are also printed in the terminal.
+2. **Stored context:** click **Show context details**. Compare its run/capture IDs with the bottom label. Look for **E6 compatibility release**, native previous **1%**, and unverified completeness/unknown precision and status. The rules detail says **No declarative context rules recorded; existing manual Trade Plan gates remain in force.** An uncertain export must not become a precise upcoming release or automatic calendar block.
+3. **Normal TDA/Watch navigation:** click **Return to Analysis**, enter a reason if requested, and verify TDA retains the same stored context. Then **Finish TDA / Enter Live Watch**, choosing **File Incomplete Anyway** if prompted. Manual gates stay explicit; returning to Watch does not grant entry.
+4. **Review and restart:** click **Finish Live Watch / Enter Review**. Check the same original IDs and context; close the window. Run the exact command above again. It restores Review automatically with the same run and original capture. There is no Restore fixture button in this normal application. Do not complete the run during this check.
+5. **Two saved captures:** go to **Trade Plan → Process → Calendar captures**. The dropdown contains **Not Configured** and two **Week 2026-10-04…** entries. New-run selection starts Not Configured after restart. Inspect the two entries: the capture matching the bottom original ID has native previous **1%**; the other has **revised**. Select the revised capture and click **Use selected capture for new runs**. Return to **Process → Run Trading Day**; its stored context still shows the original capture and **1%**.
+
+If all these observations and the Legacy scenario match, mark 243 **PASS**, noting controlled E6→E7 compatibility and the IDs. A mismatch is **FAIL** with the observed step; an unclear or incomplete check stays **QUESTION / NOT TESTED**. Developer automation separately verifies genuine E6 rule payloads with absent E7 fields retain run-wide scope and no not-matched effect; those unpublished payloads are not installed into Alpha 0.7.
 
 Automated tests verify the detailed calendar, scope, compatibility and stored-state combinations. These operator checks verify that the actual workflow and explanations are usable. A confusing instruction or unidentifiable database is useful feedback to fix, not a reason to guess a result.
