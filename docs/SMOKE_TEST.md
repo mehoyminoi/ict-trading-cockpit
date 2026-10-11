@@ -938,7 +938,7 @@ The terminal prints the directory and restart command. The demo uses synthetic m
   - Where: default **Monday event present**, inspect context in TDA, advance to Watch, then **Finish Live Watch / Enter Review > Show context details**.
   - Look for: E7 fixture plan revision, stored candidate ID/revision, October 5 bounds, rule rationale, configured effects, event ID and the same Not Matched / Block New Entry result.
   - Expected: context evaluation does not fetch a calendar, rewrite source facts, grant entry or create competency evidence. Expected-versus-observed Review stays separate.
-- [QUESTION] Saved predicates restore through source/configuration changes and restart.
+- [PASS] Saved predicates restore through source/configuration changes and restart.
   - Where: in Review, **Save fixture**; change to **Complete Monday empty** or **Legacy rules**, then **Restore saved fixture**. Close and reopen with the same command and directory; click Restore again.
   - Look for: the original saved run ID, Review state, candidate revision, Monday event and blocking result.
   - Expected: current scenario/definition changes do not replace stored rules or facts. The label identifies restored state; scenario controls describe new fixtures. No provider query occurs during restore.
