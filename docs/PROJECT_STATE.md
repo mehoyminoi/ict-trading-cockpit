@@ -8,7 +8,7 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 - **Active branch:** `feature/context-maturity-e6-import-v0` (implementation; operator acceptance pending)
 - **Main baseline:** `59a9b984b398a10f54847315569b8179a37b38e6` — canonical E5/E6 checkpoint; accepted E5 merge `3232962144126bc4d48dbb84b21a21579228be35`
-- **Implementation checkpoint:** E6 local source capture/JSON import on this branch; publication SHA pending. Branch starts from PR #58 assessment commit `2d9eed4c6acde448584a43fad923b1226de11ab1`; last accepted feature is E5 `41f9d69c5b648873f6b95f2041e5daaeb2ea8508`.
+- **Implementation checkpoint:** `130a50077bf18973aabb184cc9e588b57a62c71a` — Add immutable Forex Factory JSON captures and explicit provider coverage (E6). Branch starts from PR #58 assessment commit `2d9eed4c6acde448584a43fad923b1226de11ab1`; last accepted feature is E5 `41f9d69c5b648873f6b95f2041e5daaeb2ea8508`.
 - **Current slice:** E6 — local Forex Factory JSON capture/import v0; focused operator acceptance pending
 - **Schema:** v37
 - **Trade Plan revision:** Alpha 0.7
@@ -192,7 +192,7 @@ Validation:
 
 ## Current task
 
-**E6 — local Forex Factory JSON capture/import v0** is implemented on the feature branch and awaiting focused operator acceptance. Main remains at the accepted E5/E6 baseline. This feature branch includes the unmerged PR #58 assessment checkpoint; the implementation review is stacked on that branch.
+**E6 — local Forex Factory JSON capture/import v0** is implemented on the feature branch and awaiting focused operator acceptance. Main remains at the accepted E5/E6 baseline. This feature branch includes the unmerged PR #58 assessment checkpoint; the implementation review is [draft PR #59](https://github.com/mehoyminoi/ict-trading-cockpit/pull/59), stacked on that branch. Main and PR #58 are not merged by this slice.
 
 The operator accepted proceeding with the recommended free import direction. No paid subscription is assumed; Trading Economics at approximately $200/month remains excluded. FMP is an assessed future paid candidate, not a selected dependency. See `E6_PROVIDER_ASSESSMENT.md` for the source comparison and XML findings.
 
