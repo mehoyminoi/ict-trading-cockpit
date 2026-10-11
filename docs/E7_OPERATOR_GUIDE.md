@@ -2,7 +2,7 @@
 
 Use this guide on `feature/context-maturity-e7-v0` for the same checks **236–244** in `SMOKE_TEST.md`. Keep your existing results; resume at your current check. This guide changes the instructions, not the acceptance criteria.
 
-**Acceptance checkpoint (2026-10-11): all nine checks PASS.** Check 242 retained saved run identity and context before and after restart. The controlled E6→E7 check 243 passed with original run `16b5fe86-e5d3-4f4a-b9da-432afe1be23f` and capture `ee87fcdd-1423-4f91-bcdc-9b69dbe904f2`, recorded in `9454414`. Selecting the revised capture for new runs preserved the existing run’s native previous `1%`. The original missing-data note remains historical; review/merge is pending.
+**Acceptance checkpoint (2026-10-11): all nine checks PASS.** Check 242 retained saved run identity and context before and after restart. The controlled E6→E7 check 243 passed with original run `16b5fe86-e5d3-4f4a-b9da-432afe1be23f` and capture `ee87fcdd-1423-4f91-bcdc-9b69dbe904f2`, recorded in `9454414`. Selecting the revised capture for new runs preserved the existing run’s native previous `1%`. The original missing-data note remains historical; PR #60 merged as `f57794cff6f128830655b458e999fd8f72038280` after a fresh 456-test suite passed on Python 3.12.14.
 
 ## What the demo is testing
 

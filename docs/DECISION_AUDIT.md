@@ -245,11 +245,11 @@ The earlier proposed-only importer wording is superseded by the operator's go-ah
 
 | Area | Current interpretation | Status |
 |---|---|---|
-| Model/playbook scope | Explicit plan-owned playbook IDs; candidate effects use stored Playbook identity. Other models and Custom setups do not inherit scoped effects. | IMPLEMENTED / operator accepted 2026-10-11; review/merge pending |
+| Model/playbook scope | Explicit plan-owned playbook IDs; candidate effects use stored Playbook identity. Other models and Custom setups do not inherit scoped effects. | IMPLEMENTED / operator accepted 2026-10-11; merged through PR #60 |
 | Presence versus absence | Event Absent inverts known outcomes only; complete coverage must include every selected day and selector scope. Unknown remains Unknown. | REFINED / IMPLEMENTED |
 | Calendar relationship | NY civil weekday windows and explicit relative calendar-week offset; no model-name inference. | IMPLEMENTED / adopted Monday relationship OPEN |
 | Effects | Matched, not-matched and Unknown effects are explicit; legacy not-matched effect is None. Scoped Stand Down Day is invalid. | REFINED / IMPLEMENTED |
 | Historical ownership | Existing v37 rule/candidate/source snapshots preserve semantics through database reopen and Review; current definitions never replace them. | CURRENT / IMPLEMENTED |
 | Friday Asian Range adoption | A generic validation fixture; preceding/following Monday and policy effects are not settled trading rules. Alpha 0.7 remains unchanged. | DEFERRED pending explicit Trade Plan decisions |
 
-Earlier E7-downstream wording describes the E6 checkpoint. E7 v0 is implemented and operator accepted on its feature branch; review/merge remains pending. All nine checks PASS after controlled persistence and E6→E7 compatibility retests, with the latter recorded in `9454414`. Milestone E remains the major frontier; no roadmap priority is moved.
+Earlier E7-downstream wording describes the E6 checkpoint. E7 v0 is implemented, operator accepted and merged through PR #60 (`f57794cff6f128830655b458e999fd8f72038280`). All nine checks PASS after controlled persistence and E6→E7 compatibility retests, with the latter recorded in `9454414`. Milestone E remains the major frontier; no roadmap priority is moved.

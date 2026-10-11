@@ -1183,7 +1183,7 @@ Event Present and Event Absent share the same normalized-fact and coverage contr
 
 Matched, not-matched and Unknown effects are separate explicit settings. Historical E5 rules retain no effect for not-matched and run-wide scope. A playbook-scoped Stand Down Day is invalid. No predicate grants entry or changes a model definition/competency state; persisted rules, candidate revisions and source snapshots remain the source of truth on restore.
 
-The Friday Asian Range no-Monday-high-impact-news example validates expressibility. Its adopted Monday relationship and policy effects remain open, and Forex Factory imports cannot certify no news. Alpha 0.7 publishes no E7 rule. Use `python tools/context_predicate_demo.py` for a separate acceptance database; E7 operator acceptance is pending.
+The Friday Asian Range no-Monday-high-impact-news example validates expressibility. Its adopted Monday relationship and policy effects remain open, and Forex Factory imports cannot certify no news. Alpha 0.7 publishes no E7 rule. Use `python tools/context_predicate_demo.py` for a separate acceptance database; all nine E7 operator checks PASS on 2026-10-11, and E7 is merged through PR #60. Full intraday session/90-minute history remains a separate context-maturity requirement.
 
 # 28. Structured records and derived outputs
 
