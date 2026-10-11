@@ -93,7 +93,22 @@ Changing current time definitions, selecting a different source capture or reope
 
 ## First implementation slice after design review
 
-Implement stable interval identity and versioned run persistence first, with a disposable focused editor for the selected interval. Defer replacing all production QT controls until identity, historical defaults and comparison pairing are proven. The preview is interaction exploration, not an implementation or persistence test.
+Component layout iteration is parked following the operator's request to zoom out on 2026-10-11. Review the overall Cockpit functional map and context-specific presentation/action contracts before further production UI development. Architecture does not require choosing a final widget layout: stable interval identity, provenance, run ownership and persistence can be specified independently. Draft-to-committed-revision timing, permitted Watch interpretation edits versus observation capture and default comparison baseline must be explicitly settled before their corresponding behavior is implemented.
+
+After contract review, implement stable interval identity and versioned run persistence first, with a disposable developer harness if needed. Defer replacing production QT controls until identity, historical defaults and comparison pairing are proven. The existing preview is interaction exploration, not an implementation or persistence test.
+
+### One shared model, context-specific presentations
+
+| Cockpit context | Presentation emphasis | Shared substrate |
+| --- | --- | --- |
+| TDA / Analysis | Orient in the whole stack; inspect relevant detail; form working interpretation/thesis | Canonical clock/interval identity, expected interpretation and shared analysis actions |
+| Watch | Quiet at-a-glance self-orientation; efficient permitted observation/capture | Same facts/expectations, existing permissions/transitions and capture actions |
+| Market Review | Contextual expected/observed changes, explanation and Study questions | Preserved expectation/observation identity, notes and provenance |
+| Study / Lab | Spacious investigation around questions, hypotheses, examples and insight gathering | Same domain contracts, own explicit historical reference/run, study observations and evidence links |
+
+These presentation profiles do not add domain process modes, fork the workflow or merge interpretations across runs. A renderer can change without rewriting historical data or input-action semantics. Mouse, shortcuts and later macro-pad input target the same permitted actions. Visibility/orientation/low-burden feedback applies across profiles; the exact layout of the synthetic editor is not binding.
+
+The broader functional review should place these within the established structure: Trade Plan Foundation/Rules/Playbooks define the current system; Process operates it through TDA/Watch/Review; Study/Lab investigates and trains; Review/Development synthesizes evidence and routes work; Workbench manages concrete configuration/revision needs. Map actual versus proposed surfaces, navigation, context continuity, available actions and what is automatically captured versus deliberately certified. This is the immediate review direction, not authorization for a general UI rewrite or speculative Workbench framework.
 
 Developer verification should cover exact 00:00/06:00/10:30/12:00/18:00 transitions, Asia's preceding date, weekend/closed references, NY offset changes, stable saved identity after definition changes, no retargeting of a dirty editor, no copy-forward, atomic saves/revision ordering, immutable comparison pairing, run isolation, v37 restoration without invented history, and restart. Existing E1/E3/E4/E5/E6/E7 gates and context tests remain regression requirements.
 
