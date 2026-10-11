@@ -1,0 +1,90 @@
+# Shared QT / AMDX behavior-contract review
+
+**Status:** Concrete proposals for discussion following the reviewed whole-cockpit walkthrough. Production implementation and these three behavior choices are not yet accepted.
+**Scope:** Actions and recorded meaning shared by different renderers. Component layout remains parked. Schema v37, Alpha 0.7 and accepted E7 behavior are unchanged.
+
+## 1. Automatic capture without a completion obligation
+
+### Recommended behavior
+
+An accepted phase choice invokes **Set interpretation**. The application saves an immutable interpretation revision automatically and shows quiet success/error state. No separate Save/Record action is required. Selecting a scope, focusing a control, browsing options or leaving an untouched Unknown value creates no interpretation revision. Repeating the already-recorded phase is a no-op.
+
+Free-text notes save as recoverable drafts while being typed. A draft belongs to an explicit run, target scope, channel and, where applicable, an interpretation revision. Typing does not certify a station or repeatedly declare a new phase. Completed note edits can become timestamped annotations through the application action boundary; exact debounce/focus-exit binding can be chosen in implementation without conflating note entry with phase commitment. A note entered later must not appear to have existed when the earlier phase was selected.
+
+Changing M to D preserves M and appends D. Clearing a recorded phase to Unknown appends an explicit clearing revision; it does not delete history or populate neighboring intervals. Correction/undo, if exposed, invokes the same revision-preserving action rather than erasing a record.
+
+### Concrete case
+
+| Technician action | Durable meaning | Process completion |
+| --- | --- | --- |
+| Inspect NYAM cycle 3 | Selection only; saved interpretation remains unchanged | Unchanged |
+| At 08:55 ET, choose M for cycle 3 (09:00–10:30) | Expected revision E1=M; explicit market reference is Before interval | Unchanged |
+| Type an explanation | Recoverable note draft with its own record/reference timing and target | Unchanged |
+| At 09:20 ET, choose D for cycle 3 | Expected revision E2=D; E1 remains; E2 is During interval | Unchanged |
+| Choose cycle 4 | Different target; no copy-forward or implicit answer | Unchanged |
+| Complete a station or finish TDA | Existing deliberate certification/transition action | Changes only through that action |
+
+The semantic input is an accepted choice, not a particular dropdown event. Mouse, keyboard and future macro-pad adapters must distinguish option browsing from an actual accepted Set interpretation command.
+
+### Persistence and failure invariants
+
+Persist the target identity, value/channel, revision ID/order, source and explicit market reference in one transaction before reporting saved success. The reference belongs to the action; a passive clock tick cannot move a pending edit to another interval. Recording wall time and historical market reference remain distinct.
+
+On storage failure, preserve the pending draft, visibly report that it is not saved, and allow recovery without claiming success or completion. An idempotent command identity prevents retries from duplicating revisions. Reject a stale predecessor rather than silently overwriting a concurrent change. Exact retry presentation remains a UI choice.
+
+Reopening restores persisted drafts and revisions without converting drafts into completed analytical work. A draft with no selected phase remains a draft, not an invented first expectation. Legacy run values keep their old meaning; migration invents neither interval history nor original write times.
+
+**Review question:** Is a deliberate phase choice itself enough to record an interpretation automatically, while notes can remain recoverable drafts and analytical completion stays separate?
+
+## 2. Efficient Watch capture and expectation changes
+
+### Recommended first implementation boundary
+
+Keep existing Watch observation/thesis capture and scope inspection available. Continue using the shared **Return to Analysis** action when the technician wants to revise an expectation. That action should preserve the inspected target for efficient editing, within the current run and existing transitions. A later reviewed quick-edit path can invoke the same command and permission policy; it should not be hardcoded into a separate Watch-owned state store.
+
+Study is an environment/purpose, not a bypass of process semantics. A spacious Study renderer uses the same scoped commands and appropriate analysis/review permissions for its own run.
+
+### Concrete case
+
+| Situation | Proposed action | Record affected |
+| --- | --- | --- |
+| Technician wants to inspect the weekly expectation during Watch | Inspect weekly scope | No interpretation change |
+| Technician sees a material market development | Existing Capture observation / thesis-state action | Run observation/evidence, with its explicit reference |
+| Technician wants to replace a cycle expectation M with D | Return to Analysis with that target, then Set interpretation | New expected revision; old M retained |
+| Technician records the observed cycle phase during Market Review | Set observed interpretation | Independent observed revision with identified comparison baseline |
+
+None of these actions silently clears authorization gates, changes the Trade Plan, advances a station or upgrades eligibility. Capturing an observation must not silently rewrite the working expectation. Whether a direct Watch AMDX observation or expectation-edit action is desirable remains an explicit product decision; efficient entry does not imply the answer.
+
+**Review question:** Keep the current Return to Analysis boundary for expected-phase changes initially, or design a deliberate scoped quick-edit action in Watch now?
+
+## 3. Identified comparison rather than hindsight substitution
+
+### Recommended default
+
+Use the first explicit expected revision for the target as the initial Review baseline. Show its identity and market timing. A deliberately selected alternate baseline must be identified and persisted with the observation. Creating or editing an expectation later cannot rewrite an existing observation's comparison pair.
+
+### Concrete case
+
+| Record/action | What Review retains |
+| --- | --- |
+| E1=M entered at 08:55 for NYAM cycle 3 | Original expected interpretation, Before interval |
+| E2=D entered at 09:20 for the same cycle | Revised working interpretation, During interval |
+| Observation O1=D recorded afterward | Proposed default compares E1=M with O1=D; E2 remains inspectable |
+| Technician explicitly chooses E2 as an alternate comparison | A new/corrected observation revision identifies E2; the earlier O1/E1 pairing remains historical |
+| Observation recorded when no expectation exists | Comparison baseline is Unknown (null); a later expectation does not retroactively attach itself |
+
+Differences remain descriptive. They do not establish error, probability, trading permission or competency. Explanatory notes and Study questions can be captured without a correctness grade. Both Unknown sides or an explicitly Not Applicable side remain Not Comparable; original values/classifications remain inspectable.
+
+**Review question:** Is first explicit expectation the right default, with intentionally selected later baselines available?
+
+## 4. Independent mature-UX directions retained
+
+The operator reviewed the whole-tool walkthrough on 2026-10-11. Bird's-eye orientation and focused detail should coexist closely; the mature experience should integrate them rather than separate them behind tabs. Current Focus/Deck tabs remain existing behavior until a reviewed presentation replaces them.
+
+Study-first startup is proposed and subject to change: a dismissible Study this Competency / next-study suggestion should reduce the burden of choosing useful work with limited mental energy, especially while developing a validated successful Trade Plan. Candidate inputs include recorded Development Direction, competency focus and unfinished study. Suggestion ordering, settings, dismissal and active-run resume require later UX review. The opener must not create a run, alter an environment or impose a study quota automatically. These directions do not block the shared data/action contract work.
+
+## 5. Review and implementation boundary
+
+Discuss the three contracts independently, starting with automatic capture. Agreement that the walkthrough is coherent is recorded separately from agreement to these behavior choices. Exact renderer layout and startup preference remain independently revisable.
+
+After the relevant contracts are settled, the next implementation can build stable interval identity, versioned run persistence, revision-preserving actions and developer verification. Preserve current legacy values/permission boundaries and use a disposable developer harness before introducing production renderers. No new manual smoke checklist is introduced by this review document.

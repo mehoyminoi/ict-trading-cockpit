@@ -97,6 +97,8 @@ Component layout iteration is parked following the operator's request to zoom ou
 
 `COCKPIT_FUNCTIONAL_WALKTHROUGH.md` is the concrete review aid: verified current navigation, operating and learning journeys, current-versus-proposed capabilities, context-specific presentations, ownership/action boundaries and three behavior-contract recommendations. Review this broader picture before resuming component layout or implementing the new QT behavior.
 
+The walkthrough was reviewed on 2026-10-11. Next is `QT_ACTION_CONTRACT_REVIEW.md`, which provides concrete automatic-capture, Watch-edit and comparison-baseline cases. Operator review of the walkthrough does not imply acceptance of those pending contracts. Integrated nearby overview/detail and a proposed dismissible Study-first startup remain presentation directions; they do not require choosing a final renderer before data/action architecture.
+
 After contract review, implement stable interval identity and versioned run persistence first, with a disposable developer harness if needed. Defer replacing production QT controls until identity, historical defaults and comparison pairing are proven. The existing preview is interaction exploration, not an implementation or persistence test.
 
 ### One shared model, context-specific presentations

@@ -3,6 +3,7 @@
 **Status:** Architectural and operator review aid; final rendering and production QT changes are not approved by this document.
 **Verified baseline:** accepted E7 on main `83d82323ca936dedf045027760d81a1cd7de76b1`; schema v37, Trade Plan Alpha 0.7. This design branch changes documentation only.
 **Purpose:** Review the whole operating/learning experience before refining a QT component. Separate what currently exists, what is required, and what is proposed.
+**Operator review:** walkthrough reviewed on 2026-10-11; ready to continue to shared behavior-contract review. This does not settle the three open contracts or approve a final renderer.
 
 ## 1. The whole tool
 
@@ -57,6 +58,8 @@ Multiple existing entry points need coherent orientation. Consolidating them is 
 
 Changing a renderer or selecting an interval does not change the environment, certify a station, advance a process, or create a new run. The normal Trading Run can span multiple market sessions. Additional runs are deliberate new process contexts.
 
+The operator confirms the Focus/Deck relationship as the right microcosm for nearby detail and bird's-eye orientation. Mature UX should bring these together rather than use tabs to separate them. Existing tab navigation is documented as current behavior, not the final design.
+
 ```mermaid
 flowchart TD
     A["TDA / Analysis"] --> W["Watch"]
@@ -95,6 +98,8 @@ This is a conceptual walkthrough, not a new manual acceptance checklist. It uses
 ## 5. Learning journey: insight to investigation and practice
 
 **Enter improvement directly.** Review / Development can be entered without finishing a trading day. A reviewed run, repeated unexplained change, external learning input, or existing competency question can motivate work here; they are different kinds of input.
+
+**Proposed default doorway.** In the mature UX, Study should be the most anticipated/startup workspace, especially while a validated successful Trade Plan is being built. A dismissible Study this Competency / next-study suggestion can reduce the mental effort of choosing useful work after a tiring day. It should explain its recorded basis and offer an easy route to other work. This is a proposed starting preference, not an implemented screen, study quota, eligibility change or automatic run launch. Handling active-run resume and recommendation ordering remains to be designed.
 
 **Inspect the evidence.** Evidence/synthesis and Cross-Run Observation help make repeated patterns inspectable. Development Direction expresses what to work on next. Evidence Maturity judges usability for a progression boundary. These records are distinct from competency state, certifications, current eligibility and historical attainment.
 
@@ -148,8 +153,8 @@ These contracts deserve concrete examples before production behavior is committe
 
 ## 8. Immediate work sequence
 
-1. Review these two journeys and the real navigation map. Correct ownership, missing activities, awkward handoffs and intended context availability before detailed screen work.
-2. Resolve the three shared behavior contracts with examples. This is small architecture review, not approval of a UI layout.
+1. Walkthrough reviewed on 2026-10-11; retain the clarified close overview/detail relationship and proposed Study-first doorway. Additional corrections can still be incorporated.
+2. Resolve the three shared behavior contracts with the concrete cases in `QT_ACTION_CONTRACT_REVIEW.md`. This is small architecture review, not approval of a UI layout.
 3. Implement the narrow identity/persistence/action slice with developer verification and legacy/restart protection, once its contract is accepted.
 4. Evaluate context-specific presentations in their working conditions: Watch beside charts, Lab during investigation, TDA during analysis, Review after the fact. Later shortcuts/hardware invoke the same actions.
 

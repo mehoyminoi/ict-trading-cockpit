@@ -195,6 +195,8 @@ Focus and Deck are complementary projections of the same underlying process stat
 
 They must not fork into duplicate workflows.
 
+Operator clarification on 2026-10-11: the Focus/Deck relationship is a useful model for nearby detail and bird's-eye orientation, but the mature presentation should integrate the two closely rather than separate them behind tabs. This is a presentation direction; existing Focus/Deck tabs remain until a reviewed replacement preserves their shared process state and natural navigation.
+
 ### 4.3 Navigation versus certification
 
 Navigation does not imply completion.
@@ -1413,3 +1415,11 @@ Preserve interval/revision history for reconstruction and contextual Review/Stud
 Foundational QT/AMDX context can have different rendering/interaction profiles across the Cockpit. Watch should emphasize quiet at-a-glance self-orientation and efficient permitted capture; Study/Lab should allow a more spacious investigative experience tailored to insight gathering. TDA and Market Review can emphasize their own analytical and comparison tasks. These are projections of the shared domain state and application actions, not additional process modes or independent interpretation stores. Whole-stack accessibility, historical truth and low interaction/memory burden carry across profiles; identical widget layout is not required.
 
 Park component layout iteration while reviewing the broader Cockpit functional map, context placement and action/ownership boundaries. Architectural contract work can progress independently of final rendering choices. Before production UI development, review a coherent overall-tool view covering Trade Plan/governance, Process, Study/Lab, Review/Development and Workbench, including existing behavior versus proposed behavior. Exact draft commit timing, permitted Watch interpretation edits versus observation capture, and comparison baseline remain explicit contract decisions rather than consequences of a mockup's controls.
+
+### Proposed Study-first startup — operator direction 2026-10-11
+
+Study should be the default/most anticipated workspace in the mature UX, especially while building a validated successful Trade Plan. The operator expects time spent studying to substantially outweigh live-trade activity during that period; no numeric ratio or enforced quota is specified.
+
+A proposed startup surface should offer Study this Competency / a relevant next study task in the spirit of a dismissible recent-project suggestion. Its purpose is to answer: "After a tiring workday, what is the best use of my limited time and mental energy?" It should minimize planning/navigation burden while remaining easy to dismiss or navigate around. This direction is explicitly subject to change and is not a mandatory study gate or an implemented new startup behavior.
+
+Recommendations should explain their recorded basis, such as saved Development Direction, selected competency focus or an unfinished study; no unsupported mastery score or invented personalized priority is introduced. Details of recommendation ordering, manual preference and handling an already-active run remain open. Startup guidance should not silently create a run, change an environment, overwrite in-progress context, or change Trade Plan/progression rules.
