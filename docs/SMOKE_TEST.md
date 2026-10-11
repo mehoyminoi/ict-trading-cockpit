@@ -900,7 +900,7 @@ The terminal prints a sandbox directory and the exact restart command. It contai
 
 ## Current branch acceptance — E7 model/playbook context predicates
 
-**Operator acceptance: pending — 7 PASS / 1 QUESTION / 1 NOT TESTED**, recorded in `8f1ad50c6a62c37c1b331ad0ca84a7542b33aa87` on 2026-10-11. Checks 242 and 243 remain open. Schema **v37**, published Trade Plan **Alpha 0.7**. E7 is implemented on `feature/context-maturity-e7-v0`; developer checks do not replace these nine operator checks. The Friday Asian Range Monday relationship and policy adoption remain open.
+**Operator acceptance: pending — 8 PASS / 1 NOT TESTED**. The original results are recorded in `8f1ad50c6a62c37c1b331ad0ca84a7542b33aa87`; the controlled 242 persistence retest passed in `19ecc042b1562e128799a0cc0b7c2bc1fa6edd8b` on 2026-10-11. Check 243 remains open. Schema **v37**, published Trade Plan **Alpha 0.7**. E7 is implemented on `feature/context-maturity-e7-v0`; developer checks do not replace these nine operator checks. The Friday Asian Range Monday relationship and policy adoption remain open.
 
 Launch a separate acceptance database from the repository root:
 
@@ -942,16 +942,18 @@ The terminal prints the directory and restart command. The demo uses synthetic m
   - Where: in Review, **Save fixture**; change to **Complete Monday empty** or **Legacy rules**, then **Restore saved fixture**. Close and reopen with the same command and directory; click Restore again.
   - Look for: the original saved run ID, Review state, candidate revision, Monday event and blocking result.
   - Expected: current scenario/definition changes do not replace stored rules or facts. The label identifies restored state; scenario controls describe new fixtures. No provider query occurs during restore.
-  - Operator reopened the original saved database using explicit `--data-dir`; Restore became enabled and returned to Review. The original saved run ID had not been recorded, so identity continuity remains QUESTION. Repeating a bare launch had opened different sandboxes; this was not evidence of a restoration failure.
+  - Controlled operator retest PASS: `/tmp/ict-e7-242-retest/demo.db`, saved run `edca6b3f-e64d-4f8a-a9fd-570b633dfa80`. Restoring after Legacy rules and again after restart retained the same ID, Review, `fixture-friday@fixture-v0`, Not Matched / Block New Entry and event `fixture-monday`. This closes the earlier unrecorded-ID QUESTION. Bare launches had opened different sandboxes, rather than demonstrating a restoration failure.
 - [NOT TESTED] Legacy/manual operating behavior remains intact.
   - Where: **Legacy rules**, then normal application startup and restore of an earlier E6 run/capture.
   - The Legacy fixture check needs no restart. A demo launch starts a new unsaved Monday-event fixture; Restore is explicit. Earlier E6 captures belong to the normal application or their original E6 sandbox, rather than the E7 fixture database.
   - Look for: no declarative fixture effects in the legacy scenario; normal Alpha 0.7 gates, capture selection and existing TDA/Watch/Review behavior.
   - Expected: Alpha 0.7 has no new automatic news policy. Missing older rule fields preserve run-wide scope and no not-matched effect; source completeness/precision remain honest.
   - Normal application opened. Calendar captures contained only Not Configured, so earlier E6 capture/run restoration could not be checked.
+  - Controlled replacement check: `python tools/e6_compatibility_demo.py --data-dir /tmp/ict-e6-e7-compatibility`. See `E7_OPERATOR_GUIDE.md` for the staged observations. It creates a synthetic database with accepted E6 code at `42e3b346`, keeps an untouched original backup and manifest, and opens the normal E7 application. This is explicit old-version compatibility evidence, not recovered operator history. Retain NOT TESTED until the operator completes it.
 - [PASS] Full local automated suite passes; v37 and Alpha 0.7 remain unchanged.
   - Where: `python -m pytest`, normal startup/restoration, database schema if convenient.
   - Expected: exact local result recorded, no regression in stored runs, candidate gates, progression or context capture workflow. Prior developer full result after the Custom fixture correction was **453 passed** on both Python 3.10 and 3.12; later focused support verification was **33 passed** on both versions.
+  - Compatibility-support developer verification: **456 passed** on Python 3.10.22 and 3.12.14. After an archive-extraction warning cleanup, the final compatibility/document tests were **6 passed** on each version. These results do not change the recorded operator result or replace check 243.
   - Operator result on 2026-10-11: **Python 3.10.12, pytest 9.1.1, pluggy 1.6.0; 454 collected, 454 passed**. Recorded at `8f1ad50c6a62c37c1b331ad0ca84a7542b33aa87`, whose source/tests match parent `25ac4e5dd062fdab2539abf0c5d76317ddf5b322`. Elapsed time and PySide6 version were not supplied.
 
 ---
