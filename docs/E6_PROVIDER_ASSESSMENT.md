@@ -1,6 +1,6 @@
 # E6 — Economic-calendar provider assessment
 
-**Status:** Assessment history retained; operator authorized the free import direction. JSON v0 is implemented on the feature branch with focused operator acceptance pending. See implementation follow-through below for current scope.
+**Status:** Assessment history retained; operator authorized the free import direction. JSON v0 is implemented and operator accepted on the feature branch, with review/merge pending. See implementation follow-through below for current scope.
 
 **Baseline:** `59a9b984b398a10f54847315569b8179a37b38e6`, schema v36, Trade Plan Alpha 0.7.
 
@@ -149,4 +149,4 @@ No adapter, schema migration, automatic download, readiness rule, account-applic
 
 The operator authorized proceeding with the recommended free import direction. The first adapter now uses JSON's explicit offsets while keeping timing precision Unknown; the XML sample is still assessment evidence, not a supported import format. Schema v37 adds immutable source-capture storage, and **Trade Plan > Process > Calendar captures** supports preview, save, and explicit future-run selection. Captures store original JSON/digest, declared UTC week, import/file provenance, native rows, local IDs, adapter/mapping revisions, and limitations. Selection is not automatic after restart, and later imports do not refresh or rewrite existing runs.
 
-Requested dates are separate from completeness/selector-scope claims. The Forex Factory adapter never certifies absence or historical as-of knowledge. Out-of-week requests are Unavailable; uncertain week rows are retained with unknown day applicability. Watch does not treat their clock values as precise upcoming events or their holidays as confirmed futures-day schedule exceptions. No normalized NFP/CPI/FOMC mapping, paid dependency, runtime polling, freshness cutoff, or automatic Alpha 0.7 policy is introduced. Operator acceptance is pending in `SMOKE_TEST.md`.
+Requested dates are separate from completeness/selector-scope claims. The Forex Factory adapter never certifies absence or historical as-of knowledge. Out-of-week requests are Unavailable; uncertain week rows are retained with unknown day applicability. Watch does not treat their clock values as precise upcoming events or their holidays as confirmed futures-day schedule exceptions. No normalized NFP/CPI/FOMC mapping, paid dependency, runtime polling, freshness cutoff, or automatic Alpha 0.7 policy is introduced. All nine operator checks in `SMOKE_TEST.md` are PASS on 2026-10-10, recorded in `df4cac894f7e697bf65793c5f031265af5bdd9d4`; the local automated suite was reported as 425 passed. Review/merge remains pending.

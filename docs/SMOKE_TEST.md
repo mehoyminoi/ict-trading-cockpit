@@ -850,7 +850,7 @@ The fixture has no database, real calendar, or orders. It freezes historical mar
 
 ## Current branch acceptance — E6 local Forex Factory JSON captures
 
-**Operator acceptance: NOT TESTED.** Developer automated/offscreen validation is separate from these checks. Run these before merging `feature/context-maturity-e6-import-v0`. Schema **v37**, published Trade Plan **Alpha 0.7**.
+**Operator acceptance: PASS** on 2026-10-10. All nine results were pushed in `df4cac894f7e697bf65793c5f031265af5bdd9d4`; the operator reported **425 passed** for the local automated suite. Developer automated/offscreen validation is separate from these checks. Schema **v37**, published Trade Plan **Alpha 0.7**. Review/merge remains pending for `feature/context-maturity-e6-import-v0`.
 
 For a disposable database and synthetic export files:
 
