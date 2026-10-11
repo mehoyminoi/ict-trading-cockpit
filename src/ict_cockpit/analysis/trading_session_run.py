@@ -572,11 +572,13 @@ class TradingSessionRun:
         candidate.set_watch_point_state(watch_point_id, state)
         self._touch()
 
-    def context_rule_results(self, market_time_context: dict | None = None):
+    def context_rule_results(self, market_time_context: dict | None = None, *, candidate_id: str | None = None):
+        candidate = self.setup_candidate_by_id(candidate_id) if candidate_id else None
         return evaluate_context_rules(
             self.context_rule_snapshot, environment=self.environment.value,
             market_time_context=self.market_time_context if market_time_context is None else market_time_context,
             market_context_snapshot=self.market_context_snapshot,
+            playbook_id=candidate.source_id if candidate and candidate.source_type == "Playbook" else None,
         )
 
     def candidate_authorization(self, candidate_id: str) -> AuthorizationResult:
@@ -591,7 +593,7 @@ class TradingSessionRun:
 
         blockers: list[str] = [
             f"Context rule {result.name}: {result.state.value} / {result.effect.value} ({'; '.join(result.reasons)})"
-            for result in self.context_rule_results() if result.blocks_new_entry
+            for result in self.context_rule_results(candidate_id=candidate_id) if result.blocks_new_entry
         ]
         timed_window_ids = list(
             candidate.definition_snapshot.get("timed_window_ids", []) or []

@@ -1175,6 +1175,16 @@ A source capture and a run snapshot have different ownership: importing a later 
 
 Availability does not certify source completeness. Negative event conclusions require explicit provider coverage for the entire rule window and selector scope. Forex Factory export precision, lifecycle status, normalized type, affected-market mapping, completeness, and historical as-of knowledge remain unknown. All declared source-week rows are retained because filtering uncertain clock values could drop relevant All Day records. Watch therefore exposes these limitations without advertising precise upcoming times or confirmed day schedule exceptions. Alpha 0.7's manual gates remain authoritative.
 
+## E7 model/playbook context predicates
+
+Context rules can target explicit plan-owned playbook IDs. A targeted rule is evaluated for a candidate using its saved Playbook source identity; it is not a run-wide restriction on other models or Custom setups. The shared context details show targeted candidate identity/revision and its outcome, effect, resolved event windows and event IDs. Candidate authorization combines applicable context effects with existing setup criteria and manual gates.
+
+Event Present and Event Absent share the same normalized-fact and coverage contract. Event Absent flips known presence/absence only; missing or uncertain facts stay Unknown. Complete coverage must include each selected calendar day and selector scope before absence is proven. Calendar Week can select NY weekdays and an explicit week offset relative to the market reference. This makes preceding/following relationships declarative and handles NY DST without fixed-length UTC day assumptions.
+
+Matched, not-matched and Unknown effects are separate explicit settings. Historical E5 rules retain no effect for not-matched and run-wide scope. A playbook-scoped Stand Down Day is invalid. No predicate grants entry or changes a model definition/competency state; persisted rules, candidate revisions and source snapshots remain the source of truth on restore.
+
+The Friday Asian Range no-Monday-high-impact-news example validates expressibility. Its adopted Monday relationship and policy effects remain open, and Forex Factory imports cannot certify no news. Alpha 0.7 publishes no E7 rule. Use `python tools/context_predicate_demo.py` for a separate acceptance database; E7 operator acceptance is pending.
+
 # 28. Structured records and derived outputs
 
 Authoritative records live in structured data.
