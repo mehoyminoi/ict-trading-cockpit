@@ -7,7 +7,7 @@
 
 The current run has one expected and one observed value per QT level. Recording a later interpretation replaces the earlier value. It cannot represent a different expectation for each of the day's four sessions and sixteen 90-minute intervals.
 
-Keep active use small: four session selectors, four cycle selectors, and an editor for the selected session and cycle. Focus the current interval initially. Open other intervals only when the technician wants to forecast, inspect or review them. Preserve the underlying hierarchy and recorded changes without requiring twenty completed answers per run.
+Keep a quiet whole-stack AMDX overview visible, with a nearby inspector/editor for the selected level. Higher-order context and the current intraday scope form one coherent hierarchy; inspecting a level must not remove the surrounding picture. Focus the current interval initially without requiring twenty completed answers per run. Four-session/four-cycle buttons, collapsed higher context and raw day history in the original preview are an exploratory baseline superseded by operator feedback, not the target layout.
 
 This is the remaining Milestone E intraday-depth requirement in `PROJECT_REQUIREMENTS.md` and `CONTEXT_MATURITY.md`. It does not expand Milestone F execution safety or publish automatic context effects.
 
@@ -19,7 +19,7 @@ This is the remaining Milestone E intraday-depth requirement in `PROJECT_REQUIRE
 | Expected interpretation | `TradingSessionRun.qt_context`, normalized by `analysis/quarter_theory.py`; `set_qt_context` replaces the flat map | A per-interval history needs a separate contract. |
 | Observed interpretation | `review_observed_qt_context` plus one note; independent Review setter | Keep observation separate from expectation, including revisions and comparison identity. |
 | Storage | `database/trading_session_run_repository.py` stores both flat maps in existing JSON columns | Old values lack enough interval/write-time provenance for automatic expansion. |
-| TDA editing | `gui/qt_context_widget.py`: eight phase selectors; whole context emitted on a change | Preserve the higher-level stack; add only the selected intraday scope to active interaction. |
+| TDA editing | `gui/qt_context_widget.py`: eight phase selectors; whole context emitted on a change | Keep the whole-stack overview visible; make any editable level reachable through the adjacent selected-level interaction. |
 | Watch | Read-only interpretation summaries and raw factual time context | Keep existing permissions and process transitions authoritative. |
 | Review | `gui/post_market_review_widget.py`: flat expected summary and eight observed selectors | New comparison must name the particular session/cycle and expectation revision. |
 | Reference time | Live/Forward Test update `run.market_time_context`; Replay/Historical Backtest use the selected stored reference | Current time cannot identify when an earlier expectation was recorded. Store that provenance with each new revision. |
@@ -52,19 +52,21 @@ The run owns its interpretations. Two runs on the same trading day have distinct
 
 ## Compact interaction proposal
 
-1. **TDA:** open at the current session/cycle. Show the selected interval's two expectation fields: session and 90-minute cycle. Show the higher-level stack behind a collapsed disclosure. Record only changed fields in one action. Untouched intervals stay Unknown.
-2. **Watch:** show the current cycle's saved expectation and its session context. Inspection can select an earlier/future interval without moving the clock or modifying records. Changes use the existing return-to-analysis transition; Watch does not introduce another authorization or editing path.
-3. **Review:** choose a session/cycle and record an observed phase. Display the identified expectation alongside it, with Matched / Changed / Expected Unknown / Observed Unknown / Not Comparable. A collapsed day history reveals the other sessions/cycles. It is a browsing surface, not a completion checklist.
+1. **TDA:** show a quiet whole-stack overview and open the adjacent inspector at the current session/cycle initially. Any editable level is available nearby with the surrounding hierarchy retained. Untouched intervals stay Unknown. Trial automatic draft persistence rather than a separate Record obligation; saving work and certifying analytical completion remain distinct.
+2. **Watch:** retain the quiet whole-stack overview while emphasizing relevant current/upcoming context. Inspection can select another level or interval without moving the clock or modifying records. Changes use the existing return-to-analysis transition; future shortcuts invoke those same application actions.
+3. **Market Review:** retain whole-stack orientation and expose contextual expected/observed changes with their identified baseline and explanatory notes. The existing descriptive comparison semantics remain available where useful; there is no quarter-correctness grade. Remove the raw day-history list from the active workspace. Deeper historical browsing remains a later Review/Study/Lab placement decision, not a required list beside the editor.
+
+Bird's-eye context and accessible minutiae should be physically and conceptually close. Disclosure can expand definitions, provenance, prior-cycle relationships or editing detail; it must not hide the whole higher-order stack. Exact visual form remains unaccepted until hands-on evaluation. Heavy future keyboard/macro-pad use requires shared selection/inspection/editing actions now, while actual hardware integration remains downstream.
 
 Session and cycle phases remain independent. A session phase does not populate its four cycles. A cycle change does not replace the session phase. Entering cycle 4 does not copy cycle 3. There is no automatic A/M/D/X schedule or carry-forward.
 
-Selection and editing must stay distinct. Clicking a session/cycle never saves a record. Changing a field creates a draft; **Record expectation** commits only changed scope values atomically. Leaving a dirty editor requires a visible save/discard choice. A passive clock tick never retargets a draft: keep the selected interval pinned and mark the new current interval separately. On reopening, restore saved data; discard transient unsaved editor state. Initial focus follows the stored market reference, with no wall-clock fallback for Replay/Historical Backtest or completed-run Review.
+Selection and editing must stay distinct. Selecting a scope never changes its interpretation. The next interaction trial should persist edits automatically with quiet save/error feedback, so ordinary navigation does not require remembering Record/Discard. Final draft/committed-revision semantics, recovery and failure handling still need design verification; automatic draft persistence must not silently certify a station or process transition. A passive clock tick never retargets an edit: keep the selected interval pinned and mark the new current interval separately. Initial focus follows the stored market reference, with no wall-clock fallback for Replay/Historical Backtest or completed-run Review.
 
 Proposed phase choices: Unknown, Not Applicable, A, M, D, X(C), X(R), Distortion. Full names can appear beside the selected field or in a tooltip. Unknown is the default, not a required confirmation. There is no completion percentage, new gate, entry effect or automatic competency evidence.
 
 ## Proposed record and comparison contract
 
-Each explicit save appends an immutable revision with:
+Each committed interpretation change appends an immutable revision with the following fields. Automatic draft persistence and immutable revision commit timing must be distinguished in the next trial; the original manual Record trigger is no longer the target interaction.
 
 - revision ID and the stable interval key/bounds;
 - channel: Expected or Observed;
@@ -96,17 +98,19 @@ Developer verification should cover exact 00:00/06:00/10:30/12:00/18:00 transiti
 
 The later operator pass should use an explicit persistent sandbox and three short checks: record two different cycles; pair an observation and inspect the visible comparison; restart and confirm the same IDs and values. Explain one action and result at a time. Do not append a dense acceptance list during this design-only slice.
 
-## Design checkpoint verification
+## Original preview checkpoint verification
 
 The synthetic preview passed twelve browser interaction assertions: separate cycle defaults, guarded draft navigation/discard, appended working revisions, first-expectation comparison, observation without an expectation, preservation of a null comparison baseline after a later expectation, read-only Watch, retained neighboring cycles, and twenty independent history scopes. Light/dark desktop and 320px layouts were inspected; the expanded history also fit without horizontal overflow. Qt WebEngine's older Chromium lacks `light-dark` support, so screenshot inspection resolved the exact specified palette pairs in the test harness; native host theme switching remains unverified.
 
-Smoke-document checks: **4 passed in 0.50s** on Python 3.12.14. All 244 smoke identities/statuses remain unchanged from main. `git diff --check` passed. This checkpoint changes only this design document and `PROJECT_STATE.md`; production source, tests, schema and published plan match accepted main. The existing 456-pass full suite was not repeated for documentation-only changes. Preview assertions are not production persistence or operator acceptance evidence.
+Original smoke-document checks: **4 passed in 0.50s** on Python 3.12.14. All 244 smoke identities/statuses remain unchanged from main. `git diff --check` passed. The original checkpoint changed only this design document and `PROJECT_STATE.md`; subsequent operator clarifications also update `PROJECT_REQUIREMENTS.md` and `CONTEXT_MATURITY.md`. Production source, tests, schema and published plan match accepted main. The existing 456-pass full suite was not repeated for documentation-only changes. Preview assertions are not production persistence or operator acceptance evidence and do not validate the revised interaction direction.
 
 ## Decisions for operator review
 
 - **Provisional operator feedback, 2026-10-11:** the pertinent-cycle/context direction is promising, but the PNG suggests too many buttons/clicks and too much effort interpreting the form. The embedded visualization failed, so layout and disclosure feedback remain inconclusive without hands-on use. Independent session/cycle interpretation received tentative assent; first-expectation comparison remains tentative. The separate Record action raised a clear motion/memory concern: forgetting it could leave missing data. Test automatic draft persistence with visible save/error state and no extra save obligation, while keeping persistence distinct from analytical completion. These are directions for a subsequent trial, not final requirements, design acceptance or production authorization. Retain the current preview as a baseline for comparison.
 
-- Does focusing one session/cycle with expandable day history support the technician's working sequence?
+- **Whole-stack clarification, 2026-10-11:** quiet higher-level context is crucial throughout the process; a bird's-eye view and accessible/editable minutiae must coexist closely. The operator anticipates heavy macro-pad/shortcut use and questions raw day history or "was I right this quarter" in this workspace. These clarify analytical orientation and interaction constraints. Exact layout and historical placement remain open; the operator explicitly asks that exploratory suggestions not become law.
+
+- Does a continuously visible whole-stack overview with nearby selected-level detail support the technician's working sequence with minimal motion/memory burden?
 - Is **first recorded expectation** a useful default Review baseline, with later revisions available explicitly?
 - Keep session-level and cycle-level interpretations independent, with no inheritance in the first slice?
 

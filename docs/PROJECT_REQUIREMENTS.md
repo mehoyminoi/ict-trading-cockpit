@@ -1398,3 +1398,11 @@ The product requirement is therefore:
 > **Preserve the full intraday QT hierarchy in the data model and historical record while minimizing how much of that hierarchy the operator must explicitly touch during live use.**
 
 Do not solve completeness by exposing every session × 90-minute cycle × QT layer as a permanent grid of fields. The operator-facing design should preserve depth while reducing simultaneous exposure and repetitive entry.
+
+### Whole-stack orientation and nearby detail — operator clarification 2026-10-11
+
+The full AMDX stack, including higher-order context, should remain visible in a quiet, easily accessible form throughout the core TDA / Watch / Market Review loop. A bird's-eye view and accessible minutiae belong closely together: inspecting or editing a selected level should preserve the overview and its relationship to the surrounding levels. Progressive disclosure applies to detail; it should not hide the higher-order stack or imply that it is less important than sessions/cycles. Exact layout and coverage beyond the core loop remain open to hands-on evaluation.
+
+Make all editable levels reachable with minimal motion and navigation burden, within the existing process permissions. Anticipated heavy use of keyboard shortcuts and a macro pad is a design constraint: selection, inspection and editing should use shared application actions that mouse, keyboard and later hardware can invoke. Actual macro-pad integration remains downstream.
+
+Preserve interval/revision history for reconstruction and contextual Review/Study use. A raw day-history list or "was I right this quarter" presentation does not belong on the active QT workspace. The placement and form of deeper historical exploration remain open; no correctness scoring or mandatory quarter-by-quarter grading is introduced. Current suggestions about exact controls, baseline selection and inheritance remain provisional rather than inferred design acceptance.
