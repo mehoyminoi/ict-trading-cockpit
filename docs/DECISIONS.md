@@ -675,7 +675,7 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 
 ## 2026-10-10 — E7 explicit model scope and context predicates v0
 
-**Status:** Implemented on `feature/context-maturity-e7-v0`; focused operator acceptance pending.
+**Status:** Implemented on `feature/context-maturity-e7-v0`; all nine focused operator checks PASS on 2026-10-11, review/merge pending.
 
 **Decision:** Extend the existing plan-owned context-rule contract with explicit playbook IDs, event absence, selected NY calendar weekdays and an explicit relative calendar-week offset. Offset 0 is the calendar week containing the explicit market reference; negative/positive offsets select earlier/later weeks. Rules retain separate matched, not-matched and Unknown effects. The new not-matched effect defaults to no effect for old rules; empty playbook scope preserves run-wide E5 semantics.
 
