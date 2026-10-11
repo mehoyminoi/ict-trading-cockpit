@@ -898,7 +898,58 @@ The terminal prints a sandbox directory and the exact restart command. It contai
 
 ---
 
+## Current branch acceptance — E7 model/playbook context predicates
+
+**Operator acceptance: NOT TESTED.** Schema **v37**, published Trade Plan **Alpha 0.7**. E7 is implemented on `feature/context-maturity-e7-v0`; developer checks do not replace these nine operator checks. The Friday Asian Range Monday relationship and policy adoption remain open.
+
+Launch a separate acceptance database from the repository root:
+
+```bash
+python tools/context_predicate_demo.py --data-dir /tmp/ict-e7-acceptance
+```
+
+The terminal prints the directory and restart command. The demo uses synthetic models, source facts, completeness guarantees and effects; no real calendar or published rule is installed. Default reference is Friday **2026-10-09 10:15 ET**. Offset 0 explicitly selects Monday **October 5**; the following-Monday scenario explicitly selects **October 12**. Scenario/environment changes build a new unsaved fixture. Use **Save fixture** and **Restore saved fixture** explicitly; reuse the same `--data-dir` for restart checks. Save before concluding the run.
+
+- [NOT TESTED] Scoped effects reach only the targeted Playbook candidate.
+  - Where: default **Monday event present**, follow the normal TDA transition into Watch (complete the stations or record the deliberate incomplete override).
+  - Look for: **Fixture Friday model** has Not Matched / Block New Entry; **Other fixture model** and **Custom fixture** retain their own authorization results.
+  - Expected: the absence prerequisite is contradicted by the Monday event. Clear manual gates cannot bypass the targeted block, and other candidates do not inherit it. Details show Playbook scope and capture-local/event IDs, not title-based strategy matching.
+- [NOT TESTED] Proven absence grants no manual permission.
+  - Where: **Complete Monday empty**; expand context details and inspect Watch authorization.
+  - Look for: Matched / Informational, with the complete synthetic Monday window and explicit coverage basis.
+  - Expected: the initially clear fixture gates permit its synthetic candidate. Setting **Trading day permitted** to Pending or Blocked prevents entry despite the satisfied predicate; changing back to Clear remains an operator action. No competency/readiness or model-definition state is changed.
+- [NOT TESTED] Unknown is preserved, with explicit warning versus blocking behavior.
+  - Where: **Incomplete coverage**, **Unknown timing**, **Not Configured**, then **Unknown blocks**.
+  - Look for: Unknown / Warning for the first three; Unknown / Block New Entry for the last.
+  - Expected: no missing or uncertain source is called no-news. Warning adds no permission and never clears a manual gate. Unknown blocks affects only the targeted Playbook candidate; other/custom candidates retain their own gates and criteria.
+- [NOT TESTED] Calendar relationship is explicit and explainable.
+  - Where: **Following Monday unverified > Show context details**.
+  - Look for: resolved NY bounds on October 12 and Unknown because the synthetic source only guarantees October 5.
+  - Expected: current-week evidence does not prove next-week absence. The fixture's explicit offset is visible and is not adopted as the real Friday Asian Range rule.
+- [NOT TESTED] Candidate/environment exclusion precedes missing data.
+  - Where: **Other playbook only**, then choose **Live**, **Forward Test** or **Historical Backtest** in the demo environment selector.
+  - Look for: scoped rule Not Applicable with no effect when its Playbook is absent or its fixture environment is excluded.
+  - Expected: no scope leakage or blanket day block. The demo keeps its frozen synthetic timestamp; the environment selector is not a live data feed or an execution connection.
+- [NOT TESTED] TDA, Watch and Review explain the same stored predicate/source.
+  - Where: default **Monday event present**, inspect context in TDA, advance to Watch, then **Finish Live Watch / Enter Review > Show context details**.
+  - Look for: E7 fixture plan revision, stored candidate ID/revision, October 5 bounds, rule rationale, configured effects, event ID and the same Not Matched / Block New Entry result.
+  - Expected: context evaluation does not fetch a calendar, rewrite source facts, grant entry or create competency evidence. Expected-versus-observed Review stays separate.
+- [NOT TESTED] Saved predicates restore through source/configuration changes and restart.
+  - Where: in Review, **Save fixture**; change to **Complete Monday empty** or **Legacy rules**, then **Restore saved fixture**. Close and reopen with the same command and directory; click Restore again.
+  - Look for: the original saved run ID, Review state, candidate revision, Monday event and blocking result.
+  - Expected: current scenario/definition changes do not replace stored rules or facts. The label identifies restored state; scenario controls describe new fixtures. No provider query occurs during restore.
+- [NOT TESTED] Legacy/manual operating behavior remains intact.
+  - Where: **Legacy rules**, then normal application startup and restore of an earlier E6 run/capture.
+  - Look for: no declarative fixture effects in the legacy scenario; normal Alpha 0.7 gates, capture selection and existing TDA/Watch/Review behavior.
+  - Expected: Alpha 0.7 has no new automatic news policy. Missing older rule fields preserve run-wide scope and no not-matched effect; source completeness/precision remain honest.
+- [NOT TESTED] Full local automated suite passes; v37 and Alpha 0.7 remain unchanged.
+  - Where: `python -m pytest`, normal startup/restoration, database schema if convenient.
+  - Expected: exact local result recorded, no regression in stored runs, candidate gates, progression or context capture workflow. Developer result is 452 passed on both Python 3.10 and 3.12; operator result must be recorded separately.
+
+---
+
 ## Reporting results
+
 
 Report results as:
 

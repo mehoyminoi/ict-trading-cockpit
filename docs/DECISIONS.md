@@ -672,3 +672,17 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 **Deferred:** XML/ICS/CSV adapters, network acquisition, paid subscriptions, automatic latest-capture selection/freshness thresholds, within-run refresh, provider occurrence continuity, normalized model predicates, and published automatic trading exclusions.
 
 **Refines:** the E3 tuple provider seam and E5 query-bound absence assumption. Synthetic fixtures explicitly certify their own scope; real exports never inherit that claim.
+
+## 2026-10-10 — E7 explicit model scope and context predicates v0
+
+**Status:** Implemented on `feature/context-maturity-e7-v0`; focused operator acceptance pending.
+
+**Decision:** Extend the existing plan-owned context-rule contract with explicit playbook IDs, event absence, selected NY calendar weekdays and an explicit relative calendar-week offset. Offset 0 is the calendar week containing the explicit market reference; negative/positive offsets select earlier/later weeks. Rules retain separate matched, not-matched and Unknown effects. The new not-matched effect defaults to no effect for old rules; empty playbook scope preserves run-wide E5 semantics.
+
+**Rationale:** Model conditions must remain generic and explainable. Absence inverts known presence/absence only; Unknown is never inverted into evidence of no events. A negative event conclusion requires complete source coverage of every selected window and selector dimension. Uncertain timing/status/selectors remain conservative. Day bounds use America/New_York civil dates, including DST, rather than fixed UTC durations.
+
+**Consequences:** Plan definitions validate scoped playbook references. Candidate evaluation uses the stored Playbook source ID, never a display name or a Custom setup's incidental source ID. Scoped effects affect only targeted candidates; Stand Down Day remains run-wide and cannot be configured on a scoped rule. TDA/Watch/Review show candidate scope, revision, resolved dates, outcome/effect and event IDs from stored rules/facts. Existing schema v37 JSON snapshots carry the additive fields; legacy rules read with their original scope/effect behavior. Evaluation does not grant entry, change playbook definitions or competency state, query a provider, or mutate history.
+
+**Open:** Friday Asian Range's no-Monday-high-impact-news condition is a validation use case, not an adopted rule. Preceding versus following Monday, normalized market applicability and final policy effects require explicit Trade Plan decisions. The demo labels its current-week Monday and following-week offset explicitly. Forex Factory captures cannot certify event absence. Alpha 0.7 publishes no new rule or threshold.
+
+**Refines:** E5 run-wide positive-event predicates; preserves E6 explicit coverage/uncertainty and immutable source/run ownership. No readiness percentage, account applicability, automatic freshness policy, order execution or source mapping is introduced.

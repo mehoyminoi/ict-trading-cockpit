@@ -46,6 +46,15 @@ def _aware(value):
 
 
 def _condition(condition, market, snapshot):
+    state, reason, ids = _presence_condition(condition, market, snapshot)
+    if condition.kind is ContextConditionKind.EVENT_ABSENT:
+        state = {ContextMatch.MATCHED: ContextMatch.NOT_MATCHED,
+                 ContextMatch.NOT_MATCHED: ContextMatch.MATCHED}.get(state, state)
+        reason = "Event absence predicate: " + reason
+    return state, reason, ids
+
+
+def _presence_condition(condition, market, snapshot):
     now = _aware(market.get("captured_at", ""))
     if now is None:
         return ContextMatch.UNKNOWN, "Explicit market timestamp is missing or invalid.", ()
@@ -62,20 +71,34 @@ def _condition(condition, market, snapshot):
             return ContextMatch.UNKNOWN, "Futures trading day is missing or invalid.", ()
         if not start <= now <= end:
             return ContextMatch.UNKNOWN, "Market timestamp and futures trading day disagree.", ()
+        windows = ((start, end),)
     else:
-        monday = now.date() - timedelta(days=now.weekday())
-        start = datetime.combine(monday, time(), NY)
-        end = start + timedelta(days=7) - timedelta(microseconds=1)
+        try:
+            monday = now.date() - timedelta(days=now.weekday()) + timedelta(weeks=condition.calendar_week_offset)
+            if condition.event_weekdays:
+                windows = tuple(
+                    (datetime.combine(monday + timedelta(days=day), time(), NY),
+                     datetime.combine(monday + timedelta(days=day + 1), time(), NY) - timedelta(microseconds=1))
+                    for day in sorted(condition.event_weekdays)
+                )
+            else:
+                windows = ((datetime.combine(monday, time(), NY),
+                            datetime.combine(monday + timedelta(days=7), time(), NY) - timedelta(microseconds=1)),)
+        except (ValueError, OverflowError):
+            return ContextMatch.UNKNOWN, "Configured calendar week is outside representable dates.", ()
+    window_reason = "Event window (America/New_York): " + "; ".join(
+        f"{start.isoformat()} to {end.isoformat()}" for start, end in windows
+    ) + ". "
     if snapshot.status is not MarketContextSnapshotStatus.AVAILABLE:
-        return ContextMatch.UNKNOWN, f"Event snapshot is {snapshot.status.value}.", ()
+        return ContextMatch.UNKNOWN, window_reason + f"Event snapshot is {snapshot.status.value}.", ()
     query_start, query_end = _aware(snapshot.query_start), _aware(snapshot.query_end)
     if query_start is None or query_end is None or query_end < query_start:
-        return ContextMatch.UNKNOWN, "Snapshot coverage bounds are missing or invalid.", ()
+        return ContextMatch.UNKNOWN, window_reason + "Snapshot query bounds are missing or invalid.", ()
     matches, uncertain = [], []
     for event in snapshot.events:
         stamp = event.scheduled_datetime
         exact = event.timing_precision is MarketContextTimingPrecision.EXACT
-        if exact and not start <= stamp <= end:
+        if exact and not any(start <= stamp <= end for start, end in windows):
             continue
         if event.status in {EventStatus.CANCELLED, EventStatus.POSTPONED}:
             continue
@@ -95,15 +118,15 @@ def _condition(condition, market, snapshot):
         )
         (uncertain if unknown else matches).append(event.id)
     if matches:
-        return ContextMatch.MATCHED, "Matching normalized event facts are recorded.", tuple(matches)
+        return ContextMatch.MATCHED, window_reason + "Matching normalized event facts are recorded.", tuple(matches)
     if uncertain:
-        return ContextMatch.UNKNOWN, "Potential matching events have unknown timing, selectors or status.", tuple(uncertain)
-    if not snapshot.coverage.covers(condition, start, end):
-        return ContextMatch.UNKNOWN, f"Source completeness/scope does not cover the complete {condition.event_window.value.lower()}.", ()
-    return ContextMatch.NOT_MATCHED, "Explicit source coverage contains no matching event facts.", ()
+        return ContextMatch.UNKNOWN, window_reason + "Potential matching events have unknown timing, selectors or status.", tuple(uncertain)
+    if not all(snapshot.coverage.covers(condition, start, end) for start, end in windows):
+        return ContextMatch.UNKNOWN, window_reason + f"Source completeness/scope does not cover the complete selected {condition.event_window.value.lower()} window(s).", ()
+    return ContextMatch.NOT_MATCHED, window_reason + "Explicit source coverage contains no matching event facts.", ()
 
 
-def evaluate_context_rules(rules, *, environment, market_time_context, market_context_snapshot):
+def evaluate_context_rules(rules, *, environment, market_time_context, market_context_snapshot, playbook_id=None):
     results = []
     snapshot = MarketContextSnapshot.from_dict(market_context_snapshot)
     for rule in normalize_context_rules(rules):
@@ -111,12 +134,17 @@ def evaluate_context_rules(rules, *, environment, market_time_context, market_co
             results.append(ContextRuleResult(rule.id, rule.name, ContextMatch.NOT_APPLICABLE, None,
                                              (f"Rule does not apply in {environment}.",)))
             continue
+        if rule.playbook_ids and playbook_id not in rule.playbook_ids:
+            results.append(ContextRuleResult(rule.id, rule.name, ContextMatch.NOT_APPLICABLE, None,
+                                             (f"Rule applies only to playbook candidates: {', '.join(rule.playbook_ids)}.",)))
+            continue
         terms = [_condition(x, market_time_context, snapshot) for x in rule.conditions]
         states = [x[0] for x in terms]
         # A false conjunct resolves the rule even when another conjunct is unknown.
         state = (ContextMatch.NOT_MATCHED if ContextMatch.NOT_MATCHED in states else
                  ContextMatch.UNKNOWN if ContextMatch.UNKNOWN in states else ContextMatch.MATCHED)
-        effect = rule.effect if state is ContextMatch.MATCHED else rule.unknown_effect if state is ContextMatch.UNKNOWN else None
+        effect = (rule.effect if state is ContextMatch.MATCHED else
+                  rule.unknown_effect if state is ContextMatch.UNKNOWN else rule.not_matched_effect)
         results.append(ContextRuleResult(rule.id, rule.name, state, effect,
                                          tuple(x[1] for x in terms), tuple(dict.fromkeys(i for x in terms for i in x[2]))))
     return tuple(results)

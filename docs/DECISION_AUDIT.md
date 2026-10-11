@@ -240,3 +240,16 @@ See `E6_PROVIDER_ASSESSMENT.md`. At the assessment stage, preference alone did n
 | Automatic policy | Alpha 0.7 remains unchanged. E6 supplies honest source context, not normalized model/news restrictions or progression criteria. | DEFERRED / E7 downstream |
 
 The earlier proposed-only importer wording is superseded by the operator's go-ahead and this implementation. Manual acceptance is PASS on 2026-10-10: all nine checks are recorded in `df4cac894f7e697bf65793c5f031265af5bdd9d4`, with the local automated suite reported as 425 passed. Merged through PR #59 (`aaa931153f165b8ebb90c43126e00b6cd07beeeb`) after assessment PR #58. Acceptance does not certify source completeness, timing precision, historical as-of knowledge, or automatic trading policy.
+
+## 2026-10-10 — E7 model predicate boundary
+
+| Area | Current interpretation | Status |
+|---|---|---|
+| Model/playbook scope | Explicit plan-owned playbook IDs; candidate effects use stored Playbook identity. Other models and Custom setups do not inherit scoped effects. | IMPLEMENTED / operator acceptance pending |
+| Presence versus absence | Event Absent inverts known outcomes only; complete coverage must include every selected day and selector scope. Unknown remains Unknown. | REFINED / IMPLEMENTED |
+| Calendar relationship | NY civil weekday windows and explicit relative calendar-week offset; no model-name inference. | IMPLEMENTED / adopted Monday relationship OPEN |
+| Effects | Matched, not-matched and Unknown effects are explicit; legacy not-matched effect is None. Scoped Stand Down Day is invalid. | REFINED / IMPLEMENTED |
+| Historical ownership | Existing v37 rule/candidate/source snapshots preserve semantics through database reopen and Review; current definitions never replace them. | CURRENT / IMPLEMENTED |
+| Friday Asian Range adoption | A generic validation fixture; preceding/following Monday and policy effects are not settled trading rules. Alpha 0.7 remains unchanged. | DEFERRED pending explicit Trade Plan decisions |
+
+Earlier E7-downstream wording describes the E6 checkpoint. E7 v0 is now implemented on its feature branch, not yet operator accepted or merged. Milestone E remains the major frontier; no roadmap priority is moved.

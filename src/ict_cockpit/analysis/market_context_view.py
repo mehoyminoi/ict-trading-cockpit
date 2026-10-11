@@ -230,11 +230,27 @@ def build_market_context_view(
         detail += [f"{result.name} [{result.rule_id}]: {result.state.value} / {effect}",
                    f"Rule rationale: {rule['rationale']}",
                    f"Applies in: {', '.join(rule['environments'])}",
+                   f"Playbook scope: {', '.join(rule.get('playbook_ids', [])) or 'All candidates / run-wide'}",
                    f"Matched effect / unknown effect: {rule['effect']} / {rule['unknown_effect']}",
+                   f"Not-matched effect: {rule.get('not_matched_effect') or 'No effect'}",
                    *result.reasons, f"Matching/potential event IDs: {', '.join(result.event_ids) or 'None'}"]
     active = [result for result in results if result.effect is not None]
     if active:
         event_summary += " · Plan context: " + "; ".join(
             f"{result.name}: {result.state.value} / {result.effect.value}" for result in active
         )
+    for candidate in run.setup_candidates:
+        if candidate.source_type != "Playbook":
+            continue
+        candidate_results = run.context_rule_results(market, candidate_id=candidate.id)
+        for rule, result in zip(run.context_rule_snapshot, candidate_results):
+            if candidate.source_id not in rule.get("playbook_ids", []):
+                continue
+            effect = result.effect.value if result.effect else "No effect"
+            detail += ["", f"Candidate context: {candidate.name} [{candidate.source_id}@{candidate.source_revision}]",
+                       f"{result.name} [{result.rule_id}]: {result.state.value} / {effect}",
+                       *result.reasons,
+                       f"Matching/potential event IDs: {', '.join(result.event_ids) or 'None'}"]
+            if result.effect is not None:
+                event_summary += f" · Candidate {candidate.name}: {result.state.value} / {effect}"
     return MarketContextView(availability, temporal, event_summary, "\n".join(detail))

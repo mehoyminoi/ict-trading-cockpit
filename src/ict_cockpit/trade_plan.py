@@ -567,6 +567,9 @@ class TradePlanDefinition:
         playbook_ids = [playbook.id for playbook in self.playbooks]
         if len(playbook_ids) != len(set(playbook_ids)):
             raise ValueError("trade plan playbook ids must be unique")
+        for rule in self.context_rules:
+            if set(rule.playbook_ids) - set(playbook_ids):
+                raise ValueError(f"context rule {rule.id!r} references unknown playbooks")
         competency_ids = [item.id for item in self.competencies]
         if len(competency_ids) != len(set(competency_ids)):
             raise ValueError("trade plan competency ids must be unique")
