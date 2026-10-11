@@ -95,6 +95,8 @@ Changing current time definitions, selecting a different source capture or reope
 
 Component layout iteration is parked following the operator's request to zoom out on 2026-10-11. Review the overall Cockpit functional map and context-specific presentation/action contracts before further production UI development. Architecture does not require choosing a final widget layout: stable interval identity, provenance, run ownership and persistence can be specified independently. Draft-to-committed-revision timing, permitted Watch interpretation edits versus observation capture and default comparison baseline must be explicitly settled before their corresponding behavior is implemented.
 
+`COCKPIT_FUNCTIONAL_WALKTHROUGH.md` is the concrete review aid: verified current navigation, operating and learning journeys, current-versus-proposed capabilities, context-specific presentations, ownership/action boundaries and three behavior-contract recommendations. Review this broader picture before resuming component layout or implementing the new QT behavior.
+
 After contract review, implement stable interval identity and versioned run persistence first, with a disposable developer harness if needed. Defer replacing production QT controls until identity, historical defaults and comparison pairing are proven. The existing preview is interaction exploration, not an implementation or persistence test.
 
 ### One shared model, context-specific presentations

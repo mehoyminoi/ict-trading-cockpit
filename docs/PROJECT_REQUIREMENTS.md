@@ -12,6 +12,7 @@ Companion documents:
 - `docs/PROJECT_EVOLUTION.md` — chronological architecture history,
 - `docs/HANDOFF.md` — continuity protocol,
 - `docs/SMOKE_TEST.md` — manual acceptance record.
+- `docs/COCKPIT_FUNCTIONAL_WALKTHROUGH.md` — source-verified whole-tool journeys, current/proposed surfaces and shared QT/AMDX contract review.
 
 This document describes **current intended product truth**, not the chronological history of every idea considered. Older requirements and transcripts remain historical evidence only.
 
