@@ -648,3 +648,13 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 **Consequences:** `E6_PROVIDER_ASSESSMENT.md` compares Trading Economics, FMP, and scoped official BLS/Fed/CME schedules. Trading Economics is an engineering recommendation for capability validation, not an accepted paid dependency or proof of historical as-of coverage. No purchase, provider wiring, automatic source fallback, or Trade Plan rule change is authorized by this assessment decision.
 
 **Refines:** the earlier Forex Factory preference; it does not change E6/E7 order or historical snapshot ownership.
+
+## 2026-10-10 — E6 recurring-cost constraint
+
+**Status:** Accepted operator budget constraint; acquisition/implementation choice remains open.
+
+**Decision:** Trading Economics at approximately $200/month is unaffordable and must not be assumed as an E6 dependency. A smaller recurring fee may be acceptable, but no exact maximum, plan purchase, or annual commitment has been accepted.
+
+**Consequences:** assess endpoint-specific entitlements and billing frequency rather than headline provider prices. `E6_PROVIDER_ASSESSMENT.md` retains the free Forex Factory export path and records lower-cost FMP, Finnhub, and EODHD candidates. FMP is a proposed first paid candidate, not an accepted subscription or proof of safer feed semantics. Preserve the provider-independent uncertainty/provenance architecture.
+
+**Supersedes:** the earlier recommendation to validate Trading Economics first under an unknown budget. The technical field comparison remains useful history, not the current acquisition priority.

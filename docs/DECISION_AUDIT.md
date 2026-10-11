@@ -220,7 +220,7 @@ Older Requirements/Guide passages describing Milestone A-C as future work are hi
 
 | Area | Current interpretation | Status |
 |---|---|---|
-| Economic-calendar source | Forex Factory is operator preferred, paid or unpaid, with alternatives accepted for easier/safer implementation. Trading Economics is recommended for API validation, not a selected dependency. | REFINED preference / candidate recommendation proposed |
+| Economic-calendar source | Forex Factory is preferred; alternatives accepted for easier/safer implementation. Trading Economics's earlier API recommendation is superseded by the rejected ~$200/month cost. Free export import and FMP Starter validation are proposed; no provider purchased/selected. | REFINED / cost constraint CURRENT |
 | Supported access | Official Weekly Export links are verified. JSON and operator-supplied XML are inspected; XML detail URLs repeat, timezone is unlabeled, and both formats lose observed All Day precision. ICS/CSV remain uninspected. | VERIFIED limited assessment |
 | Historical export | Last Week's JSON link still returned this week's data. No arbitrary-date or historical as-of API is verified. | OPEN |
 | First vertical slice | Provider-independent capture/coverage/uncertainty contract, then candidate validation and capture-to-run integration. Forex Factory local import remains a fallback proposal. | PROPOSED / implementation selection open |
