@@ -661,7 +661,7 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 
 ## 2026-10-10 — E6 local source captures and honest provider claims
 
-**Status:** Implemented and operator accepted on 2026-10-10; all nine focused smoke checks PASS in `df4cac894f7e697bf65793c5f031265af5bdd9d4`, with the local automated suite reported as 425 passed. Review/merge remains pending.
+**Status:** Implemented and operator accepted on 2026-10-10; all nine focused smoke checks PASS in `df4cac894f7e697bf65793c5f031265af5bdd9d4`, with the local automated suite reported as 425 passed. Merged through PR #59 (`aaa931153f165b8ebb90c43126e00b6cd07beeeb`) after assessment PR #58.
 
 **Decision:** Start E6 with the supported weekly JSON export, manually imported and previewed outside active operation. JSON preserves explicit offsets; the inspected XML's unlabeled timezone is insufficient for this first adapter. Each import creates a separate immutable local capture with original JSON, byte digest, import/file provenance, declared UTC week, adapter/mapping revisions, native rows, and explicit limitations. Selection is deliberate for new runs and resets to Not Configured on restart. Existing run snapshots remain authoritative.
 

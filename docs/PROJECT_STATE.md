@@ -6,12 +6,13 @@ This is the starting point for a new development chat or developer handoff. Git 
 
 ## Repository state
 
-- **Active branch:** `feature/context-maturity-e6-import-v0` (operator accepted; review/merge pending)
-- **Main baseline:** `59a9b984b398a10f54847315569b8179a37b38e6` — canonical E5/E6 checkpoint; accepted E5 merge `3232962144126bc4d48dbb84b21a21579228be35`
+- **Active branch:** `main` (E6 accepted and merged)
+- **Main baseline:** `aaa931153f165b8ebb90c43126e00b6cd07beeeb` — Merge pull request #59, accepted E6 JSON capture/import v0. Assessment PR #58 merged as `0ca2acf6775622dfa5f755c5ed47a28ea197210a`; prior E5/E6 checkpoint was `59a9b984b398a10f54847315569b8179a37b38e6`.
 - **Implementation checkpoint:** `130a50077bf18973aabb184cc9e588b57a62c71a` — Add immutable Forex Factory JSON captures and explicit provider coverage (E6). Branch starts from PR #58 assessment commit `2d9eed4c6acde448584a43fad923b1226de11ab1`; prior accepted feature is E5 `41f9d69c5b648873f6b95f2041e5daaeb2ea8508`.
 - **Compatibility checkpoint:** `bd546d51d2e2c88610eec16e448f7eeeb1d98c8f` — normalize UTC `Z` coverage bounds for supported Python 3.10 in validation/comparison; exercise both UTC representations through coverage serialization/restoration.
 - **Operator acceptance checkpoint:** `df4cac894f7e697bf65793c5f031265af5bdd9d4` — Record E6 operator smoke-test results; all nine checks PASS on 2026-10-10.
-- **Current slice:** E6 — local Forex Factory JSON capture/import v0; operator accepted, review/merge pending
+- **Last completed slice:** E6 — local Forex Factory JSON capture/import v0; operator accepted and merged
+- **Current task:** E7 — inspect and scope generic model/playbook context predicates before implementation.
 - **Schema:** v37
 - **Trade Plan revision:** Alpha 0.7
 - **Verified full test result:** **425 passed in 171.70s on Python 3.10.22** and **425 passed in 157.09s on Python 3.12.14**, both clean exits on 2026-10-11 UTC, PySide6 6.8.3 / pytest 9.1.1 / offscreen. Focused E6: **24 passed in 1.15s** on Python 3.12.14. Previous implementation validation: 424 passed in 150.46s on Python 3.12.14; focused E3/E4/E5/E6 76 passed in 2.32s; smoke-document round-trip 4 passed. Last accepted E5 result: 401 passed in 136.01s.
@@ -124,7 +125,7 @@ Milestones A, B, and C are complete. The learning/progression chain remains inta
 
 `Evidence -> Competency Synthesis -> Cross-Run Observation -> Development Direction -> targeted Study -> Evidence Maturity -> Trade Plan Progression Policy -> Explainable Eligibility -> historical attainment / regression-revalidation -> operator-loop guardrails`
 
-The current major frontier is **Milestone E — context maturity: QT/AMDX, external events, schedules, and distortions**. E1, E2, E3, E4, and E5 are merged. E4 exposes stored context to the operator. E5 provides explicit snapshotted context-policy evaluation and configured entry effects; real policy adoption remains deferred. E6 local calendar captures and honest provider claims are implemented and operator accepted, awaiting review/merge. E7 generic model/playbook context predicates are the next planned slice after closing that checkpoint; source uncertainty remains authoritative.
+The current major frontier is **Milestone E — context maturity: QT/AMDX, external events, schedules, and distortions**. E1 through E6 are merged and accepted. E4 exposes stored context to the operator. E5 provides explicit snapshotted context-policy evaluation and configured entry effects; real policy adoption remains deferred. E6 supplies local calendar captures and honest provider claims. E7 generic model/playbook context predicates are the next planned slice; source uncertainty remains authoritative.
 
 Milestone D continues only for demonstrated operator friction. Film Night, gallery polish, broad TradingView integration, hardware controls, and broker execution remain downstream.
 
@@ -195,7 +196,7 @@ Validation:
 
 ## Current task
 
-**E6 — local Forex Factory JSON capture/import v0** is implemented and operator accepted on the feature branch, with all nine smoke checks PASS in `df4cac894f7e697bf65793c5f031265af5bdd9d4`. Current task: close the acceptance documentation checkpoint and review/merge the existing PRs in dependency order. Main remains at the accepted E5/E6 baseline. This feature branch includes the unmerged PR #58 assessment checkpoint; the implementation review is [draft PR #59](https://github.com/mehoyminoi/ict-trading-cockpit/pull/59), stacked on that branch. Neither PR is merged by this acceptance documentation update.
+**E7 — generic model/playbook context predicates** is the current design/implementation frontier. E6 JSON capture/import v0 is accepted and merged through [PR #59](https://github.com/mehoyminoi/ict-trading-cockpit/pull/59), after assessment PR #58 merged and PR #59 was retargeted to main. All nine E6 smoke checks are PASS in `df4cac894f7e697bf65793c5f031265af5bdd9d4`. The merged main tree exactly matches the accepted E6 feature tree; the latest verified 425-test results remain applicable without a code change at merge.
 
 The operator accepted proceeding with the recommended free import direction. No paid subscription is assumed; Trading Economics at approximately $200/month remains excluded. FMP is an assessed future paid candidate, not a selected dependency. See `E6_PROVIDER_ASSESSMENT.md` for the source comparison and XML findings.
 
@@ -215,7 +216,7 @@ Implemented:
 
 Validation: latest full suites **425 passed in 171.70s on Python 3.10.22** and **425 passed in 157.09s on Python 3.12.14**, both clean exits; focused E6 **24 passed in 1.15s** on Python 3.12.14. The operator's earlier 1 failed / 423 passed report exposed UTC `Z` parsing incompatible with Python 3.10; test setup and production coverage validation/comparison now use compatible offsets while preserving serialized bounds. The subsequent operator rerun reported **425 passed**. Before this correction, focused E3/E4/E5/E6 passed 76 tests and smoke-document round-trip passed 4 tests. Developer real-format/offscreen integration and sandbox startup/clean exit were exercised. The public JSON representation's 83 records imported and restored in a separate database; direct HTTP retrieval returned 403, so automatic network acquisition is not claimed. Main-window import/Watch/Review were visually inspected at its current minimum size of 1120×876; removing the new import tab leaves the same pre-existing minimum height. All nine operator E6 checks are **PASS** in `SMOKE_TEST.md`, pushed in the acceptance checkpoint above.
 
-Next action: review/merge assessment PR #58, then retarget and review/merge implementation PR #59. E6 is the last operator-accepted slice; E5 remains the last merged feature. The next recommended development slice is E7 generic model/playbook context predicates, using Friday Asian Range's no-Monday-high-impact-news condition as a validation case, because the snapshot, rule, and source-capture contracts are now accepted. Define applicability and explainable Unknown outcomes before publishing any trading policy; an incomplete Forex Factory capture cannot certify event absence. E6 v0 provides captured context with honest limitations, not provider-certified timing, historical as-of reconstruction, or automatic Alpha 0.7 exclusions.
+Next action: scope a small E7 slice for explicit playbook targeting, event presence/absence and calendar-day selection, because the snapshot, rule, and source-capture contracts are now accepted. Friday Asian Range's no-Monday-high-impact-news condition is an accepted validation use case, but preceding versus following Monday is not specified; any fixture must declare its week relationship and must not publish that assumption as a trading rule. Preserve explainable Unknown outcomes: an incomplete Forex Factory capture cannot certify event absence. E6 v0 provides captured context with honest limitations, not provider-certified timing, historical as-of reconstruction, or automatic Alpha 0.7 exclusions.
 
 ## Explicitly deferred / open
 

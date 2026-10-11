@@ -213,7 +213,7 @@ Older Requirements/Guide passages describing Milestone A-C as future work are hi
 | Context policy substrate | Plan-owned rules, explicit environment/unknown effects, read-only evaluation, run snapshots in v36, explanatory surfaces and candidate entry blockers. | IMPLEMENTED / operator accepted 2026-10-10 |
 | Alpha 0.7 automatic exclusions | No declarative rules are published; manual gates remain authoritative. Account applicability cannot be inferred from run environment. | DEFERRED pending explicit account semantics and new plan revision |
 | Weekly event absence | Requires complete week coverage; day-only snapshots yield Unknown when no matching event is recorded. | CURRENT |
-| Real provider / model-specific predicates | E6 local JSON capture/import is implemented with honest source claims; E7 model predicates remain downstream. | IMPLEMENTED / E6 operator accepted 2026-10-10; merge pending |
+| Real provider / model-specific predicates | E6 local JSON capture/import is implemented with honest source claims; E7 model predicates remain downstream. | IMPLEMENTED / E6 operator accepted 2026-10-10; merged through PR #59 |
 
 
 ## 2026-10-10 — E6 preferred source assessment
@@ -223,7 +223,7 @@ Older Requirements/Guide passages describing Milestone A-C as future work are hi
 | Economic-calendar source | Forex Factory is preferred; alternatives accepted for easier/safer implementation. Trading Economics's earlier API recommendation is superseded by the rejected ~$200/month cost. Free Forex Factory import is implemented after operator go-ahead; FMP remains a possible paid candidate. No subscription is purchased. | REFINED / cost constraint CURRENT |
 | Supported access | Official Weekly Export links are verified. JSON and operator-supplied XML are inspected; XML detail URLs repeat, timezone is unlabeled, and both formats lose observed All Day precision. ICS/CSV remain uninspected. | VERIFIED limited assessment |
 | Historical export | Last Week's JSON link still returned this week's data. No arbitrary-date or historical as-of API is verified. | OPEN |
-| First vertical slice | Operator authorized the recommended free import direction. E6 v0 implements source claims, immutable capture storage, JSON preview/import/selection, and run integration. | IMPLEMENTED / operator accepted 2026-10-10; merge pending |
+| First vertical slice | Operator authorized the recommended free import direction. E6 v0 implements source claims, immutable capture storage, JSON preview/import/selection, and run integration. | IMPLEMENTED / operator accepted 2026-10-10; merged through PR #59 |
 | Negative event conclusions | A successful export fetch is not sufficient to assert complete requested coverage. Missing status/timing/source scope remains honest. | CURRENT boundary / contract refinement open |
 
 See `E6_PROVIDER_ASSESSMENT.md`. At the assessment stage, preference alone did not authorize implementation or trading restrictions. The later go-ahead authorizes the free importer; automatic trading restrictions remain deferred.
@@ -239,4 +239,4 @@ See `E6_PROVIDER_ASSESSMENT.md`. At the assessment stage, preference alone did n
 | Operator selection | Preview/save/explicit selection is outside runtime. Selection configures only future runs and resets at restart; historical restore reads stored snapshots. | CURRENT / IMPLEMENTED |
 | Automatic policy | Alpha 0.7 remains unchanged. E6 supplies honest source context, not normalized model/news restrictions or progression criteria. | DEFERRED / E7 downstream |
 
-The earlier proposed-only importer wording is superseded by the operator's go-ahead and this implementation. Manual acceptance is PASS on 2026-10-10: all nine checks are recorded in `df4cac894f7e697bf65793c5f031265af5bdd9d4`, with the local automated suite reported as 425 passed. Review/merge remains pending. Acceptance does not certify source completeness, timing precision, historical as-of knowledge, or automatic trading policy.
+The earlier proposed-only importer wording is superseded by the operator's go-ahead and this implementation. Manual acceptance is PASS on 2026-10-10: all nine checks are recorded in `df4cac894f7e697bf65793c5f031265af5bdd9d4`, with the local automated suite reported as 425 passed. Merged through PR #59 (`aaa931153f165b8ebb90c43126e00b6cd07beeeb`) after assessment PR #58. Acceptance does not certify source completeness, timing precision, historical as-of knowledge, or automatic trading policy.
