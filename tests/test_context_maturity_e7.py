@@ -298,3 +298,55 @@ def test_acceptance_demo_renders_custom_candidate_and_restores_its_tda_watch_poi
         assert check_custom_fixture() == saved_identity
     finally:
         demo.shell.market_time_timer.stop(); demo.close(); conn.close()
+
+
+def test_acceptance_restart_identifies_database_and_restores_saved_review(tmp_path, monkeypatch):
+    from pathlib import Path
+    import shlex
+    from PySide6.QtWidgets import QApplication
+
+    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "tools"))
+    from context_predicate_demo import ContextPredicateDemo
+
+    saved_path = tmp_path / "saved sandbox" / "demo.db"
+    conn = create_connection(saved_path); initialize_schema(conn)
+    demo = ContextPredicateDemo(conn)
+    try:
+        assert str(saved_path) in demo.database_label.text()
+        assert not demo.restore_button.isEnabled()
+        assert "No saved fixture in this database" in demo.storage_label.text()
+        demo.copy_restart_button.click()
+        assert QApplication.clipboard().text() == demo.restart_command
+        assert shlex.split(demo.restart_command)[-1] == str(saved_path.parent)
+        runtime = demo.shell.runtime
+        transition = next(item for item in runtime.current_mode.transitions if item.outcome == "advance")
+        assert runtime.apply_transition(transition.id, reason="Synthetic fixture acceptance", override_incomplete=True)
+        assert runtime.apply_transition("live-finish")
+        assert runtime.session.current_mode_id == "post-market"
+        run_id = demo.shell.active_trading_run.id
+        demo.save_fixture()
+        assert demo.restore_button.isEnabled()
+    finally:
+        demo.shell.market_time_timer.stop(); demo.close(); conn.close()
+
+    conn = create_connection(tmp_path / "different sandbox" / "demo.db"); initialize_schema(conn)
+    demo = ContextPredicateDemo(conn)
+    try:
+        assert not demo.restore_button.isEnabled()
+        assert "No saved fixture in this database" in demo.storage_label.text()
+        assert str(saved_path) not in demo.database_label.text()
+    finally:
+        demo.shell.market_time_timer.stop(); demo.close(); conn.close()
+
+    conn = create_connection(saved_path)
+    demo = ContextPredicateDemo(conn)
+    try:
+        assert demo.restore_button.isEnabled()
+        demo.restore_fixture()
+        assert demo.shell.active_trading_run.id == run_id
+        assert demo.shell.runtime.session.current_mode_id == "post-market"
+        assert demo.shell.active_trading_run.candidate_authorization(
+            demo.shell.active_trading_run.playbook_candidate("fixture-friday").id
+        ).status is AuthorizationStatus.BLOCKED
+    finally:
+        demo.shell.market_time_timer.stop(); demo.close(); conn.close()

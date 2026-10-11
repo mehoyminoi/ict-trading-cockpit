@@ -2,11 +2,13 @@
 import argparse
 from datetime import datetime
 from pathlib import Path
+import shlex
 import sys
 import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QComboBox, QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 from ict_cockpit.context_rules import (
     ContextConditionDefinition as Condition, ContextConditionKind as Kind,
@@ -27,6 +29,10 @@ from ict_cockpit.trade_plan import EntryCriterionDefinition, PlaybookDefinition
 from context_policy_demo import FrozenContextShell
 
 
+def restart_command(directory):
+    return shlex.join(["python", "tools/context_predicate_demo.py", "--data-dir", str(directory.resolve())])
+
+
 class ContextPredicateDemo(QWidget):
     def __init__(self, connection):
         super().__init__()
@@ -38,6 +44,20 @@ class ContextPredicateDemo(QWidget):
                       "Following Monday uses explicit offset 1. No adopted Friday Asian Range rule. "
                       "Manual gates and one synthetic criterion initially clear; no orders or real calendar.")
         note.setWordWrap(True); self.outer.addWidget(note)
+        database_file = self.connection.execute("PRAGMA database_list").fetchone()[2]
+        self.database_path = Path(database_file) if database_file else None
+        self.restart_command = restart_command(self.database_path.parent) if self.database_path else ""
+        storage_bar = QHBoxLayout()
+        self.database_label = QLabel(f"Database: {self.database_path}" if self.database_path else "Database: in memory; cannot reopen after closing")
+        self.database_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        self.database_label.setWordWrap(True)
+        storage_bar.addWidget(self.database_label, 1)
+        self.copy_restart_button = QPushButton("Copy restart command")
+        self.copy_restart_button.setEnabled(bool(self.restart_command))
+        self.copy_restart_button.setToolTip("Close this window, then run the copied command from the repository root to reopen this same database.")
+        self.copy_restart_button.clicked.connect(lambda: QApplication.clipboard().setText(self.restart_command))
+        storage_bar.addWidget(self.copy_restart_button)
+        self.outer.addLayout(storage_bar)
         bar = QHBoxLayout()
         self.scenario = QComboBox()
         self.scenario.addItems(["Monday event present", "Complete Monday empty", "Incomplete coverage",
@@ -124,8 +144,11 @@ class ContextPredicateDemo(QWidget):
                     run.set_candidate_authorization_gate(candidate.id, gate["id"], "Clear")
         self.shell.runtime.load_trading_run(run)
         self.outer.addWidget(self.shell, 1)
-        self.storage_label.setText("New unsaved fixture. Use the normal TDA → Watch → Review controls; Save preserves the current state.")
-        self.restore_button.setEnabled(TradingDayRepository(self.connection).get_latest() is not None)
+        saved = TradingDayRepository(self.connection).get_latest() is not None
+        self.storage_label.setText("New unsaved fixture. Restore opens the previously saved fixture." if saved else
+                                   "No saved fixture in this database. Save fixture first. Copy restart command before closing to reopen this same database.")
+        self.restore_button.setEnabled(saved)
+        self.restore_button.setToolTip("Open the saved fixture in this database." if saved else "No saved fixture in this database.")
 
     def save_fixture(self):
         run = self.shell.active_trading_run
@@ -137,15 +160,18 @@ class ContextPredicateDemo(QWidget):
         TDAStationSessionRepository(self.connection).save(self.shell.runtime.tda_station_runner_widget.session)
         TradingSessionRunRepository(self.connection).save(run)
         self.restore_button.setEnabled(True)
+        self.restore_button.setToolTip("Open the saved fixture in this database.")
         self.storage_label.setText(f"Saved fixture run {run.id}. Change scenario, then Restore to inspect its original rules and facts.")
 
     def restore_fixture(self):
         day = TradingDayRepository(self.connection).get_latest()
         if day is None:
+            self.storage_label.setText("No saved fixture in this database. Check the database path above before repeating the test.")
             return
         repo = TradingSessionRunRepository(self.connection)
         run = repo.get_by_id(day.active_session_run_id)
         if run is None:
+            self.storage_label.setText("A saved day exists but its active run was not found. Report this message; do not mark restore PASS.")
             return
         self.shell.context_rules = ()  # Current definitions never replace saved run rules.
         self.shell.load_state(day, repo.get_for_day(day.id),
@@ -155,13 +181,13 @@ class ContextPredicateDemo(QWidget):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, epilog="Without --data-dir, each launch creates a NEW sandbox. Reuse the printed Restart command to reopen saved fixtures.")
     parser.add_argument("--data-dir", type=Path, help="Reuse the same E7 acceptance database for restart checks")
     args = parser.parse_args()
     directory = args.data_dir or Path(tempfile.mkdtemp(prefix="ict-e7-"))
     directory.mkdir(parents=True, exist_ok=True)
     print(f"E7 sandbox: {directory.resolve()}", flush=True)
-    print(f"Restart: python tools/context_predicate_demo.py --data-dir {directory.resolve()}", flush=True)
+    print(f"Restart: {restart_command(directory)}", flush=True)
     app = QApplication(sys.argv[:1])
     conn = create_connection(directory / "demo.db"); initialize_schema(conn)
     window = ContextPredicateDemo(conn); window.show()
