@@ -1,4 +1,4 @@
-# E6 — Forex Factory provider assessment
+# E6 — Economic-calendar provider assessment
 
 **Status:** Provider preference accepted; implementation proposal and unresolved contract questions below are not yet accepted implementation decisions.
 
@@ -11,6 +11,8 @@
 ## Operator preference
 
 The operator uses Forex Factory's economic calendar with an account and selected it as the first choice, paid or otherwise. Trading Economics was an assessment candidate, not a selected dependency. An ordinary Forex Factory account must not be assumed to confer API or historical export access.
+
+The operator subsequently accepted considering alternate sources when they make implementation easier or safer. Forex Factory remains a preference, not an exclusive dependency. This authorizes comparative assessment; it does not select a paid subscription, accept a price, or publish provider-derived trading rules.
 
 ## Verified public interfaces
 
@@ -49,6 +51,25 @@ Comparing the [October 4–10 calendar page](https://www.forexfactory.com/calend
 
 **Assessment outcome:** XML is readable and useful for source-link provenance, but does not close the timing/status/coverage gaps. JSON provides explicit offsets; XML provides detail links. Neither inspected format alone establishes complete precise context suitable for automatic exclusions. No further operator upload is required to document these findings; unresolved semantics can remain explicit in the proposed domain contract.
 
+## Alternate-source assessment and recommendation
+
+Documentation reviewed on 2026-10-11 UTC; no authenticated alternative-provider response has been verified.
+
+| Source | Verified interface/capabilities | Implication for E6 |
+|---|---|---|
+| Trading Economics | [Response schema](https://docs.tradingeconomics.com/economic_calendar/schema/) documents a unique CalendarID, UTC Date, DateSpan for known versus estimated timing, Importance, source links, and LastUpdate. [Country/date queries](https://docs.tradingeconomics.com/economic_calendar/country/) are documented. | Strongest documented general-calendar candidate in this assessment; reduces identity/time ambiguity. Cancellation/rescheduling semantics, ID stability under changes, completeness, and paid entitlements still need validation. |
+| Financial Modeling Prep | Official [stable economic-calendar endpoint](https://site.financialmodelingprep.com/developer/docs/stable/economics-calendar) is documented. The retrieved page did not expose enough response/precision/provenance detail to establish the required contract. | Secondary candidate; endpoint availability alone is insufficient to prefer it over Trading Economics. Calendar-specific pricing/access remains unverified. |
+| Official BLS and Federal Reserve schedules | [BLS](https://www.bls.gov/schedule/news_release/) publishes release schedules, specifies Eastern Time, and advertises an ICS subscription. The [Fed](https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm) distinguishes meetings, statements, and minutes. | Useful narrowly scoped schedule sources and validation references. Combining them is additional integration work and cannot certify absence of all high-impact news or recreate Forex Factory impact classifications. |
+| CME Group | Official [trading-hours interface](https://www.cmegroup.com/trading-hours.html) separates platforms and supports product/date selection for Globex holiday schedules. | Appropriate separate source for relevant futures closure/early-close facts. Select the exact product/platform and preserve timezone/revision provenance; a bank-holiday flag is insufficient. |
+
+**Recommendation (proposed):** evaluate Trading Economics as the first API adapter candidate before committing to a Forex Factory-only importer. This is an engineering inference from documented fields, not a claim that its data is verified safer in production. Retain Forex Factory as the operator's comparison source and possible explicitly limited import option. Preserve provider identity and native impact; do not silently equate Trading Economics importance with Forex Factory red-news classification or silently switch providers for a run.
+
+Trading Economics [advertises point-in-time access](https://docs.tradingeconomics.com/economic_calendar/point-in-time/), but the inspected examples show event-range dates without an independently specified knowledge/as-of cutoff. Actual historical-knowledge semantics and entitlement remain open; ordinary historical retrieval cannot be labeled as-of reconstruction. Its [limits](https://docs.tradingeconomics.com/get_started/rate-limits/) include 1,000 calendar rows per request and a general two requests/second limit. Partitioned retrieval and scoped completeness must be verified before any absence conclusion; no polling interval is selected here.
+
+[API pricing](https://tradingeconomics.com/api/) depends on features, request volume, and distribution. The retrieved [pricing page](https://tradingeconomics.com/api/pricing.aspx) did not provide a usable calendar-specific amount. No cost is assumed. Before purchase or runtime wiring, obtain the relevant entitlement/quote and validate representative known/estimated-time records, rescheduling identity/status, date boundaries, response truncation, and historical access. A representative authorized export can support validation without putting credentials in chat or Git.
+
+The recommended immediate work is the provider-independent capture/coverage/uncertainty contract, followed by a small Trading Economics capability check. The import-first loop below remains a fallback proposal; comparative authorization does not resolve these implementation choices.
+
 ## Fit and gaps against the existing contracts
 
 | Requirement | Assessment |
@@ -66,7 +87,7 @@ Comparing the [October 4–10 calendar page](https://www.forexfactory.com/calend
 
 E3 currently records requested bounds as snapshot bounds after a successful `events_between` tuple response. E5 uses those bounds for absence decisions. Before normal startup consumes a real provider, the contract must represent actual coverage and source limitations rather than promote an HTTP success or empty list into full coverage.
 
-## Proposed first vertical slice
+## Proposed Forex Factory fallback vertical slice
 
 **Supported weekly export -> validated local import -> immutable source capture -> run snapshot -> existing TDA/Watch/Review.**
 

@@ -636,3 +636,15 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 **Consequences:** `E6_PROVIDER_ASSESSMENT.md` records supported weekly-export observations and open contract gaps. Its local-import-first implementation scope is proposed, not operator accepted. No provider is wired into normal startup, no data access is purchased, and no automatic context policy is published.
 
 **Supersedes:** the ambiguous narrative E6/E7 numbering only; the accepted implementation sequence and context-layering boundaries remain intact.
+
+## 2026-10-10 — E6 alternative providers accepted for assessment
+
+**Status:** Accepted operator source-selection flexibility; provider/implementation selection remains open.
+
+**Decision:** Consider alternate calendar sources when they make implementation easier or safer. Forex Factory remains the operator's familiar first choice, but is not an exclusive dependency.
+
+**Rationale:** verified export limitations justify evaluating a better documented identity/timing/provenance contract before adapter work.
+
+**Consequences:** `E6_PROVIDER_ASSESSMENT.md` compares Trading Economics, FMP, and scoped official BLS/Fed/CME schedules. Trading Economics is an engineering recommendation for capability validation, not an accepted paid dependency or proof of historical as-of coverage. No purchase, provider wiring, automatic source fallback, or Trade Plan rule change is authorized by this assessment decision.
+
+**Refines:** the earlier Forex Factory preference; it does not change E6/E7 order or historical snapshot ownership.
