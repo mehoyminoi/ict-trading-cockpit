@@ -13,6 +13,7 @@ Companion documents:
 - `docs/HANDOFF.md` — continuity protocol,
 - `docs/SMOKE_TEST.md` — manual acceptance record.
 - `docs/COCKPIT_FUNCTIONAL_WALKTHROUGH.md` — source-verified whole-tool journeys, current/proposed surfaces and shared QT/AMDX contract review.
+- `docs/AMDX_CYCLE_RULE_CONTRACT.md` — coupled quartet profiles, rule/anchor provenance, interpretive uncertainty and classification-rule requirements.
 
 This document describes **current intended product truth**, not the chronological history of every idea considered. Older requirements and transcripts remain historical evidence only.
 
@@ -635,6 +636,16 @@ The 22.5-minute cycle remains omitted unless later work justifies it.
 Weekly QT uses Monday-Thursday as the four quarters; Friday is distortion/separate PO3 context rather than a fifth ordinary quarter.
 
 Q1 should be interpreted relative to the prior cycle's Q4 where applicable.
+
+### 11.5 Coupled cycle profiles and plan-defined classification
+
+Operator clarification on 2026-10-11: each applicable four-quarter cycle is interpreted in AMDX or XAMD order. AMDX means Q1=A, Q2=M, Q3=D, Q4=X; XAMD means Q1=X, Q2=A, Q3=M, Q4=D. X may be Continuation X(C) or Reversal X(R). One accepted quarter assignment constrains the full containing profile: Q3=D implies AMDX, while X subtype can remain unresolved. This supersedes treating the four sibling quarter roles as independent fields. See `AMDX_CYCLE_RULE_CONTRACT.md`.
+
+Separate explicit technician anchors, rule-implied quarter/profile context and evidence-based phase classification. An inferred sibling role is not a fabricated manual answer or observed fact. Within-quartet inference does not automatically propagate a parent's phase/profile to child quartets. Preserve uncertainty, competing interpretations, conflicting active anchors, corrections and explicit manual judgment with provenance. Do not force a pattern or X subtype to satisfy a form.
+
+AMDX/XAMD definition and classification rules should be prominent, versioned Trade Plan content with inspectable inputs, reasons, applicability and unknowns. The aim is to make classification follow the plan's declared criteria and evaluate those criteria empirically, rather than leave subjective disagreement hidden in labels. The structural order is specified here; complete objective price-action criteria are not yet specified and must not be invented. A live phase sensor is optional later work, not the foundation of this architecture.
+
+Study/Lab can later evaluate rule revisions against scoped examples and recorded information available at the time. This is empirical rule/profile investigation, not a live quarter-correctness checklist, automatic competency score or new authorization policy. Authoritative adoption of new classification rules requires a published Trade Plan revision; current Alpha 0.7 remains unchanged. The previously proposed first-expectation Review default is not accepted by this clarification and needs to be reconsidered with cycle-profile provenance.
 
 ---
 
@@ -1430,6 +1441,6 @@ A deliberate accepted AMDX phase choice should immediately become recorded inter
 
 ### Accepted in-place Watch AMDX updates — 2026-10-11
 
-Small working-interpretation changes and active 90-minute cycle input should be directly and easily reachable in Watch. An accepted phase change uses the shared automatic revision-preserving command and does not require leaving Watch. The operator expects to keep up with at least the 90-minute cycles as they pass; factual current-marker updates are automatic, while phases remain explicit technician input with Unknown/no-copy-forward for untouched intervals. An active edit remains pinned to its target across a passive clock boundary. No mandatory cycle-completion gate is introduced.
+Small working-interpretation changes and active 90-minute cycle input should be directly and easily reachable in Watch. An accepted phase change uses the shared automatic revision-preserving command and does not require leaving Watch. The operator expects to keep up with at least the 90-minute cycles as they pass; factual current-marker updates are automatic. Explicit anchors remain technician input; a constrained containing quartet may show marked rule-implied roles, while a new containing cycle receives no arbitrary copy-forward. An active edit remains pinned to its target across a passive clock boundary. No mandatory cycle-completion gate is introduced.
 
 Broader thesis changes should have easy full-stack inspection and full TDA/Return to Analysis access. Inspection alone does not alter the process; the technician decides when broader re-analysis is needed. Do not automatically force re-analysis based solely on phase/level or edit count. These are shared action/permission requirements, not a chosen widget layout or an implemented production edit path.

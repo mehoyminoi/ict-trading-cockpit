@@ -1,13 +1,13 @@
 # Shared QT / AMDX behavior-contract review
 
-**Status:** Contracts 1 (automatic interpretation recording) and 2 (in-place Watch updates) accepted by the operator on 2026-10-11. Contract 3 (comparison baseline) remains open. Production implementation has not started.
+**Status:** Contracts 1 (automatic interpretation recording) and 2 (in-place Watch updates) accepted by the operator on 2026-10-11. Contract 3 (comparison baseline) remains open. The later four-quarter profile clarification in `AMDX_CYCLE_RULE_CONTRACT.md` extends the action/history unit to explicit anchors and rule-implied cycle claims. Production implementation has not started.
 **Scope:** Actions and recorded meaning shared by different renderers. Component layout remains parked. Schema v37, Alpha 0.7 and accepted E7 behavior are unchanged.
 
 ## 1. Automatic capture without a completion obligation
 
 ### Accepted behavior
 
-An accepted phase choice invokes **Set interpretation**. The application saves an immutable interpretation revision automatically and shows quiet success/error state. No separate Save/Record action is required. Selecting a scope, focusing a control, browsing options or leaving an untouched Unknown value creates no interpretation revision. Repeating the already-recorded phase is a no-op.
+An accepted phase choice invokes **Set interpretation**. The application saves an immutable explicit-anchor revision and corresponding versioned/reconstructable cycle-profile claim automatically, and shows quiet success/error state. No separate Save/Record action is required. Selecting a scope, focusing a control, browsing options or leaving an untouched Unknown value creates no interpretation revision. Repeating the already-recorded phase is a no-op.
 
 Free-text notes save as recoverable drafts while being typed. A draft belongs to an explicit run, target scope, channel and, where applicable, an interpretation revision. Typing does not certify a station or repeatedly declare a new phase. Completed note edits can become timestamped annotations through the application action boundary; exact debounce/focus-exit binding can be chosen in implementation without conflating note entry with phase commitment. A note entered later must not appear to have existed when the earlier phase was selected.
 
@@ -42,7 +42,7 @@ Reopening restores persisted drafts and revisions without converting drafts into
 
 Keep existing Watch observation/thesis capture and scope inspection available. A small working AMDX update is available directly from Watch through a deliberate, easily reached **Set working interpretation** action. It appends a scoped revision using the same shared command and automatic persistence as Analysis, retains the original interpretation, and leaves the operator in Watch. A full Return to Analysis is not required for each phase update.
 
-The operator expects active input as at least the 90-minute cycles pass. Current interval facts/marker update automatically from market time; the phase is still technician input. An untouched new cycle stays Unknown, with no inferred AMDX phase or copy-forward. Entry should be readily available for the current target, while a draft/active edit stays bound to its explicit interval even when the current marker moves. This does not create a mandatory per-cycle completion gate.
+The operator expects active input as at least the 90-minute cycles pass. Current interval facts/marker update automatically from market time; the phase is still technician input. An untouched quarter has no explicit manual anchor; a constrained containing quartet may expose a clearly marked rule-implied role, including unresolved X subtype. A new containing cycle gets no arbitrary copy-forward, and the clock alone does not choose AMDX/XAMD. Entry should be readily available for the current target, while a draft/active edit stays bound to its explicit interval even when the current marker moves. This does not create a mandatory per-cycle completion gate.
 
 Broader thesis change should have an easy route to full-stack inspection or full TDA re-analysis. Full-stack inspection alone need not leave Watch or certify anything. Return to Analysis remains a deliberate shared transition when broader re-analysis is wanted, preserving the run and relevant target. The technician determines the significance of the change; do not impose a fixed number of edits or QT-level rule that automatically forces re-analysis.
 
@@ -69,7 +69,7 @@ None of these actions silently clears authorization gates, changes the Trade Pla
 
 ### Recommended default
 
-Use the first explicit expected revision for the target as the initial Review baseline. Show its identity and market timing. A deliberately selected alternate baseline must be identified and persisted with the observation. Creating or editing an expectation later cannot rewrite an existing observation's comparison pair.
+The first-explicit-expectation default is still a proposal. Reframe it around identified containing-cycle profile claims and their rule/anchor basis; the operator's structural clarification does not accept this default. The earlier interval-only illustration below is superseded as a complete domain model by `AMDX_CYCLE_RULE_CONTRACT.md`. Use the first explicit expected revision for the target as a candidate Review baseline. Show its identity and market timing. A deliberately selected alternate baseline must be identified and persisted with the observation. Creating or editing an expectation later cannot rewrite an existing observation's comparison pair.
 
 ### Concrete case
 
@@ -93,6 +93,6 @@ Study-first startup is proposed and subject to change: a dismissible Study this 
 
 ## 5. Review and implementation boundary
 
-Contracts 1 and 2 are accepted; discuss the comparison baseline next. Agreement that the walkthrough is coherent is recorded separately from agreement to these behavior choices. Exact renderer layout and startup preference remain independently revisable.
+Contracts 1 and 2 are accepted; reconcile the cycle-profile/rule contract next, then reconsider the comparison baseline at that level. Agreement that the walkthrough is coherent is recorded separately from agreement to these behavior choices. Exact renderer layout and startup preference remain independently revisable.
 
 After the relevant contracts are settled, the next implementation can build stable interval identity, versioned run persistence, revision-preserving actions and developer verification. Preserve current legacy values/permission boundaries and use a disposable developer harness before introducing production renderers. No new manual smoke checklist is introduced by this review document.

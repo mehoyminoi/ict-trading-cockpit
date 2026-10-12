@@ -82,7 +82,7 @@ This is a conceptual walkthrough, not a new manual acceptance checklist. It uses
 
 **Build the analysis.** In the run's TDA, Higher-Timeframe Context covers Instrument / Session Context, IPDA Premium / Discount, Monthly Liquidity / Wick CE, Weekly Context and Daily Context. Thesis / Execution Context covers Primary Draw, Secondary / Alternate Draw and Premarket Thesis. Focus supports the operation at hand; Deck supplies the spatial analytical overview. Chart work occurs in TradingView; these correspondences do not imply electronic chart control.
 
-**Place AMDX in that analysis.** Currently the flat QT editor appears in the Thesis station's Focus view. The proposed architecture keeps whole-stack context available through the analytical journey with detail appropriate to the station. An expectation belongs to the run and explicit target interval; selecting another scope should preserve the larger picture. The final TDA station/content layout remains open.
+**Place AMDX in that analysis.** Currently the flat QT editor appears in the Thesis station's Focus view. The proposed architecture keeps whole-stack context available through the analytical journey with detail appropriate to the station. An expectation belongs to the run and explicit target cycle/quarter; an anchor can constrain the containing AMDX/XAMD profile with clearly marked derived sibling roles. Selecting another scope should preserve the larger picture. The later clarification is in `AMDX_CYCLE_RULE_CONTRACT.md`. The final TDA station/content layout remains open.
 
 **Finish deliberately.** Station certification and the TDA-to-Watch transition are intentional process actions. Ordinary recording/navigation does not certify completion. The existing intentional incomplete-override path preserves that incompleteness; it does not clear safety/setup gates.
 
@@ -121,7 +121,7 @@ The architecture should separate four concerns:
 | Concern | Owns | Must stay independent of |
 | --- | --- | --- |
 | Market context | Canonical New York clock, factual hierarchy, saved interval identity/bounds and source provenance | Human phase interpretation, directional claims and widget selection |
-| Interpretation/history | Run-owned expected/observed values, revisions, notes and comparison identity | Renderer layout, current live clock and later definition changes |
+| Interpretation/history | Run-owned explicit anchors, expected/observed cycle-profile claims, rule/input provenance, revisions, notes and comparison identity | Renderer layout, current live clock and later definition changes |
 | Application actions | Inspect/select scope, set interpretation, capture observation, return to analysis, certify/complete and route study within permissions | Mouse/shortcut/macro-pad binding and individual widgets |
 | Presentation | Context-specific selection, disclosure, grouping and space | Independent domain truths or a second workflow |
 
@@ -155,7 +155,7 @@ These contracts deserve concrete examples before production behavior is committe
 ## 8. Immediate work sequence
 
 1. Walkthrough reviewed on 2026-10-11; retain the clarified close overview/detail relationship and proposed Study-first doorway. Additional corrections can still be incorporated.
-2. Automatic interpretation recording and in-place Watch updates are accepted. Review comparison baseline next using `QT_ACTION_CONTRACT_REVIEW.md`. This is architecture review, not approval of a UI layout.
+2. Automatic interpretation recording and in-place Watch updates are accepted. Reconcile cycle profiles/rule provenance next, then reconsider comparison baseline using `QT_ACTION_CONTRACT_REVIEW.md`. This is architecture review, not approval of a UI layout.
 3. Implement the narrow identity/persistence/action slice with developer verification and legacy/restart protection, once its contract is accepted.
 4. Evaluate context-specific presentations in their working conditions: Watch beside charts, Lab during investigation, TDA during analysis, Review after the fact. Later shortcuts/hardware invoke the same actions.
 

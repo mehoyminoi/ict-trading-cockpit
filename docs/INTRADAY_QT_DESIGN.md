@@ -5,7 +5,7 @@
 
 ## Problem and proposed behavior
 
-The current run has one expected and one observed value per QT level. Recording a later interpretation replaces the earlier value. It cannot represent a different expectation for each of the day's four sessions and sixteen 90-minute intervals.
+The current run has one expected and one observed value per QT level. Recording a later interpretation replaces the earlier value. It cannot represent versioned four-quarter cycle profiles with explicit anchors, rule-implied sibling roles, ambiguity and input/rule provenance across the day's sessions and 90-minute intervals. The operator's clarification is specified in `AMDX_CYCLE_RULE_CONTRACT.md`; the earlier independent-quarter proposal is superseded.
 
 Keep a quiet whole-stack AMDX overview visible, with a nearby inspector/editor for the selected level. Higher-order context and the current intraday scope form one coherent hierarchy; inspecting a level must not remove the surrounding picture. Focus the current interval initially without requiring twenty completed answers per run. Four-session/four-cycle buttons, collapsed higher context and raw day history in the original preview are an exploratory baseline superseded by operator feedback, not the target layout.
 
@@ -52,20 +52,22 @@ The run owns its interpretations. Two runs on the same trading day have distinct
 
 ## Compact interaction proposal
 
-1. **TDA:** show a quiet whole-stack overview and open the adjacent inspector at the current session/cycle initially. Any editable level is available nearby with the surrounding hierarchy retained. Untouched intervals stay Unknown. Trial automatic draft persistence rather than a separate Record obligation; saving work and certifying analytical completion remain distinct.
+1. **TDA:** show a quiet whole-stack overview and open the adjacent inspector at the current session/cycle initially. Any editable level is available nearby with the surrounding hierarchy retained. Untouched manual anchors stay unrecorded; a constrained quartet may display clearly marked rule-implied roles. Accepted choices record automatically without a separate Record obligation; saving work and certifying analytical completion remain distinct.
 2. **Watch:** retain the quiet whole-stack overview while emphasizing relevant current/upcoming context. Inspection can select another level or interval without moving the clock or modifying records. Small working-phase changes use a directly available shared revision-preserving action in Watch. Broader thesis re-analysis uses easy full-stack/TDA access; future shortcuts invoke those same application actions. This accepted direction is not yet implemented.
 3. **Market Review:** retain whole-stack orientation and expose contextual expected/observed changes with their identified baseline and explanatory notes. The existing descriptive comparison semantics remain available where useful; there is no quarter-correctness grade. Remove the raw day-history list from the active workspace. Deeper historical browsing remains a later Review/Study/Lab placement decision, not a required list beside the editor.
 4. **Study / Lab or another study surface:** keep the same quiet whole-stack context available during learning and analysis. QT/AMDX is foundational, not confined to execution preparation. Study context uses its own explicit reference and run ownership; sharing a presentation does not make different runs share editable records.
 
 Bird's-eye context and accessible minutiae should be physically and conceptually close. Disclosure can expand definitions, provenance, prior-cycle relationships or editing detail; it must not hide the whole higher-order stack. Exact visual form remains unaccepted until hands-on evaluation. Heavy future keyboard/macro-pad use requires shared selection/inspection/editing actions now, while actual hardware integration remains downstream.
 
-Session and cycle phases remain independent. A session phase does not populate its four cycles. A cycle change does not replace the session phase. Entering cycle 4 does not copy cycle 3. There is no automatic A/M/D/X schedule or carry-forward.
+Within a four-quarter cycle, an explicit role anchor constrains AMDX/XAMD order and the sibling roles, with X subtype unresolved where necessary. These roles are rule-implied context, not invented manual/observed entries. Parent and child quartets remain independently interpreted unless an explicit rule connects them; a parent phase does not make every child the same phase. There is no inference from clock position alone or arbitrary copy-forward to a new containing cycle. Fluidity/conflicts/alternatives and objective classification criteria are specified in `AMDX_CYCLE_RULE_CONTRACT.md`.
 
 Selection and editing must stay distinct. Selecting a scope never changes its interpretation. The next interaction trial should persist edits automatically with quiet save/error feedback, so ordinary navigation does not require remembering Record/Discard. Final draft/committed-revision semantics, recovery and failure handling still need design verification; automatic draft persistence must not silently certify a station or process transition. A passive clock tick never retargets an edit: keep the selected interval pinned and mark the new current interval separately. Initial focus follows the stored market reference, with no wall-clock fallback for Replay/Historical Backtest or completed-run Review.
 
-Proposed phase choices: Unknown, Not Applicable, A, M, D, X(C), X(R), Distortion. Full names can appear beside the selected field or in a tooltip. Unknown is the default, not a required confirmation. There is no completion percentage, new gate, entry effect or automatic competency evidence.
+The new role model must distinguish X with unresolved subtype from X(C)/X(R), Unknown, Not Applicable, A, M, D and separate structural Distortion context. This is a proposed new contract, not a change to legacy enum/storage. Earlier proposed phase choices were Unknown, Not Applicable, A, M, D, X(C), X(R), Distortion. Full names can appear beside the selected field or in a tooltip. Unknown is the default, not a required confirmation. There is no completion percentage, new gate, entry effect or automatic competency evidence.
 
 ## Proposed record and comparison contract
+
+`AMDX_CYCLE_RULE_CONTRACT.md` extends this interval-only proposal: record explicit anchors plus versioned/reconstructable containing-cycle claims, supporting anchor IDs, selected rule revisions, candidate order, rule-implied roles, unresolved X subtype, conflicts/alternatives and input provenance. The earlier fields below remain useful but are insufficient alone.
 
 Each committed interpretation change appends an immutable revision with the following fields. Automatic draft persistence and immutable revision commit timing must be distinguished in the next trial; the original manual Record trigger is no longer the target interaction.
 
@@ -77,7 +79,7 @@ Each committed interpretation change appends an immutable revision with the foll
 
 No record means unrecorded Unknown. Clearing a previously recorded value to Unknown appends an Unknown revision and preserves earlier history. Not Applicable is an explicit technician classification, not missing information or proof of a closed market. A later correction appends a revision; it does not erase the earlier value.
 
-The working view can show the latest explicit expectation. Review defaults to the **first explicit expected revision for that interval**, visibly labeled with its recorded market time; it never silently substitutes the newest expectation. If a different baseline is selected, save its ID with the observation. A newer expectation or observation cannot rewrite an existing comparison pairing. Returning to TDA after Review does not let a later expectation masquerade as the original forecast.
+The working view should expose the current cycle-profile claim and its explicit/derived basis. **Review baseline remains open**: first recorded expectation was a recommendation, not an accepted decision, and the new profile contract requires comparison of identified cycle claims/rules/anchors rather than only isolated phase values. Any chosen baseline must remain identified with the observed claim; later input/rules cannot rewrite an existing pairing or masquerade as an earlier forecast.
 
 Distinguish Before interval / During interval / After interval using the expectation's explicit market reference and target bounds. During/After expectations remain visible with that timing label. A retrospectively entered expectation is never advertised as an advance forecast. Recording wall time is separate from historical market time: neither proves provider knowledge “as of” that historical date. No score or competency evidence is derived from these comparisons.
 
@@ -93,7 +95,7 @@ Changing current time definitions, selecting a different source capture or reope
 
 ## First implementation slice after design review
 
-Component layout iteration is parked following the operator's request to zoom out on 2026-10-11. Review the overall Cockpit functional map and context-specific presentation/action contracts before further production UI development. Architecture does not require choosing a final widget layout: stable interval identity, provenance, run ownership and persistence can be specified independently. Automatic phase recording and in-place Watch updates are accepted; the default comparison baseline remains to be settled. Note annotation/recovery and shared permission/action details remain implementation contract work.
+Component layout iteration is parked following the operator's request to zoom out on 2026-10-11. Review the overall Cockpit functional map and context-specific presentation/action contracts before further production UI development. Architecture does not require choosing a final widget layout: stable interval identity, provenance, run ownership and persistence can be specified independently. Automatic phase recording and in-place Watch updates are accepted. Reconcile containing-cycle inference/rule provenance first; the default comparison baseline remains open at cycle-claim level. Note annotation/recovery and shared permission/action details remain implementation contract work.
 
 `COCKPIT_FUNCTIONAL_WALKTHROUGH.md` is the concrete review aid: verified current navigation, operating and learning journeys, current-versus-proposed capabilities, context-specific presentations, ownership/action boundaries and three behavior-contract recommendations. Review this broader picture before resuming component layout or implementing the new QT behavior.
 
@@ -143,6 +145,6 @@ Developer verification: **17 interaction assertions passed**, plus browser-file 
 
 - Does a continuously visible whole-stack overview with nearby selected-level detail support the technician's working sequence with minimal motion/memory burden?
 - Is **first recorded expectation** a useful default Review baseline, with later revisions available explicitly?
-- Keep session-level and cycle-level interpretations independent, with no inheritance in the first slice?
+- Preserve within-quartet rule implications and independently interpreted parent/child quartets, with explicit rule/input/uncertainty provenance?
 
-These are proposed interaction/ownership choices. Alpha 0.7 trading policy, the real Friday Asian Range Monday relationship, shorter subcycles, day-wide shared interpretation, and automated scoring/entry effects remain outside this slice.
+The operator clarified within-quartet coupling and rule-based/fluid interpretation in `AMDX_CYCLE_RULE_CONTRACT.md`; this supersedes the blanket no-inference approach. These are proposed interaction/ownership choices. Alpha 0.7 trading policy, the real Friday Asian Range Monday relationship, shorter subcycles, day-wide shared interpretation, and automated scoring/entry effects remain outside this slice.
