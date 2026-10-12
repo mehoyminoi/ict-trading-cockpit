@@ -806,3 +806,11 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 **Consequences:** take the writer reservation before checking observed/comparison heads; exact original retries work after later changes. IDs cannot cross claim/working/Review boundaries. New cycle/source/pair/receipt inserts roll back together. Standalone readers use a consistent snapshot across sources, comparisons and receipts, preventing a concurrent commit from producing a false missing-basis result. Caller-owned transactions are not committed or rolled back.
 
 **Compatibility:** atomic v39 migration preserves run/claim/working-receipt bytes and semantic no-op retries, adds no inferred history and rejects older v39 bootstrap on v40. Ordinary run saves cannot truncate comparisons. Existing Watch/UI, Alpha 0.7 and all operator smoke records are preserved. Event association/statistics and renderer/default decisions remain later work.
+
+## 2026-10-12 — Accepted observed correction; comparison deferred
+
+**Decision:** the operator accepted one-entry observed quartet correction, independently versioned and preserving earlier judgments, plus optional comparison with no automatic first/latest pairing during routine observed capture. A deliberately selected same-cycle comparison basis carries through corrections until changed/cleared.
+
+**Priority:** comparison is lower priority and belongs in Study/Review for purposeful exploration if needed. Do not add a comparison option or launch route to Watch. Further comparison UI/research expansion is deferred; current-stack orientation and efficient AMDX entry remain the focus.
+
+**Consequences:** retain the completed v40 persistence substrate. The next shared-action refinement supports observed entry without requiring comparison controls or a baseline choice. Preserve original observed accumulation replay when introducing the new versioned action. Final controls/layout remain separate; no source, schema, operator smoke or merge change accompanies this acceptance record.

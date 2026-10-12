@@ -1,6 +1,6 @@
 # AMDX Review interaction — concrete cases
 
-**Status:** developer recommendation for operator review, 2026-10-12. Prepared after the v40 persistence slice. The operator's readiness authorized this contract review; it does not accept the proposed defaults or observed revision policy below.
+**Status:** the operator accepted both principal behaviors on 2026-10-12: independently versioned one-entry observed correction and optional comparison with no automatic first/latest pairing during routine capture. Comparison is lower priority and deferred until a concrete Study/Review need arises. It has no entry point in Watch. These are accepted behavioral directions; observed revision/UI implementation remains downstream of v40.
 
 **Verified baseline:** `dfb5effb0fb185fe156f2e63a3392eed8975c53b`, source `e61c1aa5d27d20880adc476ef007328c89771001`, 658 automated PASS, schema v40, Alpha 0.7. Draft PR #64 is stacked on unmerged #63. The coupled AMDX panel is read-only in Market Review; legacy flat observed fields retain their existing action. Explicit pairing storage exists, but no coupled observed editor/comparison view is wired into the application.
 
@@ -22,7 +22,7 @@ An intentionally opened comparison offers identified expectations, including fir
 
 For corrections to the same observed cycle, retain its last deliberately selected comparison basis, if one exists. Do not silently switch to a newer expectation. If no basis was chosen, keep it unselected. An intentional clear of comparison selection records a new null-basis pairing; subsequent corrections retain that unselected state. A new cycle inherits neither the observed profile nor a comparison choice from another cycle.
 
-This supersedes the earlier first-expectation automatic-pairing idea as the **current developer recommendation**, not as an accepted product decision. First/latest remains an optional identified research choice, with no routine default proposed here.
+The operator’s subsequent acceptance supersedes the earlier automatic-first pairing proposal: routine capture uses no automatically selected expectation. Optional comparison remains lower priority and belongs only in Study/Review when needed. First/latest remains an optional identified research choice, with no routine default proposed here.
 
 ## 3. Before/action/after cases
 
@@ -43,7 +43,7 @@ This supersedes the earlier first-expectation automatic-pairing idea as the **cu
 
 The v40 backend can already retain explicit and null pairings, alternate selections, exact retries and atomic observed-claim/pair writes. It currently accepts Observed `accumulate-v1` actions. It does **not** yet implement the proposed one-entry observed replacement/no-op/applicability flow.
 
-If that policy is accepted, add a named versioned Observed action with preserved original accumulation replay and migration/receipt compatibility before connecting controls. Current Expected `revise-working-v1` remains separate. No existing observation is reinterpreted as having used the new policy.
+Implement the accepted behavior through a named versioned Observed action with preserved original accumulation replay and migration/receipt compatibility before connecting controls. Current Expected `revise-working-v1` remains separate. No existing observation is reinterpreted as having used the new policy.
 
 Application binding must respect existing run/process permissions, save only deliberate accepted actions, pin cycle/reference/basis through a gesture, and restore committed meaning after restart. Observation/pair transactions never certify Review or update competency/authorization state. Free-text note drafts remain separate unimplemented work; phase entry must not wait for a note.
 
@@ -54,4 +54,4 @@ Final primary 16:9 rendering, quiet whole-stack orientation, direct one-click X(
 1. **Observed revision:** use the same efficient one-entry quartet correction semantics as Watch, independently versioned and preserving earlier observed history.
 2. **Comparison:** routine observed entry has no automatic first/latest pairing; explicitly opened comparison is optional, and a deliberately selected basis carries through corrections of that same cycle until cleared/changed.
 
-Both are recommendations for review. No new source, schema, UI or smoke status is changed by this document.
+Both principal behaviors are accepted. Comparison controls and further comparison-focused work are deferred until Study/Review use demonstrates a need. Do not add a Watch comparison option, history panel or launch route. Prioritize efficient AMDX entry and current-stack orientation. No new source, schema, UI or smoke status is changed by this acceptance record.

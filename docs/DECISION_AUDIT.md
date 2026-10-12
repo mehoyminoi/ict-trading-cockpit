@@ -376,3 +376,14 @@ See `AMDX_REVIEW_PERSISTENCE_GUIDE.md`. No new classifier, event likelihood, com
 ## 2026-10-12 — Review interaction cases prepared
 
 `AMDX_REVIEW_INTERACTION_CONTRACT_REVIEW.md` recommends independently versioned one-entry observed correction and optional deliberately opened comparison. Routine observation would store no selected expectation; an explicitly selected basis would remain pinned through same-cycle corrections until changed/cleared. This supersedes automatic-first pairing as the developer recommendation, not as an accepted operator decision. v40 Observed accumulation and all existing source/UI behavior remain unchanged. Both decisions are OPEN.
+
+## 2026-10-12 — Review behavior acceptance and priority
+
+| Earlier status | Operator decision | Current status |
+| --- | --- | --- |
+| One-entry observed correction proposed | Accepted independently of working expectation, preserving earlier judgments. | ACCEPTED behavior / versioned action not implemented |
+| Routine no-auto-comparison proposed | Accepted; deliberately selected same-cycle basis persists through corrections until changed/cleared. | ACCEPTED behavior / optional later UI |
+| Comparison as immediate next UI task | Lower priority; explore in Study/Review when a concrete need arises. | DEFERRED / storage preserved |
+| Watch comparison access | No option or launch route needed from Watch. | EXCLUDED from Watch |
+
+This supersedes earlier OPEN/proposed decision wording, without claiming new implementation or UI acceptance. See `AMDX_REVIEW_INTERACTION_CONTRACT_REVIEW.md`.

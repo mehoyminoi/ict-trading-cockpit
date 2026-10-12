@@ -230,3 +230,9 @@ See `AMDX_REVIEW_PERSISTENCE_GUIDE.md` and the disposable `tools/amdx_review_per
 ## 2026-10-12 — Review interaction proposal
 
 The concrete contract review is `AMDX_REVIEW_INTERACTION_CONTRACT_REVIEW.md`. Two unaccepted recommendations: independently versioned observed quartet correction matching the accepted working semantics, and routine observed capture with no automatic comparison. Optional deliberately selected comparison basis would persist through same-cycle corrections until changed/cleared. v40 already supports explicit/null pairing, but observed replacement/no-op/applicability still needs a versioned action extension before controls. No runtime/source/schema/smoke changes are made; retain the completed 658-pass result. Do not infer acceptance from readiness to review, or put history/comparison on Watch.
+
+## 2026-10-12 — Review behavior accepted; comparison lower priority
+
+The operator accepted both principal interaction behaviors: independently versioned one-entry observed correction and optional comparison with no automatic first/latest pairing. Deliberately selected same-cycle basis remains through corrections until changed/cleared. Comparison is lower priority, deferred to a demonstrated Study/Review need; there is no comparison option or launch route from Watch.
+
+Next effort supports efficient observed entry and current-stack orientation, using the completed v40 storage. Versioned observed replacement/no-op/applicability semantics are not yet implemented and must preserve original accumulation replay. Do not expand comparison UI as the automatic next slice. This checkpoint changes documentation only; the 658-pass source, schema v40, Alpha 0.7 and all 254 smoke records remain unchanged. No merge occurred.
