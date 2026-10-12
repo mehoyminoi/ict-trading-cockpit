@@ -192,7 +192,7 @@ def test_rule_snapshot_roundtrip_survives_new_plan_and_explains_review_without_m
     assert "E5 fixture" in card.detail_text.toPlainText()
     assert "Fixture only" in card.detail_text.toPlainText()
     assert restored.__dict__ == before
-    assert conn.execute("PRAGMA user_version").fetchone()[0] == CURRENT_SCHEMA_VERSION == 37
+    assert conn.execute("PRAGMA user_version").fetchone()[0] == CURRENT_SCHEMA_VERSION
     conn.close(); shell.close(); card.close()
 
 

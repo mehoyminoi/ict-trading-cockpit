@@ -700,3 +700,17 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 **Consequences:** versioned JSON history/evaluation save/reload is verified without changing schema v37, Alpha 0.7 or the desktop. Actual application writes, plan publication, higher-order temporal mapping, operational classifiers, Review default, source adapters/sensors and coverflow rendering remain downstream. News interpretation/research is part of the definition direction, but no correlation or provider as-of capability is assumed validated.
 
 **Supersedes:** independent sibling-role assumptions and the separate Record-click target in the earlier intraday prototype. Existing legacy flat QT storage/behavior is preserved until reviewed repository integration; no historical interval claims are invented.
+
+## 2026-10-11 — Transactional run-owned AMDX history
+
+**Status:** Operator authorized proceeding after the pure foundation checkpoint. Implemented in schema v38; developer storage/compatibility verification recorded in `PROJECT_STATE.md`. Production phase-entry UI and operator usability review remain downstream.
+
+**Decision:** Store accepted-action claims and criteria evaluations in separate append-only tables owned by existing saved runs. Registry rows protect stable cycle identities and exact definition revision content. Ordinary mutable run snapshot saves do not own or overwrite these histories. New AMDX data is absent on legacy runs until an explicit action occurs; never synthesize interval history from flat QT values.
+
+**Rationale:** Automatic durable capture must preserve earlier interpretations, survive restart and prevent stale editors or ordinary application saves from losing records. The interpretation and its input/rule basis should be independently reviewable without choosing a default Review comparison.
+
+**Consequences:** shared actions own an immediate SQLite transaction, validate the inspected scope head and append/commit once. Exact retries are idempotent; changed IDs/content, stale heads and inconsistent ownership/bases are rejected. Cycle/definition registration and result insertion roll back together on failure. An unrelated pending caller transaction is rejected rather than committed or rolled back. SQL UPDATE/DELETE/REPLACE guards protect existing rows. Explicit evaluation basis IDs are optional and never select a Review default. Definition snapshot identity includes Candidate/Published status; actual Trade Plan editing/publication remains separate.
+
+**Compatibility:** v37 → v38 is additive and atomic, with old run/capture data preserved and actual accepted-E6 restoration verified through the normal application. Alpha 0.7, existing gates and competency behavior remain unchanged. New Watch/TDA bindings, higher-order mapping, note drafts, Review defaults and final UX remain the next/separate work.
+
+**Refines:** the previous pure JSON archive contract into actual database persistence. No manual Save/Record obligation, automatic cycle-completion gate or inferred legacy history is introduced.

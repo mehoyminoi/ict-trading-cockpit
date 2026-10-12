@@ -58,7 +58,7 @@ def open_window(directory, evidence):
     from PySide6.QtCore import Qt
     from PySide6.QtWidgets import QLabel
     from ict_cockpit.database.connection import create_connection
-    from ict_cockpit.database.schema import initialize_schema
+    from ict_cockpit.database.schema import CURRENT_SCHEMA_VERSION, initialize_schema
     from ict_cockpit.database.tda_repository import TDARepository
     from ict_cockpit.database.study_find_repository import StudyFindRepository
     from ict_cockpit.gui.main_window import MainWindow
@@ -73,7 +73,7 @@ def open_window(directory, evidence):
         if run.market_context_snapshot != evidence["market_context_snapshot"]:
             raise ValueError("Restored context differs from the original E6 snapshot.")
         label = QLabel(
-            f"E6 compatibility sandbox · synthetic data · schema v37 / Alpha 0.7\n"
+            f"E6 compatibility sandbox · synthetic data · original v37 → current v{CURRENT_SCHEMA_VERSION} / Alpha 0.7\n"
             f"Original run: {evidence['run_id']} · original capture: {evidence['capture_id']}"
         )
         label.setTextFormat(Qt.TextFormat.PlainText)

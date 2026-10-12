@@ -2,7 +2,7 @@
 
 **Status:** Architecture response to operator clarification on 2026-10-11. The cycle/rule contract document is reviewed. Specific classifier definitions, their weights, the meaning of the illustrative rule targets and the Review default remain open.
 **Decision direction:** enough is known to build the structural/rule-definition foundation without completing every AMDX rule or renderer. Keep unfinished criteria explicit; do not fill them with guessed trading conditions.
-**Baseline:** accepted E7, v37 / Alpha 0.7. This document began as a documentation-only contract. The operator subsequently authorized proceeding; `AMDX_FOUNDATION_GUIDE.md` records the implemented pure domain foundation and JSON archive contract, with database/renderers still downstream.
+**Baseline:** accepted E7, v37 / Alpha 0.7. This document began as a documentation-only contract. The operator subsequently authorized the domain foundation and then transactional persistence; `AMDX_FOUNDATION_GUIDE.md` and `AMDX_PERSISTENCE_GUIDE.md` record those implementations, including additive v38 storage. Production rendering remains downstream; Alpha 0.7 is unchanged.
 
 ## 1. Changeable definitions with protected historical revisions
 

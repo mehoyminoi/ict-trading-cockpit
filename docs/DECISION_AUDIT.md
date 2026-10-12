@@ -265,3 +265,15 @@ Earlier E7-downstream wording describes the E6 checkpoint. E7 v0 is implemented,
 | Renderer and Review baseline | Context-specific screens and comparison default remain open. Coverflow is a later revisable experiment. | DEFERRED / no UI acceptance inferred |
 
 See `AMDX_FOUNDATION_GUIDE.md`. The operator authorized proceeding after reviewing the cycle/definition direction; this does not adopt a synthetic price/news classifier or alter Alpha 0.7.
+
+## 2026-10-11 — AMDX persistence implementation
+
+| Area | Current interpretation | Status |
+|---|---|---|
+| Persistence NEXT in the foundation checkpoint | Schema v38 separate append-only tables and the normal run repository's shared AMDX actions now commit/reload claims and evaluations. | SUPERSEDED / persistence implemented |
+| Existing run snapshot ownership | Ordinary run saves retain old fields and cannot truncate AMDX history; legacy runs have empty new history. | IMPLEMENTED / v37 and actual E6 compatibility verified |
+| Revision content and simultaneous edits | Stable cycle/definition content is protected; exact retries are idempotent and stale scoped heads are rejected. | IMPLEMENTED / writer and rollback tests |
+| Review comparison | Optional explicit evaluation basis is stored; no first/latest default is selected. | OPEN presentation policy |
+| Desktop entry path | Backend is ready for minimal Watch/TDA action binding and restored-record presentation. No new phase-entry surface exists yet. | NEXT / final layout still deferred |
+
+See `AMDX_PERSISTENCE_GUIDE.md`. Earlier v37/no-migration and database-NEXT statements record the foundation checkpoint; this v38 slice supersedes that implementation status while preserving the accepted policy/legacy boundaries.
