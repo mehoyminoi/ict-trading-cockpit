@@ -372,3 +372,7 @@ See `AMDX_REVIEW_FOUNDATION_GUIDE.md`. No schema/plan change or new manual accep
 | Defaults and presentation | No first/latest selection, new observed replacement semantics, Review controls or Watch history display. | OPEN / existing presentation preserved |
 
 See `AMDX_REVIEW_PERSISTENCE_GUIDE.md`. No new classifier, event likelihood, competency evidence or published Trade Plan policy is introduced.
+
+## 2026-10-12 — Review interaction cases prepared
+
+`AMDX_REVIEW_INTERACTION_CONTRACT_REVIEW.md` recommends independently versioned one-entry observed correction and optional deliberately opened comparison. Routine observation would store no selected expectation; an explicitly selected basis would remain pinned through same-cycle corrections until changed/cleared. This supersedes automatic-first pairing as the developer recommendation, not as an accepted operator decision. v40 Observed accumulation and all existing source/UI behavior remain unchanged. Both decisions are OPEN.

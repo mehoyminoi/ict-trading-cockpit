@@ -85,7 +85,7 @@ The first-explicit-expectation default is still a proposal. Reframe it around id
 
 Differences remain descriptive. They do not establish error, probability, trading permission or competency. Explanatory notes and Study questions can be captured without a correctness grade. Both Unknown sides or an explicitly Not Applicable side remain Not Comparable; original values/classifications remain inspectable.
 
-**Review question:** Is first explicit expectation the right default, with intentionally selected later baselines available?
+**Updated developer recommendation, 2026-10-12:** `AMDX_REVIEW_INTERACTION_CONTRACT_REVIEW.md` proposes no automatic first/latest pairing during routine observed capture. Comparison opens deliberately; selected bases remain explicit and corrections retain a deliberate choice until changed/cleared. It also proposes independently versioned one-entry observed correction. These are concrete cases for review, not inferred acceptance. The earlier automatic-first proposal above is historical context.
 
 ## 4. Independent mature-UX directions retained
 
