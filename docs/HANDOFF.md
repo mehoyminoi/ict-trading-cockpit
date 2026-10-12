@@ -206,3 +206,7 @@ Checks 251–254 are PASS from the operator’s message, “Smoke test complete.
 Mature X(C)/X(R) entry must each take one click from the active target, with direct future keyboard/macro-pad actions. The current submenu remains an interim renderer. Primary 16:9 geometry, whole-stack renderers and classifiers remain downstream.
 
 Next is `AMDX_REVIEW_COMPARISON_CONTRACT_REVIEW.md`: containing-cycle observation and explicitly retained expectation pairing. The proposed first-expectation default remains unaccepted. No observed entry, comparison UI, automatic grade or rule adoption is added.
+
+## 2026-10-12 — Watch history/comparison boundary
+
+Operator clarified that normal Watch needs the AMDX stack as it is now and current position within it. Do not add prior stack versions or before/after comparisons to support the Review proposal. Preserve automatic immutable revision retention. Later purposeful Review/Study may explore changes associated with identified price-action events or noticed features; context links, samples and aggregation remain unimplemented. The first-versus-latest default remains open. This update changes documents only; source/tests/tools, accepted 254 smoke records, schema v39 and Alpha 0.7 are unchanged.

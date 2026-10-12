@@ -338,3 +338,12 @@ See `AMDX_QUARTET_REVISION_OPERATOR_GUIDE.md`. This is the semantic/input follow
 | First expectation comparison default | Concrete cycle-profile pairing cases prepared; default and broader observed-input contract still require review. | OPEN / not accepted by the smoke completion |
 
 This entry supersedes earlier pending-check wording for the follow-up. The original 250 checklist records, source, schema v39 and Alpha 0.7 are preserved. PR #62 is ready for review and remains stacked on unmerged PR #61.
+
+## 2026-10-12 — Scope of AMDX history/comparison
+
+| Potential interpretation | Operator clarification | Status |
+| --- | --- | --- |
+| First/latest comparison near the active stack in Watch | Watch needs current working stack and current position with minimal clutter; no visible change history or stack-change comparison. | EXCLUDED from normal Watch presentation |
+| Retain revisions | Continue automatic immutable retention for purposeful later Review/Study. | PRESERVED storage/provenance requirement |
+| Later event/change insights | Investigate associations with recorded price-action events or noticed features when samples/context support them. | FUTURE research direction / no aggregation implemented |
+| First-versus-latest default | Clarification selects where history belongs, not the specific Review pairing default. | OPEN / not inferred acceptance |

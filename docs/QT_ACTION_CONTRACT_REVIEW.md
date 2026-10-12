@@ -67,7 +67,9 @@ None of these actions silently clears authorization gates, changes the Trade Pla
 
 ## 3. Identified comparison rather than hindsight substitution
 
-### Recommended default
+### Proposed default for later Review only
+
+Operator clarification on 2026-10-12: Watch needs the current working stack and current position, with limited visual clutter. Retain changes automatically for later Review/Study; do not expose first/latest comparisons or change history in normal Watch. The proposal below describes intentionally accessed Review, not another active-day obligation. Later aggregation may investigate recorded changes in relation to identified price-action events or noticed features; no statistical result or classifier is implemented. The baseline default remains open.
 
 The first-explicit-expectation default is still a proposal. Reframe it around identified containing-cycle profile claims and their rule/anchor basis; the operator's structural clarification does not accept this default. The earlier interval-only illustration below is superseded as a complete domain model by `AMDX_CYCLE_RULE_CONTRACT.md`. Use the first explicit expected revision for the target as a candidate Review baseline. Show its identity and market timing. A deliberately selected alternate baseline must be identified and persisted with the observation. Creating or editing an expectation later cannot rewrite an existing observation's comparison pair.
 

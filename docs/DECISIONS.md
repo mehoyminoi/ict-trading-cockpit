@@ -778,3 +778,11 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 **Rationale:** subtype selection is frequent working interpretation input; the extra menu action adds motion and process burden. The current menu remains interim. Exact control arrangement and bindings remain open alongside the primary 16:9 renderer.
 
 **Next contract:** identified observed-profile/expected-profile comparison, prepared in `AMDX_REVIEW_COMPARISON_CONTRACT_REVIEW.md`. A first-expectation default remains proposed, rather than inferred from smoke acceptance.
+
+## 2026-10-12 — Watch orientation now; change research later
+
+**Decision:** normal Watch shows the current working AMDX stack and the technician’s position within it. Prior stack versions and before/after or expectation comparison panels do not need visible space there. Whole-stack accessibility, current uncertainty, quiet hover context and efficient direct entry remain. Immutable revisions continue to be retained automatically.
+
+**Rationale:** the working meaning now supports the operation at hand. Visible change tracking adds clutter and mental work during the day. Later purposeful Review/Study may investigate associations between interpretation changes, identified price-action events and features the technician noticed.
+
+**Consequences:** historical comparison is a context-specific later tool, not a daily viewing/capture obligation. No extra explanation or confirmation step is introduced. Event association, sample definitions and aggregation remain unimplemented; no causal conclusion or likelihood is invented. This clarifies presentation ownership, not acceptance of a first-versus-latest comparison default.
