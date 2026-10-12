@@ -4,7 +4,7 @@
 **Verified baseline:** accepted E7 on main `83d82323ca936dedf045027760d81a1cd7de76b1`; schema v37, Trade Plan Alpha 0.7. This design branch changes documentation only.
 **Purpose:** Review the whole operating/learning experience before refining a QT component. Separate what currently exists, what is required, and what is proposed.
 **Operator review:** walkthrough reviewed on 2026-10-11; ready to continue to shared behavior-contract review. This does not settle the three open contracts or approve a final renderer.
-**Subsequent contract decision:** automatic interpretation recording accepted on 2026-10-11; Watch editing and comparison baseline remain open.
+**Subsequent contract decision:** automatic interpretation recording and in-place Watch updates accepted on 2026-10-11; comparison baseline remains open.
 
 ## 1. The whole tool
 
@@ -86,7 +86,7 @@ This is a conceptual walkthrough, not a new manual acceptance checklist. It uses
 
 **Finish deliberately.** Station certification and the TDA-to-Watch transition are intentional process actions. Ordinary recording/navigation does not certify completion. The existing intentional incomplete-override path preserves that incompleteness; it does not clear safety/setup gates.
 
-**Operate in Watch.** Existing Watch carries forward thesis/context, tracks candidate/watch-point state, records material observations and thesis changes, and exposes authorization reasons. The proposed renderer should quietly orient the technician in the whole AMDX stack and promote only relevant detail. An efficient capture action does not need to become a large journal form. Expectation editing currently uses Return to Analysis; broader Watch editing is an open action-policy decision.
+**Operate in Watch.** Existing Watch carries forward thesis/context, tracks candidate/watch-point state, records material observations and thesis changes, and exposes authorization reasons. The proposed renderer should quietly orient the technician in the whole AMDX stack and promote only relevant detail. An efficient capture action does not need to become a large journal form. Expectation editing currently uses Return to Analysis. The subsequently accepted direction enables small working-phase changes directly in Watch and preserves easy full-stack/TDA access for broader re-analysis; that command is not yet implemented.
 
 **Respond to change.** If a thesis needs re-analysis, the existing Return to Analysis transition is deliberate and preserves the run's history. Material changes can be captured in Watch without pretending that every observation is a new expectation. A passive interval boundary should update the current marker without retargeting an edit to a different interval.
 
@@ -142,12 +142,12 @@ Foundational availability does not require the same permanent widget in every go
 
 **Architecture work that can proceed without choosing a final layout:** specify stable target identity/bounds, versioned record shape and legacy restoration, context projection interfaces, action names/permissions and domain-level verification. Data work must preserve old values without inventing interval history. The existing `day`/`session`/`macro_90m` naming ambiguity is documented in `INTRADAY_QT_DESIGN.md`; conceptual view labels are not a migration rule.
 
-Automatic interpretation recording was subsequently accepted; Watch editing and the default comparison baseline remain recommendations for discussion:
+Automatic interpretation recording and in-place Watch updates were subsequently accepted; the default comparison baseline remains a recommendation for discussion:
 
 | Open contract | Proposed starting position | Consequence to examine |
 | --- | --- | --- |
 | Automatic draft capture → historical interpretation | Persist edits without a Save obligation. A deliberate phase selection can trigger an immutable interpretation revision through a shared action; unfinished note text can remain a recoverable draft. Saving never certifies a station. | Define exactly what creates a revision, how notes attach, error/retry behavior and how drafts restore after a crash. Avoid interpreting every keystroke as a new thesis. |
-| Efficient Watch entry | Keep existing observation/thesis capture actions; route expectation changes through the shared Return to Analysis action initially. Design command interfaces so a later reviewed quick-edit path can use the same semantics. | Distinguish observation from a revised expectation, protect timing/provenance, and avoid unnecessary navigation. Whether direct Watch phase editing is appropriate remains open. |
+| Efficient Watch entry | Accepted: small working-phase changes use a directly reachable shared revision-preserving action in Watch. Broader thesis review retains easy full-stack/TDA access. Existing observation/thesis capture remains separate. | Distinguish observation from a revised expectation, protect timing/provenance, and avoid unnecessary navigation. Direct working-phase editing is accepted direction; exact control layout remains open. |
 | Review expectation baseline | Preserve first explicit recorded expectation as a visible default; attach the chosen revision ID (or Unknown) to each observation. Allow explicitly identified later baselines when justified. | First expectation remains tentative; later revisions must not silently rewrite an earlier comparison, and retrospective entries must not masquerade as advance forecasts. |
 
 These contracts deserve concrete examples before production behavior is committed. Final selector/button placement, renderer density and visual styling can be revisited afterward.
@@ -155,7 +155,7 @@ These contracts deserve concrete examples before production behavior is committe
 ## 8. Immediate work sequence
 
 1. Walkthrough reviewed on 2026-10-11; retain the clarified close overview/detail relationship and proposed Study-first doorway. Additional corrections can still be incorporated.
-2. Automatic interpretation recording is accepted. Review Watch editing next, then comparison baseline, using `QT_ACTION_CONTRACT_REVIEW.md`. This is architecture review, not approval of a UI layout.
+2. Automatic interpretation recording and in-place Watch updates are accepted. Review comparison baseline next using `QT_ACTION_CONTRACT_REVIEW.md`. This is architecture review, not approval of a UI layout.
 3. Implement the narrow identity/persistence/action slice with developer verification and legacy/restart protection, once its contract is accepted.
 4. Evaluate context-specific presentations in their working conditions: Watch beside charts, Lab during investigation, TDA during analysis, Review after the fact. Later shortcuts/hardware invoke the same actions.
 

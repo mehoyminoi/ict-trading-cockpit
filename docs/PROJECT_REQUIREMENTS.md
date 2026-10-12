@@ -1426,4 +1426,10 @@ Recommendations should explain their recorded basis, such as saved Development D
 
 ### Accepted automatic interpretation recording — 2026-10-11
 
-A deliberate accepted AMDX phase choice should immediately become recorded interpretation history, without waiting for station completion or requiring a separate Save/Record action. Later changes preserve the earlier interpretation as revisions. Note text remains automatically recoverable during editing. Scope navigation and analytical completion remain separate actions. Option browsing/untouched Unknown defaults do not invent an interpretation. See `QT_ACTION_CONTRACT_REVIEW.md`; Watch editing permissions and the default comparison baseline remain open.
+A deliberate accepted AMDX phase choice should immediately become recorded interpretation history, without waiting for station completion or requiring a separate Save/Record action. Later changes preserve the earlier interpretation as revisions. Note text remains automatically recoverable during editing. Scope navigation and analytical completion remain separate actions. Option browsing/untouched Unknown defaults do not invent an interpretation. See `QT_ACTION_CONTRACT_REVIEW.md`; the default comparison baseline remains open.
+
+### Accepted in-place Watch AMDX updates — 2026-10-11
+
+Small working-interpretation changes and active 90-minute cycle input should be directly and easily reachable in Watch. An accepted phase change uses the shared automatic revision-preserving command and does not require leaving Watch. The operator expects to keep up with at least the 90-minute cycles as they pass; factual current-marker updates are automatic, while phases remain explicit technician input with Unknown/no-copy-forward for untouched intervals. An active edit remains pinned to its target across a passive clock boundary. No mandatory cycle-completion gate is introduced.
+
+Broader thesis changes should have easy full-stack inspection and full TDA/Return to Analysis access. Inspection alone does not alter the process; the technician decides when broader re-analysis is needed. Do not automatically force re-analysis based solely on phase/level or edit count. These are shared action/permission requirements, not a chosen widget layout or an implemented production edit path.

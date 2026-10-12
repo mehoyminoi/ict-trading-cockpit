@@ -1,6 +1,6 @@
 # Shared QT / AMDX behavior-contract review
 
-**Status:** Contract 1 (automatic interpretation recording) accepted by the operator on 2026-10-11. Contracts 2 (Watch editing) and 3 (comparison baseline) remain open. Production implementation has not started.
+**Status:** Contracts 1 (automatic interpretation recording) and 2 (in-place Watch updates) accepted by the operator on 2026-10-11. Contract 3 (comparison baseline) remains open. Production implementation has not started.
 **Scope:** Actions and recorded meaning shared by different renderers. Component layout remains parked. Schema v37, Alpha 0.7 and accepted E7 behavior are unchanged.
 
 ## 1. Automatic capture without a completion obligation
@@ -38,26 +38,32 @@ Reopening restores persisted drafts and revisions without converting drafts into
 
 ## 2. Efficient Watch capture and expectation changes
 
-### Boundaries under review
+### Accepted Watch boundary
 
-Keep existing Watch observation/thesis capture and scope inspection available. Continue using the shared **Return to Analysis** action when the technician wants to revise an expectation. That action should preserve the inspected target for efficient editing, within the current run and existing transitions. A later reviewed quick-edit path can invoke the same command and permission policy; it should not be hardcoded into a separate Watch-owned state store.
+Keep existing Watch observation/thesis capture and scope inspection available. A small working AMDX update is available directly from Watch through a deliberate, easily reached **Set working interpretation** action. It appends a scoped revision using the same shared command and automatic persistence as Analysis, retains the original interpretation, and leaves the operator in Watch. A full Return to Analysis is not required for each phase update.
 
-The paragraph above is the conservative initial proposal and current permission boundary. A deliberate in-place **Set working interpretation** action in Watch is the alternative now being reviewed to reduce motion/navigation burden. It would append a scoped revision through the same application command, retain the original expectation and leave process certification separate. Broader thesis re-analysis can still use Return to Analysis. Neither option is accepted yet; a renderer must not decide the policy independently.
+The operator expects active input as at least the 90-minute cycles pass. Current interval facts/marker update automatically from market time; the phase is still technician input. An untouched new cycle stays Unknown, with no inferred AMDX phase or copy-forward. Entry should be readily available for the current target, while a draft/active edit stays bound to its explicit interval even when the current marker moves. This does not create a mandatory per-cycle completion gate.
+
+Broader thesis change should have an easy route to full-stack inspection or full TDA re-analysis. Full-stack inspection alone need not leave Watch or certify anything. Return to Analysis remains a deliberate shared transition when broader re-analysis is wanted, preserving the run and relevant target. The technician determines the significance of the change; do not impose a fixed number of edits or QT-level rule that automatically forces re-analysis.
+
+This is accepted design behavior, not the current v37 UI: the existing production QT editor is still in Analysis and the new shared Watch edit command has not been implemented.
 
 Study is an environment/purpose, not a bypass of process semantics. A spacious Study renderer uses the same scoped commands and appropriate analysis/review permissions for its own run.
 
 ### Concrete case
 
-| Situation | Proposed action | Record affected |
+| Situation | Accepted action direction | Record affected |
 | --- | --- | --- |
 | Technician wants to inspect the weekly expectation during Watch | Inspect weekly scope | No interpretation change |
 | Technician sees a material market development | Existing Capture observation / thesis-state action | Run observation/evidence, with its explicit reference |
-| Technician wants to replace a cycle expectation M with D | Return to Analysis with that target, then Set interpretation | New expected revision; old M retained |
+| Technician wants to update a cycle's working interpretation M to D | Set working interpretation directly in Watch | New expected/working revision; old M retained; stay in Watch |
+| Current market reference moves into the next 90-minute cycle | Update factual current marker; make explicit input easy to reach | No new interpretation until a deliberate choice; active edit retains its target |
+| Technician needs broader thesis review | Inspect full stack or Return to Analysis for full TDA | Inspection alone changes no interpretation; accepted edits preserve history |
 | Technician records the observed cycle phase during Market Review | Set observed interpretation | Independent observed revision with identified comparison baseline |
 
-None of these actions silently clears authorization gates, changes the Trade Plan, advances a station or upgrades eligibility. Capturing an observation must not silently rewrite the working expectation. Whether a direct Watch AMDX observation or expectation-edit action is desirable remains an explicit product decision; efficient entry does not imply the answer.
+None of these actions silently clears authorization gates, changes the Trade Plan, advances a station or upgrades eligibility. Capturing an observation must not silently rewrite the working expectation. Working-interpretation revision and observation remain distinct commands/channels.
 
-**Review question:** Keep the current Return to Analysis boundary for expected-phase changes initially, or design a deliberate scoped quick-edit action in Watch now?
+**Operator decision, 2026-10-11:** accepted in-place updates. Small AMDX changes/ongoing cycle input should be a button click away in Watch; broader thesis change should have easy full-stack/TDA review access. Exact controls remain unselected.
 
 ## 3. Identified comparison rather than hindsight substitution
 
@@ -87,6 +93,6 @@ Study-first startup is proposed and subject to change: a dismissible Study this 
 
 ## 5. Review and implementation boundary
 
-Contract 1 is accepted; discuss Watch editing next, then the comparison baseline. Agreement that the walkthrough is coherent is recorded separately from agreement to these behavior choices. Exact renderer layout and startup preference remain independently revisable.
+Contracts 1 and 2 are accepted; discuss the comparison baseline next. Agreement that the walkthrough is coherent is recorded separately from agreement to these behavior choices. Exact renderer layout and startup preference remain independently revisable.
 
 After the relevant contracts are settled, the next implementation can build stable interval identity, versioned run persistence, revision-preserving actions and developer verification. Preserve current legacy values/permission boundaries and use a disposable developer harness before introducing production renderers. No new manual smoke checklist is introduced by this review document.
