@@ -1,6 +1,6 @@
 # One-entry AMDX quartet revision — operator checks
 
-**Checkpoint:** follow-up branch `feature/amdx-quartet-revision-v1`, based on the functionally accepted PR #61. Schema v39 / Alpha 0.7. The ten reviewed action cases are implemented; four new checks 251–254 are NOT TESTED. Earlier checks 245–250 retain their original PASS results.
+**Checkpoint:** follow-up branch `feature/amdx-quartet-revision-v1`, draft PR #62 based on the functionally accepted PR #61. Schema v39 / Alpha 0.7. The ten reviewed action cases are implemented; four new checks 251–254 are NOT TESTED. Earlier checks 245–250 retain their original PASS results.
 
 ## Open a fresh retained sandbox
 
@@ -38,6 +38,6 @@ Use the Day row throughout these checks. You can leave TDA unfinished; none of t
 
 ## Verification boundary
 
-Developer checks cover all 16 position/role pairs, compatible retention and retirement, X subtype, separate uncertainty/applicability, repeated-input no-ops, mixed old/new replay, immutable receipts, exact retries after later edits, competing writers, atomic receipt/claim rollback, v38 migration/old-reader rejection, normal-window restore and gesture boundaries. The focused group passed **133 checks in 108.59s**; full-suite results are recorded in `PROJECT_STATE.md`.
+Developer checks cover all 16 position/role pairs, compatible retention and retirement, X subtype, separate uncertainty/applicability, repeated-input no-ops, mixed old/new replay, immutable receipts, exact retries after later edits, competing writers, atomic receipt/claim rollback, v38 migration/old-reader rejection, normal-window restore and gesture boundaries. The focused group passed **133 checks in 108.59s**; the full suite passed **587 in 757.42s**, with a clean exit/no warnings. Runtime and compatibility details are recorded in `PROJECT_STATE.md`.
 
 The existing panel fit was inspected in TDA Focus, Thesis and Watch at 1024px width (the existing runtime minimum produced 1024×876). This does not implement the future primary 16:9 renderer, coverflow or higher-order mapping. Those remain separate presentation/architecture work. New manual acceptance is pending; the previous six PASS results apply to the original entry slice.
