@@ -1,6 +1,6 @@
 # AMDX Review interaction — concrete cases
 
-**Status:** the operator accepted both principal behaviors on 2026-10-12: independently versioned one-entry observed correction and optional comparison with no automatic first/latest pairing during routine capture. Comparison is lower priority and deferred until a concrete Study/Review need arises. It has no entry point in Watch. These are accepted behavioral directions; observed revision/UI implementation remains downstream of v40.
+**Status:** the operator accepted both principal behaviors on 2026-10-12: independently versioned one-entry observed correction and optional comparison with no automatic first/latest pairing during routine capture. Comparison is lower priority and deferred until a concrete Study/Review need arises. It has no entry point in Watch. These are accepted behavioral directions. The v41 action in `AMDX_OBSERVED_REVISION_GUIDE.md` now implements observed revision and durable no-op/retry behavior; native Review binding remains downstream.
 
 **Verified baseline:** `dfb5effb0fb185fe156f2e63a3392eed8975c53b`, source `e61c1aa5d27d20880adc476ef007328c89771001`, 658 automated PASS, schema v40, Alpha 0.7. Draft PR #64 is stacked on unmerged #63. The coupled AMDX panel is read-only in Market Review; legacy flat observed fields retain their existing action. Explicit pairing storage exists, but no coupled observed editor/comparison view is wired into the application.
 
@@ -41,7 +41,7 @@ The operator’s subsequent acceptance supersedes the earlier automatic-first pa
 
 ## 4. Implementation boundary
 
-The v40 backend can already retain explicit and null pairings, alternate selections, exact retries and atomic observed-claim/pair writes. It currently accepts Observed `accumulate-v1` actions. It does **not** yet implement the proposed one-entry observed replacement/no-op/applicability flow.
+The v40 backend can already retain explicit and null pairings, alternate selections, exact retries and atomic observed-claim/pair writes. It currently accepts Observed `accumulate-v1` actions. The later v41 action now implements the accepted one-entry observed replacement/no-op/applicability flow; see `AMDX_OBSERVED_REVISION_GUIDE.md`. Existing v40 accumulation records retain their original policy.
 
 Implement the accepted behavior through a named versioned Observed action with preserved original accumulation replay and migration/receipt compatibility before connecting controls. Current Expected `revise-working-v1` remains separate. No existing observation is reinterpreted as having used the new policy.
 

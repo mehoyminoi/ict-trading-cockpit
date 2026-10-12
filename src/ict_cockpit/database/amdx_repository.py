@@ -6,7 +6,8 @@ import json
 import sqlite3
 
 from ict_cockpit.analysis.amdx import (
-    Anchor, Claim, Cycle, InterpretationHistory, WORKING_POLICY, aware, claim_payload, payload, require_id, timestamp,
+    Anchor, Claim, Cycle, InterpretationHistory, LEGACY_POLICY, OBSERVED_POLICY, WORKING_POLICY,
+    aware, claim_payload, payload, require_id, timestamp,
 )
 from ict_cockpit.analysis.amdx_rules import Evaluation
 
@@ -78,10 +79,10 @@ class AMDXRepository:
         claims, heads = [], {}
         for id, branch, channel, cycle_id, parent, encoded in rows:
             item = json.loads(encoded)
-            if item.get("version") not in (1, 2):
+            if item.get("version") not in (1, 2, 3):
                 raise ValueError("Unsupported stored AMDX claim version")
             claim = item["claim"]
-            if (item["version"] == 2) != (claim.get("action_policy") == WORKING_POLICY):
+            if {1: LEGACY_POLICY, 2: WORKING_POLICY, 3: OBSERVED_POLICY}[item["version"]] != claim.get("action_policy", LEGACY_POLICY):
                 raise ValueError("Claim envelope disagrees with its action policy")
             if (claim["id"], claim["run_id"], claim["branch_id"], claim["channel"], claim["cycle"]["id"]) != (
                 id, run_id, branch, channel, cycle_id
@@ -107,9 +108,11 @@ class AMDXRepository:
                 )
                 if receipt != (run_id, cycle_id, parent, id, 1, _json(request)):
                     raise ValueError("Working claim disagrees with its command receipt")
+            elif item["version"] == 3:
+                self.review.validate_observed_claim_receipt(claim, parent, len(claims))
             heads[key] = id
             claims.append(claim)
-        return InterpretationHistory.from_payload({"version": 2, "claims": claims})
+        return InterpretationHistory.from_payload({"version": 3, "claims": claims})
 
     def accept(self, *, claim_id: str, run_id: str, branch_id: str, channel: str,
                cycle: Cycle, quarter_id: str, anchor: Anchor | None,

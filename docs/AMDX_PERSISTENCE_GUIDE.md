@@ -1,6 +1,6 @@
 # AMDX transactional persistence v0
 
-**Checkpoint:** initial storage used schema v38; quartet revision used v39 with immutable working receipts. The Review persistence follow-up uses v40 with comparison and original-request tables; see `AMDX_REVIEW_PERSISTENCE_GUIDE.md`. Alpha 0.7 is unchanged. Initial entry checks 245–250 and quartet follow-up checks 251–254 are accepted; the backend Review slice does not add an entry screen.
+**Checkpoint:** initial storage used schema v38; quartet revision used v39 with immutable working receipts. Review persistence used v40 with comparison/original-request tables. The observed revision follow-up uses v41; see `AMDX_OBSERVED_REVISION_GUIDE.md`. Alpha 0.7 is unchanged. Initial entry checks 245–250 and quartet follow-up checks 251–254 are accepted; the backend Review slice does not add an entry screen.
 
 ## Stored records and ownership
 
@@ -15,6 +15,7 @@ The additive v37 → v38 migration creates four tables:
 | `amdx_working_command` (v39) | Immutable original command, inspected head and result/changed flag; reserves retry identities even for semantic no-ops |
 | `amdx_comparison` (v40) | Immutable explicit expected/observed source references, owning scope and previous comparison |
 | `amdx_review_command` (v40) | Immutable original pairing or atomic observation/pair request, with exact retry result |
+| `amdx_observed_command` (v41) | Independent observed revision policy, inspected heads, original snapshot/result and reserved changed/no-op identities |
 
 Existing `trading_session_run` columns and row contents are preserved. Older expected/observed QT maps are not converted into interval anchors or fabricated histories. Existing saved runs load with empty AMDX records until an explicit action is accepted. Ordinary run snapshot saves cannot truncate or overwrite the separate AMDX tables.
 
