@@ -57,6 +57,8 @@ Ordinary input must exclude structurally impossible placements. Across both supp
 
 This is recorded entry-direction feedback, not an implemented replacement command or approval to discard all other current anchors. Before coding, make explicit how a new quartet claim retires incompatible supporting anchors, treats compatible anchors/X subtype, handles uncertainty/clear and identifies any deliberately retained alternative. Preserve stale-head checks, immutable history, original target/reference and separate parent/child scopes. Analytical rule conflicts and explicit exceptions remain traceable. Existing persisted transcripts keep their original accumulation semantics; a new action must identify its own basis rather than reinterpret old records.
 
+`AMDX_WORKING_QUARTET_ACTION_REVIEW.md` now makes those choices concrete as a developer recommendation with ten worked cases. It proposes retaining compatible anchors, retiring incompatible ones, keeping X subtype only at the same compatible X quarter, and never reactivating retired anchors after clear. Its detailed policy remains a review proposal; this contract and the current stored-action semantics are not silently changed.
+
 ## 5. Trade Plan rules should carry the interpretive burden
 
 The desired system is a plan-defined cycle interpretation engine, not merely a sensor that notices phase changes. Live classification/sensing may be useful later, but is not a prerequisite for the current architecture and is not implemented by this design.

@@ -15,6 +15,7 @@ Companion documents:
 - `docs/COCKPIT_FUNCTIONAL_WALKTHROUGH.md` — source-verified whole-tool journeys, current/proposed surfaces and shared QT/AMDX contract review.
 - `docs/AMDX_CYCLE_RULE_CONTRACT.md` — coupled quartet profiles, rule/anchor provenance, interpretive uncertainty and classification-rule requirements.
 - `docs/AMDX_RULE_DEFINITION_FRAMEWORK.md` — versioned classifier definitions, priority/weighting, target scopes, news context and the narrow implementation boundary.
+- `docs/AMDX_WORKING_QUARTET_ACTION_REVIEW.md` — proposed one-entry working-quartet revision, compatible/retired anchors, X subtype and uncertainty cases; detailed policy pending review.
 
 This document describes **current intended product truth**, not the chronological history of every idea considered. Older requirements and transcripts remain historical evidence only.
 

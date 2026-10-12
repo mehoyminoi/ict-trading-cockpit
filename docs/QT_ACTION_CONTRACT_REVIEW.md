@@ -1,7 +1,7 @@
 # Shared QT / AMDX behavior-contract review
 
-**Status:** Contracts 1 (automatic interpretation recording) and 2 (in-place Watch updates) accepted by the operator on 2026-10-11. Contract 3 (comparison baseline) remains open. The later four-quarter profile clarification in `AMDX_CYCLE_RULE_CONTRACT.md` extends the action/history unit to explicit anchors and rule-implied cycle claims. Production implementation has not started.
-**Scope:** Actions and recorded meaning shared by different renderers. Component layout remains parked. Schema v37, Alpha 0.7 and accepted E7 behavior are unchanged.
+**Status:** Contracts 1 (automatic interpretation recording) and 2 (in-place Watch updates) accepted by the operator on 2026-10-11. The initial domain/storage/Watch-TDA entry is now implemented, with six functional operator checks PASS in PR #61. Contract 3 (comparison baseline) and note drafts remain open/unimplemented. `AMDX_CYCLE_RULE_CONTRACT.md` defines the quartet unit; `AMDX_WORKING_QUARTET_ACTION_REVIEW.md` proposes the next one-entry revision policy following native feedback.
+**Scope:** Actions and recorded meaning shared by different renderers. The following cases preserve the earlier accepted/proposed distinctions. Schema v38 is implemented on the feature branch; merged main remains v37. Alpha 0.7 is unchanged. Final rendering uses the accepted primary 16:9 direction and remains open.
 
 ## 1. Automatic capture without a completion obligation
 
@@ -46,7 +46,7 @@ The operator expects active input as at least the 90-minute cycles pass. Current
 
 Broader thesis change should have an easy route to full-stack inspection or full TDA re-analysis. Full-stack inspection alone need not leave Watch or certify anything. Return to Analysis remains a deliberate shared transition when broader re-analysis is wanted, preserving the run and relevant target. The technician determines the significance of the change; do not impose a fixed number of edits or QT-level rule that automatically forces re-analysis.
 
-This is accepted design behavior, not the current v37 UI: the existing production QT editor is still in Analysis and the new shared Watch edit command has not been implemented.
+The initial shared Watch/TDA entry now implements this boundary on the v38 feature branch. Its per-quarter anchor accumulation remains current behavior; the new one-entry quartet revision is proposed in `AMDX_WORKING_QUARTET_ACTION_REVIEW.md`.
 
 Study is an environment/purpose, not a bypass of process semantics. A spacious Study renderer uses the same scoped commands and appropriate analysis/review permissions for its own run.
 
@@ -93,6 +93,6 @@ Study-first startup is proposed and subject to change: a dismissible Study this 
 
 ## 5. Review and implementation boundary
 
-Contracts 1 and 2 are accepted; reconcile the cycle-profile/rule contract next, then reconsider the comparison baseline at that level. Agreement that the walkthrough is coherent is recorded separately from agreement to these behavior choices. Exact renderer layout and startup preference remain independently revisable.
+Contracts 1 and 2 are accepted and the initial quartet foundation/entry is implemented. The next action review refines how a new working choice replaces its active basis; the comparison baseline remains independently open. Agreement that the walkthrough is coherent is recorded separately from agreement to these behavior choices. Exact renderer layout and startup preference remain independently revisable.
 
-After the relevant contracts are settled, the next implementation can build stable interval identity, versioned run persistence, revision-preserving actions and developer verification. Preserve current legacy values/permission boundaries and use a disposable developer harness before introducing production renderers. No new manual smoke checklist is introduced by this review document.
+Stable daily/session identities, versioned run persistence and the initial shared entry are implemented and functionally accepted in PR #61. Next review the proposed one-entry working-quartet action, including retention/retirement, X subtype and uncertainty, before implementing its versioned command. Preserve legacy values and original transcript semantics. Review comparison policy remains independent; no new manual smoke checklist is introduced by this contract document.

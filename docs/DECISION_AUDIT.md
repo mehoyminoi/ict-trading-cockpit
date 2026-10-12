@@ -302,3 +302,15 @@ See `AMDX_ENTRY_OPERATOR_GUIDE.md`. This functional surface is reviewable; backe
 | Locally saved smoke results | Pushed in `17b874b2c7fb48f2b35d2e30b9e2a6affe019072`: all six checks 245–250 PASS; all item identities/comments and prior 244 statuses preserved. PR #61 ready for review. | SYNC COMPLETE / current functional surface accepted; follow-up action/layout open |
 
 See `PROJECT_REQUIREMENTS.md` §15.2 and native-trial subsection, `AMDX_CYCLE_RULE_CONTRACT.md` §4 and the new decision entries. This checkpoint records feedback only; source/tests, schema v38 and Alpha 0.7 remain unchanged.
+
+## 2026-10-11 — Working-quartet revision action review
+
+| Topic | Concrete recommendation | Status |
+|---|---|---|
+| Ordinary phase entry | One valid position/phase selects the new working order; retain compatible anchors and retire incompatible ones in a single immutable claim. | PROPOSED / review cases prepared |
+| X subtype | Retain C/R only at the same compatible X quarter; an order switch moves X and leaves its new subtype unresolved unless explicitly supplied. | PROPOSED / no subtype copy-forward |
+| Unknown and clear | Affect the selected phase anchor; other compatible anchors can still imply the order. Retired anchors never reactivate. Not Applicable is an explicitly separate quartet-applicability judgment in the proposed policy. | PROPOSED / current stored semantics unchanged |
+| Repeat input | Honor the older declared no-op when an already explicit identical choice produces no active-basis change and the head is current. Existing UI currently appends. | EXISTING implementation gap / proposed new command coverage |
+| Historical replay | New action-policy identity and replay basis; original Accept/Clear records keep accumulation semantics. | REQUIRED compatibility boundary / payload and migration implementation pending |
+
+See `AMDX_WORKING_QUARTET_ACTION_REVIEW.md` for ten cases. Readiness to continue authorized this contract refinement, not acceptance of every newly recommended uncertainty/applicability detail. PR #61's six PASS results cover the existing functional surface. No implementation, schema, Trade Plan or smoke-status change is made here.
