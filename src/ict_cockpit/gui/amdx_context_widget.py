@@ -13,8 +13,9 @@ from PySide6.QtWidgets import (
 from ict_cockpit.analysis.amdx import (
     Anchor, Cycle, InterpretationHistory, Role, XSubtype, available_roles, infer_profile, intraday_cycles, timestamp,
 )
-from ict_cockpit.analysis.market_time import MARKET_TIMEZONE
+from ict_cockpit.analysis.market_time import MARKET_TIMEZONE, futures_trading_day_for
 from ict_cockpit.analysis.amdx_review import StaleComparison
+from ict_cockpit.analysis.amdx_review_date import resolve_review_date
 from ict_cockpit.analysis.quarter_theory import QT_LEVELS, normalize_qt_context
 from ict_cockpit.database.amdx_repository import StaleAMDXUpdate
 
@@ -47,6 +48,9 @@ class AMDXContextWidget(QFrame):
         self.history = InterpretationHistory()
         self.comparisons = ()
         self.review_day_label = ""
+        self._container_day_label = ""
+        self._review_date_error = ""
+        self._review_date_detail = ""
         self.review_sessions = ()
         self.target = None
         self._pinned = False
@@ -152,7 +156,15 @@ class AMDXContextWidget(QFrame):
         changed_channel = (mode_id == "post-market") != (self.mode_id == "post-market")
         self.run, self.mode_id = run, mode_id
         if review_day_label is not None:
-            self.review_day_label = review_day_label
+            self._container_day_label = review_day_label
+        prior_date_error = self._review_date_error
+        prior_date = self.review_day_label
+        resolved = resolve_review_date(run, self._container_day_label)
+        self.review_day_label = resolved.day_label
+        self._review_date_error, self._review_date_detail = resolved.error, resolved.detail
+        changed_date = prior_date != self.review_day_label
+        if prior_date_error and not self._review_date_error:
+            self.status_label.setText("")
         if changed_run:
             self.target, self._pinned = None, False
             # An in-flight gesture retains its old run so release cannot write
@@ -160,7 +172,7 @@ class AMDXContextWidget(QFrame):
             self.status_label.setText("")
             self.history = InterpretationHistory()
             self.comparisons = ()
-        if changed_channel:
+        if changed_channel or (self.channel == "Observed" and changed_date):
             self.target, self._pinned = None, False
             self.status_label.setText("")
         self.reference = None
@@ -188,7 +200,7 @@ class AMDXContextWidget(QFrame):
         else:
             self.history = InterpretationHistory()
         if self.channel == "Observed":
-            self._load_review_cycles(changed_run or changed_channel)
+            self._load_review_cycles(changed_run or changed_channel or changed_date)
         if not self._pinned and self._gesture_target is None:
             self._set_current_target()
         # Preserve the selected scope even when its session/day leaves the clock's view.
@@ -216,11 +228,15 @@ class AMDXContextWidget(QFrame):
                           self.channel, pair.id if pair and self.channel == "Observed" else None)
 
     def _load_review_cycles(self, initialize):
-        # The shell supplies its saved trading-day identity, never today's clock.
+        # The run's saved starting reference wins over a mislabeled container.
         self.review_sessions = ()
         self.cycles = ()
         if self.run is None:
             self.target = None
+            return
+        if self._review_date_error:
+            self.target = None
+            self.status_label.setText(f"Review date unavailable · {self._review_date_error} · recording disabled")
             return
         try:
             reviewed_date = date.fromisoformat(self.review_day_label)
@@ -329,6 +345,8 @@ class AMDXContextWidget(QFrame):
         self._gesture_clear_applicability = None
         if (not target or not reference or not self.repository or self._read_error or not self.run
                 or target.run_id != self.run.id or target.channel != self.channel
+                or (self.channel == "Observed" and (self._review_date_error
+                    or futures_trading_day_for(target.cycle.quarters[0].start).isoformat() != self.review_day_label))
                 or self.mode_id not in ("tda", "live-watch", "post-market")):
             self._reload_context()
             return
@@ -427,7 +445,9 @@ class AMDXContextWidget(QFrame):
                  if quarter else "No active quarter")
         self.target_label.setText((f"Observed AMDX · {self.review_day_label} · " if self.channel == "Observed" else "Working AMDX · ")
                                   + scope + (" · pinned" if self._pinned and self.channel != "Observed" else ""))
+        self.target_label.setToolTip(self._review_date_detail if self.channel == "Observed" else "")
         enabled = bool(self.repository and self.run and self.target and self.reference and not self._read_error
+                       and (self.channel != "Observed" or not self._review_date_error)
                        and self.mode_id in ("tda", "live-watch", "post-market"))
         self.session_selector.setVisible(self.channel == "Observed")
         self.session_selector.setEnabled(bool(self.review_sessions) and not self._gesture_target)

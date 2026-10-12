@@ -19,7 +19,9 @@ from ict_cockpit.database.tda_repository import TDARepository
 from ict_cockpit.gui.main_window import MainWindow
 
 
-def open_demo(directory, *, review=False):
+def open_demo(directory, *, review=False, date_case=False):
+    if date_case and not review:
+        raise ValueError("The date-provenance fixture requires Review mode")
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=True)
     manifest = directory / "amdx-entry-fixture.json"
@@ -27,7 +29,7 @@ def open_demo(directory, *, review=False):
     if not existing and any(directory.iterdir()):
         raise ValueError("Use an empty AMDX sandbox directory; existing files will not be replaced")
     metadata = json.loads(manifest.read_text()) if existing else None
-    kind = "AMDX observed entry fixture v1" if review else "AMDX entry fixture v1"
+    kind = "AMDX review date fixture v1" if date_case else "AMDX observed entry fixture v1" if review else "AMDX entry fixture v1"
     if metadata is not None and metadata.get("kind") != kind:
         raise ValueError("This directory is not an AMDX entry sandbox")
     if existing and not (directory / "demo.db").exists():
@@ -38,7 +40,7 @@ def open_demo(directory, *, review=False):
         shell = window.trade_plan_widget.trading_day_shell_widget
         if not existing:
             shell.run_environment = RunEnvironment.REPLAY
-            shell.run_market_timestamp = datetime(2026, 10, 8, 9, 15, tzinfo=MARKET_TIMEZONE)
+            shell.run_market_timestamp = datetime(2026, 10, 9 if date_case else 8, 9, 15, tzinfo=MARKET_TIMEZONE)
             if not shell.start_trading_run():
                 raise ValueError("Unable to start the synthetic Replay run")
             if review:
@@ -48,6 +50,13 @@ def open_demo(directory, *, review=False):
                     raise ValueError("Unable to advance synthetic TDA")
                 if not shell.runtime.apply_transition("live-finish"):
                     raise ValueError("Unable to open synthetic Review")
+            if date_case:
+                # Synthetic older grouping discrepancy, confined to this new
+                # fixture. Production resolution never rewrites its container.
+                shell.trading_day.futures_day_label = "2026-10-08"
+                window.save_trading_day(shell.trading_day)
+                shell.runtime.review_day_label = shell.trading_day.futures_day_label
+                shell._update_view()
             metadata = {"kind": kind, "run_id": shell.active_trading_run.id}
             manifest.write_text(json.dumps(metadata, indent=2))
         if shell.active_trading_run is None or shell.active_trading_run.id != metadata["run_id"]:
@@ -59,6 +68,10 @@ def open_demo(directory, *, review=False):
         notice = QLabel(f"Synthetic {'Review (incomplete TDA overridden)' if review else 'AMDX entry'} sandbox · {directory / 'demo.db'} · restart with the same command")
         notice.setWordWrap(True)
         window.statusBar().addPermanentWidget(notice, 1)
+        if date_case:
+            notice.setText(f"Synthetic date mismatch · container 2026-10-08 · run starts 2026-10-09 · "
+                           f"expected Observed date 2026-10-09 · {directory / 'demo.db'}")
+            window.setWindowTitle("AMDX Review date sandbox · preserved run-start reference")
         menu = window.menuBar().addMenu("Demo reference")
         advance = QAction("Advance by 90 minutes", window)
         def advance_reference():

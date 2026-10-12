@@ -339,8 +339,16 @@ class TradingDayShellWidget(QWidget):
     def start_trading_run(self) -> bool:
         if self.trading_day.status is TradingDayLifecycleStatus.COMPLETE or self.active_trading_run is not None:
             return False
-        self.runtime.start_new()
         market_time_context = self._market_time_context_for_new_run()
+        requested_day = str(market_time_context.get("futures_trading_day", ""))
+        if ((self.trading_day.futures_day_label and self.trading_day.futures_day_label != requested_day)
+                or (self.trading_runs and not self.trading_day.futures_day_label)):
+            self.summary_label.setText(
+                f"Run not started · selected reference belongs to Trading Day {requested_day}. "
+                "Complete the current Trading Day, then choose Start New Trading Day."
+            )
+            return False
+        self.runtime.start_new()
         if not self.trading_day.futures_day_label:
             self.trading_day.futures_day_label = str(
                 market_time_context.get("futures_trading_day", "")

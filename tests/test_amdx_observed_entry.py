@@ -274,6 +274,7 @@ def test_missing_saved_review_day_disables_entry_without_guessing_today(cockpit)
     window, shell, _ = cockpit
     pane = review(shell)
     shell.runtime.review_day_label = ""
+    shell.active_trading_run.market_context_snapshot = {}
     shell.runtime.refresh_market_context()
     assert pane.target is None and not pane.phase_buttons[Role.M].isEnabled()
     pane.choose(Role.M)

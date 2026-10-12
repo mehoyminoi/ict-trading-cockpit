@@ -1020,6 +1020,14 @@ Use `AMDX_OBSERVED_ENTRY_OPERATOR_GUIDE.md`, branch `feature/amdx-observed-entry
   - Where: disable fixture fault; close/reopen the same observed demo directory and inspect edited NYAM if necessary.
   - Expected: same run, Review mode, saved reviewed date and Day/90m judgments; transient navigation is not mistaken for interpretation history.
 
+### AMDX Review date provenance — focused correction smoke
+
+Use `AMDX_REVIEW_DATE_OPERATOR_GUIDE.md` and `python tools/amdx_review_date_demo.py --data-dir /tmp/ict-amdx-review-date-v1`. Check 260 is NOT TESTED. All previous 259 identities/statuses/comments are preserved; schema v41 / Alpha 0.7 are unchanged.
+
+- [NOT TESTED] Review uses its run's preserved original date despite older container labeling, survives clock rollover/restart, and rejects a different-date additional run before resetting process state.
+  - Where: separate retained date-provenance sandbox, synthetic container 2026-10-08 / run reference 2026-10-09; follow the four numbered guide checkpoints.
+  - Expected: Observed date 2026-10-09; enter NYAM 90m Q3=M for XAMD; advance clock to Trading Day 2026-10-10 without moving the target/recording; reopen the same run/profile, inspecting NYAM if needed; after concluding, a different-date additional launch says Run not started with the explicit new-day path and no reset/new run.
+
 ## Reporting results
 
 
