@@ -47,3 +47,7 @@ Order relation and X subtype are descriptive and independent. Same order with un
 ## Remaining integration
 
 Later Review input and intentionally opened comparison views can call this boundary without a separate Save obligation. First-versus-latest default, observed-entry gestures, event/change aggregation and final rendering still need their own contracts. Watch continues to emphasize current working stack, current position and efficient entry. Mature one-click X(C)/X(R) and primary 16:9 geometry remain renderer requirements rather than behavior added here.
+
+## Verified checkpoint
+
+Source `e61c1aa5d27d20880adc476ef007328c89771001` on `feature/amdx-review-persistence-v0`, [draft PR #64](https://github.com/mehoyminoi/ict-trading-cockpit/pull/64), stacked on unmerged PR #63. Full suite **658 passed in 813.57s (13m33s)**, clean exit/no warnings; final focused group **114 passed in 3.62s**, including 33 new repository/demo cases. Python 3.12.14 / PySide6 6.8.3 / pytest 9.1.1, offscreen. Archived-v39 schema/repository migration, row-byte preservation, failure rollback, old-reader rejection and actual E6 normal-window compatibility pass at v40. Python 3.10 syntax passes; separate 3.10 execution was not run. Disposable demo, Markdown guide references/fences and git diff --check pass. All 254 smoke records are byte-identical to `d940138`; no new operator result or UI acceptance is inferred.
