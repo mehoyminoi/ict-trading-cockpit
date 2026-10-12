@@ -360,3 +360,15 @@ This entry supersedes earlier pending-check wording for the follow-up. The origi
 | Event-associated insights | Requires recorded context and scoped samples; no aggregation added. | FUTURE research |
 
 See `AMDX_REVIEW_FOUNDATION_GUIDE.md`. No schema/plan change or new manual acceptance result is introduced.
+
+## 2026-10-12 — Review repository integration
+
+| Earlier boundary | Current implementation | Status |
+| --- | --- | --- |
+| Pure explicit pairing archive | Saved-run-owned comparison rows and original receipts, with validated source/basis replay. | IMPLEMENTED backend / v40 |
+| Observation plus pair transaction NEXT | One owned action commits new observed claim, cycle if needed, comparison and receipt atomically. | IMPLEMENTED / rollback and stale-head protection |
+| Concurrent reload | Read snapshot prevents mixing pre-commit claims with post-commit comparisons. | IMPLEMENTED / writer-overlap regression |
+| v39 | Additive atomic migration preserves old bytes and retry semantics; older bootstrap rejects v40. | REFINED compatibility boundary |
+| Defaults and presentation | No first/latest selection, new observed replacement semantics, Review controls or Watch history display. | OPEN / existing presentation preserved |
+
+See `AMDX_REVIEW_PERSISTENCE_GUIDE.md`. No new classifier, event likelihood, competency evidence or published Trade Plan policy is introduced.

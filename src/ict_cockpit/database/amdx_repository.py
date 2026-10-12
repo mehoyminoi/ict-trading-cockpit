@@ -39,6 +39,8 @@ def _working_request(*, clear_applicability=False, **arguments):
 class AMDXRepository:
     def __init__(self, connection: sqlite3.Connection):
         self.connection = connection
+        from ict_cockpit.database.amdx_review_repository import AMDXReviewRepository
+        self.review = AMDXReviewRepository(self)
 
     @contextmanager
     def _transaction(self):
@@ -119,43 +121,59 @@ class AMDXRepository:
         Repeating an identical action ID is idempotent, including after later edits.
         """
         with self._transaction():
-            history = self.get_history(run_id)
-            if self.connection.execute("SELECT 1 FROM amdx_working_command WHERE id = ?", (claim_id,)).fetchone():
-                raise ValueError("A working command identity cannot be reused for legacy accumulation")
-            existing = self.connection.execute("SELECT run_id, parent_claim_id FROM amdx_claim WHERE id = ?", (claim_id,)).fetchone()
-            if existing:
-                claim = next((c for c in history.claims if c.id == claim_id), None)
-                action_anchor = next((a for a in claim.anchors if a.quarter_id == claim.action_quarter_id), None) if claim else None
-                if claim is None or (
-                    claim.run_id, claim.branch_id, claim.channel, claim.cycle, claim.action_quarter_id,
-                    action_anchor, claim.recorded_at, claim.market_reference, existing[1]
-                ) != (run_id, branch_id, channel, cycle, quarter_id, anchor, recorded_at, market_reference, expected_head_id):
-                    raise ValueError("A stored claim identity cannot be overwritten or reused")
-                return claim
-            previous = next((c for c in reversed(history.claims) if (
-                c.branch_id, c.channel, c.cycle.id
-            ) == (branch_id, channel, cycle.id)), None)
-            if (previous.id if previous else None) != expected_head_id:
-                raise StaleAMDXUpdate("AMDX scope changed; reload its latest claim before accepting this revision")
-            updated = history.accept(
+            return self._accept(
                 claim_id=claim_id, run_id=run_id, branch_id=branch_id, channel=channel,
                 cycle=cycle, quarter_id=quarter_id, anchor=anchor,
                 recorded_at=recorded_at, market_reference=market_reference,
+                expected_head_id=expected_head_id,
             )
-            claim = updated.claims[-1]
-            self._store_cycle(cycle)
-            self.connection.execute("""
-                INSERT INTO amdx_claim (id, run_id, branch_id, channel, cycle_id, parent_claim_id, payload_json)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (claim.id, run_id, branch_id, channel, cycle.id, expected_head_id,
-                  _json({"version": 1, "claim": claim_payload(claim)})))
+
+    def _accept(self, *, claim_id: str, run_id: str, branch_id: str, channel: str,
+                cycle: Cycle, quarter_id: str, anchor: Anchor | None,
+                recorded_at: datetime, market_reference: datetime,
+                expected_head_id: str | None) -> Claim:
+        """Append inside an already-owned transaction, also used by Review."""
+        if not self.connection.in_transaction:
+            raise RuntimeError("An owned AMDX transaction is required")
+        self.review.require_free_identity(claim_id)
+        history = self.get_history(run_id)
+        if self.connection.execute("SELECT 1 FROM amdx_working_command WHERE id = ?", (claim_id,)).fetchone():
+            raise ValueError("A working command identity cannot be reused for legacy accumulation")
+        existing = self.connection.execute("SELECT run_id, parent_claim_id FROM amdx_claim WHERE id = ?", (claim_id,)).fetchone()
+        if existing:
+            claim = next((c for c in history.claims if c.id == claim_id), None)
+            action_anchor = next((a for a in claim.anchors if a.quarter_id == claim.action_quarter_id), None) if claim else None
+            if claim is None or (
+                claim.run_id, claim.branch_id, claim.channel, claim.cycle, claim.action_quarter_id,
+                action_anchor, claim.recorded_at, claim.market_reference, existing[1]
+            ) != (run_id, branch_id, channel, cycle, quarter_id, anchor, recorded_at, market_reference, expected_head_id):
+                raise ValueError("A stored claim identity cannot be overwritten or reused")
             return claim
+        previous = next((c for c in reversed(history.claims) if (
+            c.branch_id, c.channel, c.cycle.id
+        ) == (branch_id, channel, cycle.id)), None)
+        if (previous.id if previous else None) != expected_head_id:
+            raise StaleAMDXUpdate("AMDX scope changed; reload its latest claim before accepting this revision")
+        updated = history.accept(
+            claim_id=claim_id, run_id=run_id, branch_id=branch_id, channel=channel,
+            cycle=cycle, quarter_id=quarter_id, anchor=anchor,
+            recorded_at=recorded_at, market_reference=market_reference,
+        )
+        claim = updated.claims[-1]
+        self._store_cycle(cycle)
+        self.connection.execute("""
+            INSERT INTO amdx_claim (id, run_id, branch_id, channel, cycle_id, parent_claim_id, payload_json)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (claim.id, run_id, branch_id, channel, cycle.id, expected_head_id,
+              _json({"version": 1, "claim": claim_payload(claim)})))
+        return claim
 
     def revise_working(self, *, expected_head_id: str | None, clear_applicability: bool = False,
                        **arguments) -> WorkingRevisionResult:
         request = _working_request(**arguments, expected_head_id=expected_head_id,
                                    clear_applicability=clear_applicability)
         with self._transaction():
+            self.review.require_free_identity(arguments["claim_id"])
             history = self.get_history(arguments["run_id"])
             receipt = self.connection.execute("""
                 SELECT run_id, cycle_id, parent_claim_id, result_claim_id, changed, payload_json

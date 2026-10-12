@@ -1,6 +1,6 @@
 # Explicit AMDX Review pairing — foundation
 
-**Scope:** isolated pure domain/archive implementation in `analysis/amdx_review.py`. No app database table, migration, Review input widget or Watch history/comparison display. Active schema remains v39 and Alpha 0.7 remains unchanged. This slice is a draft follow-up on the operator-accepted quartet branch; it does not adopt a first-versus-latest baseline default.
+**Scope:** isolated pure domain/archive implementation in `analysis/amdx_review.py`. The initial foundation added no app database table or migration. Its later integration now uses schema v40 through `AMDX_REVIEW_PERSISTENCE_GUIDE.md`; Review input UI and Watch history/comparison remain absent. The foundation checkpoint used v39; its persistence follow-up uses v40. Alpha 0.7 remains unchanged. This slice is a draft follow-up on the operator-accepted quartet branch; it does not adopt a first-versus-latest baseline default.
 
 ## What is retained
 
@@ -30,7 +30,7 @@ The demo explicitly chooses E1 (AMDX) against O1 (XAMD), then E2 (XAMD) against 
 
 ## Integration boundary
 
-Next repository work can persist pair revisions and an observation/pair transaction with immutable receipts, scoped-head protection, original source references and migration compatibility. It must preserve exact retries and nullable-baseline meaning. The current implementation stores nothing in the application database and does not wire this command into the runtime.
+Repository integration is now implemented in `AMDX_REVIEW_PERSISTENCE_GUIDE.md`, with immutable receipts, scoped-head protection, read snapshots, original references, atomic observation/pair commits and migration compatibility. It must preserve exact retries and nullable-baseline meaning. The pure foundation remains independently usable; its repository adapter now stores pairings in the application database. The commands are not wired to Review/Watch controls.
 
 Later Review/Study may expose an intentionally opened comparison, or aggregate interpretation changes against recorded price-action events/noticed features with defined samples. Baseline defaults, contextual observation-entry gestures, event association/aggregation and layout remain separate decisions. Watch continues to promote the current working stack and current temporal position, with efficient entry and no visible change-history obligation. Mature X(C)/X(R) direct one-click access remains a future renderer requirement.
 

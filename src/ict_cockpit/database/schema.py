@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 39
+CURRENT_SCHEMA_VERSION = 40
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -125,6 +125,9 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 38:
             _migrate_version_38_to_39(connection)
             version = 39
+        if version == 39:
+            _migrate_version_39_to_40(connection)
+            version = 40
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -898,3 +901,53 @@ def _migrate_version_38_to_39(connection: sqlite3.Connection) -> None:
         BEGIN SELECT RAISE(ABORT, 'AMDX history is immutable'); END
     """)
     connection.execute("PRAGMA user_version = 39")
+
+
+def _migrate_version_39_to_40(connection: sqlite3.Connection) -> None:
+    if not connection.in_transaction:
+        connection.execute("BEGIN")
+    connection.execute("""
+        CREATE TABLE amdx_comparison (
+            sequence INTEGER PRIMARY KEY CHECK(sequence > 0),
+            id TEXT NOT NULL UNIQUE,
+            run_id TEXT NOT NULL REFERENCES trading_session_run(id) ON DELETE RESTRICT,
+            branch_id TEXT NOT NULL,
+            cycle_id TEXT NOT NULL REFERENCES amdx_cycle_identity(id) ON DELETE RESTRICT,
+            expected_claim_id TEXT,
+            observed_claim_id TEXT NOT NULL,
+            parent_comparison_id TEXT,
+            payload_json TEXT NOT NULL,
+            UNIQUE(id, run_id),
+            FOREIGN KEY (expected_claim_id, run_id) REFERENCES amdx_claim(id, run_id) ON DELETE RESTRICT,
+            FOREIGN KEY (observed_claim_id, run_id) REFERENCES amdx_claim(id, run_id) ON DELETE RESTRICT,
+            FOREIGN KEY (parent_comparison_id, run_id) REFERENCES amdx_comparison(id, run_id) ON DELETE RESTRICT
+        )
+    """)
+    connection.execute("CREATE INDEX idx_amdx_comparison_run ON amdx_comparison(run_id, sequence)")
+    connection.execute("""
+        CREATE TABLE amdx_review_command (
+            id TEXT NOT NULL PRIMARY KEY,
+            run_id TEXT NOT NULL,
+            operation TEXT NOT NULL CHECK(operation IN ('Pair', 'ObserveAndPair')),
+            observed_claim_id TEXT NOT NULL,
+            payload_json TEXT NOT NULL,
+            FOREIGN KEY (id, run_id) REFERENCES amdx_comparison(id, run_id) ON DELETE RESTRICT,
+            FOREIGN KEY (observed_claim_id, run_id) REFERENCES amdx_claim(id, run_id) ON DELETE RESTRICT
+        )
+    """)
+    connection.execute("""CREATE UNIQUE INDEX idx_amdx_review_observed_producer
+                       ON amdx_review_command(observed_claim_id) WHERE operation = 'ObserveAndPair'""")
+    for table in ("amdx_comparison", "amdx_review_command"):
+        for operation in ("UPDATE", "DELETE"):
+            connection.execute(f"""
+                CREATE TRIGGER {table}_no_{operation.lower()}
+                BEFORE {operation} ON {table}
+                BEGIN SELECT RAISE(ABORT, 'AMDX Review history is immutable'); END
+            """)
+        conflict = "id = NEW.id OR sequence = NEW.sequence" if table == "amdx_comparison" else "id = NEW.id"
+        connection.execute(f"""
+            CREATE TRIGGER {table}_no_replace BEFORE INSERT ON {table}
+            WHEN EXISTS (SELECT 1 FROM {table} WHERE {conflict})
+            BEGIN SELECT RAISE(ABORT, 'AMDX Review history is immutable'); END
+        """)
+    connection.execute("PRAGMA user_version = 40")

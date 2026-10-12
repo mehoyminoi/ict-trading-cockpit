@@ -796,3 +796,13 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 **Consequences:** archives replay original v1/v2 claims and validate comparison scope/chronology/predecessors. Descriptive order relation and X subtype remain separate; uncertain/conflicting/inapplicable states are retained. Market-reference position is not evidence of a live forecast. Schema v39, Alpha 0.7, existing runtime and all operator smoke records remain unchanged. The pure contract does not yet provide database durability, concurrent-writer protection or observation-plus-pair atomic application commits.
 
 **Boundary:** this supports later purposeful Review/Study without adding Watch history or comparison. Event links/aggregation, observed-entry gestures, Review defaults, primary 16:9 rendering and one-click X subtype controls remain separately scoped work.
+
+## 2026-10-12 — Durable explicit Review pairings
+
+**Status:** operator authorized proceeding from the pure foundation. Backend integration implemented on `feature/amdx-review-persistence-v0`; no baseline default or contextual input widget is adopted.
+
+**Decision:** schema v40 stores immutable run-owned comparisons and original Pair / ObserveAndPair command receipts. Record an observed action, selected expected basis or explicit missing basis, comparison and receipt in one owned transaction. Alternate pairings refer to the same immutable observation and preserve earlier pairings. The existing Observed accumulation semantics remain unchanged.
+
+**Consequences:** take the writer reservation before checking observed/comparison heads; exact original retries work after later changes. IDs cannot cross claim/working/Review boundaries. New cycle/source/pair/receipt inserts roll back together. Standalone readers use a consistent snapshot across sources, comparisons and receipts, preventing a concurrent commit from producing a false missing-basis result. Caller-owned transactions are not committed or rolled back.
+
+**Compatibility:** atomic v39 migration preserves run/claim/working-receipt bytes and semantic no-op retries, adds no inferred history and rejects older v39 bootstrap on v40. Ordinary run saves cannot truncate comparisons. Existing Watch/UI, Alpha 0.7 and all operator smoke records are preserved. Event association/statistics and renderer/default decisions remain later work.
