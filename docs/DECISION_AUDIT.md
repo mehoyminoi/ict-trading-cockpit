@@ -277,3 +277,15 @@ See `AMDX_FOUNDATION_GUIDE.md`. The operator authorized proceeding after reviewi
 | Desktop entry path | Backend is ready for minimal Watch/TDA action binding and restored-record presentation. No new phase-entry surface exists yet. | NEXT / final layout still deferred |
 
 See `AMDX_PERSISTENCE_GUIDE.md`. Earlier v37/no-migration and database-NEXT statements record the foundation checkpoint; this v38 slice supersedes that implementation status while preserving the accepted policy/legacy boundaries.
+
+## 2026-10-11 — AMDX application entry boundary
+
+| Area | Current interpretation | Status |
+|---|---|---|
+| Watch/TDA binding NEXT | Shared fixed Working AMDX panel now commits/restores Expected working-cycle actions in the normal application. | IMPLEMENTED / operator checks 245–250 pending |
+| Current versus inspected target | Default follows current after accepted input; inspected targets and open gestures stay pinned. Navigation/time alone never records. | IMPLEMENTED / mouse/menu/keyboard and boundary tests |
+| Legacy intraday flat entry | Retained as read-only earlier context in the application-backed path; higher legacy/derived fields keep provenance/behavior. | REFINED / no invented history or cross-layer inheritance |
+| Compact Focus wheel behavior | With fixed AMDX orientation, application runtime content can scroll and wheel scrolls content; Back/Forward and station controls remain. Standalone legacy runner behavior is preserved. | REFINED developer fit choice / final UX OPEN |
+| Review / Study | Shared working context is read-only in Market Review; no observed-cycle or comparison default is adopted. Spacious Study renderers remain downstream. | OPEN separate contracts |
+
+See `AMDX_ENTRY_OPERATOR_GUIDE.md`. This functional surface is reviewable; backend tests and earlier document review do not imply operator usability acceptance or settled component geometry.

@@ -1,6 +1,6 @@
 # AMDX domain foundation v0
 
-**Checkpoint:** initial pure domain implementation on 2026-10-11 used schema v37. The subsequent `AMDX_PERSISTENCE_GUIDE.md` records transactional run-owned storage in schema v38. Published Alpha 0.7 remains unchanged; production renderers are the next integration boundary.
+**Checkpoint:** initial pure domain implementation on 2026-10-11 used schema v37. The subsequent `AMDX_PERSISTENCE_GUIDE.md` records transactional run-owned storage in schema v38; `AMDX_ENTRY_OPERATOR_GUIDE.md` records the minimal shared Watch/TDA entry surface now awaiting operator review. Published Alpha 0.7 remains unchanged; final renderers/comparison policy remain open.
 
 ## Implemented behavior
 
@@ -47,6 +47,6 @@ Focused verification: **39 passed**. Covers all eight supported single-anchor pl
 
 ## Next integration boundary
 
-Transactional run-owned persistence/restart integration is implemented in the v38 slice. Next: connect the shared durable actions and restored records to a minimal production Watch/TDA entry path while keeping legacy QT maps readable with their current meaning. Do not silently infer old interval history or import synthetic definitions into a plan. Contextual Review/Study adoption follows the shared contract; its default pairing remains open.
+Transactional run-owned persistence/restart and the minimal production Watch/TDA entry path are implemented. Next: hands-on review of the shared entry/orientation behavior. Legacy QT maps remain readable with their current meaning; no old interval history or synthetic published criterion is inferred. Contextual Review/Study adoption follows the shared contract; its default pairing remains open.
 
 Actual operational classifier criteria and targets, weighting methods, plan-editing UI, Review default pairing, higher-level temporal mapping, sensors/source feeds, statistical validation and coverflow rendering remain open/downstream. This checkpoint does not change entry authorization, completion gates, competency evidence or startup behavior. Operator usability acceptance has not been requested for an unchanged screen.

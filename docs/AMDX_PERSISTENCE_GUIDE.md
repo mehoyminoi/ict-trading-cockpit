@@ -1,6 +1,6 @@
 # AMDX transactional persistence v0
 
-**Checkpoint:** schema v38, 2026-10-11 operator date; published Alpha 0.7 is unchanged. This integrates the reviewed domain foundation with the application database/run repository. Production phase-entry/rendering adoption remains the next slice.
+**Checkpoint:** schema v38, 2026-10-11 operator date; published Alpha 0.7 is unchanged. This integrates the reviewed domain foundation with the application database/run repository. The subsequent `AMDX_ENTRY_OPERATOR_GUIDE.md` records the implemented minimal Watch/TDA phase-entry surface; operator usability review remains pending.
 
 ## Stored records and ownership
 
@@ -61,6 +61,6 @@ The focused domain/storage/E6/E7/compatibility/database group passed **133 tests
 
 ## Next boundary
 
-Connect these shared committed actions to a minimal working AMDX entry path in Watch and analytical TDA, retaining easy full-stack access and nearby orientation. Use pinned identity/head context during edits, handle stale/storage failures explicitly, restore the run-owned records and distinguish explicit versus implied roles. Rendering must not create revisions. Keep the accepted flat legacy values inspectable with their original provenance rather than silently treating them as cycle history.
+The minimal shared Watch/TDA entry path is now implemented; see `AMDX_ENTRY_OPERATOR_GUIDE.md`. It uses pinned identity/head context, reports stale/storage failures, restores run-owned records, distinguishes entered/implied roles and keeps legacy QT context separate. Rendering/navigation creates no revisions. Hands-on review is next; the broader renderer and comparison contracts remain open.
 
 Review default pairing, higher-order cycle mapping, note-draft semantics, keyboard/macro-pad and coverflow details, real price/news classifiers, plan-editing UI and broad Lab statistics remain separately defined work. No new entry/completion/competency gate is introduced by stored AMDX uncertainty.

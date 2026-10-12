@@ -121,6 +121,8 @@ class TradingDayShellWidget(QWidget):
         )
         self.runtime.layout().removeWidget(self.runtime.transition_frame)
         self.runtime.transition_frame.setParent(self)
+        self.runtime.layout().removeWidget(self.runtime.amdx_context_widget)
+        self.runtime.amdx_context_widget.setParent(self)
         runtime_layout.addWidget(self.runtime)
 
         self.runtime.session_changed.connect(self._process_session_changed)
@@ -178,6 +180,7 @@ class TradingDayShellWidget(QWidget):
         layout.addWidget(self.summary_label)
         layout.addWidget(self.resume_context_label)
         layout.addWidget(self.market_time_label)
+        layout.addWidget(self.runtime.amdx_context_widget)
         layout.addWidget(self.run_history_label)
         layout.addWidget(self.run_history)
         layout.addLayout(controls)
@@ -612,8 +615,10 @@ class TradingDayShellWidget(QWidget):
             and not self.runtime.market_context_widget.details_button.isChecked()
         )
         self.runtime_scroll.setVerticalScrollBarPolicy(
-            Qt.ScrollBarPolicy.ScrollBarAlwaysOff if compact_focus else Qt.ScrollBarPolicy.ScrollBarAsNeeded
+            Qt.ScrollBarPolicy.ScrollBarAlwaysOff if compact_focus and self.runtime.amdx_context_widget.repository is None
+            else Qt.ScrollBarPolicy.ScrollBarAsNeeded
         )
+        runner.wheel_station_navigation_enabled = self.runtime.amdx_context_widget.repository is None
 
     def _update_view(self) -> None:
         self._refresh_history()
@@ -628,6 +633,7 @@ class TradingDayShellWidget(QWidget):
         self._refresh_market_time_display()
 
         active = self.active_trading_run is not None
+        self.runtime.amdx_context_widget.setVisible(active and self.runtime.amdx_context_widget.repository is not None)
         self.runtime_scroll.setVisible(active)
         self.runtime.transition_frame.setVisible(active)
         self.title_label.setVisible(not active)

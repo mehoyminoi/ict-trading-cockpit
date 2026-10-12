@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QMessageBox,
     QPushButton,
+    QSizePolicy,
     QStackedWidget,
     QVBoxLayout,
     QWidget,
@@ -19,6 +20,7 @@ from ict_cockpit.gui.live_watch_widget import LiveWatchWidget
 from ict_cockpit.gui.market_context_widget import MarketContextWidget
 from ict_cockpit.gui.post_market_review_widget import PostMarketReviewWidget
 from ict_cockpit.gui.qt_context_widget import QTContextWidget
+from ict_cockpit.gui.amdx_context_widget import AMDXContextWidget
 from ict_cockpit.gui.tda_station_runner_widget import TDAStationRunnerWidget
 from ict_cockpit.gui.tda_watch_point_widget import TDAWatchPointWidget
 from ict_cockpit.process_blueprint import ModeDefinition, ProcessBlueprint
@@ -85,6 +87,7 @@ class TradingDayRuntimeWidget(QWidget):
 
         self.tda_station_runner_widget = TDAStationRunnerWidget(blueprint)
         self.qt_context_widget = QTContextWidget()
+        self.amdx_context_widget = AMDXContextWidget()
         self.market_context_widget = MarketContextWidget()
         self.qt_context_widget.context_changed.connect(self.qt_context_changed.emit)
         self.tda_watch_point_widget = TDAWatchPointWidget(self.playbooks)
@@ -148,6 +151,7 @@ class TradingDayRuntimeWidget(QWidget):
         layout.addWidget(self.summary_label)
         layout.addLayout(self.mode_rail)
         layout.addWidget(self.market_context_widget)
+        layout.addWidget(self.amdx_context_widget)
         # Premarket Thesis QT/model/watch-point decisions are station-critical work.
         # Keep them above the Focus viewport so they cannot be hidden below the
         # scroll boundary on compact displays.
@@ -213,6 +217,10 @@ class TradingDayRuntimeWidget(QWidget):
             and runner.current_station_id == "tda-thesis"
             and runner.view_tabs.currentWidget() is runner.focus_page
         )
+        # The fixed orientation panel owns its width; runtime content wraps to
+        # the remaining viewport and retains natural vertical scrolling.
+        self.mode_stack.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
+        runner.view_tabs.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
         self.qt_context_widget.setVisible(visible)
         self.tda_watch_point_widget.setVisible(visible)
         if visible:
@@ -344,6 +352,13 @@ class TradingDayRuntimeWidget(QWidget):
             self.trading_run,
             mode_id=self.current_mode.id,
             market_time_context=market_time_context,
+        )
+        self.amdx_context_widget.load_context(
+            self.trading_run,
+            market_time_context if market_time_context is not None else (
+                self.trading_run.market_time_context if self.trading_run else {}
+            ),
+            self.current_mode.id,
         )
 
     def start_new(self) -> None:

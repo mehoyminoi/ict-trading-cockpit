@@ -960,6 +960,29 @@ The terminal prints the directory and restart command. The demo uses synthetic m
 
 ---
 
+## AMDX — durable Watch/TDA entry v0
+
+Use `AMDX_ENTRY_OPERATOR_GUIDE.md` and `python tools/amdx_entry_demo.py` for the separate retained Replay sandbox. These checks are new and NOT TESTED; earlier acceptance results above are preserved.
+
+- [NOT TESTED] Working AMDX shows daily/session quartet context and nearby higher QT provenance; inspection creates no revision or station completion.
+  - Where: retained AMDX entry sandbox, fixed Working AMDX panel in TDA.
+  - Expected: NYAM daily Q3 and its separate 90m Q3 are distinct; higher context is visible with legacy/derived provenance.
+- [NOT TESTED] One deliberate current-quarter phase choice records immediately and implies its quartet siblings without a Save/Record step.
+  - Where: current NYAM 90m Q3 at the initial synthetic reference; choose M.
+  - Expected: child quartet XAMD, Q3 entered, siblings implied, Day unresolved and station still incomplete.
+- [NOT TESTED] Watch supports direct daily/90m updates without returning to Analysis or propagating a parent role into its child quartet.
+  - Where: enter Watch, select daily NYAM/Q3 and choose D.
+  - Expected: daily AMDX with unresolved X subtype; child XAMD retained; existing gates and Return to Analysis remain available.
+- [NOT TESTED] X subtype and later accepted revisions remain distinct from Unknown, with earlier interpretation records retained.
+  - Where: daily NYPM/Q4; select X(R), then X(?) through the direct/secondary choices.
+  - Expected: explicit reversal then unresolved X subtype; no quarter-correctness score, raw active history list or automatic competency evidence.
+- [NOT TESTED] Restart restores the same sandbox run and committed working profiles without fixture Save or reseeding.
+  - Where: close/reopen using the same AMDX entry command/directory.
+  - Expected: original run identity and daily/90m claims retained; transient navigation may follow the current reference.
+- [NOT TESTED] Clock/reference advancement follows current-quarter entry but preserves a deliberately pinned edit target and creates no interpretation by itself.
+  - Where: Demo reference → Advance by 90 minutes, inspect/pin a quarter, advance again, then Follow current.
+  - Expected: default follows current, pinned target stays explicit, Follow current releases it, and navigation/time advancement records no phase.
+
 ## Reporting results
 
 

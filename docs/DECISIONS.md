@@ -714,3 +714,19 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 **Compatibility:** v37 → v38 is additive and atomic, with old run/capture data preserved and actual accepted-E6 restoration verified through the normal application. Alpha 0.7, existing gates and competency behavior remain unchanged. New Watch/TDA bindings, higher-order mapping, note drafts, Review defaults and final UX remain the next/separate work.
 
 **Refines:** the previous pure JSON archive contract into actual database persistence. No manual Save/Record obligation, automatic cycle-completion gate or inferred legacy history is introduced.
+
+## 2026-10-11 — Minimal shared Watch/TDA AMDX entry
+
+**Status:** Operator authorized proceeding from the persistence checkpoint. Implemented and developer verified; six new operator checks are NOT TESTED. This does not constitute final component/layout or classifier acceptance.
+
+**Decision:** Use one shared Working AMDX panel in the normal runtime, outside the content scroll area. Daily and active-session quartets remain near the input target, with higher legacy/derived QT context quietly visible. Four direct role choices and a secondary subtype/uncertainty/clear menu invoke committed repository actions. Current-quarter input follows time after successful entry; a deliberately inspected target stays pinned. Mouse/menu gestures pin their scope/reference through a clock boundary.
+
+**Rationale:** fulfill the accepted immediate-recording and in-place Watch contracts without a separate Save step, repetitive grid entry or forced return to TDA. Reuse the same data/actions for the analytical path and restore; preserve uncertain/conflicting interpretations and distinguish entered anchors from implied siblings.
+
+**Consequences:** recording reports success only after commit, retains the last committed view on failure, rejects/reloads stale scope without replay and disables recording on unavailable history. Earlier intraday flat inputs become read-only in the application-backed path; higher fields retain their legacy behavior/provenance. The shared panel remains visible in Market Review as working context, with no observed-cycle edit or default comparison adopted.
+
+**Layout/navigation choice:** fixed orientation leaves the rest of the runtime scrollable; in the application-backed path the wheel scrolls content, while mouse Back/Forward and station controls still navigate. Standalone legacy runner wheel behavior remains. This narrow fit choice avoids clipping the role controls or compressing station guidance; final context-specific rendering remains open.
+
+**Review path:** `tools/amdx_entry_demo.py` opens a retained separate normal-window Replay sandbox; the same command restores its committed run/claims/reference. Its explicit demo reference action changes time only. `AMDX_ENTRY_OPERATOR_GUIDE.md` maps six hands-on checks to smoke items 245–250. No synthetic classifier, weighting scale, competency evidence, entry/completion gate, Study-first startup or coverflow implementation is introduced.
+
+**Refines:** the persistence-next UI boundary into an implemented functional surface. Actual price/news criteria, higher-order cycle mapping, note drafts and contextual Review/Study presentation remain separately defined work.
