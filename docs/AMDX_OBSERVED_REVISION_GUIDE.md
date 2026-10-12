@@ -48,3 +48,7 @@ Synthetic observed Q1=A selects AMDX; Q3=M revises to XAMD; repeat M is a no-op;
 ## Next integration
 
 Bind efficient observed entry to the permitted Review surface with pinned reviewed cycle/reference, quiet success/failure feedback and no extra Save obligation. Restore explicit/manual versus implied/Unknown context without exposing a raw change-history list. Comparison controls and event/change research remain deferred to a concrete Study/Review need and have no Watch entry point. Mature one-click X(C)/X(R), primary 16:9 geometry, higher-stack mapping and macro-pad bindings remain separate renderer/architecture work.
+
+## Verified checkpoint
+
+Source `d9d97dc60821d2f7730d91d1eb384eef92a989b4` on `feature/amdx-observed-revision-v1`, [draft PR #65](https://github.com/mehoyminoi/ict-trading-cockpit/pull/65), stacked on unmerged PR #64. Full **699 passed in 830.49s (13m50s)**, clean exit/no warnings; focused group **215 passed in 4.88s**, including **41 new observed cases**. Python 3.12.14 / PySide6 6.8.3 / pytest 9.1.1, offscreen. Archived-v40 schema/repository migration and row-byte preservation, old-reader rejection, separate-process replay and existing actual E6 normal-window compatibility pass at v41. Python 3.10 syntax passes; separate 3.10 execution was not run. Disposable CLI, guide references/fences and git diff --check pass. All 254 smoke records are byte-identical to `1bf3933`; native Review binding and operator trial remain next, with no inferred new UI acceptance.
