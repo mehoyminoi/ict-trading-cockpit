@@ -757,7 +757,7 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 
 ## 2026-10-11 — Versioned one-entry working-quartet revision
 
-**Status:** operator authorized implementation after the ten-case action review. Implemented on `feature/amdx-quartet-revision-v1`; four follow-up operator checks remain NOT TESTED. PR #61's initial six PASS results remain separate.
+**Status:** operator authorized implementation after the ten-case action review. Implemented on `feature/amdx-quartet-revision-v1`; four follow-up operator checks 251–254 are accepted from the completed smoke report on 2026-10-12. PR #61's initial six PASS results remain separate.
 
 **Decision:** normal Expected/working input uses `revise-working-v1`. One structurally valid entry selects AMDX/XAMD, retains compatible technician anchors and retires incompatible ones from the active basis into immutable prior history. The selected quarter's old anchor is replaced. X subtype remains only at the same compatible X quarter; switching order does not copy it to the new X position. Unknown and clearing are selected-phase operations. Not Applicable is a separate whole-quartet judgment that retires phase anchors; a valid phase restores applicability directly. Clearing never revives retired anchors.
 
@@ -768,3 +768,13 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 **Storage:** schema v39 adds immutable command receipts and a forward-version guard. Receipts reserve identities for changed actions and no-ops, so exact retries return their original result after later edits. Cycle registration, optional claim and receipt commit atomically. Existing claim bytes remain unchanged through v38 migration; failed migration rolls back. Older v38 apps reject v39; use an original unmigrated copy for old-code comparisons.
 
 **Supersedes:** the original accumulation action as the normal Watch/TDA entry command and unrestricted phase choices. Preserves generic accumulation for original histories/analytical scopes, fixed structural rules, parent/child independence, failure/stale/gesture behavior and Alpha 0.7. Final primary 16:9 rendering, higher-order mapping, note drafts, classifiers and Review default remain separate.
+
+## 2026-10-12 — Working-quartet acceptance and direct X subtype entry
+
+**Status:** operator completed the four-check follow-up smoke and reported a smoother flow. Checks 251–254 are PASS by that completion report; no individual logs or new local runtime details were supplied. PR #62 is ready for review, stacked on unmerged PR #61. Source is unchanged from the 587-pass developer checkpoint.
+
+**Decision:** in the mature renderer, X(C) and X(R) are each one-click choices from the active entry target, without opening a subtype menu first or adding a confirmation/Save step. Shared actions also support future direct keyboard/macro-pad bindings. Structural validity, target/gesture identity, persistence and failure handling remain intact.
+
+**Rationale:** subtype selection is frequent working interpretation input; the extra menu action adds motion and process burden. The current menu remains interim. Exact control arrangement and bindings remain open alongside the primary 16:9 renderer.
+
+**Next contract:** identified observed-profile/expected-profile comparison, prepared in `AMDX_REVIEW_COMPARISON_CONTRACT_REVIEW.md`. A first-expectation default remains proposed, rather than inferred from smoke acceptance.

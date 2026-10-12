@@ -198,3 +198,11 @@ Chat history is useful working context, but it is not the canonical project reco
 - Versioned Trade Plan data is canonical for trading/process rules.
 
 A successful handoff should require verification, not archaeology.
+
+## 2026-10-12 — Quartet follow-up acceptance
+
+Checks 251–254 are PASS from the operator’s message, “Smoke test complete. This feels much smoother.” No separate per-check log, local runtime details or new result commit was supplied. Initial checks 245–250 and all previous 250 records are preserved. Application source remains `84167e9bec21189a6bca08e2206a191665df0caa`, validated by the completed 587-pass suite; this reconciliation changes documents only. PR #62 is ready for review, stacked on unmerged PR #61; do not infer merge authorization. Active schema v39 / Alpha 0.7.
+
+Mature X(C)/X(R) entry must each take one click from the active target, with direct future keyboard/macro-pad actions. The current submenu remains an interim renderer. Primary 16:9 geometry, whole-stack renderers and classifiers remain downstream.
+
+Next is `AMDX_REVIEW_COMPARISON_CONTRACT_REVIEW.md`: containing-cycle observation and explicitly retained expectation pairing. The proposed first-expectation default remains unaccepted. No observed entry, comparison UI, automatic grade or rule adoption is added.

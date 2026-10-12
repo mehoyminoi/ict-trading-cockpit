@@ -328,3 +328,13 @@ See `AMDX_WORKING_QUARTET_ACTION_REVIEW.md` for ten cases. Readiness to continue
 | Earlier six PASS | Checks 245–250 remain PASS for PR #61. New 251–254 are NOT TESTED on the follow-up branch. | PRESERVED acceptance / no inferred follow-up PASS |
 
 See `AMDX_QUARTET_REVISION_OPERATOR_GUIDE.md`. This is the semantic/input follow-up to the reviewed initial surface, not final 16:9 rendering or an adopted price/news method. PR #61 remains ready for review and unmerged; the new branch is based on that accepted source for a separate reviewable slice.
+
+## 2026-10-12 — Quartet acceptance and mature subtype access
+
+| Earlier status | Current direction | Status |
+| --- | --- | --- |
+| Four follow-up checks pending | Operator reports the smoke complete and smoother; 251–254 recorded PASS from that report. | ACCEPTED functional flow / no per-check logs supplied |
+| X(C)/X(R) behind a secondary menu | Each subtype directly available in one click from the active entry target; reuse shared actions for keyboard/macro-pad. | ACCEPTED mature interaction requirement / renderer not implemented |
+| First expectation comparison default | Concrete cycle-profile pairing cases prepared; default and broader observed-input contract still require review. | OPEN / not accepted by the smoke completion |
+
+This entry supersedes earlier pending-check wording for the follow-up. The original 250 checklist records, source, schema v39 and Alpha 0.7 are preserved. PR #62 is ready for review and remains stacked on unmerged PR #61.
