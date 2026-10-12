@@ -1,11 +1,11 @@
 # Shared QT / AMDX behavior-contract review
 
-**Status:** Concrete proposals for discussion following the reviewed whole-cockpit walkthrough. Production implementation and these three behavior choices are not yet accepted.
+**Status:** Contract 1 (automatic interpretation recording) accepted by the operator on 2026-10-11. Contracts 2 (Watch editing) and 3 (comparison baseline) remain open. Production implementation has not started.
 **Scope:** Actions and recorded meaning shared by different renderers. Component layout remains parked. Schema v37, Alpha 0.7 and accepted E7 behavior are unchanged.
 
 ## 1. Automatic capture without a completion obligation
 
-### Recommended behavior
+### Accepted behavior
 
 An accepted phase choice invokes **Set interpretation**. The application saves an immutable interpretation revision automatically and shows quiet success/error state. No separate Save/Record action is required. Selecting a scope, focusing a control, browsing options or leaving an untouched Unknown value creates no interpretation revision. Repeating the already-recorded phase is a no-op.
 
@@ -34,13 +34,15 @@ On storage failure, preserve the pending draft, visibly report that it is not sa
 
 Reopening restores persisted drafts and revisions without converting drafts into completed analytical work. A draft with no selected phase remains a draft, not an invented first expectation. Legacy run values keep their old meaning; migration invents neither interval history nor original write times.
 
-**Review question:** Is a deliberate phase choice itself enough to record an interpretation automatically, while notes can remain recoverable drafts and analytical completion stays separate?
+**Operator decision, 2026-10-11:** accepted. A deliberate phase choice immediately becomes recorded interpretation history without waiting for station completion or a separate Save/Record click. Corrections preserve earlier values; note drafts and analytical completion remain separate.
 
 ## 2. Efficient Watch capture and expectation changes
 
-### Recommended first implementation boundary
+### Boundaries under review
 
 Keep existing Watch observation/thesis capture and scope inspection available. Continue using the shared **Return to Analysis** action when the technician wants to revise an expectation. That action should preserve the inspected target for efficient editing, within the current run and existing transitions. A later reviewed quick-edit path can invoke the same command and permission policy; it should not be hardcoded into a separate Watch-owned state store.
+
+The paragraph above is the conservative initial proposal and current permission boundary. A deliberate in-place **Set working interpretation** action in Watch is the alternative now being reviewed to reduce motion/navigation burden. It would append a scoped revision through the same application command, retain the original expectation and leave process certification separate. Broader thesis re-analysis can still use Return to Analysis. Neither option is accepted yet; a renderer must not decide the policy independently.
 
 Study is an environment/purpose, not a bypass of process semantics. A spacious Study renderer uses the same scoped commands and appropriate analysis/review permissions for its own run.
 
@@ -85,6 +87,6 @@ Study-first startup is proposed and subject to change: a dismissible Study this 
 
 ## 5. Review and implementation boundary
 
-Discuss the three contracts independently, starting with automatic capture. Agreement that the walkthrough is coherent is recorded separately from agreement to these behavior choices. Exact renderer layout and startup preference remain independently revisable.
+Contract 1 is accepted; discuss Watch editing next, then the comparison baseline. Agreement that the walkthrough is coherent is recorded separately from agreement to these behavior choices. Exact renderer layout and startup preference remain independently revisable.
 
 After the relevant contracts are settled, the next implementation can build stable interval identity, versioned run persistence, revision-preserving actions and developer verification. Preserve current legacy values/permission boundaries and use a disposable developer harness before introducing production renderers. No new manual smoke checklist is introduced by this review document.

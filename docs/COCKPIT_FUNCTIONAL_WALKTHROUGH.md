@@ -4,6 +4,7 @@
 **Verified baseline:** accepted E7 on main `83d82323ca936dedf045027760d81a1cd7de76b1`; schema v37, Trade Plan Alpha 0.7. This design branch changes documentation only.
 **Purpose:** Review the whole operating/learning experience before refining a QT component. Separate what currently exists, what is required, and what is proposed.
 **Operator review:** walkthrough reviewed on 2026-10-11; ready to continue to shared behavior-contract review. This does not settle the three open contracts or approve a final renderer.
+**Subsequent contract decision:** automatic interpretation recording accepted on 2026-10-11; Watch editing and comparison baseline remain open.
 
 ## 1. The whole tool
 
@@ -141,7 +142,7 @@ Foundational availability does not require the same permanent widget in every go
 
 **Architecture work that can proceed without choosing a final layout:** specify stable target identity/bounds, versioned record shape and legacy restoration, context projection interfaces, action names/permissions and domain-level verification. Data work must preserve old values without inventing interval history. The existing `day`/`session`/`macro_90m` naming ambiguity is documented in `INTRADAY_QT_DESIGN.md`; conceptual view labels are not a migration rule.
 
-The following are recommendations for discussion, not accepted new behavior:
+Automatic interpretation recording was subsequently accepted; Watch editing and the default comparison baseline remain recommendations for discussion:
 
 | Open contract | Proposed starting position | Consequence to examine |
 | --- | --- | --- |
@@ -154,7 +155,7 @@ These contracts deserve concrete examples before production behavior is committe
 ## 8. Immediate work sequence
 
 1. Walkthrough reviewed on 2026-10-11; retain the clarified close overview/detail relationship and proposed Study-first doorway. Additional corrections can still be incorporated.
-2. Resolve the three shared behavior contracts with the concrete cases in `QT_ACTION_CONTRACT_REVIEW.md`. This is small architecture review, not approval of a UI layout.
+2. Automatic interpretation recording is accepted. Review Watch editing next, then comparison baseline, using `QT_ACTION_CONTRACT_REVIEW.md`. This is architecture review, not approval of a UI layout.
 3. Implement the narrow identity/persistence/action slice with developer verification and legacy/restart protection, once its contract is accepted.
 4. Evaluate context-specific presentations in their working conditions: Watch beside charts, Lab during investigation, TDA during analysis, Review after the fact. Later shortcuts/hardware invoke the same actions.
 

@@ -99,6 +99,8 @@ Component layout iteration is parked following the operator's request to zoom ou
 
 The walkthrough was reviewed on 2026-10-11. Next is `QT_ACTION_CONTRACT_REVIEW.md`, which provides concrete automatic-capture, Watch-edit and comparison-baseline cases. Operator review of the walkthrough does not imply acceptance of those pending contracts. Integrated nearby overview/detail and a proposed dismissible Study-first startup remain presentation directions; they do not require choosing a final renderer before data/action architecture.
 
+Subsequent operator decision on 2026-10-11 accepts automatic interpretation recording: an accepted phase choice saves a revision immediately without a separate Save/Record action or station-completion dependency. Note drafts/completion remain separate. This supersedes the earlier open question about phase commit timing; note annotation details remain implementation work. Watch editing and comparison baseline are still open; review Watch next.
+
 After contract review, implement stable interval identity and versioned run persistence first, with a disposable developer harness if needed. Defer replacing production QT controls until identity, historical defaults and comparison pairing are proven. The existing preview is interaction exploration, not an implementation or persistence test.
 
 ### One shared model, context-specific presentations
