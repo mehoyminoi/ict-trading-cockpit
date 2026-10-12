@@ -321,7 +321,7 @@ def test_actual_v37_schema_migrates_without_rewriting_legacy_rows_or_inventing_h
     before = connection.execute("SELECT * FROM trading_session_run WHERE id = ?", (run.id,)).fetchone()
     connection.close()
     connection = open_application_database(database)
-    assert connection.execute("PRAGMA user_version").fetchone()[0] == CURRENT_SCHEMA_VERSION == 38
+    assert connection.execute("PRAGMA user_version").fetchone()[0] == CURRENT_SCHEMA_VERSION == 39
     assert connection.execute("SELECT * FROM trading_session_run WHERE id = ?", (run.id,)).fetchone() == before
     repo = TradingSessionRunRepository(connection)
     assert repo.get_by_id(run.id).qt_context == run.qt_context
@@ -347,7 +347,7 @@ def test_v38_migration_failure_rolls_back_all_new_ddl_and_version(tmp_path):
     assert connection.execute("PRAGMA user_version").fetchone()[0] == 37
     assert connection.execute("SELECT name FROM sqlite_master WHERE name LIKE 'amdx_%'").fetchall() == []
     initialize_schema(connection)
-    assert connection.execute("PRAGMA user_version").fetchone()[0] == 38
+    assert connection.execute("PRAGMA user_version").fetchone()[0] == CURRENT_SCHEMA_VERSION
     connection.close()
 
 
@@ -368,6 +368,183 @@ def test_reused_cycle_identity_and_inconsistent_result_object_are_rejected(store
 def test_disposable_persistence_demo_exercises_real_repositories():
     result = subprocess.run([sys.executable, str(ROOT / "tools/amdx_persistence_demo.py")], cwd=ROOT,
                             capture_output=True, text=True, check=True)
-    assert "schema v38" in result.stdout
+    assert f"schema v{CURRENT_SCHEMA_VERSION}" in result.stdout
     assert "both revisions survive database reopen" in result.stdout
     assert "Foreign-key consistency: PASS" in result.stdout
+
+
+def test_working_mixed_history_and_receipts_survive_restart(store, tmp_path):
+    connection, repo, run = store
+    first = repo.accept(**choice(run, role=Role.A, position=1))
+    old_conflict = repo.accept(**choice(run, revision="2", role=Role.A, position=2, head=first.id))
+    old_rows = connection.execute("SELECT * FROM amdx_claim ORDER BY sequence").fetchall()
+    result = repo.revise_working(**choice(run, revision="3", head=old_conflict.id))
+    assert result.changed and result.claim.inference.candidates == (Profile.XAMD,)
+    assert connection.execute("SELECT * FROM amdx_claim ORDER BY sequence LIMIT 2").fetchall() == old_rows
+    before = repo.get_history(run.id)
+    reopened = open_application_database(tmp_path / "amdx database.db")
+    try:
+        other = AMDXRepository(reopened)
+        assert other.get_history(run.id) == before
+        assert before.claims[1].inference.state == "Conflict"
+        assert other.revise_working(**choice(run, revision="3", head=old_conflict.id)) == result
+    finally:
+        reopened.close()
+    code = """import json,sys
+from pathlib import Path
+from ict_cockpit.database.bootstrap import open_application_database
+from ict_cockpit.database.amdx_repository import AMDXRepository
+c=open_application_database(Path(sys.argv[1]));print(json.dumps(AMDXRepository(c).get_history(sys.argv[2]).to_payload()));c.close()
+"""
+    actual = subprocess.run([sys.executable,"-c",code,str(tmp_path / "amdx database.db"),run.id],
+                            env={**os.environ,"PYTHONPATH":str(ROOT / "src")},capture_output=True,text=True,check=True)
+    assert json.loads(actual.stdout) == before.to_payload()
+
+
+def test_noop_receipts_reserve_identity_and_return_original_result_after_later_changes(store):
+    connection, repo, run = store
+    first = repo.revise_working(**choice(run))
+    same = choice(run, revision="2", head=first.claim.id)
+    noop = repo.revise_working(**same)
+    assert not noop.changed and noop.claim == first.claim
+    changed = repo.revise_working(**choice(run,revision="3",role=Role.D,head=first.claim.id))
+    assert changed.changed
+    assert repo.revise_working(**same) == noop
+    assert repo.revise_working(**choice(run)) == first
+    assert len(repo.get_history(run.id).claims) == 2
+    assert connection.execute("SELECT COUNT(*) FROM amdx_working_command").fetchone()[0] == 3
+    with pytest.raises(ValueError,match="overwritten"):
+        repo.revise_working(**{**same,"anchor":replace(same["anchor"],role=Role.D)})
+    with pytest.raises(ValueError,match="working command identity"):
+        repo.accept(**same)
+    with pytest.raises(StaleAMDXUpdate):
+        repo.revise_working(**choice(run,revision="4",head=first.claim.id,role=Role.D))
+    with pytest.raises(ValueError,match="structurally valid"):
+        repo.revise_working(**choice(run,revision="5",head=changed.claim.id,role=Role.A))
+    assert len(repo.get_history(run.id).claims) == 2
+
+
+def test_empty_clear_noop_has_durable_idempotent_receipt_without_inventing_a_claim(store):
+    connection, repo, run = store
+    clear = choice(run,role=None)
+    result = repo.revise_working(**clear)
+    assert not result.changed and result.claim is None
+    first = repo.revise_working(**choice(run,revision="2"))
+    assert first.changed and repo.revise_working(**clear) == result
+    assert len(repo.get_history(run.id).claims) == 1
+
+
+def test_evaluation_keeps_its_explicit_v2_basis_after_later_working_revision(store):
+    connection, repo, run = store
+    first = repo.revise_working(**choice(run))
+    evaluation = repo.save_evaluation(assessment(run),recorded_at=REFERENCE,basis_claim_id=first.claim.id)
+    repo.revise_working(**choice(run,revision='2',role=Role.D,head=first.claim.id))
+    assert repo.get_evaluation(evaluation.evaluation.id) == evaluation
+    assert evaluation.basis_claim_id == first.claim.id
+
+
+def test_receipt_insert_failure_rolls_back_claim_cycle_and_command_together(store):
+    connection, repo, run = store
+    connection.execute("CREATE TRIGGER fail_receipt BEFORE INSERT ON amdx_working_command BEGIN SELECT RAISE(ABORT,'fixture receipt failure'); END")
+    with pytest.raises(sqlite3.IntegrityError,match="receipt failure"):
+        repo.revise_working(**choice(run))
+    assert counts(connection) == (0,0,0,0)
+    assert connection.execute("SELECT COUNT(*) FROM amdx_working_command").fetchone()[0] == 0
+    connection.execute("DROP TRIGGER fail_receipt")
+    first = repo.revise_working(**choice(run))
+    connection.execute("CREATE TRIGGER fail_receipt BEFORE INSERT ON amdx_working_command BEGIN SELECT RAISE(ABORT,'fixture receipt failure'); END")
+    with pytest.raises(sqlite3.IntegrityError):
+        repo.revise_working(**choice(run,revision="2",role=Role.D,head=first.claim.id))
+    assert repo.get_history(run.id).claims == (first.claim,)
+
+
+@pytest.mark.parametrize("operation", ["UPDATE", "DELETE", "REPLACE"])
+def test_working_receipts_are_sql_immutable_including_noops(store, operation):
+    connection, repo, run = store
+    first = repo.revise_working(**choice(run))
+    repo.revise_working(**choice(run,revision="2",head=first.claim.id))
+    before = connection.execute("SELECT * FROM amdx_working_command ORDER BY id").fetchall()
+    sql = {"UPDATE":"UPDATE amdx_working_command SET changed=0",
+           "DELETE":"DELETE FROM amdx_working_command",
+           "REPLACE":"INSERT OR REPLACE INTO amdx_working_command SELECT * FROM amdx_working_command"}[operation]
+    with pytest.raises(sqlite3.IntegrityError,match="immutable"):
+        with connection:
+            connection.execute(sql)
+    assert connection.execute("SELECT * FROM amdx_working_command ORDER BY id").fetchall() == before
+
+
+def test_working_two_writer_contention_cannot_partially_retire_or_duplicate(store, tmp_path):
+    connection, repo, run = store
+    first = repo.revise_working(**choice(run,role=Role.A,position=1))
+    barrier = Barrier(2)
+    def worker(revision, role):
+        c = open_application_database(tmp_path / "amdx database.db")
+        try:
+            other = AMDXRepository(c)
+            barrier.wait(timeout=10)
+            try:
+                return other.revise_working(**choice(run,revision=revision,role=role,head=first.claim.id)).claim
+            except StaleAMDXUpdate:
+                return None
+        finally:
+            c.close()
+    with ThreadPoolExecutor(max_workers=2) as workers:
+        futures = [workers.submit(worker,"2",Role.M),workers.submit(worker,"3",Role.D)]
+        outcomes = [f.result(timeout=15) for f in futures]
+    assert sum(result is not None for result in outcomes) == 1
+    assert len(repo.get_history(run.id).claims) == 2
+    assert connection.execute("SELECT COUNT(*) FROM amdx_working_command").fetchone()[0] == 2
+
+
+def test_tampered_noop_receipt_cannot_claim_a_phase_change_was_unchanged(store):
+    connection, repo, run = store
+    first = repo.revise_working(**choice(run))
+    command = choice(run,revision="2",head=first.claim.id)
+    repo.revise_working(**command)
+    encoded = json.loads(connection.execute("SELECT payload_json FROM amdx_working_command WHERE id=?",(command["claim_id"],)).fetchone()[0])
+    encoded["anchor"]["role"] = "D"
+    connection.execute("DROP TRIGGER amdx_working_command_no_update")
+    with connection:
+        connection.execute("UPDATE amdx_working_command SET payload_json=? WHERE id=?",
+                           (json.dumps(encoded,sort_keys=True,separators=(',',':')),command["claim_id"]))
+    with pytest.raises(ValueError,match="action basis"):
+        repo.revise_working(**{**command,"anchor":replace(command["anchor"],role=Role.D)})
+
+
+def test_v38_migration_preserves_claim_bytes_guards_old_reader_and_rolls_back_failed_receipts(tmp_path):
+    from ict_cockpit.analysis.amdx import InterpretationHistory, claim_payload, payload
+    database = tmp_path / 'legacy-v38.db'
+    connection = create_connection(database)
+    old_code = subprocess.check_output(['git','show','4346c88b7d8a6b98e1dd776b12c41845ae35598a:src/ict_cockpit/database/schema.py'],cwd=ROOT,text=True)
+    old = {}
+    exec(compile(old_code,'v38-schema','exec'),old)
+    old['initialize_schema'](connection)
+    run = saved_run(connection)
+    history = InterpretationHistory()
+    for arguments in (choice(run,role=Role.A,position=1),choice(run,revision='2',role=Role.A,position=2)):
+        history = history.accept(**{k:v for k,v in arguments.items() if k != 'expected_head_id'})
+    connection.execute('INSERT INTO amdx_cycle_identity VALUES (?,?)',(history.claims[0].cycle.id,json.dumps(payload(history.claims[0].cycle),sort_keys=True,separators=(',',':'))))
+    for i, claim in enumerate(history.claims):
+        connection.execute('INSERT INTO amdx_claim(id,run_id,branch_id,channel,cycle_id,parent_claim_id,payload_json) VALUES (?,?,?,?,?,?,?)',
+                           (claim.id,run.id,claim.branch_id,claim.channel,claim.cycle.id,history.claims[i-1].id if i else None,
+                            json.dumps({'version':1,'claim':claim_payload(claim)},sort_keys=True,separators=(',',':'))))
+    connection.commit()
+    original = connection.execute('SELECT * FROM amdx_claim ORDER BY sequence').fetchall()
+    connection.set_authorizer(lambda action,*_: sqlite3.SQLITE_DENY if action == sqlite3.SQLITE_CREATE_TRIGGER else sqlite3.SQLITE_OK)
+    with pytest.raises(sqlite3.DatabaseError):
+        initialize_schema(connection)
+    connection.set_authorizer(None)
+    assert connection.execute('PRAGMA user_version').fetchone()[0] == 38
+    assert not connection.execute("SELECT name FROM sqlite_master WHERE name LIKE 'amdx_working_command%'").fetchall()
+    initialize_schema(connection)
+    assert connection.execute('PRAGMA user_version').fetchone()[0] == 39
+    assert connection.execute('SELECT * FROM amdx_claim ORDER BY sequence').fetchall() == original
+    repo = AMDXRepository(connection)
+    assert repo.get_history(run.id) == history
+    with pytest.raises(RuntimeError,match='Unsupported database schema version: 39'):
+        old['initialize_schema'](connection)
+    revised = repo.revise_working(**choice(run,revision='3',head=history.claims[-1].id))
+    assert revised.claim.inference.candidates == (Profile.XAMD,)
+    assert connection.execute('SELECT * FROM amdx_claim ORDER BY sequence LIMIT 2').fetchall() == original
+    assert connection.execute('PRAGMA foreign_key_check').fetchall() == []
+    connection.close()

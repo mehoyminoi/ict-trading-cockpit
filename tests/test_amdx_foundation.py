@@ -185,6 +185,118 @@ def test_payload_revision_and_transcript_tampering_fail_explicitly():
             InterpretationHistory.from_payload(p)
 
 
+def revise(history, day, position, role, revision, *, subtype=None, clear_applicability=False):
+    return history.revise_working(
+        claim_id=f"working-{revision}", run_id="run", branch_id="working", channel="Expected",
+        cycle=day, quarter_id=day.quarters[position - 1].id,
+        anchor=anchor(day, position, role, id=f"working-anchor-{revision}", subtype=subtype) if role else None,
+        recorded_at=REFERENCE + timedelta(minutes=revision), market_reference=REFERENCE,
+        clear_applicability=clear_applicability,
+    )
+
+
+@pytest.mark.parametrize("position", [1, 2, 3, 4])
+@pytest.mark.parametrize("role", [Role.A, Role.M, Role.D, Role.X])
+def test_working_choices_validate_quarter_position_across_both_orders(position, role):
+    from ict_cockpit.analysis.amdx import available_roles
+    day, _ = cycles()
+    valid = [{Role.A,Role.X},{Role.A,Role.M},{Role.M,Role.D},{Role.D,Role.X}][position - 1]
+    assert set(available_roles(position)) == valid
+    if role in valid:
+        history = revise(InterpretationHistory(), day, position, role, 1)
+        assert history.claims[-1].inference.state == "Resolved"
+        assert InterpretationHistory.from_payload(history.to_payload()) == history
+    else:
+        with pytest.raises(ValueError, match="structurally valid"):
+            revise(InterpretationHistory(), day, position, role, 1)
+
+
+def test_working_order_revision_retires_incompatible_keeps_compatible_and_clear_never_resurrects():
+    day, _ = cycles()
+    history = revise(InterpretationHistory(), day, 1, Role.A, 1)
+    history = revise(history, day, 3, Role.D, 2)
+    assert len(history.claims[-1].anchors) == 2
+    history = revise(history, day, 3, Role.M, 3)
+    latest = history.claims[-1]
+    assert latest.inference.candidates == (Profile.XAMD,)
+    assert latest.basis_claim_id == history.claims[-2].id
+    assert latest.retired_anchor_ids == tuple(a.id for a in history.claims[-2].anchors)
+    history = revise(history, day, 3, None, 4)
+    assert history.claims[-1].anchors == ()
+    assert history.claims[-1].inference.state == "Unresolved"
+    assert history.claims[0].inference.candidates == (Profile.AMDX,)
+    assert InterpretationHistory.from_payload(history.to_payload()) == history
+
+
+def test_working_x_subtype_retention_reset_and_order_switch():
+    day, _ = cycles()
+    history = revise(InterpretationHistory(), day, 4, Role.X, 1, subtype=XSubtype.REVERSAL)
+    history = revise(history, day, 3, Role.D, 2)
+    assert history.claims[-1].inference.roles[3].subtype is XSubtype.REVERSAL
+    history = revise(history, day, 4, Role.X, 3)
+    assert history.claims[-1].inference.roles[3].subtype is None
+    history = revise(history, day, 4, Role.X, 4, subtype=XSubtype.REVERSAL)
+    history = revise(history, day, 3, Role.M, 5)
+    assert history.claims[-1].inference.roles[0].role is Role.X
+    assert history.claims[-1].inference.roles[0].subtype is None
+    assert len(history.claims[-1].anchors) == 1
+
+
+def test_working_unknown_and_applicability_are_separate_and_no_old_phases_return():
+    day, _ = cycles()
+    history = revise(InterpretationHistory(), day, 1, Role.A, 1)
+    history = revise(history, day, 3, Role.D, 2)
+    history = revise(history, day, 3, Role.UNKNOWN, 3)
+    assert history.claims[-1].inference.roles[2].role is Role.D
+    assert history.claims[-1].anchors[-1].role is Role.UNKNOWN
+    history = revise(history, day, 2, Role.NOT_APPLICABLE, 4)
+    assert history.claims[-1].inference.state == "Not Applicable"
+    assert history.claims[-1].anchors == ()
+    history = revise(history, day, 2, Role.UNKNOWN, 5)
+    assert history.claims[-1].inference.state == "Not Applicable"
+    history = revise(history, day, 2, None, 6, clear_applicability=True)
+    assert history.claims[-1].inference.state == "Unresolved"
+    assert history.claims[-1].anchors[0].role is Role.UNKNOWN
+    history = revise(history, day, 1, Role.NOT_APPLICABLE, 7)
+    history = revise(history, day, 3, Role.M, 8)
+    assert history.claims[-1].inference.candidates == (Profile.XAMD,)
+    assert not history.claims[-1].applicability
+    assert InterpretationHistory.from_payload(history.to_payload()) == history
+
+
+def test_mixed_v1_v2_replay_preserves_legacy_conflicts_and_validates_retirement_basis():
+    from copy import deepcopy
+    day, _ = cycles()
+    legacy = accept(accept(InterpretationHistory(), day, 1, Role.A), day, 2, Role.A, revision="2")
+    original = legacy.to_payload()
+    assert original["version"] == 1
+    history = revise(legacy, day, 3, Role.M, 3)
+    assert history.claims[1].inference.state == "Conflict"
+    assert history.claims[-1].inference.candidates == (Profile.XAMD,)
+    encoded = history.to_payload()
+    assert encoded["claims"][:2] == original["claims"]
+    assert InterpretationHistory.from_payload(encoded) == history
+    for key, replacement in (("retired_anchor_ids", []), ("basis_claim_id", None), ("action_policy", "future")):
+        corrupt = deepcopy(encoded)
+        corrupt["claims"][-1][key] = replacement
+        with pytest.raises(ValueError):
+            InterpretationHistory.from_payload(corrupt)
+    with pytest.raises(ValueError, match="Legacy accumulation"):
+        accept(history, day, 3, Role.D, revision="4")
+
+
+def test_working_semantic_noop_and_scope_restrictions():
+    day, _ = cycles()
+    history = revise(InterpretationHistory(), day, 3, Role.D, 1)
+    assert revise(history, day, 3, Role.D, 2) is history
+    assert len(revise(history, day, 1, Role.A, 3).claims) == 2  # implied -> explicit
+    arguments = dict(claim_id="bad-scope",run_id="run",branch_id="alternative",channel="Expected",
+                     cycle=day,quarter_id=day.quarters[0].id,anchor=anchor(day,1,Role.A,id="other"),
+                     recorded_at=REFERENCE,market_reference=REFERENCE)
+    with pytest.raises(ValueError, match="Expected/working"):
+        InterpretationHistory().revise_working(**arguments)
+
+
 def rule(day, *, id="synthetic-close", role=Role.A, position=1, priority=0, kind=OutputKind.ASSIGNED_ROLE):
     return Definition(id, "candidate-v1", "synthetic-plan-v1", "Candidate", "day", position,
                       kind, role, priority, (Condition(day.quarters[1].id, "closed-inside", Operator.EQ, True),),

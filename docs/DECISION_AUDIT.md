@@ -314,3 +314,17 @@ See `PROJECT_REQUIREMENTS.md` §15.2 and native-trial subsection, `AMDX_CYCLE_RU
 | Historical replay | New action-policy identity and replay basis; original Accept/Clear records keep accumulation semantics. | REQUIRED compatibility boundary / payload and migration implementation pending |
 
 See `AMDX_WORKING_QUARTET_ACTION_REVIEW.md` for ten cases. Readiness to continue authorized this contract refinement, not acceptance of every newly recommended uncertainty/applicability detail. PR #61's six PASS results cover the existing functional surface. No implementation, schema, Trade Plan or smoke-status change is made here.
+
+## 2026-10-11 — Working-quartet follow-up implementation
+
+| Earlier status | Current implementation | Status |
+|---|---|---|
+| Ten-case action proposal | Operator authorized the next implementation. `revise-working-v1` retains compatible anchors and explicitly retires contradictions in one new claim. | IMPLEMENTED / four follow-up checks pending |
+| Unrestricted roles | UI choices and shared action enforce the valid union of AMDX/XAMD roles at each position. | IMPLEMENTED / no classifier adoption |
+| X / Unknown / applicability | Same-quarter compatible subtype retention, no subtype copying on order switch, conditional Unknown display and separate quartet applicability. | IMPLEMENTED / operator checks 253–254 pending |
+| Repeated input gap | Identical explicit meaning is a no-op; immutable receipts reserve command identity without adding a profile revision. | RESOLVED implementation gap / targeted developer checks |
+| Existing history | Original v1 actions replay as accumulation; new v2 actions retain their own policy and retirement basis. | IMPLEMENTED / mixed replay and preserved bytes verified |
+| v38 storage | v39 adds receipts and forward-version guard; migration preserves existing claims and rollback is atomic. | REFINED / old v38 reader explicitly rejects v39 |
+| Earlier six PASS | Checks 245–250 remain PASS for PR #61. New 251–254 are NOT TESTED on the follow-up branch. | PRESERVED acceptance / no inferred follow-up PASS |
+
+See `AMDX_QUARTET_REVISION_OPERATOR_GUIDE.md`. This is the semantic/input follow-up to the reviewed initial surface, not final 16:9 rendering or an adopted price/news method. PR #61 remains ready for review and unmerged; the new branch is based on that accepted source for a separate reviewable slice.

@@ -6,7 +6,7 @@ import json
 import sqlite3
 
 from ict_cockpit.analysis.amdx import (
-    Anchor, Claim, Cycle, InterpretationHistory, aware, payload, require_id, timestamp,
+    Anchor, Claim, Cycle, InterpretationHistory, WORKING_POLICY, aware, claim_payload, payload, require_id, timestamp,
 )
 from ict_cockpit.analysis.amdx_rules import Evaluation
 
@@ -24,6 +24,16 @@ class StoredEvaluation:
     evaluation: Evaluation
     recorded_at: datetime
     basis_claim_id: str | None
+
+
+@dataclass(frozen=True)
+class WorkingRevisionResult:
+    claim: Claim | None
+    changed: bool
+
+
+def _working_request(*, clear_applicability=False, **arguments):
+    return {"version": 1, **payload(arguments), "clear_applicability": clear_applicability}
 
 
 class AMDXRepository:
@@ -66,9 +76,11 @@ class AMDXRepository:
         claims, heads = [], {}
         for id, branch, channel, cycle_id, parent, encoded in rows:
             item = json.loads(encoded)
-            if item.get("version") != 1:
+            if item.get("version") not in (1, 2):
                 raise ValueError("Unsupported stored AMDX claim version")
             claim = item["claim"]
+            if (item["version"] == 2) != (claim.get("action_policy") == WORKING_POLICY):
+                raise ValueError("Claim envelope disagrees with its action policy")
             if (claim["id"], claim["run_id"], claim["branch_id"], claim["channel"], claim["cycle"]["id"]) != (
                 id, run_id, branch, channel, cycle_id
             ):
@@ -79,9 +91,23 @@ class AMDXRepository:
             cycle_row = self.connection.execute("SELECT payload_json FROM amdx_cycle_identity WHERE id = ?", (cycle_id,)).fetchone()
             if cycle_row is None or cycle_row[0] != _json(claim["cycle"]):
                 raise ValueError("AMDX claim disagrees with its stable cycle identity")
+            if item["version"] == 2:
+                receipt = self.connection.execute("""
+                    SELECT run_id, cycle_id, parent_claim_id, result_claim_id, changed, payload_json
+                    FROM amdx_working_command WHERE id = ?
+                """, (id,)).fetchone()
+                request = _working_request(
+                    claim_id=id, run_id=run_id, branch_id=branch, channel=channel,
+                    cycle=claim["cycle"], quarter_id=claim["action_quarter_id"],
+                    anchor=claim["action_anchor"], recorded_at=claim["recorded_at"],
+                    market_reference=claim["market_reference"], expected_head_id=parent,
+                    clear_applicability=claim["action"] == "ClearApplicability",
+                )
+                if receipt != (run_id, cycle_id, parent, id, 1, _json(request)):
+                    raise ValueError("Working claim disagrees with its command receipt")
             heads[key] = id
             claims.append(claim)
-        return InterpretationHistory.from_payload({"version": 1, "claims": claims})
+        return InterpretationHistory.from_payload({"version": 2, "claims": claims})
 
     def accept(self, *, claim_id: str, run_id: str, branch_id: str, channel: str,
                cycle: Cycle, quarter_id: str, anchor: Anchor | None,
@@ -94,6 +120,8 @@ class AMDXRepository:
         """
         with self._transaction():
             history = self.get_history(run_id)
+            if self.connection.execute("SELECT 1 FROM amdx_working_command WHERE id = ?", (claim_id,)).fetchone():
+                raise ValueError("A working command identity cannot be reused for legacy accumulation")
             existing = self.connection.execute("SELECT run_id, parent_claim_id FROM amdx_claim WHERE id = ?", (claim_id,)).fetchone()
             if existing:
                 claim = next((c for c in history.claims if c.id == claim_id), None)
@@ -120,8 +148,65 @@ class AMDXRepository:
                 INSERT INTO amdx_claim (id, run_id, branch_id, channel, cycle_id, parent_claim_id, payload_json)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             """, (claim.id, run_id, branch_id, channel, cycle.id, expected_head_id,
-                  _json({"version": 1, "claim": payload(claim)})))
+                  _json({"version": 1, "claim": claim_payload(claim)})))
             return claim
+
+    def revise_working(self, *, expected_head_id: str | None, clear_applicability: bool = False,
+                       **arguments) -> WorkingRevisionResult:
+        request = _working_request(**arguments, expected_head_id=expected_head_id,
+                                   clear_applicability=clear_applicability)
+        with self._transaction():
+            history = self.get_history(arguments["run_id"])
+            receipt = self.connection.execute("""
+                SELECT run_id, cycle_id, parent_claim_id, result_claim_id, changed, payload_json
+                FROM amdx_working_command WHERE id = ?
+            """, (arguments["claim_id"],)).fetchone()
+            if receipt:
+                if receipt[5] != _json(request) or receipt[:3] != (
+                    arguments["run_id"], arguments["cycle"].id, expected_head_id
+                ):
+                    raise ValueError("A working command identity cannot be overwritten or reused")
+                result = next((c for c in history.claims if c.id == receipt[3]), None)
+                if (receipt[3] is not None and result is None) or (
+                    result and (result.branch_id, result.channel, result.cycle) != (
+                        arguments["branch_id"], arguments["channel"], arguments["cycle"]
+                    )
+                ) or (receipt[4] and (receipt[3] != arguments["claim_id"] or result.action_policy != WORKING_POLICY)) or (
+                    not receipt[4] and receipt[3] != expected_head_id
+                ):
+                    raise ValueError("Working command receipt has an inconsistent result basis")
+                basis_index = next((i for i, c in enumerate(history.claims) if c.id == expected_head_id), -1)
+                basis = InterpretationHistory(history.claims[:basis_index + 1])
+                replay = basis.revise_working(**arguments, clear_applicability=clear_applicability)
+                if bool(len(replay.claims) != len(basis.claims)) != bool(receipt[4]) or (
+                    receipt[4] and replay.claims[-1] != result
+                ):
+                    raise ValueError("Working command receipt disagrees with its action basis")
+                return WorkingRevisionResult(result, bool(receipt[4]))
+            if self.connection.execute("SELECT 1 FROM amdx_claim WHERE id = ?", (arguments["claim_id"],)).fetchone():
+                raise ValueError("A stored claim identity cannot be reused for a working command")
+            previous = next((c for c in reversed(history.claims) if (
+                c.branch_id, c.channel, c.cycle.id
+            ) == (arguments["branch_id"], arguments["channel"], arguments["cycle"].id)), None)
+            if (previous.id if previous else None) != expected_head_id:
+                raise StaleAMDXUpdate("AMDX scope changed; reload before revising its working quartet")
+            updated = history.revise_working(**arguments, clear_applicability=clear_applicability)
+            changed = len(updated.claims) != len(history.claims)
+            result = updated.claims[-1] if changed else previous
+            self._store_cycle(arguments["cycle"])
+            if changed:
+                self.connection.execute("""
+                    INSERT INTO amdx_claim (id, run_id, branch_id, channel, cycle_id, parent_claim_id, payload_json)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                """, (result.id, result.run_id, result.branch_id, result.channel, result.cycle.id,
+                      expected_head_id, _json({"version": 2, "claim": claim_payload(result)})))
+            self.connection.execute("""
+                INSERT INTO amdx_working_command
+                (id, run_id, cycle_id, parent_claim_id, result_claim_id, changed, payload_json)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (arguments["claim_id"], arguments["run_id"], arguments["cycle"].id,
+                  expected_head_id, result.id if result else None, int(changed), _json(request)))
+            return WorkingRevisionResult(result, changed)
 
     def save_evaluation(self, evaluation: Evaluation, *, recorded_at: datetime,
                         basis_claim_id: str | None = None) -> StoredEvaluation:

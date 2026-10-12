@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
 )
 
 from ict_cockpit.analysis.amdx import (
-    Anchor, Cycle, InterpretationHistory, Role, XSubtype, infer_profile, intraday_cycles, timestamp,
+    Anchor, Cycle, InterpretationHistory, Role, XSubtype, available_roles, infer_profile, intraday_cycles, timestamp,
 )
 from ict_cockpit.analysis.market_time import MARKET_TIMEZONE
 from ict_cockpit.analysis.quarter_theory import QT_LEVELS, normalize_qt_context
@@ -47,6 +47,8 @@ class AMDXContextWidget(QFrame):
         self._read_error = False
         self._gesture_target = None
         self._gesture_reference = None
+        self._gesture_clear_applicability = None
+        self._gesture_generation = 0
         self._table_rendering = False
 
         self.target_label = QLabel("AMDX · No active quarter")
@@ -60,9 +62,9 @@ class AMDXContextWidget(QFrame):
         for role in (Role.A, Role.M, Role.D, Role.X):
             button = QPushButton("X(?)" if role is Role.X else role.value)
             button.setMaximumWidth(48)
-            button.setToolTip("Record this explicit anchor immediately; sibling roles are implied.")
+            button.setToolTip("Revise this working quartet immediately; sibling roles are implied. Earlier claims remain in history.")
             button.pressed.connect(self._begin_gesture)
-            button.released.connect(lambda: QTimer.singleShot(0, self._end_gesture))
+            button.released.connect(self._schedule_end_gesture)
             button.clicked.connect(lambda _checked=False, r=role: self.choose(r))
             self.phase_buttons[role] = button
             bar.addWidget(button)
@@ -71,7 +73,7 @@ class AMDXContextWidget(QFrame):
         self.more_button.setToolTip("X subtype, uncertainty or clear this anchor")
         self.menu = QMenu(self)
         self.menu.aboutToShow.connect(self._begin_gesture)
-        self.menu.aboutToHide.connect(lambda: QTimer.singleShot(0, self._end_gesture))
+        self.menu.aboutToHide.connect(self._schedule_end_gesture)
         self.menu_actions = {}
         for label, role, subtype in (
             ("X(C) · Continuation", Role.X, XSubtype.CONTINUATION),
@@ -81,7 +83,10 @@ class AMDXContextWidget(QFrame):
             ("Clear this anchor", None, None),
         ):
             action = self.menu.addAction(label)
-            action.triggered.connect(lambda _checked=False, r=role, s=subtype: self.choose(r, s))
+            if role is None:
+                action.triggered.connect(self._clear_selected)
+            else:
+                action.triggered.connect(lambda _checked=False, r=role, s=subtype: self.choose(r, s))
             self.menu_actions[label] = action
         self.more_button.setMenu(self.menu)
         bar.addWidget(self.more_button)
@@ -124,6 +129,7 @@ class AMDXContextWidget(QFrame):
         if changed_run:
             self.target, self._pinned = None, False
             self._gesture_target = self._gesture_reference = None
+            self._gesture_clear_applicability = None
             self.status_label.setText("")
             self.history = InterpretationHistory()
         self.reference = None
@@ -194,35 +200,55 @@ class AMDXContextWidget(QFrame):
         self._pinned = False
         self.target = None
         self._gesture_target = self._gesture_reference = None
+        self._gesture_clear_applicability = None
         self._reload_context()
 
     def _reload_context(self):
         self.load_context(self.run, {"captured_at": self.reference.isoformat()} if self.reference else {}, self.mode_id)
 
     def _begin_gesture(self):
+        self._gesture_generation += 1
         self._gesture_target, self._gesture_reference = self.target, self.reference
+        self._gesture_clear_applicability = self._has_applicability()
 
-    def _end_gesture(self):
+    def _has_applicability(self):
+        head = self._head(self.target.cycle) if self.target else None
+        return bool(head and (head.applicability or any(a.role is Role.NOT_APPLICABLE for a in head.anchors)))
+
+    def _clear_selected(self, _checked=False):
+        clear = self._gesture_clear_applicability if self._gesture_clear_applicability is not None else self._has_applicability()
+        self.choose(None, clear_applicability=clear)
+
+    def _schedule_end_gesture(self):
+        generation = self._gesture_generation
+        QTimer.singleShot(0, lambda: self._end_gesture(generation))
+
+    def _end_gesture(self, generation):
+        if generation != self._gesture_generation:
+            return
         if self._gesture_target is None:
             return
         self._gesture_target = self._gesture_reference = None
+        self._gesture_clear_applicability = None
         if not self._pinned:
             self._reload_context()
 
-    def choose(self, role, subtype=None):
+    def choose(self, role, subtype=None, *, clear_applicability=False):
         target = self._gesture_target or self.target
         reference = self._gesture_reference or self.reference
         self._gesture_target = self._gesture_reference = None
+        self._gesture_clear_applicability = None
         if (not target or not reference or not self.repository or self._read_error or not self.run
                 or target.run_id != self.run.id or self.mode_id not in ("tda", "live-watch")):
             return
         anchor = Anchor(str(uuid4()), target.quarter_id, role, "Technician / working AMDX", subtype) if role else None
         try:
-            claim = self.repository.accept(
+            result = self.repository.revise_working(
                 claim_id=str(uuid4()), run_id=target.run_id, branch_id="working", channel="Expected",
                 cycle=target.cycle, quarter_id=target.quarter_id, anchor=anchor,
                 recorded_at=datetime.now().astimezone(), market_reference=reference,
                 expected_head_id=target.expected_head_id,
+                clear_applicability=clear_applicability,
             )
         except (ValueError, TypeError, KeyError, sqlite3.Error, RuntimeError) as error:
             self.status_label.setText(f"Not recorded · {error}")
@@ -237,14 +263,15 @@ class AMDXContextWidget(QFrame):
                 self.target = EditTarget(target.run_id, target.cycle, target.quarter_id, head.id if head else None)
             self._render()
             return
-        self.history = InterpretationHistory(self.history.claims + (claim,))
-        self.target = EditTarget(target.run_id, target.cycle, target.quarter_id, claim.id)
-        self.status_label.setText("Recorded · " + claim.inference.state + " · entered anchors / implied siblings")
-        if self._pinned:
-            self._render()
-        else:
-            self._reload_context()
-        self.recorded.emit(claim)
+        claim = result.claim
+        if result.changed and all(c.id != claim.id for c in self.history.claims):
+            self.history = InterpretationHistory(self.history.claims + (claim,))
+        self.target = EditTarget(target.run_id, target.cycle, target.quarter_id, claim.id if claim else None)
+        self.status_label.setText(("Recorded · " if result.changed else "Already current · ")
+                                  + (claim.inference.state if claim else "Unassigned") + " · entered anchors / implied siblings")
+        self._reload_context()
+        if result.changed:
+            self.recorded.emit(claim)
 
     def _render_table(self):
         self.table.setRowCount(len(self.cycles))
@@ -255,13 +282,20 @@ class AMDXContextWidget(QFrame):
             for col, quarter in enumerate(cycle.quarters):
                 derived = next((r for r in inference.roles if r.quarter_id == quarter.id), None)
                 explicit = next((a for a in (head.anchors if head else ()) if a.quarter_id == quarter.id), None)
+                if explicit is None and head:
+                    explicit = next((a for a in head.applicability if a.quarter_id == quarter.id), None)
                 phase = role_text(explicit.role, explicit.subtype) if explicit else role_text(derived.role, derived.subtype) if derived else "?"
                 origin = "entered" if explicit else "implied" if derived and derived.origin == "Implied" else "unresolved"
+                if explicit and explicit.role is Role.UNKNOWN and derived and derived.role is not Role.UNKNOWN:
+                    phase, origin = "Unknown / " + role_text(derived.role, derived.subtype), "entered / implied"
                 label = quarter.label if cycle.layer == "day" else quarter.start.astimezone(MARKET_TIMEZONE).strftime("%H:%M")
                 item = QTableWidgetItem(f"{label} · {phase}\n{origin}")
                 item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 item.setToolTip(f"{quarter.id}\n{quarter.start.isoformat()} → {quarter.end.isoformat()}\n"
-                                f"{inference.structural_revision}; {origin}\n" + "\n".join(inference.reasons))
+                                f"{inference.structural_revision}; {origin}\n"
+                                + ("Technician judgment: Unknown. Conditional structural role: " + role_text(derived.role, derived.subtype) + ".\n"
+                                   if explicit and explicit.role is Role.UNKNOWN and derived and derived.role is not Role.UNKNOWN else "")
+                                + "\n".join(inference.reasons))
                 self.table.setItem(row, col, item)
                 if self.target and self.target.quarter_id == quarter.id:
                     self.table.setCurrentCell(row, col)
@@ -292,9 +326,19 @@ class AMDXContextWidget(QFrame):
         self.target_label.setText("Working AMDX · " + scope + (" · pinned" if self._pinned else ""))
         enabled = bool(self.repository and self.run and self.target and self.reference and not self._read_error
                        and self.mode_id in ("tda", "live-watch"))
-        for button in (*self.phase_buttons.values(), self.more_button):
-            button.setEnabled(enabled)
+        roles = available_roles(quarter.position) if quarter else ()
+        for role, button in self.phase_buttons.items():
+            button.setEnabled(enabled and role in roles)
             button.setVisible(self.mode_id != "post-market")
+            button.setToolTip((f"Q{quarter.position} permits " + "/".join(r.value for r in roles) + " under AMDX/XAMD. "
+                               if quarter else "") + "Revise the working quartet immediately; earlier claims remain in history.")
+        self.more_button.setEnabled(enabled)
+        self.more_button.setVisible(self.mode_id != "post-market")
+        for key, action in self.menu_actions.items():
+            action.setEnabled(enabled and (not key.startswith("X(") or Role.X in roles))
+        self.menu_actions["Not Applicable"].setText("Not Applicable · whole quartet")
+        applicability = self._gesture_clear_applicability if self._gesture_clear_applicability is not None else self._has_applicability()
+        self.menu_actions["Clear this anchor"].setText("Clear Not Applicable" if applicability else "Clear this anchor")
         self.follow_button.setVisible(self._pinned and self.mode_id != "post-market")
         if not self.status_label.text():
             self.status_label.setText("Select a quarter to inspect; choose a phase to record. X subtype may remain unresolved."

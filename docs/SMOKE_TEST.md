@@ -983,6 +983,23 @@ Use `AMDX_ENTRY_OPERATOR_GUIDE.md` and `python tools/amdx_entry_demo.py` for the
   - Where: Demo reference → Advance by 90 minutes, inspect/pin a quarter, advance again, then Follow current.
   - Expected: default follows current, pinned target stays explicit, Follow current releases it, and navigation/time advancement records no phase.
 
+### AMDX one-entry working-quartet revision — focused operator smoke
+
+Use `AMDX_QUARTET_REVISION_OPERATOR_GUIDE.md` on `feature/amdx-quartet-revision-v1` and the fresh retained sandbox `/tmp/ict-amdx-quartet-v1`. Checks 251–254 are new and NOT TESTED; all previous 250 identities, results and comments are preserved. Schema v39 / Alpha 0.7.
+
+- [NOT TESTED] Normal phase and X subtype choices follow the selected quarter's legal positions across both AMDX and XAMD.
+  - Where: Working AMDX Day row; inspect Q1, Q2, Q3 and Q4.
+  - Expected: Q1 A/X, Q2 A/M, Q3 M/D, Q4 D/X; invalid direct/subtype choices disabled. Inspection does not record or complete anything.
+- [NOT TESTED] One new valid entry changes the working quartet without old-anchor cleanup, and clearing does not reactivate retired phases.
+  - Where: Day Q1=A, then Q3=M, then Clear this anchor at Q3.
+  - Expected: AMDX → XAMD in one new entry → Unresolved on clear. Old Q1=A stays historical rather than returning; the 90m child and process state remain separate.
+- [NOT TESTED] X subtype stays only at the same compatible X quarter, and repeating an identical explicit choice adds no interpretation revision.
+  - Where: Day Q4=X(R), Q3=D, repeat D, then Q3=M.
+  - Expected: AMDX retains Q4=X(R); repeat reports Already current; switching to XAMD gives Q1=X(?) rather than copying R.
+- [NOT TESTED] Unknown and quartet applicability remain distinct, and the new working claims restore through normal restart.
+  - Where: XAMD with explicit Q1=X(?) and Q3=M; choose Q3=Unknown, Not Applicable, Unknown, Clear Not Applicable; mark Not Applicable again and restore with Q3=M; restart using the same sandbox directory.
+  - Expected: conditional Unknown / M is honest; Unknown does not undo Not Applicable; clear does not restore old phases; one valid input restores XAMD; the same run and committed profile reopen without Save or reseeding.
+
 ## Reporting results
 
 
