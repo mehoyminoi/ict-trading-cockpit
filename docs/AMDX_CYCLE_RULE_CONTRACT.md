@@ -97,7 +97,7 @@ Useful later analyses may examine classification coverage, unresolved/conflict c
 1. Correct the shared domain unit to a containing four-quarter cycle with explicit anchors, rule-implied context and unresolved X subtype.
 2. Define versioned structural inference/profile provenance and conflict/alternative representation; retain legacy meaning and accepted action contracts.
 3. Build the structural/definition/provenance foundation without waiting for a full rulebook. Operationalize only explicitly specified classification examples; unfinished targets/conditions/weights remain undefined. See `AMDX_RULE_DEFINITION_FRAMEWORK.md`.
-4. Store explicit comparison/profile identities without hardcoding a default. Revisit contextual Review policy before automatic presentation, while the narrow domain/persistence/action foundation can progress. Final rendering, source feeds/live sensors and broad analytics remain separate later work.
+4. Store explicit comparison/profile identities without hardcoding a default. The pure action/archive foundation is now implemented in `analysis/amdx_review.py`; database integration remains downstream. See `AMDX_REVIEW_FOUNDATION_GUIDE.md`. Revisit contextual Review policy before automatic presentation, while the narrow domain/persistence/action foundation can progress. Final rendering, source feeds/live sensors and broad analytics remain separate later work.
 
 ## 9. Design verification
 

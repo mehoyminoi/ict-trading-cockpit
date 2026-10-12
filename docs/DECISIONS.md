@@ -786,3 +786,13 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 **Rationale:** the working meaning now supports the operation at hand. Visible change tracking adds clutter and mental work during the day. Later purposeful Review/Study may investigate associations between interpretation changes, identified price-action events and features the technician noticed.
 
 **Consequences:** historical comparison is a context-specific later tool, not a daily viewing/capture obligation. No extra explanation or confirmation step is introduced. Event association, sample definitions and aggregation remain unimplemented; no causal conclusion or likelihood is invented. This clarifies presentation ownership, not acceptance of a first-versus-latest comparison default.
+
+## 2026-10-12 — Explicit later-Review pairing foundation
+
+**Status:** operator ready to continue after syncing the accepted quartet checkpoint. Narrow domain/archive foundation implemented on a separate follow-up branch. Database and UI integration remain downstream; no first/latest default is adopted.
+
+**Implementation choice:** a comparison explicitly identifies an Expected claim or missing basis, an Observed claim, run/branch/quartet, preceding comparison, recording/reference timing and named pairing policy. Same-run/branch/cycle ownership and channels are validated. Alternate pairings append without rewriting either source or the earlier pair. Source-history extension preserves its prefix; missing baselines never attach retroactively. Exact retries preserve the original result and changed identities or stale heads reject.
+
+**Consequences:** archives replay original v1/v2 claims and validate comparison scope/chronology/predecessors. Descriptive order relation and X subtype remain separate; uncertain/conflicting/inapplicable states are retained. Market-reference position is not evidence of a live forecast. Schema v39, Alpha 0.7, existing runtime and all operator smoke records remain unchanged. The pure contract does not yet provide database durability, concurrent-writer protection or observation-plus-pair atomic application commits.
+
+**Boundary:** this supports later purposeful Review/Study without adding Watch history or comparison. Event links/aggregation, observed-entry gestures, Review defaults, primary 16:9 rendering and one-click X subtype controls remain separately scoped work.

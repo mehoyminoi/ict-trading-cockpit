@@ -1,6 +1,6 @@
 # Shared QT / AMDX behavior-contract review
 
-**Status:** Contracts 1 (automatic interpretation recording) and 2 (in-place Watch updates) accepted on 2026-10-11. PR #61's initial entry has six functional operator checks PASS. The operator subsequently authorized the reviewed one-entry policy, now implemented on `feature/amdx-quartet-revision-v1`; its four new checks 251–254 are accepted from the completed operator smoke report on 2026-10-12. Contract 3 (comparison baseline) and note drafts remain open/unimplemented.
+**Status:** Contracts 1 (automatic interpretation recording) and 2 (in-place Watch updates) accepted on 2026-10-11. PR #61's initial entry has six functional operator checks PASS. The operator subsequently authorized the reviewed one-entry policy, now implemented on `feature/amdx-quartet-revision-v1`; its four new checks 251–254 are accepted from the completed operator smoke report on 2026-10-12. Contract 3’s baseline default and note drafts remain open/unimplemented. The isolated explicit pairing/archive foundation in `AMDX_REVIEW_FOUNDATION_GUIDE.md` implements identified references without a default or application/UI integration.
 **Scope:** shared actions and recorded meaning. The new branch uses schema v39; PR #61 uses v38 and merged main remains v37. Alpha 0.7 is unchanged. Final rendering uses the accepted primary 16:9 direction and remains open.
 
 ## 1. Automatic capture without a completion obligation
