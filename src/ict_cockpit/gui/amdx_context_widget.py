@@ -194,13 +194,20 @@ class AMDXContextWidget(QFrame):
         self._pinned = False
         self.target = None
         self._gesture_target = self._gesture_reference = None
+        self._reload_context()
+
+    def _reload_context(self):
         self.load_context(self.run, {"captured_at": self.reference.isoformat()} if self.reference else {}, self.mode_id)
 
     def _begin_gesture(self):
         self._gesture_target, self._gesture_reference = self.target, self.reference
 
     def _end_gesture(self):
+        if self._gesture_target is None:
+            return
         self._gesture_target = self._gesture_reference = None
+        if not self._pinned:
+            self._reload_context()
 
     def choose(self, role, subtype=None):
         target = self._gesture_target or self.target
@@ -219,17 +226,24 @@ class AMDXContextWidget(QFrame):
             )
         except (ValueError, TypeError, KeyError, sqlite3.Error, RuntimeError) as error:
             self.status_label.setText(f"Not recorded · {error}")
+            # Keep a failed choice's scope visible for a deliberate retry or release.
+            self.target, self._pinned = target, True
             if isinstance(error, StaleAMDXUpdate):
                 # Refresh the inspected head, but require another deliberate choice.
-                self.load_context(self.run, {"captured_at": reference.isoformat()}, self.mode_id)
+                # The gesture's earlier reference belongs to the attempted claim,
+                # not to the clock that continues advancing behind the pin.
+                self._reload_context()
                 head = self._head(target.cycle)
                 self.target = EditTarget(target.run_id, target.cycle, target.quarter_id, head.id if head else None)
-                self._render()
+            self._render()
             return
         self.history = InterpretationHistory(self.history.claims + (claim,))
         self.target = EditTarget(target.run_id, target.cycle, target.quarter_id, claim.id)
         self.status_label.setText("Recorded · " + claim.inference.state + " · entered anchors / implied siblings")
-        self._render()
+        if self._pinned:
+            self._render()
+        else:
+            self._reload_context()
         self.recorded.emit(claim)
 
     def _render_table(self):

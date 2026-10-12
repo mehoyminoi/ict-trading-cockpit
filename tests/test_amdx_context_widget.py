@@ -153,6 +153,111 @@ def test_mouse_press_pins_identity_and_reference_until_release_across_boundary(c
     assert saved.cycle == original.cycle
     assert saved.action_quarter_id == original.quarter_id
     assert saved.market_reference == reference()
+    assert pane.reference == reference(12, 1)
+    assert pane.target.cycle != original.cycle
+    assert pane.target.quarter_id.endswith("Q1")
+    assert not pane._pinned
+    QApplication.processEvents()
+    assert len(history(window, shell).claims) == 1
+
+
+@pytest.mark.parametrize("pinned", [False, True])
+def test_cancelled_menu_preserves_inspection_or_resumes_current_without_recording(cockpit, pinned):
+    window, shell, connection = cockpit
+    pane = widget(shell)
+    if pinned:
+        pane.select_quarter(1, 2)
+    original = pane.target
+    pane.menu.popup(pane.more_button.mapToGlobal(pane.more_button.rect().bottomLeft()))
+    refresh(shell, reference(12, 1))
+    assert pane.target == original
+    pane.menu.close()
+    QApplication.processEvents()
+    assert pane.reference == reference(12, 1)
+    if pinned:
+        assert pane.target == original
+        assert pane.cycles[-1] == original.cycle
+    else:
+        assert pane.target.cycle != original.cycle
+        assert pane.target.quarter_id.endswith("Q1")
+    assert pane._pinned is pinned
+    assert history(window, shell).claims == ()
+
+
+def test_menu_choice_across_boundary_records_original_basis_then_resumes_current(cockpit):
+    window, shell, connection = cockpit
+    pane = widget(shell)
+    original = pane.target
+    pane.menu.popup(pane.more_button.mapToGlobal(pane.more_button.rect().bottomLeft()))
+    refresh(shell, reference(12, 1))
+    action = pane.menu_actions["X(R) · Reversal"]
+    QTest.mouseClick(pane.menu, Qt.MouseButton.LeftButton, pos=pane.menu.actionGeometry(action).center())
+    QApplication.processEvents()
+    saved = history(window, shell).claims[-1]
+    assert saved.cycle == original.cycle
+    assert saved.action_quarter_id == original.quarter_id
+    assert saved.market_reference == reference()
+    assert saved.anchors[0].subtype is XSubtype.REVERSAL
+    assert pane.reference == reference(12, 1)
+    assert pane.target.cycle != original.cycle
+    assert not pane._pinned
+    assert len(history(window, shell).claims) == 1
+
+
+def test_failed_boundary_input_pins_original_target_for_explicit_retry(cockpit):
+    window, shell, connection = cockpit
+    pane = widget(shell)
+    original = pane.target
+    button = pane.phase_buttons[Role.M]
+    connection.execute("CREATE TRIGGER fail_boundary_append BEFORE INSERT ON amdx_claim BEGIN SELECT RAISE(ABORT, 'fixture disk failure'); END")
+    QTest.mousePress(button, Qt.MouseButton.LeftButton)
+    refresh(shell, reference(12, 1))
+    QTest.mouseRelease(button, Qt.MouseButton.LeftButton)
+    QApplication.processEvents()
+    assert "Not recorded" in pane.status_label.text()
+    assert pane.target == original
+    assert pane._pinned
+    assert "pinned" in pane.target_label.text()
+    refresh(shell, reference(13, 30))
+    assert pane.target == original
+    assert history(window, shell).claims == ()
+    connection.execute("DROP TRIGGER fail_boundary_append")
+    button.click()
+    saved = history(window, shell).claims[-1]
+    assert saved.cycle == original.cycle
+    assert saved.action_quarter_id == original.quarter_id
+    assert saved.market_reference == reference(13, 30)
+    pane.follow_button.click()
+    assert pane.target.cycle != original.cycle
+    assert len(history(window, shell).claims) == 1
+
+
+def test_stale_boundary_gesture_keeps_latest_clock_and_pins_original_scope(cockpit):
+    window, shell, connection = cockpit
+    pane = widget(shell)
+    original = pane.target
+    button = pane.phase_buttons[Role.D]
+    QTest.mousePress(button, Qt.MouseButton.LeftButton)
+    pane.repository.accept(claim_id="boundary-outside-edit", run_id=original.run_id, branch_id="working", channel="Expected",
+                           cycle=original.cycle, quarter_id=original.quarter_id,
+                           anchor=Anchor("boundary-outside-anchor", original.quarter_id, Role.M, "synthetic-other-editor"),
+                           recorded_at=reference(), market_reference=reference(), expected_head_id=None)
+    refresh(shell, reference(12, 1))
+    QTest.mouseRelease(button, Qt.MouseButton.LeftButton)
+    QApplication.processEvents()
+    assert "Not recorded" in pane.status_label.text()
+    assert pane.reference == reference(12, 1)
+    assert pane.target.quarter_id == original.quarter_id
+    assert pane.target.cycle == original.cycle
+    assert pane.target.expected_head_id == "boundary-outside-edit"
+    assert pane._pinned
+    assert pane.table.item(1, 4).text() == "XAMD"
+    assert len(history(window, shell).claims) == 1
+    button.click()
+    assert history(window, shell).claims[-1].market_reference == reference(12, 1)
+    assert history(window, shell).claims[-1].inference.candidates == (Profile.AMDX,)
+    pane.follow_button.click()
+    assert pane.target.cycle != original.cycle
 
 
 def test_x_subtype_clear_and_unknown_are_explicit_distinct_actions(cockpit):
