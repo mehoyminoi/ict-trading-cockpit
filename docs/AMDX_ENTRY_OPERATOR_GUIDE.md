@@ -2,6 +2,8 @@
 
 **Checkpoint:** shared durable Watch/TDA entry on `feature/intraday-qt-design-v0`, PR #61 ready for review; six functional operator checks PASS. Schema v38 / Alpha 0.7. This is a functional first surface for hands-on review; final layout, coverflow, higher-order cycle mapping and Review comparison policy remain open.
 
+**Later follow-up:** the accepted working revision replaces incompatible anchors in one entry (PR #62). The native Review follow-up now adds separate observed editing and direct one-click X(C)/X(R) buttons across both channels; see `AMDX_OBSERVED_ENTRY_OPERATOR_GUIDE.md` for pending checks 255–259. This original guide/check set remains historical acceptance evidence; its read-only Review and submenu-only subtype descriptions are superseded on the new branch.
+
 ## Open the retained sandbox
 
 From the repository root, with this feature branch synced and your usual Python environment active:

@@ -399,3 +399,7 @@ This supersedes earlier OPEN/proposed decision wording, without claiming new imp
 | Native observed editor | Backend is ready for a permitted Review adapter and gesture/restart verification. | NEXT / not implemented |
 
 See `AMDX_OBSERVED_REVISION_GUIDE.md`. No classifier, published plan, gate or operator smoke result is introduced.
+
+## 2026-10-12 — Native observed entry supersedes read-only Review panel
+
+The accepted one-entry observed behavior is now bound in `feature/amdx-observed-entry-v1`. Earlier descriptions of the fixed AMDX panel as read-only in Market Review and subtype entry as submenu-only are historical implementation states. The panel now records separate Observed/working quartets in Review and has direct one-click X(C)/X(R) controls in both channels. Review date comes from the saved Trading Day, with all-session inspection and clock-independent selection. The database-backed path hides earlier flat intraday observed controls/descriptive comparison without rewriting their data. This does not expand comparison priority: no AMDX comparison/history controls or Watch route are added, and no first/latest baseline default is adopted. New checks 255–259 await operator acceptance; schema v41, Alpha 0.7 and earlier 254 records remain unchanged. Final 16:9 geometry remains separate.

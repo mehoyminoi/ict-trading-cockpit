@@ -824,3 +824,13 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 **Persistence:** schema v41 adds immutable observed-command receipts. Changed source/pair metadata/receipt commit together; unchanged meaning reserves both identities without a source/pair revision. Snapshot counts preserve exact replay of changed/no-op original requests after later edits. Scoped heads and cross-action identity checks remain explicit; failures roll back the entire action. Existing selected basis is carried, or None remains unselected; no first/latest fallback or comparison UI is added.
 
 **Compatibility:** version-3 observed claims retain their own action policy. Original v1/v2 payloads and old v40 record bytes are preserved. Atomic v40 migration adds no guessed history; older bootstrap rejects v41. Existing legacy analytical accumulation and exact old retries remain valid, but new accumulation cannot follow an observed revision in that same scope. Alpha 0.7 and process gates are unchanged.
+
+## 2026-10-12 — Native observed quartet entry
+
+**Status:** accepted entry behavior implemented; new functional operator smoke remains pending.
+
+**Implementation:** the shared fixed AMDX panel edits Expected/working in TDA/Watch and Observed/working in Post-Market Review. The saved Trading Day supplies Review's date; all four sessions are available without following today's clock into another day. Missing saved identity disables capture. One accepted choice commits immediately with both observed/pair heads pinned through its gesture. Failures and stale writes retain meaning, with no automatic replay; read failure disables writes while keeping committed context. Direct X(C)/X(R) buttons now satisfy one-click entry in both channels.
+
+**Presentation:** current observed profiles, entered/implied distinctions and structural hover context remain near the input. The application-backed path hides flat intraday observed controls and the old descriptive comparison list while preserving stored values and higher legacy fields. No AMDX comparison/history control or Watch launch route is added. Selected pairing provenance, if already present, is retained quietly by the shared action; routine capture has no first/latest default.
+
+**Boundary:** schema v41 and Alpha 0.7 are unchanged. `AMDX_OBSERVED_ENTRY_OPERATOR_GUIDE.md` supplies a retained synthetic normal-window Review fixture and new checks 255–259. Existing 254 records retain their results. Final 16:9 geometry, higher-order cycle mapping, rule classifiers, shortcut assignments, notes drafts and purposeful Study/Review comparison remain downstream. This implementation is not new operator acceptance or merge authorization.
