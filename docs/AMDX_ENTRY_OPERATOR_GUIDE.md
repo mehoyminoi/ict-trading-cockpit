@@ -1,6 +1,6 @@
 # Working AMDX entry — first application surface
 
-**Checkpoint:** shared durable Watch/TDA entry on `feature/intraday-qt-design-v0`, draft PR #61. Schema v38 / Alpha 0.7. This is a functional first surface for hands-on review; final layout, coverflow, higher-order cycle mapping and Review comparison policy remain open.
+**Checkpoint:** shared durable Watch/TDA entry on `feature/intraday-qt-design-v0`, PR #61 ready for review; six functional operator checks PASS. Schema v38 / Alpha 0.7. This is a functional first surface for hands-on review; final layout, coverflow, higher-order cycle mapping and Review comparison policy remain open.
 
 ## Open the retained sandbox
 
@@ -36,7 +36,7 @@ TDA/Watch content scrolls beneath the fixed panel. In this database-backed path 
 
 ## Six short checks
 
-These correspond to smoke items **245–250**. Report PASS / FAIL / QUESTION / NOT TESTED for each; comments about cognitive effort and orientation are useful alongside functional results.
+These correspond to smoke items **245–250**. All six were reported **PASS** by the operator on 2026-10-11 and pushed in `17b874b2c7fb48f2b35d2e30b9e2a6affe019072`. The steps remain here for repeatable testing; future retests can report PASS / FAIL / QUESTION / NOT TESTED, with comments about cognitive effort and orientation.
 
 1. **245 — Orientation:** open the command above. Confirm Working AMDX, Day and 90m rows, nearby higher QT context, and NYAM 90m Q3 ready for entry. Quarter inspection should not say Recorded or complete a station.
 2. **246 — Direct input:** click **M** once. The 90m row should become **XAMD**, with Q3 entered and siblings implied. The Day row remains unresolved. There is no Save/Record step and no station completion.
@@ -47,6 +47,6 @@ These correspond to smoke items **245–250**. Report PASS / FAIL / QUESTION / N
 
 ## Verification and next boundary
 
-Developer checks cover real mouse/menu/keyboard actions, direct database commits, separate parent/child results, conflicts, clear/subtype/uncertainty revisions, clock/gesture boundaries, stale/storage failures, normal-window restart, sandbox reuse/refusal and fixed-panel reachability. The focused AMDX/domain/storage/runtime/E4/dual-view/E6 compatibility group passed **114 tests in 78.03s**. Full-suite results are recorded in `PROJECT_STATE.md`. Offscreen layouts were inspected for TDA Focus, Thesis and Watch at a requested 1024px width; this runtime's existing application minimum produced 1024×876. The panel fits that width, while runtime content remains scrollable. Native desktop usability acceptance remains pending.
+Developer checks cover real mouse/menu/keyboard actions, direct database commits, separate parent/child results, conflicts, clear/subtype/uncertainty revisions, clock/gesture boundaries, stale/storage failures, normal-window restart, sandbox reuse/refusal and fixed-panel reachability. The focused AMDX/domain/storage/runtime/E4/dual-view/E6 compatibility group passed **114 tests in 78.03s**. Full-suite results are recorded in `PROJECT_STATE.md`. Offscreen layouts were inspected for TDA Focus, Thesis and Watch at a requested 1024px width; this runtime's existing application minimum produced 1024×876. The panel fits that width, while runtime content remains scrollable. The operator has passed all six functional checks. Final rendering remains open, with a primary 16:9 workspace now required and a preference for one-entry quartet revision plus structurally valid role choices recorded for follow-up.
 
-Next: use the hands-on results to assess this shared entry/orientation contract. Keep criterion-content work, higher-order cycle identity, Review pairing and more spacious Study rendering distinct from final component polish. The backend preserves original revisions and definitions; no trade-plan criterion, probability, competency score or new authorization policy is adopted here.
+Next: review the accepted functional slice in PR #61 and refine the shared one-entry working-quartet revision action, including compatible anchors, X subtype, uncertainty and structural role limits. Keep criterion-content work, higher-order cycle identity, Review pairing and more spacious Study rendering distinct from final component polish. The backend preserves original revisions and definitions; no trade-plan criterion, probability, competency score or new authorization policy is adopted here.

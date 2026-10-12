@@ -962,7 +962,7 @@ The terminal prints the directory and restart command. The demo uses synthetic m
 
 ## AMDX — durable Watch/TDA entry v0
 
-Use `AMDX_ENTRY_OPERATOR_GUIDE.md` and `python tools/amdx_entry_demo.py` for the separate retained Replay sandbox. These checks are new and NOT TESTED; earlier acceptance results above are preserved.
+Use `AMDX_ENTRY_OPERATOR_GUIDE.md` and `python tools/amdx_entry_demo.py` for the separate retained Replay sandbox. All six checks 245–250 are PASS per the operator results pushed on 2026-10-11 in `17b874b2c7fb48f2b35d2e30b9e2a6affe019072`; earlier acceptance results above are preserved. Final layout and the later quartet-revision interaction changes remain separate follow-up work.
 
 - [PASS] Working AMDX shows daily/session quartet context and nearby higher QT provenance; inspection creates no revision or station completion.
   - Where: retained AMDX entry sandbox, fixed Working AMDX panel in TDA.

@@ -282,7 +282,7 @@ See `AMDX_PERSISTENCE_GUIDE.md`. Earlier v37/no-migration and database-NEXT stat
 
 | Area | Current interpretation | Status |
 |---|---|---|
-| Watch/TDA binding NEXT | Shared fixed Working AMDX panel now commits/restores Expected working-cycle actions in the normal application. | IMPLEMENTED / operator checks 245–250 pending |
+| Watch/TDA binding NEXT | Shared fixed Working AMDX panel now commits/restores Expected working-cycle actions in the normal application. | IMPLEMENTED / operator checks 245–250 PASS; PR #61 ready for review |
 | Current versus inspected target | Default follows current after accepted input; inspected targets and open gestures stay pinned. Navigation/time alone never records. | IMPLEMENTED / mouse/menu/keyboard and boundary tests |
 | Legacy intraday flat entry | Retained as read-only earlier context in the application-backed path; higher legacy/derived fields keep provenance/behavior. | REFINED / no invented history or cross-layer inheritance |
 | Compact Focus wheel behavior | With fixed AMDX orientation, application runtime content can scroll and wheel scrolls content; Back/Forward and station controls remain. Standalone legacy runner behavior is preserved. | REFINED developer fit choice / final UX OPEN |
@@ -299,6 +299,6 @@ See `AMDX_ENTRY_OPERATOR_GUIDE.md`. This functional surface is reviewable; backe
 | Find/clear an old anchor to change order | Prefer one new valid entry revising the working quartet while retaining the earlier claim as history. Compatible anchors, subtype and uncertainty effects need explicit shared-action semantics. | REFINED interaction direction / action contract pending |
 | Conflicts and alternatives | Preserve analytical conflicts, original transcripts and explicit alternatives; ordinary revision need not expose stale-anchor cleanup. | CURRENT provenance requirement |
 | Session/day plus active 90m visibility and hover | Operator likes these relationships; retain them in more visual future renderers within the larger workspace. | POSITIVE feedback / final rendering open |
-| Locally saved smoke results | Operator reports saving the checklist; remote branch still has 245–250 NOT TESTED. No statuses were supplied or pushed here. | RESULTS SYNC PENDING / no inferred acceptance |
+| Locally saved smoke results | Pushed in `17b874b2c7fb48f2b35d2e30b9e2a6affe019072`: all six checks 245–250 PASS; all item identities/comments and prior 244 statuses preserved. PR #61 ready for review. | SYNC COMPLETE / current functional surface accepted; follow-up action/layout open |
 
 See `PROJECT_REQUIREMENTS.md` §15.2 and native-trial subsection, `AMDX_CYCLE_RULE_CONTRACT.md` §4 and the new decision entries. This checkpoint records feedback only; source/tests, schema v38 and Alpha 0.7 remain unchanged.

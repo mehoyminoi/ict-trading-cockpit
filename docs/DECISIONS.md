@@ -717,7 +717,7 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 
 ## 2026-10-11 — Minimal shared Watch/TDA AMDX entry
 
-**Status:** Operator authorized proceeding from the persistence checkpoint. Implemented and developer verified; six new operator checks are NOT TESTED. This does not constitute final component/layout or classifier acceptance.
+**Status:** Implemented and developer verified. Operator accepted all six functional checks 245–250 on 2026-10-11, pushed in `17b874b2c7fb48f2b35d2e30b9e2a6affe019072`; PR #61 is ready for review. This does not constitute final component/layout, replacement-action or classifier acceptance.
 
 **Decision:** Use one shared Working AMDX panel in the normal runtime, outside the content scroll area. Daily and active-session quartets remain near the input target, with higher legacy/derived QT context quietly visible. Four direct role choices and a secondary subtype/uncertainty/clear menu invoke committed repository actions. Current-quarter input follows time after successful entry; a deliberately inspected target stays pinned. Mouse/menu gestures pin their scope/reference through a clock boundary.
 
@@ -751,6 +751,6 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 
 **Rationale:** searching for an anchor to clear makes the operator reason about the form rather than the quartet's meaning. Impossible phase choices do not belong in ordinary entry. Session/day plus active 90-minute visibility and quiet hover explanations received positive feedback; more visual renderers remain future work.
 
-**Consequences:** refine the shared action before implementing the preferred quartet replacement flow. Other compatible anchors, X subtype, Unknown/Not Applicable/clear and deliberately retained alternatives need explicit semantics. Existing stored claims/evaluation conflicts keep their original meaning; future actions must carry their revision basis. This feedback does not imply final layout acceptance or individual smoke PASS results; the saved local checklist has not yet been pushed.
+**Consequences:** refine the shared action before implementing the preferred quartet replacement flow. Other compatible anchors, X subtype, Unknown/Not Applicable/clear and deliberately retained alternatives need explicit semantics. Existing stored claims/evaluation conflicts keep their original meaning; future actions must carry their revision basis. This feedback alone did not supply individual smoke statuses or final layout acceptance. The subsequently pushed checklist records all six functional checks PASS in `17b874b2c7fb48f2b35d2e30b9e2a6affe019072`; the new action/geometry directions remain unimplemented.
 
 **Refines:** the original native panel's unrestricted role buttons and per-quarter anchor-accumulation interaction target; preserves domain uncertainty, parent/child separation and historical truth.
