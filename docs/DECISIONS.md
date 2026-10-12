@@ -827,10 +827,10 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 
 ## 2026-10-12 — Native observed quartet entry
 
-**Status:** accepted entry behavior implemented; new functional operator smoke remains pending.
+**Status:** accepted entry behavior implemented; checks 255–259 operator PASS on 2026-10-12 from “All points passed,” following clarification/retest guidance.
 
 **Implementation:** the shared fixed AMDX panel edits Expected/working in TDA/Watch and Observed/working in Post-Market Review. The saved Trading Day supplies Review's date; all four sessions are available without following today's clock into another day. Missing saved identity disables capture. One accepted choice commits immediately with both observed/pair heads pinned through its gesture. Failures and stale writes retain meaning, with no automatic replay; read failure disables writes while keeping committed context. Direct X(C)/X(R) buttons now satisfy one-click entry in both channels.
 
 **Presentation:** current observed profiles, entered/implied distinctions and structural hover context remain near the input. The application-backed path hides flat intraday observed controls and the old descriptive comparison list while preserving stored values and higher legacy fields. No AMDX comparison/history control or Watch launch route is added. Selected pairing provenance, if already present, is retained quietly by the shared action; routine capture has no first/latest default.
 
-**Boundary:** schema v41 and Alpha 0.7 are unchanged. `AMDX_OBSERVED_ENTRY_OPERATOR_GUIDE.md` supplies a retained synthetic normal-window Review fixture and new checks 255–259. Existing 254 records retain their results. Final 16:9 geometry, higher-order cycle mapping, rule classifiers, shortcut assignments, notes drafts and purposeful Study/Review comparison remain downstream. This implementation is not new operator acceptance or merge authorization.
+**Boundary:** schema v41 and Alpha 0.7 are unchanged. `AMDX_OBSERVED_ENTRY_OPERATOR_GUIDE.md` supplies a retained synthetic normal-window Review fixture and new checks 255–259. Existing 254 records retain their results. Final 16:9 geometry, higher-order cycle mapping, rule classifiers, shortcut assignments, notes drafts and purposeful Study/Review comparison remain downstream. The later functional report accepts this narrow Review entry behavior. It does not accept the final renderer or authorize a merge.

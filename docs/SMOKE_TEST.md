@@ -1002,21 +1002,21 @@ Use `AMDX_QUARTET_REVISION_OPERATOR_GUIDE.md` on `feature/amdx-quartet-revision-
 
 ### AMDX observed quartet entry — native Review smoke
 
-Use `AMDX_OBSERVED_ENTRY_OPERATOR_GUIDE.md`, branch `feature/amdx-observed-entry-v1` and `python tools/amdx_observed_entry_demo.py --data-dir /tmp/ict-amdx-observed-v1`. New checks 255–259 are NOT TESTED by the operator. All previous 254 identities/statuses/comments are preserved. Schema v41 / Alpha 0.7; comparison controls remain deferred.
+Use `AMDX_OBSERVED_ENTRY_OPERATOR_GUIDE.md`, branch `feature/amdx-observed-entry-v1` and `python tools/amdx_observed_entry_demo.py --data-dir /tmp/ict-amdx-observed-v1`. Checks 255–259 are PASS from the operator’s 2026-10-12 report, “All points passed,” following clarification of check 258 and fresh-sandbox restart guidance. No separate per-check log, fixture/run ID, local runtime version or elapsed time was supplied. The original premature-close error’s cause remains unconfirmed; the report accepts the functional retest, not a diagnosis of that original fixture. All previous 254 identities/statuses/comments are preserved. Schema v41 / Alpha 0.7; comparison controls remain deferred.
 
-- [NOT TESTED] Review shows the saved reviewed-day quartet and records an independent observed phase immediately without Save, baseline choice or station completion.
+- [PASS] Review shows the saved reviewed-day quartet and records an independent observed phase immediately without Save, baseline choice or station completion.
   - Where: synthetic Review fixture, NYAM 90m Q3; choose M.
   - Expected: child XAMD, Day unresolved, entered/implied distinctions and quiet higher context; no AMDX comparison/history panel.
-- [NOT TESTED] Observed quartet correction needs one new valid entry, with one-click X(C)/X(R) and no subtype transfer to a different X quarter.
+- [PASS] Observed quartet correction needs one new valid entry, with one-click X(C)/X(R) and no subtype transfer to a different X quarter.
   - Where: Day NYPM/Q4; choose X(R), then X(C), then Day NYAM/Q3=M.
   - Expected: AMDX with R then C; new Q3=M gives XAMD and Asia X(?), with child profile unchanged and prior judgments retained.
-- [NOT TESTED] Review enforces structural positions and distinguishes repeated explicit no-op, Unknown, whole-quartet applicability and clear.
+- [PASS] Review enforces structural positions and distinguishes repeated explicit no-op, Unknown, whole-quartet applicability and clear.
   - Where: inspect Day Q1–Q4; repeat Q3=M; choose Unknown, Not Applicable, Clear Not Applicable, then Q3=M.
   - Expected: roles A/X, A/M, M/D, D/X; repeated explicit choice reports Already current; clear never revives retired anchors; one valid choice restores XAMD.
-- [NOT TESTED] Reviewed-day/session targets survive clock rollover and failed observed writes preserve committed meaning until deliberate retry.
+- [PASS] Reviewed-day/session targets survive clock rollover and failed observed writes preserve committed meaning until deliberate retry.
   - Where: inspect all sessions, select NYAM 90m Q3, advance Demo reference into another trading day; enable simulated observed write failure and choose D, disable it and choose D again.
   - Expected: reviewed date remains 2026-10-08; navigation records nothing; failure says Not recorded and retains XAMD; deliberate retry gives AMDX with no partial/automatic action.
-- [NOT TESTED] Restart restores the same Review run and committed observed quartets after rollover without Save or reseeding.
+- [PASS] Restart restores the same Review run and committed observed quartets after rollover without Save or reseeding.
   - Where: disable fixture fault; close/reopen the same observed demo directory and inspect edited NYAM if necessary.
   - Expected: same run, Review mode, saved reviewed date and Day/90m judgments; transient navigation is not mistaken for interpretation history.
 

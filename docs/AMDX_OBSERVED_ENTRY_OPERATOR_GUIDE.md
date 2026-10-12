@@ -1,6 +1,6 @@
 # Observed AMDX — native Review trial
 
-Branch `feature/amdx-observed-entry-v1` adds observed quartet entry to the normal Post-Market Review screen. Schema **v41** and Trade Plan **Alpha 0.7** are unchanged from the observed-action backend. Functional operator acceptance is pending; this is not the final 16:9 renderer.
+Branch `feature/amdx-observed-entry-v1` adds observed quartet entry to the normal Post-Market Review screen. Schema **v41** and Trade Plan **Alpha 0.7** are unchanged from the observed-action backend. Checks **255–259 PASS**, reported by the operator on 2026-10-12 as “All points passed” after clarification/retest guidance; this is not the final 16:9 renderer.
 
 ## Sync and open
 
@@ -37,13 +37,17 @@ Only current observed profiles occupy this panel. No AMDX comparison controls or
 
 ## Five short checks — smoke 255–259
 
-Report PASS / FAIL / QUESTION / NOT TESTED. These are new checks; previous accepted results 245–254 are preserved.
+Report PASS / FAIL / QUESTION / NOT TESTED. All five checks are now accepted from the operator’s report. These steps remain repeatable; previous accepted results 245–254 are preserved. No separate per-check logs or local runtime details were supplied.
 
 1. **255 — Orientation and independent capture:** confirm Review, reviewed date 2026-10-08, NYAM 90m Q3, Day/90m rows and higher context. Click **M** once. The 90m profile becomes XAMD; Day remains unresolved. No Save, baseline choice or station completion is needed. There is no AMDX comparison/history panel.
 2. **256 — One-entry correction and direct subtype:** click Day **NYPM/Q4**, then **X(R)** once; Day becomes AMDX with entered X(R). Click **X(C)** once to change the subtype. Click Day **NYAM/Q3**, then **M**: Day becomes XAMD with implied Asia X(?), without old-anchor cleanup or moving the C subtype to Asia. The NYAM child profile from check 255 remains XAMD.
 3. **257 — Legal roles, uncertainty and no-op:** select Day Q1/Q2/Q3/Q4 and check enabled roles A/X, A/M, M/D, D/X. Direct X subtypes are available only at Q1/Q4. At Day Q3 choose **M** twice; the repeated explicit choice says Already current. Use the secondary menu for **Unknown**, **Not Applicable · whole quartet**, and **Clear Not Applicable**. Clearing does not resurrect old phases. Choose Q3=M to restore XAMD.
-4. **258 — Historical targets and failure:** use the session selector to inspect all four sessions; selection records nothing. Return to NYAM 90m Q3. Use **Demo reference → Advance by 90 minutes** repeatedly until the clock shows another trading day; the Review date/target remain 2026-10-08. Enable **Simulate observed write failure**, choose D, and confirm Not recorded with the existing XAMD retained. Disable the failure and choose D deliberately again; it becomes AMDX. No automatic replay occurs. The fixture fault is limited to its separate database and persists across restart until disabled.
-5. **259 — Restart:** leave the fault disabled, close and reopen with the same command. The same run, Review mode, reviewed date and committed Day/90m profiles return. Use the session selector to inspect the earlier edited NYAM quartet if navigation defaults to another quarter. Selection itself is transient; the saved judgments are durable.
+4. **258 — Historical targets and failure:** use the session selector to inspect all four sessions; selection records nothing. Turn simulated failure OFF. Select NYAM, then click the **90m row’s Q3 cell beginning 09:00**; confirm the heading ends in **NYAM 90m Q3**, and click **M** to establish child XAMD. Selecting Day NYAM/Q3 targets a different quartet. Use **Demo reference → Advance by 90 minutes** repeatedly until the upper **Trading Day** date differs from 2026-10-08 (the futures day changes at **18:00 ET**, not midnight); the Review date/target remain 2026-10-08. Enable **Simulate observed write failure**, choose D, and confirm Not recorded with the existing XAMD retained. Disable the failure and first confirm that XAMD remains unchanged. Choose D deliberately again; it becomes AMDX. No automatic replay occurs. The fixture fault is limited to its separate database and persists across restart until disabled.
+5. **259 — Restart:** leave the fault disabled, close using the **window’s X**, then reopen with the same command. Do not click **Conclude Trading Run** for this restart check. The same run, Review mode, reviewed date and committed Day/90m profiles return. Use the session selector to inspect the earlier edited NYAM quartet if navigation defaults to another quarter. Selection itself is transient; the saved judgments are durable.
+
+## Restart support note
+
+The operator reported the launcher error “The saved fixture has been concluded” after a premature close. The guard also uses that message when the restored active run does not match the fixture manifest; the original cause was not established. Closing the window alone is intended to support restart. Fresh-sandbox guidance used `python tools/amdx_observed_entry_demo.py --data-dir /tmp/ict-amdx-observed-258-retest`, preserving the original directory. The subsequent “All points passed” report accepts the five functional checks without claiming recovery of that original fixture or identifying which directory/run was used. No launcher source change is made by this acceptance checkpoint.
 
 ## Developer boundary
 
