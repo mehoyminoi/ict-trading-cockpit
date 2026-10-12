@@ -43,11 +43,19 @@ Expected/working and observed/review channels stay separate for anchors and prof
 
 Allow unresolved order, unresolved X subtype, competing hypotheses, conflicting active anchors and explicitly recorded exceptions/manual judgment. Do not force a label simply to complete a form. Distinguish a profile resolved structurally from a classification verified by evidence.
 
-For one working interpretation, the current accepted anchor for each quarter is the latest non-cleared revision. Earlier revisions remain history rather than simultaneous active constraints. Competing hypotheses are explicitly separate claims/branches, not an accidental mixture of historical edits.
+The implemented anchor-accumulation action keeps the latest non-cleared anchor for each quarter active. Earlier revisions remain history rather than simultaneous active constraints. Competing hypotheses are explicitly separate claims/branches, not an accidental mixture of historical edits. The subsequent native-trial feedback below refines the preferred ordinary working-quartet edit flow; the existing action is not yet changed.
 
-If current Q1=A and Q2=A are both asserted, neither listed profile fits. Preserve both inputs and show the conflict; do not silently erase one or choose the latest quarter as the winner. The technician may correct an anchor, retain uncertainty, record a competing hypothesis or identify a rule exception. No new authorization/completion gate is introduced by this uncertainty alone.
+In the existing accumulation action, if current Q1=A and Q2=A are both asserted, neither listed profile fits. Preserve both inputs and show the conflict; do not silently erase one or choose the latest quarter as the winner. The technician may correct an anchor, retain uncertainty, record a competing hypothesis or identify a rule exception. No new authorization/completion gate is introduced by this uncertainty alone.
 
 If the technician is unsure whether Q3 is M or D, preserve the competing XAMD and AMDX interpretations with their basis, rather than invent a confidence percentage. A rule result can say which evidence supports, contradicts or is missing for each. Recording a manual judgment/exception remains inspectable with source/reason; it is not hidden as a rule-derived result.
+
+### Native-trial refinement — 2026-10-11
+
+The operator prefers a new valid entry to revise the working quartet directly, without searching for an earlier anchor to overwrite or clear. This refines the ordinary entry-action target rather than removing domain support for conflicting evidence, alternatives or immutable earlier claims. For example, after Q1=A has selected AMDX, a later deliberate Q3=M choice should be able to select XAMD as the new working interpretation while retaining the earlier AMDX claim in history. It should not require finding and clearing Q1 first.
+
+Ordinary input must exclude structurally impossible placements. Across both supplied orders, Q1 permits A/X, Q2 A/M, Q3 M/D and Q4 D/X. Restrict by quarter position across both orders, not by the currently resolved order, so a deliberate revision remains possible. X subtype choices apply only to the valid X positions. Unknown, Not Applicable and clear are separate actions.
+
+This is recorded entry-direction feedback, not an implemented replacement command or approval to discard all other current anchors. Before coding, make explicit how a new quartet claim retires incompatible supporting anchors, treats compatible anchors/X subtype, handles uncertainty/clear and identifies any deliberately retained alternative. Preserve stale-head checks, immutable history, original target/reference and separate parent/child scopes. Analytical rule conflicts and explicit exceptions remain traceable. Existing persisted transcripts keep their original accumulation semantics; a new action must identify its own basis rather than reinterpret old records.
 
 ## 5. Trade Plan rules should carry the interpretive burden
 

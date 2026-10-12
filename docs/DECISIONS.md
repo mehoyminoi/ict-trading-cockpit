@@ -730,3 +730,27 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 **Review path:** `tools/amdx_entry_demo.py` opens a retained separate normal-window Replay sandbox; the same command restores its committed run/claims/reference. Its explicit demo reference action changes time only. `AMDX_ENTRY_OPERATOR_GUIDE.md` maps six hands-on checks to smoke items 245–250. No synthetic classifier, weighting scale, competency evidence, entry/completion gate, Study-first startup or coverflow implementation is introduced.
 
 **Refines:** the persistence-next UI boundary into an implemented functional surface. Actual price/news criteria, higher-order cycle mapping, note drafts and contextual Review/Study presentation remain separately defined work.
+
+## 2026-10-11 — Cockpit as the primary desktop workspace
+
+**Status:** Accepted operator override; future layout target, not yet implemented geometry.
+
+**Decision:** Plan around a 16:9 Cockpit workspace taking the majority of the operator's ultrawide display, or the full display otherwise. The operator will arrange charts, journals and other daily information around it. The Cockpit is the primary focus of the working layout.
+
+**Rationale:** broader spatial context supports the desired nearby overview/detail relationship and makes the session/day and active 90-minute quartets easier to orient within the full process. Low clutter, low motion and low memory burden still govern what each context promotes.
+
+**Consequences:** future Watch, TDA, Review and Study renderers should use this primary-workspace target rather than optimize for an undefined small companion window. No exact resolution, fixed aspect-ratio enforcement, new minimum window size or screen-layout implementation is adopted in this documentation checkpoint. TradingView remains the charting workstation.
+
+**Supersedes:** `PROJECT_REQUIREMENTS.md` §15.2's compact desktop-companion footprint.
+
+## 2026-10-11 — Native AMDX entry feedback and structural choice limits
+
+**Status:** Operator direction recorded; exact replacement-action semantics pending, current UI unchanged.
+
+**Decision:** Normal phase entry should be limited to structurally valid positions across both quartet orders: Q1 A/X, Q2 A/M, Q3 M/D, Q4 D/X. The operator prefers a new valid entry to revise the working quartet without locating an older conflicting anchor. Preserve earlier interpretations as immutable history; retain explicit analytical alternatives/conflicts separately. The control set must still permit switching order in one deliberate entry.
+
+**Rationale:** searching for an anchor to clear makes the operator reason about the form rather than the quartet's meaning. Impossible phase choices do not belong in ordinary entry. Session/day plus active 90-minute visibility and quiet hover explanations received positive feedback; more visual renderers remain future work.
+
+**Consequences:** refine the shared action before implementing the preferred quartet replacement flow. Other compatible anchors, X subtype, Unknown/Not Applicable/clear and deliberately retained alternatives need explicit semantics. Existing stored claims/evaluation conflicts keep their original meaning; future actions must carry their revision basis. This feedback does not imply final layout acceptance or individual smoke PASS results; the saved local checklist has not yet been pushed.
+
+**Refines:** the original native panel's unrestricted role buttons and per-quarter anchor-accumulation interaction target; preserves domain uncertainty, parent/child separation and historical truth.

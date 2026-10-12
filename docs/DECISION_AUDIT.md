@@ -289,3 +289,16 @@ See `AMDX_PERSISTENCE_GUIDE.md`. Earlier v37/no-migration and database-NEXT stat
 | Review / Study | Shared working context is read-only in Market Review; no observed-cycle or comparison default is adopted. Spacious Study renderers remain downstream. | OPEN separate contracts |
 
 See `AMDX_ENTRY_OPERATOR_GUIDE.md`. This functional surface is reviewable; backend tests and earlier document review do not imply operator usability acceptance or settled component geometry.
+
+## 2026-10-11 — Native AMDX feedback and primary workspace override
+
+| Earlier interpretation | Latest direction | Status |
+|---|---|---|
+| Undefined small / compact desktop companion | Plan around a primary 16:9 workspace occupying most of an ultrawide, or a full conventional display; charts/journals arranged around the Cockpit. | SUPERSEDED footprint / accepted target, geometry not implemented |
+| Any A/M/D/X button at any quarter | Normal entry permits Q1 A/X, Q2 A/M, Q3 M/D, Q4 D/X across both legal orders. Invalid placements should not be normal choices. | REFINED entry requirement / not implemented |
+| Find/clear an old anchor to change order | Prefer one new valid entry revising the working quartet while retaining the earlier claim as history. Compatible anchors, subtype and uncertainty effects need explicit shared-action semantics. | REFINED interaction direction / action contract pending |
+| Conflicts and alternatives | Preserve analytical conflicts, original transcripts and explicit alternatives; ordinary revision need not expose stale-anchor cleanup. | CURRENT provenance requirement |
+| Session/day plus active 90m visibility and hover | Operator likes these relationships; retain them in more visual future renderers within the larger workspace. | POSITIVE feedback / final rendering open |
+| Locally saved smoke results | Operator reports saving the checklist; remote branch still has 245–250 NOT TESTED. No statuses were supplied or pushed here. | RESULTS SYNC PENDING / no inferred acceptance |
+
+See `PROJECT_REQUIREMENTS.md` §15.2 and native-trial subsection, `AMDX_CYCLE_RULE_CONTRACT.md` §4 and the new decision entries. This checkpoint records feedback only; source/tests, schema v38 and Alpha 0.7 remain unchanged.

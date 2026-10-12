@@ -779,7 +779,9 @@ Workflow modes/decks/stations should correspond naturally to the chart workspace
 
 ### 15.2 Responsive active workspace
 
-The active operating surface should work as a compact desktop companion to TradingView.
+The Cockpit is the primary working surface in the operator's desktop layout. Plan the mature interface around a **16:9 workspace** occupying the majority of the operator's ultrawide display, or the full display on a conventional screen. Charts, journals and other daily information are arranged around the Cockpit. This operator override on 2026-10-11 supersedes the earlier undefined smaller-footprint / compact-companion requirement.
+
+16:9 is a design target, not an implemented fixed-aspect window restriction or an exact pixel resolution. Layout remains responsive to available space. More room should support nearby orientation and task detail while preserving low interaction and memory burden; it is not a reason to expose every control simultaneously.
 
 Required controls must remain discoverable without excessive scrolling or hidden layout dependencies.
 
@@ -1427,6 +1429,23 @@ The full AMDX stack, including higher-order context, should remain visible in a 
 Make all editable levels reachable with minimal motion and navigation burden, within the existing process permissions. Anticipated heavy use of keyboard shortcuts and a macro pad is a design constraint: selection, inspection and editing should use shared application actions that mouse, keyboard and later hardware can invoke. Actual macro-pad integration remains downstream.
 
 Preserve interval/revision history for reconstruction and contextual Review/Study use. A raw day-history list or "was I right this quarter" presentation does not belong on the active QT workspace. The placement and form of deeper historical exploration remain open; no correctness scoring or mandatory quarter-by-quarter grading is introduced. Current suggestions about exact controls, baseline selection and inheritance remain provisional rather than inferred design acceptance.
+
+### First native AMDX trial — operator feedback 2026-10-11
+
+The operator prefers revising the working quartet with one new valid entry rather than finding and clearing an older anchor that contradicts the intended new order. This is a shared-action direction, beyond control styling: ordinary quartet revision should preserve earlier claims as history without requiring manual conflict cleanup. Precise treatment of other compatible anchors, X subtype, uncertainty and explicit alternatives still needs an action-contract refinement before implementation. Existing domain conflict/evaluation traces remain valid; no stored claim is silently rewritten or discarded.
+
+Normal phase-entry controls should offer only roles structurally possible at the selected quarter position across AMDX and XAMD:
+
+| Quarter | Available roles |
+| --- | --- |
+| Q1 | A, X |
+| Q2 | A, M |
+| Q3 | M, D |
+| Q4 | D, X |
+
+Availability must not be restricted to the currently selected order, which would prevent a one-entry order change. X(C), X(R) and X(?) belong only at positions where X is possible. Unknown, Not Applicable and clear remain distinct from phase roles; their exact quartet-revision effects require the shared-action refinement. Invalid normal phase placements are prevented in the future entry path, while existing history and explicit analytical conflicts/exceptions remain inspectable.
+
+The operator likes quiet contextual hover explanations and having the session/day quartet and active session's 90-minute quartet visible together. Retain those relationships in later, more visual presentations within the primary workspace; the current table is not an accepted final renderer.
 
 ### Context-specific presentation — operator direction 2026-10-11
 
