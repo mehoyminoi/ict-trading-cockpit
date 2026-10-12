@@ -253,3 +253,15 @@ The earlier proposed-only importer wording is superseded by the operator's go-ah
 | Friday Asian Range adoption | A generic validation fixture; preceding/following Monday and policy effects are not settled trading rules. Alpha 0.7 remains unchanged. | DEFERRED pending explicit Trade Plan decisions |
 
 Earlier E7-downstream wording describes the E6 checkpoint. E7 v0 is implemented, operator accepted and merged through PR #60 (`f57794cff6f128830655b458e999fd8f72038280`). All nine checks PASS after controlled persistence and E6→E7 compatibility retests, with the latter recorded in `9454414`. Milestone E remains the major frontier; no roadmap priority is moved.
+
+## 2026-10-11 — AMDX foundation boundary
+
+| Area | Current interpretation | Status |
+|---|---|---|
+| Independent quarter values | Coupled AMDX/XAMD profile within one quartet, separate parent/child context, explicit anchors and unresolved X subtype. Legacy flat storage is preserved until integration. | REFINED / pure domain foundation implemented |
+| Separate Record action | A deliberate accepted choice appends a new immutable claim through the shared domain action. Durable app writes follow transactional repository integration. | SUPERSEDED target / domain action implemented |
+| Criterion priority | Versioned Cycle Profile Priority governs the cycle using best-priority assigned-role matches; contrary/local outputs remain traced. No weights/probabilities are assumed. | IMPLEMENTED framework policy / specific trading definitions OPEN |
+| Persistence | Versioned history/evaluation JSON archive and validated reload are verified. No production run fields/migration exist yet. | IMPLEMENTED contract / database integration NEXT |
+| Renderer and Review baseline | Context-specific screens and comparison default remain open. Coverflow is a later revisable experiment. | DEFERRED / no UI acceptance inferred |
+
+See `AMDX_FOUNDATION_GUIDE.md`. The operator authorized proceeding after reviewing the cycle/definition direction; this does not adopt a synthetic price/news classifier or alter Alpha 0.7.

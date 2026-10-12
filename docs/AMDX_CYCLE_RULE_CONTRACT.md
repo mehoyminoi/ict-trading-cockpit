@@ -1,7 +1,7 @@
 # AMDX / XAMD cycle and rule contract
 
-**Status:** Operator clarification recorded on 2026-10-11; corrected architectural design. Objective phase-classification criteria and implementation are not yet defined/accepted.
-**Baseline:** accepted E7, schema v37 / Alpha 0.7. No production source, schema or published Trade Plan changes.
+**Status:** Operator clarification recorded/reviewed on 2026-10-11; corrected architectural design. The operator authorized proceeding with the foundation. `AMDX_FOUNDATION_GUIDE.md` records the pure domain/action/archive implementation; actual price-classification criteria and production rendering remain open.
+**Baseline:** accepted E7, schema v37 / Alpha 0.7. The foundation adds isolated domain modules and tests without changing the application schema, published Trade Plan or existing QT surfaces.
 **Why this correction matters:** the earlier prototype treated individual quarter values too independently. A four-quarter profile is a coupled interpretation: one accepted quarter assignment constrains the other roles within that same quartet. This changes the interpretation/history unit and must be reflected before persistence/action implementation.
 **Operator review:** document reviewed on 2026-10-11. `AMDX_RULE_DEFINITION_FRAMEWORK.md` extends the contract with changeable candidate definitions, explicit priority/weighting semantics, input/output targets, news interpretation and the narrow framework implementation boundary. Specific classifier criteria and the Review default remain open.
 

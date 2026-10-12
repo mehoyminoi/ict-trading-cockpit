@@ -1107,6 +1107,12 @@ Time-derived QT roles remain factual in both expected and observed views. Review
 The current E1 UI is intentionally a testing-grade interaction surface. The mature QT experience must preserve the deeper intraday hierarchy—four sessions per futures day and four 90-minute cycles per session—without requiring the operator to complete a giant repetitive grid. Future UI work should prefer context focus, visual hierarchy, progressive disclosure, automatic factual derivation, inheritance where honest, and edit-by-exception.
 
 
+## Coupled cycle foundation
+
+The reviewed AMDX contract now has an isolated domain foundation (`analysis/amdx.py`, `analysis/amdx_rules.py`); see `AMDX_FOUNDATION_GUIDE.md`. This is not yet wired into the legacy expected/observed maps above. A containing quartet has four stable temporal identities. An explicit anchor constrains AMDX or XAMD within that quartet; sibling roles are conditional implications, not independently observed facts. X subtype can remain unresolved. Parent and child quartets retain separate interpretations.
+
+Versioned criteria separate recorded input features, local behavior labels, assigned roles and the governing cycle profile. The first explicit priority policy retains all rule traces while selecting the best-priority assigned-role basis; unknown competing criteria and equal-priority contradictions remain inspectable. Immutable accepted-action claims and evaluation snapshots supply the future shared persistence/rendering contract. Database integration, operational classification criteria, comparison defaults and final UI remain later work. No inference here grants entry permission or competency evidence.
+
 # 26. QT hierarchy
 
 Current conceptual hierarchy includes:

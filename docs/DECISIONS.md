@@ -686,3 +686,17 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 **Open:** Friday Asian Range's no-Monday-high-impact-news condition is a validation use case, not an adopted rule. Preceding versus following Monday, normalized market applicability and final policy effects require explicit Trade Plan decisions. The demo labels its current-week Monday and following-week offset explicitly. Forex Factory captures cannot certify event absence. Alpha 0.7 publishes no new rule or threshold.
 
 **Refines:** E5 run-wide positive-event predicates; preserves E6 explicit coverage/uncertainty and immutable source/run ownership. No readiness percentage, account applicability, automatic freshness policy, order execution or source mapping is introduced.
+
+## 2026-10-11 — Coupled AMDX domain foundation and versioned criteria
+
+**Status:** Operator reviewed the cycle contract and authorized proceeding with the narrow foundation. Pure domain/action/archive implementation is developer verified; production persistence/renderers are not integrated.
+
+**Decision:** Model a containing quartet with stable quarter identities, explicit anchors, coupled AMDX/XAMD structural consequences, unresolved X subtype and visible conflicts. Preserve accepted interpretation revisions automatically through a shared action contract, with run/channel/branch/cycle isolation and explicit timestamps. Keep recorded features, local behavior, assigned roles and governing profiles distinct. Definition/evaluation snapshots retain plan/rule revisions, scoped inputs, source/availability and reasons for replay/comparison.
+
+**Rationale:** One quarter assignment constrains its siblings, while subjective disagreements and competing rule methods require traceable alternatives rather than independent fields or opaque scores. The complete rulebook is not needed before the foundation; only executable criteria require operational inputs/targets and resolver semantics.
+
+**Implementation choice:** the first named resolver is Cycle Profile Priority. Smaller integers govern; all equally best-priority assigned-role matches constrain the quartet. Competing unknowns at equal/higher priority leave the result unresolved, ties can conflict, and lower-priority/local-behavior outputs remain in the trace. This is a declared developer framework policy, not an adopted trading method or universal weighting formula.
+
+**Consequences:** versioned JSON history/evaluation save/reload is verified without changing schema v37, Alpha 0.7 or the desktop. Actual application writes, plan publication, higher-order temporal mapping, operational classifiers, Review default, source adapters/sensors and coverflow rendering remain downstream. News interpretation/research is part of the definition direction, but no correlation or provider as-of capability is assumed validated.
+
+**Supersedes:** independent sibling-role assumptions and the separate Record-click target in the earlier intraday prototype. Existing legacy flat QT storage/behavior is preserved until reviewed repository integration; no historical interval claims are invented.

@@ -1,0 +1,329 @@
+"""Coupled AMDX interpretations. Pure domain foundation, not a price classifier.
+
+No legacy QT conversion, database mutation, clock fallback or authorization.
+Callers provide explicit scope, identities and timestamps for accepted actions.
+"""
+from dataclasses import asdict, dataclass
+from datetime import datetime, time, timedelta
+from enum import Enum
+
+from ict_cockpit.analysis.market_time import (
+    MARKET_TIMEZONE, as_new_york, futures_trading_day_for,
+    raw_qt_layer_contexts_for, session_for,
+)
+
+
+STRUCTURAL_REVISION = "amdx-xamd-v1"
+PAYLOAD_VERSION = 1
+
+
+class Role(str, Enum):
+    A = "A"
+    M = "M"
+    D = "D"
+    X = "X"
+    UNKNOWN = "Unknown"
+    NOT_APPLICABLE = "Not Applicable"
+
+
+class XSubtype(str, Enum):
+    CONTINUATION = "C"
+    REVERSAL = "R"
+
+
+class Profile(str, Enum):
+    AMDX = "AMDX"
+    XAMD = "XAMD"
+
+
+ORDERS = {
+    Profile.AMDX: (Role.A, Role.M, Role.D, Role.X),
+    Profile.XAMD: (Role.X, Role.A, Role.M, Role.D),
+}
+
+
+def aware(value: datetime) -> datetime:
+    if not isinstance(value, datetime) or value.tzinfo is None or value.utcoffset() is None:
+        raise ValueError("An explicit timezone-aware timestamp is required")
+    return value
+
+
+def timestamp(value: str) -> datetime:
+    # Accept UTC Z on supported Python 3.10 as well as newer runtimes.
+    return aware(datetime.fromisoformat(value.replace("Z", "+00:00")))
+
+
+def require_id(value: str) -> None:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError("An explicit non-empty identity is required")
+
+
+@dataclass(frozen=True)
+class Quarter:
+    id: str
+    position: int
+    label: str
+    start: datetime
+    end: datetime
+
+    def __post_init__(self):
+        require_id(self.id)
+        if type(self.position) is not int or self.position not in range(1, 5):
+            raise ValueError("Quarter position must be 1 through 4")
+        if aware(self.start) >= aware(self.end):
+            raise ValueError("Quarter bounds must increase")
+
+
+@dataclass(frozen=True)
+class Cycle:
+    id: str
+    layer: str
+    quarters: tuple[Quarter, ...]
+    parent_quarter_id: str = ""
+
+    def __post_init__(self):
+        require_id(self.id)
+        require_id(self.layer)
+        object.__setattr__(self, "quarters", tuple(self.quarters))
+        if tuple(q.position for q in self.quarters) != (1, 2, 3, 4):
+            raise ValueError("A cycle must contain exactly four ordered quarters")
+        if len({q.id for q in self.quarters}) != 4:
+            raise ValueError("Quarter identities must be unique")
+        if any(a.end != b.start for a, b in zip(self.quarters, self.quarters[1:])):
+            raise ValueError("Cycle quarters must have contiguous bounds")
+
+    def quarter_at(self, moment: datetime) -> Quarter | None:
+        aware(moment)
+        return next((q for q in self.quarters if q.start <= moment < q.end), None)
+
+
+def intraday_cycles(moment: datetime) -> tuple[Cycle, Cycle] | tuple[()]:
+    """Day/session quartets using the accepted NY clock, never higher-layer guesses.
+
+    Closed weekends have no applicable active quartet. Friday remains a normal
+    intraday day; this does not construct or classify the special weekly Q5.
+    """
+    aware(moment)
+    local = as_new_york(moment)
+    if session_for(local) == "Closed":
+        return ()
+    trading_date = futures_trading_day_for(local)
+    start = datetime.combine(trading_date - timedelta(days=1), time(18), MARKET_TIMEZONE)
+    day_id = f"day:{trading_date.isoformat()}"
+    quarters = []
+    for index in range(4):
+        reference = start + timedelta(hours=6 * index)
+        layer = next(x for x in raw_qt_layer_contexts_for(reference) if x["id"] == "day")
+        quarters.append(Quarter(
+            f"{day_id}:Q{index + 1}", index + 1, layer["active_child_label"],
+            timestamp(layer["effective_start"]), timestamp(layer["effective_end"]),
+        ))
+    day = Cycle(day_id, "day", tuple(quarters))
+    parent = day.quarter_at(local)
+    assert parent is not None
+    session_id = f"session:{parent.id}"
+    children = tuple(Quarter(
+        f"{session_id}:Q{i + 1}", i + 1, f"90m {i + 1}",
+        parent.start + timedelta(minutes=90 * i),
+        parent.start + timedelta(minutes=90 * (i + 1)),
+    ) for i in range(4))
+    return day, Cycle(session_id, "session", children, parent.id)
+
+
+@dataclass(frozen=True)
+class Anchor:
+    id: str
+    quarter_id: str
+    role: Role
+    source_ref: str
+    subtype: XSubtype | None = None
+    origin: str = "Technician"
+    rule_revision: str = ""
+    note: str = ""
+
+    def __post_init__(self):
+        require_id(self.id)
+        require_id(self.quarter_id)
+        require_id(self.source_ref)
+        object.__setattr__(self, "role", Role(self.role))
+        if self.subtype is not None:
+            object.__setattr__(self, "subtype", XSubtype(self.subtype))
+            if self.role is not Role.X:
+                raise ValueError("Only X has a continuation/reversal subtype")
+        if self.origin not in ("Technician", "Rule"):
+            raise ValueError("Anchor origin must be Technician or Rule")
+        if self.origin == "Rule":
+            require_id(self.rule_revision)
+
+
+@dataclass(frozen=True)
+class ImpliedRole:
+    quarter_id: str
+    role: Role
+    subtype: XSubtype | None
+    origin: str
+
+
+@dataclass(frozen=True)
+class Inference:
+    candidates: tuple[Profile, ...]
+    roles: tuple[ImpliedRole, ...]
+    state: str
+    reasons: tuple[str, ...]
+    structural_revision: str = STRUCTURAL_REVISION
+
+
+def infer_profile(cycle: Cycle, anchors: tuple[Anchor, ...]) -> Inference:
+    """Intersect active anchors within one quartet; never discard a conflict."""
+    ids = {q.id for q in cycle.quarters}
+    anchors = tuple(anchors)
+    if any(a.quarter_id not in ids for a in anchors):
+        raise ValueError("Anchor target is outside this quartet")
+    if len({a.id for a in anchors}) != len(anchors):
+        raise ValueError("Anchor identities must be unique")
+    by_quarter = {q.id: tuple(a for a in anchors if a.quarter_id == q.id) for q in cycle.quarters}
+    applicable = all(a.role is not Role.NOT_APPLICABLE for a in anchors)
+    constraints = tuple(a for a in anchors if a.role not in (Role.UNKNOWN, Role.NOT_APPLICABLE))
+    candidates = tuple(profile for profile, order in ORDERS.items() if all(
+        a.role == order[next(q.position - 1 for q in cycle.quarters if q.id == a.quarter_id)]
+        for a in constraints
+    )) if applicable else ()
+    subtype_conflict = any(len({a.subtype for a in values if a.subtype is not None}) > 1
+                           for values in by_quarter.values())
+    if not applicable:
+        return Inference((), (), "Not Applicable", ("An explicit anchor excludes this quartet.",))
+    if not candidates or subtype_conflict:
+        return Inference(candidates, (), "Conflict", (
+            "Active anchors do not support a consistent role/subtype profile; all inputs are retained.",
+        ))
+    roles = []
+    for q in cycle.quarters:
+        values = {ORDERS[p][q.position - 1] for p in candidates}
+        role = next(iter(values)) if len(values) == 1 else Role.UNKNOWN
+        explicit = tuple(a for a in by_quarter[q.id] if a.role is role and role is not Role.UNKNOWN)
+        subtype = next((a.subtype for a in explicit if a.subtype is not None), None)
+        origins = {a.origin for a in explicit}
+        origin = (next(iter(origins)) if len(origins) == 1 else "Mixed") if explicit else (
+            "Implied" if role is not Role.UNKNOWN else "Unresolved")
+        roles.append(ImpliedRole(q.id, role, subtype, origin))
+    return Inference(candidates, tuple(roles), "Resolved" if len(candidates) == 1 else "Unresolved", (
+        "Roles are conditional structural consequences of the retained anchors, not price observations.",
+    ))
+
+
+@dataclass(frozen=True)
+class Claim:
+    id: str
+    run_id: str
+    branch_id: str
+    channel: str
+    cycle: Cycle
+    anchors: tuple[Anchor, ...]
+    inference: Inference
+    recorded_at: datetime
+    market_reference: datetime
+    action_quarter_id: str
+    action: str
+    structural_revision: str = STRUCTURAL_REVISION
+
+
+@dataclass(frozen=True)
+class InterpretationHistory:
+    claims: tuple[Claim, ...] = ()
+
+    def __post_init__(self):
+        object.__setattr__(self, "claims", tuple(self.claims))
+        if len({c.id for c in self.claims}) != len(self.claims):
+            raise ValueError("Claim identities must be unique")
+
+    def accept(self, *, claim_id: str, run_id: str, branch_id: str, channel: str,
+               cycle: Cycle, quarter_id: str, anchor: Anchor | None,
+               recorded_at: datetime, market_reference: datetime) -> "InterpretationHistory":
+        """Append one accepted choice/clear with its entire resulting profile.
+
+        None clears the current anchor without resurrecting an older revision.
+        Branches, runs, channels and cycles are isolated. No default Review pair.
+        """
+        for value in (claim_id, run_id, branch_id):
+            require_id(value)
+        aware(recorded_at)
+        aware(market_reference)
+        if channel not in ("Expected", "Observed"):
+            raise ValueError("Channel must be Expected or Observed")
+        if quarter_id not in {q.id for q in cycle.quarters}:
+            raise ValueError("Action target is outside this quartet")
+        if anchor is not None and (anchor.quarter_id != quarter_id or anchor.origin != "Technician"):
+            raise ValueError("This action accepts an explicit technician anchor for its pinned target")
+        if any(c.id == claim_id for c in self.claims):
+            raise ValueError("Claim identity already exists")
+        previous = next((c for c in reversed(self.claims) if (
+            c.run_id, c.branch_id, c.channel, c.cycle.id
+        ) == (run_id, branch_id, channel, cycle.id)), None)
+        if any(c.cycle.id == cycle.id and c.cycle != cycle for c in self.claims):
+            raise ValueError("Stable cycle identity cannot be reused with different bounds")
+        if previous and recorded_at < previous.recorded_at:
+            raise ValueError("Recorded action time cannot move backward within a working scope")
+        if anchor is not None and any(a.id == anchor.id for c in self.claims for a in c.anchors):
+            raise ValueError("A new accepted choice needs a new anchor revision identity")
+        active = tuple(a for a in (previous.anchors if previous else ()) if a.quarter_id != quarter_id)
+        if anchor is not None:
+            active += (anchor,)
+        claim = Claim(claim_id, run_id, branch_id, channel, cycle, active,
+                      infer_profile(cycle, active), recorded_at, market_reference,
+                      quarter_id, "Accept" if anchor else "Clear")
+        return InterpretationHistory(self.claims + (claim,))
+
+    def to_payload(self) -> dict:
+        return {"version": PAYLOAD_VERSION, "claims": [payload(c) for c in self.claims]}
+
+    @classmethod
+    def from_payload(cls, value: dict) -> "InterpretationHistory":
+        if value.get("version") != PAYLOAD_VERSION:
+            raise ValueError("Unsupported AMDX history payload version")
+        claims = []
+        for item in value["claims"]:
+            if item["structural_revision"] != STRUCTURAL_REVISION:
+                raise ValueError("Unsupported structural revision; historical claims cannot be reinterpreted")
+            cycle = cycle_from_payload(item["cycle"])
+            anchors = tuple(Anchor(**a) for a in item["anchors"])
+            inference = infer_profile(cycle, anchors)
+            if payload(inference) != item["inference"]:
+                raise ValueError("Stored inference disagrees with its retained structural basis")
+            claim = Claim(item["id"], item["run_id"], item["branch_id"], item["channel"],
+                          cycle, anchors, inference, timestamp(item["recorded_at"]),
+                          timestamp(item["market_reference"]), item["action_quarter_id"],
+                          item["action"], item["structural_revision"])
+            # Validate the action transcript rather than accepting inconsistent active snapshots.
+            action_anchor = next((a for a in anchors if a.quarter_id == claim.action_quarter_id), None)
+            if claim.action not in ("Accept", "Clear") or (claim.action == "Accept") != (action_anchor is not None):
+                raise ValueError("Invalid stored action")
+            replay = cls(tuple(claims)).accept(
+                claim_id=claim.id, run_id=claim.run_id, branch_id=claim.branch_id,
+                channel=claim.channel, cycle=cycle, quarter_id=claim.action_quarter_id,
+                anchor=action_anchor, recorded_at=claim.recorded_at, market_reference=claim.market_reference,
+            ).claims[-1]
+            if replay != claim:
+                raise ValueError("Stored profile snapshot disagrees with action history")
+            claims.append(claim)
+        return cls(tuple(claims))
+
+
+def payload(value):
+    """Detached JSON-compatible snapshot; no live mutable containers are exposed."""
+    if hasattr(value, "__dataclass_fields__"):
+        return payload(asdict(value))
+    if isinstance(value, datetime):
+        return aware(value).isoformat()
+    if isinstance(value, Enum):
+        return value.value
+    if isinstance(value, dict):
+        return {key: payload(item) for key, item in value.items()}
+    if isinstance(value, (tuple, list)):
+        return [payload(item) for item in value]
+    return value
+
+
+def cycle_from_payload(value: dict) -> Cycle:
+    return Cycle(value["id"], value["layer"], tuple(Quarter(
+        q["id"], q["position"], q["label"], timestamp(q["start"]), timestamp(q["end"]),
+    ) for q in value["quarters"]), value["parent_quarter_id"])
