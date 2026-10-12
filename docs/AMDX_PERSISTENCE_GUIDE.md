@@ -38,6 +38,8 @@ Reload checks payload versions, ownership, stable cycle content, revision chains
 
 The v38 migration explicitly opens a transaction when SQLite DDL has not already opened one, keeping all four tables, indices/triggers and the version bump atomic. An injected migration failure leaves v37 and no partial AMDX schema; a subsequent normal migration succeeds. Earlier application columns and source captures retain their existing meanings.
 
+Migration is forward-only. An older v37 application rejects a migrated v38 database; use an original v37 backup/separate copy for old-code comparisons rather than relabeling or downgrading the migrated file. The controlled E6 fixture retains that original backup.
+
 Developer verification includes an actual accepted-v37 schema with populated QT expectation/observation rows, plus the controlled database written by accepted E6 source `42e3b346`. The normal current application restores the original run, captures, context snapshot, workflow and manual authorization boundaries at v38, with empty AMDX records. The original E6 v37 backup and provenance manifest remain unchanged. The compatibility harness now distinguishes original v37 from the current schema in its label.
 
 This does not certify real Forex Factory completeness, event timing/status, historical as-of knowledge, AMDX classifier quality, or a new automatic trading policy. Source acquisition/mapping and actual classifier criteria remain separate work.
