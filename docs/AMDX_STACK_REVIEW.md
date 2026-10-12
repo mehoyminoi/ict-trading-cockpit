@@ -2,7 +2,7 @@
 
 Reviewed published checkpoint `1fc19d1b07195bc15b1d91670de9e9377e12f319`, application source `0efa822c5924c35ff6f654e649daacd5c237dbde`, against the accepted working/observed action, persistence and Watch/Review boundaries.
 
-**Result: one integration-blocking finding in PR #66.** No additional blocker was found in the reviewed domain/storage contracts. PRs #63–65 are now ready for review; #61/#62/#66 remain ready. Ready status does not imply approval or merge. All six PRs remain unmerged.
+**Original review result: one integration-blocking finding in PR #66.** A subsequent source correction is implemented below; final developer validation passed (744 tests across all 70 isolated module processes) and focused operator check 260 remains pending. No additional blocker was found in the reviewed domain/storage contracts. PRs #63–65 are now ready for review; #61/#62/#66 remain ready. Ready status does not imply approval or merge. All six PRs remain unmerged.
 
 ## Finding — a later run can review the containing day's earlier date
 
@@ -76,3 +76,16 @@ Fresh review verification: all five existing CLI demonstrations completed succes
 First correct and verify the #66 date-provenance blocker. Then assess the stack in dependency order **#61 → #62 → #63 → #64 → #65 → #66**. Preserve ancestry with merge commits; retarget each child to main only after its parent actually merges. Keep parent branches until dependent retargeting is complete. Recheck the actual resulting source/tree if any head, base or implementation changes.
 
 This review performs no merge, retarget, source change or new operator acceptance. Comparison UI/research, primary 16:9 geometry, higher-order cycle mapping, shortcut assignments and broader Study presentation remain downstream. The immediate next slice is the date-scope correction, not a renderer expansion.
+
+
+## Correction follow-up — 2026-10-12
+
+Source `e12a2d4c4d4767f32dd13c3ea795ffab18531f78` implements the recommended run-owned period correction. `analysis/amdx_review_date.py` resolves a valid saved run-start reference using New York futures-day semantics; the mutable clock/expectation claims are never date substitutes. Missing retained reference can use the explicitly described legacy containing Day; malformed retained reference or absence of both sources disables capture. The heading hover explains its origin and a valid original reference differing from an old container. Changed date provenance cannot record an older in-flight target.
+
+The canonical shell rejects a different-date additional run, or an undated existing container with prior runs, before process/TDA reset or run creation. It points to Complete Trading Day → Start New Trading Day. Same-date additional runs remain allowed. Native restoration of a previously accepted mismatched grouping now uses the run's valid original date without rewriting the containing Day or old claims.
+
+Focused **77 passed in 784.90s**, covering 24 new cases (15 pure date / 9 native), normal-window restart and the existing working/observed gesture/failure paths. Full verification completed: **744 passed in 328.84s (5m29s)** across all 70 isolated module runs, clean exits/no warnings. Each module’s JUnit count was matched against the full collected node IDs, with no failures/errors/skips. No combined single-process full run is claimed; the focused group ran in one process. The native environment is restored (Python 3.12.14 / PySide6 6.8.3 / pytest 9.1.1, offscreen); no separate Python 3.10 execution is claimed. A requested 1280×720 sandbox produced the existing 1280×876 minimum and was inspected. Source remains frozen during validation.
+
+`AMDX_REVIEW_DATE_OPERATOR_GUIDE.md` provides one new operator check 260, NOT TESTED. Its retained separate native fixture deliberately constructs the older-label discrepancy only in synthetic data; it is not original operator data or a migration. Previous 259 records remain unchanged. Schema v41 / Alpha 0.7 / action and archive policies remain unchanged. No merge/retarget occurs. Reassess integration after full verification and this focused check.
+
+**Developer reassessment:** the source-level date blocker is corrected and covered by passing native regressions, actual restoration, the preserved-reference fixture and the complete module-isolated suite. The implementation finding is resolved at `e12a2d4`; check 260 remains pending for the new targeted operator path before integration. Previous accepted results are not reinterpreted. All verification processes have exited; no merges occurred.

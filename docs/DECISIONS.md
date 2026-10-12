@@ -834,3 +834,12 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 **Presentation:** current observed profiles, entered/implied distinctions and structural hover context remain near the input. The application-backed path hides flat intraday observed controls and the old descriptive comparison list while preserving stored values and higher legacy fields. No AMDX comparison/history control or Watch launch route is added. Selected pairing provenance, if already present, is retained quietly by the shared action; routine capture has no first/latest default.
 
 **Boundary:** schema v41 and Alpha 0.7 are unchanged. `AMDX_OBSERVED_ENTRY_OPERATOR_GUIDE.md` supplies a retained synthetic normal-window Review fixture and new checks 255–259. Existing 254 records retain their results. Final 16:9 geometry, higher-order cycle mapping, rule classifiers, shortcut assignments, notes drafts and purposeful Study/Review comparison remain downstream. The later functional report accepts this narrow Review entry behavior. It does not accept the final renderer or authorize a merge.
+
+
+## 2026-10-12 — Run-owned Review date correction
+
+**Status:** correction of the accepted reviewed-scope contract, implemented with focused 77-pass and complete module-isolated 744-pass validation; focused check 260 pending.
+
+Review's date resolves from the particular run's preserved starting market reference, not its latest advancing clock or an unchecked container label. Older runs lacking that reference may use an explicit saved-Day fallback; malformed original references or absence of both sources disable recording. A valid run reference can restore an older misgrouped run without rewriting container labels or claims, and its differing provenance is explained in the heading hover. In-flight older-date targets cannot record after provenance changes.
+
+The existing one-futures-day container boundary is enforced at additional-run launch before process/TDA reset: a different-date request or undated existing container with prior runs is rejected with the existing complete-day/new-day path. Same-date additional runs remain allowed. This introduces no classifier, comparison default, history panel, new confirmation/save obligation, schema or published-plan change. Final renderer/Study work remains downstream.
