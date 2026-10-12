@@ -3,6 +3,7 @@
 **Status:** Operator clarification recorded on 2026-10-11; corrected architectural design. Objective phase-classification criteria and implementation are not yet defined/accepted.
 **Baseline:** accepted E7, schema v37 / Alpha 0.7. No production source, schema or published Trade Plan changes.
 **Why this correction matters:** the earlier prototype treated individual quarter values too independently. A four-quarter profile is a coupled interpretation: one accepted quarter assignment constrains the other roles within that same quartet. This changes the interpretation/history unit and must be reflected before persistence/action implementation.
+**Operator review:** document reviewed on 2026-10-11. `AMDX_RULE_DEFINITION_FRAMEWORK.md` extends the contract with changeable candidate definitions, explicit priority/weighting semantics, input/output targets, news interpretation and the narrow framework implementation boundary. Specific classifier criteria and the Review default remain open.
 
 ## 1. Structural rule supplied by the operator
 
@@ -85,8 +86,8 @@ Useful later analyses may examine classification coverage, unresolved/conflict c
 
 1. Correct the shared domain unit to a containing four-quarter cycle with explicit anchors, rule-implied context and unresolved X subtype.
 2. Define versioned structural inference/profile provenance and conflict/alternative representation; retain legacy meaning and accepted action contracts.
-3. Extract and operationalize a small classification rule/example from the actual plan before implementing a broad price-action classifier. Missing criteria stay explicitly undefined.
-4. Revisit the contextual Review baseline at cycle-profile level, then implement the narrow identity/persistence/action slice. Final rendering, source feeds/live sensors and broad analytics remain separate later work.
+3. Build the structural/definition/provenance foundation without waiting for a full rulebook. Operationalize only explicitly specified classification examples; unfinished targets/conditions/weights remain undefined. See `AMDX_RULE_DEFINITION_FRAMEWORK.md`.
+4. Store explicit comparison/profile identities without hardcoding a default. Revisit contextual Review policy before automatic presentation, while the narrow domain/persistence/action foundation can progress. Final rendering, source feeds/live sensors and broad analytics remain separate later work.
 
 ## 9. Design verification
 

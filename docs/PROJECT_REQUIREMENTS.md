@@ -14,6 +14,7 @@ Companion documents:
 - `docs/SMOKE_TEST.md` — manual acceptance record.
 - `docs/COCKPIT_FUNCTIONAL_WALKTHROUGH.md` — source-verified whole-tool journeys, current/proposed surfaces and shared QT/AMDX contract review.
 - `docs/AMDX_CYCLE_RULE_CONTRACT.md` — coupled quartet profiles, rule/anchor provenance, interpretive uncertainty and classification-rule requirements.
+- `docs/AMDX_RULE_DEFINITION_FRAMEWORK.md` — versioned classifier definitions, priority/weighting, target scopes, news context and the narrow implementation boundary.
 
 This document describes **current intended product truth**, not the chronological history of every idea considered. Older requirements and transcripts remain historical evidence only.
 
@@ -646,6 +647,12 @@ Separate explicit technician anchors, rule-implied quarter/profile context and e
 AMDX/XAMD definition and classification rules should be prominent, versioned Trade Plan content with inspectable inputs, reasons, applicability and unknowns. The aim is to make classification follow the plan's declared criteria and evaluate those criteria empirically, rather than leave subjective disagreement hidden in labels. The structural order is specified here; complete objective price-action criteria are not yet specified and must not be invented. A live phase sensor is optional later work, not the foundation of this architecture.
 
 Study/Lab can later evaluate rule revisions against scoped examples and recorded information available at the time. This is empirical rule/profile investigation, not a live quarter-correctness checklist, automatic competency score or new authorization policy. Authoritative adoption of new classification rules requires a published Trade Plan revision; current Alpha 0.7 remains unchanged. The previously proposed first-expectation Review default is not accepted by this clarification and needs to be reconsidered with cycle-profile provenance.
+
+### 11.6 Changeable rule definitions, priority and interpretive event context
+
+Operator direction on 2026-10-11: criteria should be changeable, trackable and actionable Trade Plan definitions so different approaches can be compared. Edit candidate definitions and publish identifiable revisions while protecting prior published rules and run history. Different criteria/priority/explicit weighting methods can produce different role/profile conclusions from the same facts; retain evaluation reasons, competing results and rule/input provenance. Input quarter/session and classified target must be distinct and explicit. Local X-like behavior need not be the final assigned quartet role; unsupported assignments remain conflicts/exceptions rather than forced patterns. Detailed classifier content and weight scales are not invented by the generic framework. See `AMDX_RULE_DEFINITION_FRAMEWORK.md`.
+
+High-impact/red-folder news relationships are a key TDA/Study input for anticipating weeks and sessions alongside price-action evidence. Preserve event timing/classification/coverage, historical information availability, source/rule revisions and unknowns. Empirical correlation remains something to evaluate; it is not assumed predictive strength or an automatic entry-policy effect. Framework construction can proceed with structural/definition/action contracts while actual classifier methods are specified and evaluated.
 
 ---
 
@@ -1434,6 +1441,10 @@ Study should be the default/most anticipated workspace in the mature UX, especia
 A proposed startup surface should offer Study this Competency / a relevant next study task in the spirit of a dismissible recent-project suggestion. Its purpose is to answer: "After a tiring workday, what is the best use of my limited time and mental energy?" It should minimize planning/navigation burden while remaining easy to dismiss or navigate around. This direction is explicitly subject to change and is not a mandatory study gate or an implemented new startup behavior.
 
 Recommendations should explain their recorded basis, such as saved Development Direction, selected competency focus or an unfinished study; no unsupported mastery score or invented personalized priority is introduced. Details of recommendation ordering, manual preference and handling an already-active run remain open. Startup guidance should not silently create a run, change an environment, overwrite in-progress context, or change Trade Plan/progression rules.
+
+### Parked coverflow-style AMDX navigation idea — 2026-10-11
+
+Subject to evaluation against other methods, explore a coverflow-style focus/detail feature controlled by scrolling/wheel and hotkeys. It should expose an appropriate amount of information while retaining nearby quiet whole-stack orientation. Navigation alone must not accept an interpretation, create history or retarget a pending edit. Reuse shared actions and keep layout/animation/binding choices downstream; this is an exploratory UX idea, not an approved renderer or implementation dependency.
 
 ### Accepted automatic interpretation recording — 2026-10-11
 

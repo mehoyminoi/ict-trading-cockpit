@@ -95,6 +95,8 @@ Changing current time definitions, selecting a different source capture or reope
 
 ## First implementation slice after design review
 
+The operator reviewed the corrected cycle contract on 2026-10-11. `AMDX_RULE_DEFINITION_FRAMEWORK.md` sets the next narrow boundary: structural cycle/quarter identity, rule-definition/result/provenance interfaces and shared actions can progress without a complete rulebook or final renderer. Specific classifier targets/conditions and weighting semantics must be explicit before those criteria become executable; Review default remains a separate policy choice.
+
 Component layout iteration is parked following the operator's request to zoom out on 2026-10-11. Review the overall Cockpit functional map and context-specific presentation/action contracts before further production UI development. Architecture does not require choosing a final widget layout: stable interval identity, provenance, run ownership and persistence can be specified independently. Automatic phase recording and in-place Watch updates are accepted. Reconcile containing-cycle inference/rule provenance first; the default comparison baseline remains open at cycle-claim level. Note annotation/recovery and shared permission/action details remain implementation contract work.
 
 `COCKPIT_FUNCTIONAL_WALKTHROUGH.md` is the concrete review aid: verified current navigation, operating and learning journeys, current-versus-proposed capabilities, context-specific presentations, ownership/action boundaries and three behavior-contract recommendations. Review this broader picture before resuming component layout or implementing the new QT behavior.
