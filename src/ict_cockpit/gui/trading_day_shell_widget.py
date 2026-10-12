@@ -380,6 +380,7 @@ class TradingDayShellWidget(QWidget):
         self.trading_runs.append(run)
         self.active_trading_run = run
         self._sync_legacy_aliases()
+        self.runtime.review_day_label = self.trading_day.futures_day_label
         self.runtime.load_trading_run(run)
         self.trading_day_changed.emit(self.trading_day)
         self.session_run_changed.emit(run)
@@ -565,6 +566,7 @@ class TradingDayShellWidget(QWidget):
 
     def load_state(self, trading_day: TradingDay, session_runs: list[TradingRun], *, process_session: TradingDaySession | None = None, tda_session=None) -> None:
         self.trading_day = trading_day
+        self.runtime.review_day_label = trading_day.futures_day_label
         self.trading_runs = list(session_runs)
         self.active_trading_run = next(
             (run for run in self.trading_runs if run.id == trading_day.active_session_run_id and run.status is TradingRunStatus.ACTIVE),

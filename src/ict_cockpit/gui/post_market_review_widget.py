@@ -125,6 +125,7 @@ class PostMarketReviewWidget(QWidget):
         qt_review_layout = QVBoxLayout(self.qt_review_frame)
         qt_review_layout.setContentsMargins(10, 8, 10, 8)
         qt_heading = QLabel("QT / AMDX — expected vs observed")
+        self.qt_heading = qt_heading
         qt_heading.setStyleSheet("font-weight: 600;")
         qt_help = QLabel(
             "Record what the QT / AMDX interpretation looked like in hindsight. "
@@ -132,6 +133,7 @@ class PostMarketReviewWidget(QWidget):
             "create competency evidence."
         )
         qt_help.setWordWrap(True)
+        self.qt_help = qt_help
         self.qt_expected_label = QLabel()
         self.qt_expected_label.setWordWrap(True)
         qt_review_layout.addWidget(qt_heading)
@@ -139,9 +141,12 @@ class PostMarketReviewWidget(QWidget):
         qt_review_layout.addWidget(self.qt_expected_label)
 
         self.observed_qt_combos: dict[str, QComboBox] = {}
+        self.observed_qt_labels = {}
         for level_id, label in QT_LEVELS:
             row = QHBoxLayout()
-            row.addWidget(QLabel(f"{label} observed"))
+            level_label = QLabel(f"{label} observed")
+            self.observed_qt_labels[level_id] = level_label
+            row.addWidget(level_label)
             combo = QComboBox()
             combo.addItems([item.value for item in QTPhase])
             combo.currentTextChanged.connect(self._emit_observed_qt_review)
@@ -159,6 +164,7 @@ class PostMarketReviewWidget(QWidget):
         qt_review_layout.addWidget(self.qt_review_note_input)
 
         comparison_heading = QLabel("Descriptive comparison")
+        self.qt_comparison_heading = comparison_heading
         comparison_heading.setStyleSheet("font-weight: 600;")
         qt_review_layout.addWidget(comparison_heading)
         self.qt_comparison_list = QListWidget()
@@ -320,6 +326,19 @@ class PostMarketReviewWidget(QWidget):
         self.stage_stack.setCurrentWidget(self.process_review_page)
         self.stage_label.setText("2 of 2 · Process Review")
 
+    def set_coupled_intraday(self, enabled):
+        """Application-backed intraday entry belongs to the fixed quartet panel."""
+        self.coupled_intraday = enabled
+        self.qt_heading.setText("Higher QT / AMDX · legacy context" if enabled else "QT / AMDX — expected vs observed")
+        self.qt_help.setText("Use Observed AMDX above for day and 90-minute quartets. Earlier flat intraday entries remain retained."
+                             if enabled else "Record the QT / AMDX interpretation in hindsight; comparison is descriptive only.")
+        self.qt_expected_label.setVisible(not enabled)
+        self.qt_comparison_heading.setVisible(not enabled)
+        self.qt_comparison_list.setVisible(not enabled)
+        for level_id in ("day", "session", "macro_90m"):
+            self.observed_qt_combos[level_id].setVisible(not enabled)
+            self.observed_qt_labels[level_id].setVisible(not enabled)
+
     def load_state(
         self,
         trading_run: TradingRun,
@@ -349,6 +368,8 @@ class PostMarketReviewWidget(QWidget):
                     )
                 )
                 combo.setEnabled(provenance.get(level_id) != "Derived")
+                if getattr(self, "coupled_intraday", False) and level_id in ("day", "session", "macro_90m"):
+                    combo.setEnabled(False)
                 if provenance.get(level_id) == "Derived":
                     combo.setToolTip(
                         "This QT / AMDX role is derived from market time and "

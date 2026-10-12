@@ -225,6 +225,7 @@ class MainWindow(QMainWindow):
         shell = self.trade_plan_widget.trading_day_shell_widget
         shell.runtime.amdx_context_widget.set_repository(self.trading_session_run_repository.amdx)
         shell.runtime.qt_context_widget.set_intraday_read_only(True)
+        shell.runtime.post_market_review_widget.set_coupled_intraday(True)
         shell.trading_day_changed.connect(self.save_trading_day)
         shell.session_run_changed.connect(self.save_trading_session_run)
 

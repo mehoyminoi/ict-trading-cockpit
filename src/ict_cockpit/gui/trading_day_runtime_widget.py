@@ -58,6 +58,7 @@ class TradingDayRuntimeWidget(QWidget):
         self.live_watch_policy = live_watch_policy or LiveWatchPolicyDefinition()
         self.playbooks = tuple(playbooks)
         self.embedded_session_run = embedded_session_run
+        self.review_day_label = ""
         self.modes = list(blueprint.modes)
         if not self.modes:
             raise ValueError("blueprint must contain trading-day modes")
@@ -359,6 +360,7 @@ class TradingDayRuntimeWidget(QWidget):
                 self.trading_run.market_time_context if self.trading_run else {}
             ),
             self.current_mode.id,
+            review_day_label=self.review_day_label,
         )
 
     def start_new(self) -> None:
