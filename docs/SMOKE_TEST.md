@@ -1070,21 +1070,23 @@ Operator report, 2026-10-13 (America/Denver): “All checks passed. The step by 
 
 ## Maintained Observed Review — native trial
 
-Use `AMDX_REVIEW_CALENDAR_OPERATOR_GUIDE.md` and `python tools/amdx_review_calendar_demo.py --data-dir /tmp/ict-amdx-review-calendar-v0`. This separate retained synthetic fixture opens Review for 2026-10-09. Schema v45 / Alpha 0.7; the prior 269 identities/results/comments remain unchanged. Checks 270–274 await operator results.
+Use `AMDX_REVIEW_CALENDAR_OPERATOR_GUIDE.md` and `python tools/amdx_review_calendar_demo.py --data-dir /tmp/ict-amdx-review-calendar-v0`. This separate retained synthetic fixture opens Review for 2026-10-09. Schema v45 / Alpha 0.7; the prior 269 identities/results/comments remain unchanged. Checks 270–274 are PASS from the explicit 2026-10-13 operator report.
 
-- [NOT TESTED] A legal Observed Review phase entry immediately appears in the same maintained Lab calendar without a second entry or Save.
+Operator report, 2026-10-13 (America/Denver): checks 270–274 passed; smoke-test notes saved locally but not committed or pushed. This checkpoint records the reported result; the local file and any additional notes have not been inspected or imported.
+
+- [PASS] A legal Observed Review phase entry immediately appears in the same maintained Lab calendar without a second entry or Save.
   - Where: guide checkpoint 270, Review NYAM 90m Q3=M, then same-quartet Observed Lab preset.
   - Expected: both current views show XAMD / Q3 M entered.
-- [NOT TESTED] Direct one-click X(R) records the shared Observed judgment and makes a captured run assessment available without selecting an Expected baseline.
+- [PASS] Direct one-click X(R) records the shared Observed judgment and makes a captured run assessment available without selecting an Expected baseline.
   - Where: guide checkpoint 271, Review 90m Q1, X(R).
   - Expected: XAMD / Q1 X(R) entered / Q3 M entered; Captured run assessment available.
-- [NOT TESTED] A subsequent Lab correction updates current Review orientation while preserving its prior assessment.
+- [PASS] A subsequent Lab correction updates current Review orientation while preserving its prior assessment.
   - Where: guide checkpoint 272, same-quartet Observed Lab Q3=D, return Review.
   - Expected: current Lab and Review AMDX / Q3 D entered; captured assessment still available.
-- [NOT TESTED] Read-only captured run assessment reconstructs its original Observed revision after later calendar corrections.
+- [PASS] Read-only captured run assessment reconstructs its original Observed revision after later calendar corrections.
   - Where: guide checkpoint 273, Captured run assessment.
   - Expected: retained XAMD / Q1 X(R) and Q3 M; disabled phase/reference controls; distinct from original Expected launch inspection.
-- [NOT TESTED] Clock advancement and same-directory restart retain the original reviewed day, current judgment and immutable captured assessment without re-entry.
+- [PASS] Clock advancement and same-directory restart retain the original reviewed day, current judgment and immutable captured assessment without re-entry.
   - Where: guide checkpoint 274, advance display, window-X close/reopen, inspect assessment.
   - Expected: October 9 Review/NYAM current AMDX; captured XAMD with X(R)/M unchanged.
 

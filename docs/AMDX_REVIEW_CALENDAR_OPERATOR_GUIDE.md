@@ -2,6 +2,8 @@
 
 This trial checks that Review and Lab maintain one Observed judgment while earlier run assessments remain immutable. It uses a separate synthetic MNQ database with Review dated **2026-10-09**, NYAM **09:15 New York**. The fixture deliberately overrides incomplete TDA; its starting Expected Yearly AMDX is synthetic, not a market assessment.
 
+Operator acceptance, 2026-10-13 (America/Denver): checks 270–274 passed. The operator saved the smoke test locally but had not committed or pushed it; this records the report without importing uninspected notes. The instructions below are retained for repeat trials.
+
 ## Get the trial
 
 Close older demo windows. From your repository, preserve any local smoke-test notes before switching branches:

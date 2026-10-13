@@ -25,3 +25,8 @@ The earlier flat QT entry frame is hidden for bound runs so it cannot create a c
 This slice connects currently permitted native session/day Observed input. The backend also permits the existing original-reference higher target scope. Selecting another higher orientation within the reviewed day still requires the separately specified bounded Review-period proof/selector; it is not enabled here. Capturing a full stack after an intraday assessment is inspection evidence, not permission to edit additional higher periods.
 
 Final rendering, broader historical as-of reconstruction, legacy import, large-history performance, mutable criterion authoring/classifiers and Study-first startup remain separate. Alpha 0.7 is unchanged. `AMDX_REVIEW_CALENDAR_OPERATOR_GUIDE.md` provides five numbered checks in a retained separate synthetic fixture; earlier checks 1–269 remain unchanged.
+
+
+## Operator acceptance
+
+Checks 270–274 are PASS from the explicit 2026-10-13 report. The accepted scope is the five documented functional behaviors, not expanded higher-period entry, legacy import or final rendering. The user reports that the smoke-test file is saved locally but uncommitted/unpushed; its additional contents were not inspected or imported. No further operator trial is required for this documentation-only acceptance.
