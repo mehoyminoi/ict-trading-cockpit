@@ -2033,3 +2033,10 @@ The projection selects only the requested run/channel/branch/cycle and carries o
 The PR #68 follow-up now supplies `AMDXRepository.context` over the existing v41 tables. It reads exact saved legacy maps and an atomic scoped source/pair snapshot, prepares higher targets and records through the existing working/observed actions. Original reference is checked for new observed requests inside the owned write transaction; committed retries preserve their original basis/result. Registry/claim/pair/receipt writes roll back together. Existing intraday behavior and day-only fallback are unchanged.
 
 Connection/process and normal MainWindow reopen retain higher history without adding controls or converting legacy values. The caller still owns process permission and active gesture checks; native higher binding is the next step. Missing original timestamp explicitly makes higher observed capture unavailable. See `AMDX_HIGHER_PERSISTENCE_GUIDE.md`; schema v41 / Alpha 0.7 and all existing smoke results remain unchanged.
+
+
+### Higher Review orientation and spacious Lab direction — 2026-10-13
+
+The v41 higher adapter still loads Observed context from the run's original saved reference. The concrete proposal in `AMDX_HIGHER_REVIEW_PERIOD_CONTRACT.md` separates that preserved source from an explicit higher orientation within the reviewed futures day. Such navigation would read existing scoped heads without recording interpretation or claiming historical information availability. Additional selection and durable proof storage remain unimplemented. The implemented DST correction distinguishes repeated-hour instants and retains exact serialized-offset replay.
+
+The mature Lab should provide spacious full-stack AMDX analysis with nearby quarter detail and versioned definition/evidence context. Watch presents quiet current-state orientation and efficient entry. These are presentations of a shared foundation; the spacious Lab renderer, broader Study-owned historical selection and final geometry remain planned work. Comparisons remain purposeful lower-priority Study/Review exploration, with no Watch route.

@@ -333,3 +333,12 @@ Focused **210 PASS in 8.58s**, **50 new cases** including connection/process and
 
 
 **Previous-reader compatibility:** the actual parent `e27bd31` v41 source, isolated through Git archive, restored newly written higher working/observed claims and their pairing. All seven run/cycle/claim/command/pair table row sets remained unchanged; schema stayed v41. Synthetic evidence was retained in `/tmp/ict-higher-v41-compat-83u8j2pu`. This is a separate compatibility check, not recovered operator history or an additional full suite.
+
+
+## 2026-10-13 — Exact DST instants and explicit higher Review proposal
+
+PR #68 source `9c476df520efec8a7e50a04c015e0de4da78d850 corrects repeated-hour source comparison and domain replay by retaining exact numeric-offset instants. New source validation compares UTC instants; Quarter/Claim/Comparison in-memory timestamps match their serialized representation. Original ISO payload content, policies, schema v41, Alpha 0.7 and all 260 smoke records are preserved. Five new regressions; **313 focused PASS in 13.20s**, then **844 complete PASS across 72 isolated modules in 508.64s**, clean exits with no failures/errors/skips or pytest warnings and collection-matched counts. Python 3.10 grammar only; runtime Python 3.12. All test work finished.
+
+`AMDX_HIGHER_REVIEW_PERIOD_CONTRACT.md` now concretely proposes explicit orientation within the whole reviewed futures day, defaulting to the preserved run-start reference and deduplicating unchanged higher context. Navigation writes no interpretation; another orientation is available independently of expectation history. Eighteen temporal assertions passed against existing mapping. Scope-proof metadata/migration and selection/native bindings remain proposed and unimplemented; current v0 Observed loading remains run-start scoped. Review this semantic contract before implementation. No new smoke trial or merge occurred; main remains `6dd43c8`, #67/#68 unmerged.
+
+The mature Lab is intended to have a spacious full-stack AMDX workspace with nearby detail, prominent versioned definitions and purposeful investigation. Watch keeps quiet current-state orientation/direct entry. Lab presentation, Study-owned historical information basis and final geometry are not implemented by this checkpoint; comparison exploration remains lower priority and excluded from Watch.

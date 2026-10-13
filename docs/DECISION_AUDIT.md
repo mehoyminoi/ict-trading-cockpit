@@ -440,3 +440,10 @@ This supersedes “higher mapping wholly unimplemented” only for the pure occu
 PR #68 supplies the higher entry/restore adapter over v41; earlier “pure-only/no durable higher entry” statements remain historical for #67. Existing action policies, registry content, receipts and retry meaning are reused. New observed entry checks the actual original run timestamp under the owned write lock; a date-only legacy Day cannot supply invented higher provenance. The accepted intraday fallback and native surfaces remain unchanged. Missing/malformed higher reference is explicit availability, not an inferred phase or default Not Applicable answer.
 
 No new schema, legacy conversion, action policy, Watch history/comparison route, renderer acceptance or Alpha 0.7 rule follows. Native binding and Study-owned/as-of selection remain downstream. The focused/full evidence is in state/handoff and the API in `AMDX_HIGHER_PERSISTENCE_GUIDE.md`.
+
+
+## 2026-10-13 — Source instant equality corrected; selection proposal remains pending
+
+Higher saved-source equality now compares actual instants, not repeated local wall labels. Domain timestamps preserve serialized numeric offsets for exact repeated-hour replay. This supersedes the erroneous same-ZoneInfo equality in the earlier PR #68 source, while preserving existing payloads/policies and schema v41. Final corrected source `9c476df520efec8a7e50a04c015e0de4da78d850 passed 313 focused and 844 complete tests across 72 isolated modules; all test work exited.
+
+The next Review-period contract is now written in `AMDX_HIGHER_REVIEW_PERIOD_CONTRACT.md` with 18 verified temporal assertions. Its whole-day additional orientation, separate source proof and navigation-memory recommendations are proposed only. They do not supersede the current implemented v0 run-start scope until accepted and implemented. No additional reference selector, metadata migration, native higher editor or spacious Lab renderer is present. The existing planned spacious Lab/quiet Watch direction remains intact; no Watch comparison/history route is introduced.
