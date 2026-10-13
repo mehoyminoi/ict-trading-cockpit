@@ -879,3 +879,35 @@ Saved reference identity and chronological domain replay retain the actual numer
 Support historical entry across every AMDX layer as far back as needed, with no arbitrary recent-history cutoff or dependence on fabricated trading runs. Accumulated backtest/forward-test data is an early foundation of the process, not a later visual refinement. Independent collections retain instrument identity, definition/evidence references, actual entry time, studied time and declared retrospective/forward basis. MNQ defaults suffice for initial use; preserve storage separation for later instruments without requiring multi-instrument UI now. Existing unknown asset ownership is not guessed.
 
 The initial catalog reuses the pure versioned quartet actions with tagged collection ownership, immutable command/result history and archives. It does not create run-owned claims/pairs or classify backfilled expectations as prospective predictions. Catalog storage requires schema v42 in this branch; main stays v41. Native catalog input, automatic run linkage, imports, analytics and bounded run Review selection remain subsequent integration. See `AMDX_HISTORICAL_CATALOG_GUIDE.md`.
+
+
+## 2026-10-13 — Initial native AMDX Lab catalog entry
+
+**Status:** continuation authorized; source `678e9a0835a442f1de42ec6761bfcd7116fc6bad` implemented in draft PR #70. Operator trial/layout acceptance remains pending.
+
+Use the independent v42 catalog as the owner of manual historical/forward AMDX. The initial Lab widget keeps all seven identified layers visible beside the selected quarter editor, with legal immediate phase choice and direct X(C)/X(R). New MNQ collection creation is explicit; inspection and context navigation record no judgment. Saved definition/capture context stays nearby, while optional provenance drafts and the last inspected collection/reference/quarter/channel recover automatically through per-database atomic QSettings preferences. These preferences are navigation/drafts, not immutable interpretation history; committed capture metadata remains in the catalog archive/database.
+
+Freeze target heads and capture basis through the input gesture. Channel/catalog/time/quarter/metadata/tab changes cancel that gesture. Read, stale and write failures disable input until deliberate Reload; a committed write followed by read failure says the entry was recorded and the refreshed context is unavailable. Repeated New York hours expose first/second occurrence; skipped spring times reject entry. Closed references retain higher inspection and explicitly unavailable intraday rows.
+
+MainWindow exposes AMDX Lab, and the retained standalone 16:9 trial hosts the same widget with exact 1998/1985 presets. It creates no trading run and needs no conclusion/reseed after normal close. Focused 97 PASS; final suite evidence appears in project state/handoff. Four checks 261–264 remain NOT TESTED; earlier 260 records are preserved. Schema v42 / Alpha 0.7 and shared action policies are unchanged. Keep #70 draft pending operator trial review; final renderer, run linkage, bounded run Review selection, bulk imports, statistics and classifiers remain downstream. See `AMDX_CATALOG_LAB_OPERATOR_GUIDE.md`.
+
+
+## 2026-10-13 — Native AMDX Lab focused behavior accepted
+
+The explicit operator report marks checks 261–264 PASS, covering immediate 90-minute input, direct X(R), an independent older yearly occurrence and retained restart context/profiles. Earlier draft/pending-trial statements describe historical checkpoints. PR #70 is now ready for review, without a merge. The local result file was saved but not yet committed/pushed when reported; no unseen notes or local-file inspection is inferred. Source `678e9a0`, completed 97-focused/936-complete developer evidence, schema v42 and Alpha 0.7 are unchanged. This accepts the covered functional behaviors, not the final renderer/topology or broader catalog linkage/analytics. No Watch history/comparison route is adopted.
+
+
+## 2026-10-13 — Master AMDX calendar corrects purpose-collection ownership
+
+The operator clarified that the intended “catalog” is a master AMDX stackup calendar maintained over time, with historical Lab backfill and different views/uses across TDA, Watch and Lab. The developer's separate Backtest/ForwardTest collection interpretation was too narrow. Record one canonical maintained calendar per instrument, initially MNQ; purpose/environment is provenance/filtering, not the primary owner. Views/actions share that calendar while runs retain exact captured context/revision basis and working/observed semantic distinctions remain explicit.
+
+`AMDX_MASTER_CALENDAR_CLARIFICATION.md` defines the corrected architecture, what is reusable and what is not yet implemented. The current v42 ledger/editor are reusable, but TDA/Watch still use run-owned data and there is no canonical instrument/master mapping. A disposable actual v42 check confirmed the same owner exposes one historical yearly backfill at multiple reference points and another purpose collection isolates it. No shared consumer integration is claimed.
+
+Supersede collection-destination-at-launch/run-source-only collection as the primary next implementation in `AMDX_RUN_CATALOG_LINK_CONTRACT.md`. Its immutable source/receipt/archive/asset/availability principles remain valid for transition and run reconstruction. Next is canonical master ownership plus shared read/write/channel and run snapshot-reference contract, before migration/consumer binding. Preserve legacy records/conflicts explicitly; no blind latest merge, deletion or asset guessing.
+
+Runtime/source/tests/tools, schema v42 / Alpha 0.7 and all 264 smoke results remain unchanged. Native 261–264 PASS accepts the covered functional behaviors, not separate purpose catalogs or final rendering. Retain 97-focused/936-complete evidence for source `678e9a0`, without a new full run. No merge or operator action is required for this clarification.
+
+
+## 2026-10-13 — Shared master calendar contract before integration
+
+Operator continuation authorized the next implementation specification in `AMDX_MASTER_CALENDAR_CONTRACT.md`: one canonical instrument owner, explicit working/observed semantics, shared current views and immutable run capture vectors, automatic operational capture, owned atomic writes/retries and preserved legacy/archive basis. Detailed technical choices are developer specifications, not additional operator acceptance. Existing Backtest/ForwardTest metadata and mutable run upsert cannot be repurposed silently as master identity or frozen captures. No runtime/source/schema change or shared consumer implementation is claimed. Disposable existing-v42 ledger checks and four smoke-document checks pass; source `678e9a0` and all 264 smoke results remain unchanged. Next implement canonical binding/shared target foundation, then atomic run capture/native integration.

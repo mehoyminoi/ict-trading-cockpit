@@ -55,6 +55,7 @@ from ict_cockpit.database.context_capture_repository import ContextCaptureReposi
 from ict_cockpit.gui.feedback_dialog import FeedbackDialog
 from ict_cockpit.gui.study_find_review_widget import StudyFindReviewWidget
 from ict_cockpit.gui.study_find_widget import StudyFindWidget
+from ict_cockpit.gui.amdx_catalog_widget import AMDXCatalogWidget
 from ict_cockpit.gui.summary_template_workbench_widget import (
     SummaryTemplateWorkbenchWidget,
 )
@@ -206,6 +207,11 @@ class MainWindow(QMainWindow):
             self.summary_template_workbench_widget,
             "Workbench",
         )
+        self.amdx_catalog_widget = AMDXCatalogWidget(self.trading_session_run_repository.amdx.catalog)
+        self.tabs.addTab(self.amdx_catalog_widget, "AMDX Lab")
+        self.amdx_catalog_widget.set_active(False)
+        self.tabs.currentChanged.connect(lambda _index: self.amdx_catalog_widget.set_active(
+            self.tabs.currentWidget() is self.amdx_catalog_widget))
         self.setCentralWidget(self.tabs)
 
         self.status_bar = QStatusBar()
@@ -304,6 +310,8 @@ class MainWindow(QMainWindow):
 
         if current_widget is self.study_find_widget:
             return tab_name, self.study_find_widget.current_study_find_id
+        if current_widget is self.amdx_catalog_widget:
+            return tab_name, self.amdx_catalog_widget.catalog.id if self.amdx_catalog_widget.catalog else ""
 
         if current_widget is self.trade_summary_widget:
             return tab_name, self.trade_summary_widget.current_trade_id

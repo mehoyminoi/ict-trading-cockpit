@@ -1029,6 +1029,23 @@ Use `AMDX_REVIEW_DATE_OPERATOR_GUIDE.md` and `python tools/amdx_review_date_demo
   - Expected: Observed date 2026-10-09; enter NYAM 90m Q3=M for XAMD; advance clock to Trading Day 2026-10-10 without moving the target/recording; reopen the same run/profile, inspecting NYAM if needed; after concluding, a different-date additional launch says Run not started with the explicit new-day path and no reset/new run.
   - Operator guided report, 2026-10-12 (America/Denver): upper Trading Day advanced to October 10 while Observed AMDX remained October 9; NYAM 90m Q3=M was entered and the profile was XAMD. After window-X close and same-directory reopen, the date remained October 9; selecting NYAM restored XAMD and Q3 entered without another phase choice. After Conclude Trading Run, Start Another Trading Run created no second run and displayed: "Run not started - selected reference belongs to Trading Day 2026-10-13. Complete the current Trading Day, then choose Start New Trading Day". The October 13 request is the live reference after restart, not a change to the saved Review date. The heading-tooltip inspection was not separately reported; no operator hover acceptance is inferred.
 
+## AMDX Lab historical catalog — focused native trial
+
+Use `AMDX_CATALOG_LAB_OPERATOR_GUIDE.md` and `python tools/amdx_catalog_lab_demo.py --data-dir /tmp/ict-amdx-catalog-lab-v1`. The retained 16:9 frame hosts the same native widget as the normal application's AMDX Lab tab. Close/reopen at any point with the same directory; there is no run to conclude. Schema v42 / Alpha 0.7 remain unchanged from the catalog foundation; earlier 260 records retain their identities/results/comments. Operator checks 261–264 are PASS from the explicit 2026-10-13 report: "Smoke test 261-264 passed. Saved locally but not yet committed or pushed". The local file/any additional notes have not been inspected or imported; this checkpoint records the reported result.
+
+- [PASS] 1998 NYAM 90-minute Q3=M records immediately as XAMD without a run or Save action.
+  - Where: Study references → Initial 1998 example · NYAM 90m Q3; right heading 90-minute Q3 / 90m 3 Observed; click M.
+  - Expected: bottom 90-minute row Profile XAMD and Q3 M entered; Recorded or valid unchanged-meaning status on a repeated trial.
+- [PASS] X(R) is available directly in one click at the same 90-minute quartet's Q1.
+  - Where: bottom 90-minute row Q1; right heading 90-minute Q1; click X(R).
+  - Expected: Q1 X(R) entered, XAMD, and retained Q3 M entered; no subtype menu or separate Save.
+- [PASS] The older 1985 Yearly Q3=D entry records a separate higher occurrence as AMDX.
+  - Where: Study references → Older 1985 example · Yearly Q3; date 1985-08-12 09:15; right heading Yearly Q3 / Jul–Sep Observed; click D.
+  - Expected: Yearly Profile AMDX and Q3 D entered, without overwriting the 1998 90-minute interpretation.
+- [PASS] Closing/reopening restores the catalog, historical reference, selected quarter and both independent profiles.
+  - Where: close while 1985 Yearly Q3 is selected; reopen with the same command/directory, then choose the Initial 1998 preset.
+  - Expected: 1985-08-12 / Yearly Q3 / D entered / AMDX restore without entry; 1998 NYAM 90-minute remains XAMD with Q1 X(R) and Q3 M entered. Preset navigation records no phase.
+
 ## Reporting results
 
 
