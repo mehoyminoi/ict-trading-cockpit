@@ -6,7 +6,7 @@ The recommendation is to associate a run with an instrument/catalog once, then m
 
 ## Superseded primary ownership direction — 2026-10-13
 
-The operator clarified that “catalog” means one maintained master AMDX stackup calendar used across Lab, TDA and Watch, rather than separate purpose collections. The collection-destination-at-launch/run-source-only collector proposed above must not be implemented as the primary workflow. `AMDX_MASTER_CALENDAR_CLARIFICATION.md` replaces that next-step direction with a shared instrument/calendar owner and run capture references/snapshots. Original ownership, immutable receipts, explicit assets, unknown availability and archive-preservation principles below remain useful for transition/import/reconstruction. This older proposal introduced no collector or migration.
+The operator clarified that “catalog” means one maintained master AMDX stackup calendar used across Lab, TDA and Watch, rather than separate purpose collections. The collection-destination-at-launch/run-source-only collector proposed above must not be implemented as the primary workflow. `AMDX_MASTER_CALENDAR_CLARIFICATION.md` replaces that next-step direction with a shared instrument/calendar owner and run capture references/snapshots; `AMDX_MASTER_CALENDAR_CONTRACT.md` supplies the current implementation specification and next slice. Original ownership, immutable receipts, explicit assets, unknown availability and archive-preservation principles below remain useful for transition/import/reconstruction. This older proposal introduced no collector or migration.
 
 ## Findings from the current source
 

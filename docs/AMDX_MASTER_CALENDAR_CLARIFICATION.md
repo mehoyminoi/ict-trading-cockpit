@@ -50,4 +50,4 @@ The detailed shared write/snapshot/channel contract comes before changing persis
 
 Checks 261–264 remain PASS for the tested native entry/subtype/historical occurrence/restart behaviors. Those results do not accept separate purpose catalogs as the final architecture or the current controls as the final renderer. No runtime, schema, action policy or data was changed by this clarification. Source remains `678e9a0`, schema v42 / Alpha 0.7, with the completed 97-focused/936-complete evidence retained. All 264 smoke records are unchanged.
 
-Next is the shared master owner plus run snapshot/write contract, replacing the earlier collector-first plan. No new smoke trial or terminal action is required for this design correction.
+The shared owner/action/run capture specification is now recorded in `AMDX_MASTER_CALENDAR_CONTRACT.md`, replacing the earlier collector-first plan. Next implement canonical binding and the shared read/target foundation, followed by atomic run capture and native integration. None of that integration is implemented by these documentation checkpoints; no new smoke trial or terminal action is required for them.
