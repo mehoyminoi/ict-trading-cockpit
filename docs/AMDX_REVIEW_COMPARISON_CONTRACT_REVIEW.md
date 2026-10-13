@@ -2,7 +2,9 @@
 
 **Status:** concrete recommendation for operator review, prepared 2026-10-12 after acceptance of working-quartet checks 251–254. Operator clarification on 2026-10-12 confirms that comparison/history belongs in later purposeful Review/Study. Watch shows the current working stack and position, without a visible revision history or comparison of stack changes. The first-versus-latest default remains a proposal; this placement clarification does not select it or authorize observed-entry implementation.
 
-**Verified baseline:** source `84167e9bec21189a6bca08e2206a191665df0caa`, 587 automated PASS, schema v39, Alpha 0.7. PR #61 and stacked PR #62 are ready for review and unmerged. The existing Market Review AMDX panel is read-only. Immutable claims, separate channels and explicitly based criteria evaluations exist; an evaluation basis is not an implemented Review comparison pair.
+**Implementation boundary:** `AMDX_REVIEW_FOUNDATION_GUIDE.md` documents the new pure explicit-pair/archive action. It requires a supplied expected basis or explicit None; it adopts no baseline default and has no app database/UI integration. The proposed Review flow below remains independently reviewable.
+
+**Verified initial application baseline:** source `84167e9bec21189a6bca08e2206a191665df0caa`, 587 automated PASS, schema v39, Alpha 0.7. PR #61 and stacked PR #62 are ready for review and unmerged. The existing Market Review AMDX panel is read-only. Immutable claims, separate channels and explicitly based criteria evaluations exist; an evaluation basis is not an implemented Review comparison pair.
 
 ## 1. Proposed later Review flow
 

@@ -210,3 +210,11 @@ Next is `AMDX_REVIEW_COMPARISON_CONTRACT_REVIEW.md`: containing-cycle observatio
 ## 2026-10-12 — Watch history/comparison boundary
 
 Operator clarified that normal Watch needs the AMDX stack as it is now and current position within it. Do not add prior stack versions or before/after comparisons to support the Review proposal. Preserve automatic immutable revision retention. Later purposeful Review/Study may explore changes associated with identified price-action events or noticed features; context links, samples and aggregation remain unimplemented. The first-versus-latest default remains open. This update changes documents only; source/tests/tools, accepted 254 smoke records, schema v39 and Alpha 0.7 are unchanged.
+
+## 2026-10-12 — Explicit Review pairing foundation
+
+Active follow-up `feature/amdx-review-pairing-v0` starts at accepted quartet checkpoint `eb822bc`. `analysis/amdx_review.py` adds a pure, frozen Review history with explicit expected/observed claim references, nullable expected basis, same run/branch/quartet checks, preserved comparison predecessors, exact retries and stale-head rejection. Its self-contained archive replays retained v1/v2 source claims. Order relation and X subtype are descriptive and separate.
+
+`tools/amdx_review_demo.py` is a read-only synthetic CLI example, not a normal-window trial or required new smoke test. `AMDX_REVIEW_FOUNDATION_GUIDE.md` explains what exists and what does not: app database persistence/concurrency and observation-plus-pair transactions are next; UI/defaults/event aggregation remain downstream. Watch, schema v39, Alpha 0.7 and all accepted smoke records are unchanged. The broader architecture frontier remains Milestone E.
+
+**Final verification:** source `7a31f7194c3053a7254a6a58f2edc3fc631eb570`, draft PR #63 stacked on PR #62. **625 passed in 814.37s**, clean exit/no warnings; focused group **98 passed in 0.42s**, including 38 new tests. Python 3.12.14 / PySide6 6.8.3 / pytest 9.1.1, offscreen; Python 3.10 syntax only. Synthetic CLI and Markdown/diff checks pass. All 254 smoke records are byte-identical to `eb822bc`. Full test process exited 0 and no background test work remains. Next is repository integration, not adding history to Watch or adopting an unreviewed baseline default.

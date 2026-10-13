@@ -347,3 +347,16 @@ This entry supersedes earlier pending-check wording for the follow-up. The origi
 | Retain revisions | Continue automatic immutable retention for purposeful later Review/Study. | PRESERVED storage/provenance requirement |
 | Later event/change insights | Investigate associations with recorded price-action events or noticed features when samples/context support them. | FUTURE research direction / no aggregation implemented |
 | First-versus-latest default | Clarification selects where history belongs, not the specific Review pairing default. | OPEN / not inferred acceptance |
+
+## 2026-10-12 — Explicit Review pairing foundation boundary
+
+| Topic | New implementation | Status |
+| --- | --- | --- |
+| Identified Expected/Observed cycle basis | Supplied claim IDs or explicit missing expected basis; same run/branch/quartet and proper channels validated. | IMPLEMENTED pure domain |
+| Alternate comparison | Immutable comparison revision and retained predecessor; observations/old pairings unchanged. | IMPLEMENTED pure action |
+| Replay | Self-contained archive retains original claim policies and validates comparison ownership, chronology and chain. | IMPLEMENTED archive / app database integration NEXT |
+| First/latest default | No automatic selection; placement clarification remains distinct from baseline adoption. | OPEN policy |
+| Watch | Current stack and position; no new history/comparison surface. | PRESERVED |
+| Event-associated insights | Requires recorded context and scoped samples; no aggregation added. | FUTURE research |
+
+See `AMDX_REVIEW_FOUNDATION_GUIDE.md`. No schema/plan change or new manual acceptance result is introduced.
