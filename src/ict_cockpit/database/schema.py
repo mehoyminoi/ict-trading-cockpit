@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 44
+CURRENT_SCHEMA_VERSION = 45
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -140,6 +140,9 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 43:
             _migrate_version_43_to_44(connection)
             version = 44
+        if version == 44:
+            _migrate_version_44_to_45(connection)
+            version = 45
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -1125,3 +1128,35 @@ def _migrate_version_43_to_44(connection: sqlite3.Connection) -> None:
             BEGIN SELECT RAISE(ABORT, 'AMDX run captures are immutable'); END
         """)
     connection.execute("PRAGMA user_version = 44")
+
+
+def _migrate_version_44_to_45(connection: sqlite3.Connection) -> None:
+    if not connection.in_transaction:
+        connection.execute("BEGIN")
+    connection.execute("CREATE UNIQUE INDEX idx_amdx_run_observed_binding ON amdx_run_binding(run_id,catalog_id)")
+    connection.execute("CREATE UNIQUE INDEX idx_amdx_run_observed_catalog ON amdx_catalog_command(id,catalog_id)")
+    connection.execute("""
+        CREATE TABLE amdx_run_observed_command (
+            sequence INTEGER PRIMARY KEY,
+            id TEXT NOT NULL UNIQUE,
+            run_id TEXT NOT NULL,
+            catalog_id TEXT NOT NULL,
+            catalog_command_id TEXT NOT NULL UNIQUE CHECK(catalog_command_id=id),
+            parent_id TEXT,
+            payload_json TEXT NOT NULL,
+            UNIQUE(id,run_id),
+            FOREIGN KEY (run_id,catalog_id) REFERENCES amdx_run_binding(run_id,catalog_id) ON DELETE RESTRICT,
+            FOREIGN KEY (catalog_command_id,catalog_id) REFERENCES amdx_catalog_command(id,catalog_id) ON DELETE RESTRICT,
+            FOREIGN KEY (parent_id,run_id) REFERENCES amdx_run_observed_command(id,run_id) ON DELETE RESTRICT
+        )
+    """)
+    connection.execute("CREATE INDEX idx_amdx_run_observed_scope ON amdx_run_observed_command(run_id,sequence)")
+    for operation in ("UPDATE", "DELETE"):
+        connection.execute(f"""CREATE TRIGGER amdx_run_observed_no_{operation.lower()}
+            BEFORE {operation} ON amdx_run_observed_command
+            BEGIN SELECT RAISE(ABORT, 'AMDX run assessments are immutable'); END""")
+    connection.execute("""CREATE TRIGGER amdx_run_observed_no_replace
+        BEFORE INSERT ON amdx_run_observed_command
+        WHEN EXISTS (SELECT 1 FROM amdx_run_observed_command WHERE id=NEW.id OR sequence=NEW.sequence)
+        BEGIN SELECT RAISE(ABORT, 'AMDX run assessments are immutable'); END""")
+    connection.execute("PRAGMA user_version = 45")

@@ -45,6 +45,7 @@ class PostMarketReviewWidget(QWidget):
 
     def __init__(self, blueprint: ProcessBlueprint) -> None:
         super().__init__()
+        self.shared_amdx = False
         self._loading = False
         self._expected_qt_context: dict[str, str] = {}
         self._station_names = {
@@ -388,7 +389,7 @@ class PostMarketReviewWidget(QWidget):
             raw_stack = raw_quarter_stack_summary(
                 trading_run.market_time_context
             )
-            if (
+            if not self.shared_amdx and (
                 qt_summary != "No QT / AMDX interpretation recorded"
                 or raw_stack != "Not available"
             ):

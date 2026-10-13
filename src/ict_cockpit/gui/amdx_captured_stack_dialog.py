@@ -8,7 +8,8 @@ from ict_cockpit.gui.amdx_catalog_widget import AMDXCatalogWidget
 class _CapturedSource:
     def __init__(self, capture, amdx):
         self.capture, self.amdx, self.connection = capture, amdx, amdx.connection
-        self.owner = read_master_archive(capture.packet["master"])[1]
+        master = capture.packet.get("master") or capture.packet["result"]["master"]
+        self.owner = read_master_archive(master)[1]
 
     def list_catalogs(self):
         return (self.owner,)
@@ -29,7 +30,7 @@ class _CapturedPane(AMDXCatalogWidget):
     def refresh(self):
         super().refresh()
         self.status_label.setText("Retained run context · inspection is read-only")
-        self.rule_label.setText("This is the captured working stack. Current calendar corrections do not change it.")
+        self.rule_label.setText("This is the captured stack. Current calendar corrections do not change it.")
 
     def _restore(self):
         self._restore_catalog_id = self.repository.owner.id
@@ -44,13 +45,13 @@ class _CapturedPane(AMDXCatalogWidget):
 class AMDXCapturedStackDialog(QDialog):
     def __init__(self, capture, amdx, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("AMDX · captured working context")
+        self.setWindowTitle("AMDX · captured working context" if capture.projection.channel == "Expected" else "AMDX · captured run assessment")
         self.resize(1344, 756)
         layout = QVBoxLayout(self)
         layout.addWidget(QLabel(f"Captured at {capture.reason.lower()} · reference {capture.projection.reference.isoformat()} · read-only"))
         self.pane = _CapturedPane(_CapturedSource(capture, amdx), reference=capture.projection.reference)
         self.pane.heading.setText("AMDX · retained run context")
-        self.pane.channel_selector.setCurrentText("Expected")
+        self.pane.channel_selector.setCurrentText(capture.projection.channel)
         self.pane.set_active(False)
         for control in (self.pane.catalog_selector, self.pane.new_button, self.pane.details_button):
             control.hide()

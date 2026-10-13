@@ -19,6 +19,9 @@ class AMDXSharedContextWidget(AMDXContextWidget):
         self.binding = None
         self.shared_projection = None
         self.launch_capture = None
+        self.observed_capture = None
+        self._observed_prepared = None
+        self._review_initial_reference = None
         self._surface_active = True
         self._shared_needs_reload = False
         self._shared_target_reference = None
@@ -35,8 +38,11 @@ class AMDXSharedContextWidget(AMDXContextWidget):
         self.full_stack_button.clicked.connect(self._open_stack)
         self.reload_button = QPushButton("Reload AMDX")
         self.reload_button.clicked.connect(self._deliberate_reload)
+        self.assessment_button = QPushButton("Captured run assessment")
+        self.assessment_button.clicked.connect(self._open_assessment)
         controls.addWidget(self.full_stack_button)
         controls.addWidget(self.reload_button)
+        controls.addWidget(self.assessment_button)
         controls.addStretch()
         self.layout().addLayout(controls)
 
@@ -60,8 +66,14 @@ class AMDXSharedContextWidget(AMDXContextWidget):
         if self._gesture_target and (mode_id != self._gesture_mode or previous != (run.id if run else None)):
             self._gesture_cancelled = True
         self._loading = True
-        self.binding = self.shared_projection = self.launch_capture = None
+        self.binding = self.shared_projection = self.launch_capture = self.observed_capture = self._observed_prepared = None
+        self._review_initial_reference = None
         try:
+            if mode_id == "post-market" and run and self.repository and self.repository.connection.execute(
+                "SELECT 1 FROM amdx_run_binding WHERE run_id=?", (run.id,)).fetchone():
+                original_binding = self.repository.run_calendar.get_binding(run.id)
+                self._review_initial_reference = self.repository.run_calendar.get_result(
+                    original_binding["launch_operation_id"]).capture.projection.reference
             super().load_context(run, market_context, mode_id, **kwargs)
             if run and self.repository:
                 saved = self.repository.connection.execute("SELECT 1 FROM amdx_run_binding WHERE run_id=?", (run.id,)).fetchone()
@@ -84,6 +96,17 @@ class AMDXSharedContextWidget(AMDXContextWidget):
                             self._shared_target_reference = reference
                     else:
                         self.launch_capture = self.repository.run_calendar.get_result(self.binding["launch_operation_id"]).capture
+                        self.observed_capture = self.repository.run_observed.latest(run.id)
+                        if self.target:
+                            quarter = next(q for q in self.target.cycle.quarters if q.id == self.target.quarter_id)
+                            prepared = self.repository.run_observed.prepare(run.id, reference=quarter.start,
+                                level=self.target.cycle.layer, position=quarter.position)
+                            if prepared.target.target.cycle != self.target.cycle:
+                                raise ValueError("Selected Review occurrence differs from maintained calendar")
+                            self._observed_prepared = prepared
+                            self.history = self.repository.catalog.history(self.binding["catalog_id"])
+                            self.comparisons = ()
+                            self.target = self._edit_target(self.target.cycle, self.target.quarter_id)
             if self._shared_needs_reload:
                 self._read_error = True
                 self.status_label.setText(retained_failure or "Shared context unavailable · use Reload AMDX")
@@ -118,10 +141,24 @@ class AMDXSharedContextWidget(AMDXContextWidget):
         retained_reference = self._shared_target_reference
         retained = self._pinned and previous and 0 <= row < len(self.cycles) and self.cycles[row] == previous.cycle
         super().select_quarter(row, column)
-        if self.binding and self.channel == "Expected":
-            if retained:
+        if self.binding:
+            if retained and self.channel == "Expected":
                 self._shared_target_reference = retained_reference
             self._reload_context()
+
+    def _select_review_session(self, index):
+        super()._select_review_session(index)
+        if self.binding and self.channel == "Observed" and not self._gesture_target:
+            self._reload_context()
+
+    def _load_review_cycles(self, initialize):
+        reference = self.reference
+        if initialize and self._review_initial_reference is not None:
+            self.reference = self._review_initial_reference
+        try:
+            super()._load_review_cycles(initialize)
+        finally:
+            self.reference = reference
 
     def _begin_gesture(self):
         super()._begin_gesture()
@@ -135,6 +172,8 @@ class AMDXSharedContextWidget(AMDXContextWidget):
                 self._gesture_cancelled = self._shared_needs_reload = self._read_error = True
                 self.status_label.setText(f"Entry unavailable · {error} · use Reload AMDX")
                 self._render()
+        elif self.binding and self.channel == "Observed":
+            self._gesture_scope = self._observed_prepared
 
     def _end_gesture(self, generation):
         if generation == self._gesture_generation:
@@ -144,7 +183,9 @@ class AMDXSharedContextWidget(AMDXContextWidget):
     def choose(self, role, subtype=None, *, clear_applicability=False):
         if self.binding and (not self._surface_active or self._gesture_cancelled):
             return
-        if not self.binding or self.channel != "Expected":
+        if self.binding and self.channel == "Observed":
+            return self._choose_observed(role, subtype, clear_applicability=clear_applicability)
+        if not self.binding:
             return super().choose(role, subtype, clear_applicability=clear_applicability)
         target = self._gesture_target or self.target
         scope = self._gesture_scope
@@ -175,6 +216,40 @@ class AMDXSharedContextWidget(AMDXContextWidget):
             self.status_label.setText(("Entry recorded; refresh unavailable" if committed else "Not recorded") + f" · {error} · use Reload AMDX")
             self._render()
 
+    def _choose_observed(self, role, subtype, *, clear_applicability):
+        target = self._gesture_target or self.target
+        prepared = self._gesture_scope or self._observed_prepared
+        self._gesture_target = self._gesture_reference = self._gesture_scope = None
+        self._gesture_clear_applicability = None
+        if (self._read_error or not target or not prepared or self.mode_id != "post-market"
+                or target.run_id != self.run.id or target.channel != "Observed"
+                or target.cycle != prepared.target.target.cycle or target.quarter_id != prepared.target.target.quarter_id):
+            return
+        committed = False
+        try:
+            result = self.repository.run_observed.revise(prepared, operation_id=str(uuid4()),
+                recorded_at=datetime.now().astimezone(), role=role, anchor_id=str(uuid4()) if role is not None else None,
+                source_ref="Technician / maintained Observed Review" if role is not None else "", subtype=subtype,
+                clear_applicability=clear_applicability)
+            committed = True
+            self._reload_context()
+            if self._read_error:
+                self.status_label.setText("Assessment recorded; refresh unavailable · use Reload AMDX")
+                return
+            self.status_label.setText("Recorded in maintained Observed calendar · run assessment captured"
+                if result.changed else "Already current · run assessment captured")
+            row = next(r for r in result.projection.cycles if r.context.cycle.id == target.cycle.id)
+            self.recorded.emit(row.claim)
+        except (ValueError, TypeError, KeyError, sqlite3.Error, RuntimeError) as error:
+            self._shared_needs_reload = self._read_error = True
+            self.status_label.setText(("Assessment recorded; refresh unavailable" if committed else "Not recorded")
+                + f" · {error} · use Reload AMDX")
+            self._render()
+
+    def _open_assessment(self):
+        if self.observed_capture and not self._read_error:
+            self.open_stack.emit(dict(capture=self.observed_capture, instrument=self.binding["instrument"], run_id=self.run.id))
+
     def _open_stack(self):
         if not self.binding or self._read_error:
             return
@@ -186,9 +261,14 @@ class AMDXSharedContextWidget(AMDXContextWidget):
         if self._loading or not hasattr(self, "captured_label"):
             return
         self.captured_label.hide()
+        self.assessment_button.setVisible(self.channel == "Observed" and self.observed_capture is not None)
+        self.assessment_button.setEnabled(not self._read_error)
         self.full_stack_button.setVisible(self.binding is not None)
         self.reload_button.setVisible(self.binding is not None or self._shared_needs_reload)
         self.full_stack_button.setEnabled(not self._read_error)
+        if self.binding and self.channel == "Observed":
+            self.target_label.setText(self.target_label.text().replace("Observed AMDX", "Maintained Observed AMDX"))
+            self.target_label.setToolTip("Current maintained Observed judgment for this run's reviewed day. Entering a phase captures its exact revision for this run; earlier assessments stay immutable.")
         projection = self.launch_capture.projection if self.launch_capture else self.shared_projection
         if projection:
             parts = []
