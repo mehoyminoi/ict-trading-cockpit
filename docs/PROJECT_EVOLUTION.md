@@ -517,3 +517,10 @@ Operator acceptance of bounded higher Review completes checks 261–280 across t
 ## 2026-10-13 — Consolidated AMDX foundation becomes main
 
 After explicit approval of the reviewed nine-PR merge sequence, #67–75 were merged into main in order with merge commits and exact-tree verification. The final code merge `8b7f8ae` is identical to reviewed checkpoint `15e64af`; 1,136-test validation and operator checks 261–280 remain applicable. Main advances from v41 to v46 without a Trade Plan revision change. The maintained historical/operational calendar, immutable run provenance and bounded Observed Review are now the stable foundation for the next whole-cockpit UX/Study implementation plan. Regular-app database backup/sync is documented separately; no user database was opened by the agent and no final renderer/criteria/import work is implied by the merge.
+
+
+## 2026-10-13 — Whole-cockpit UX/Study implementation plan
+
+After AMDX PRs #67–75 merged, the next authorized work is a comprehensive UX/Study plan rather than more speculative storage. `COCKPIT_UX_IMPLEMENTATION_PLAN.md` maps current capabilities to a primary 16:9 shell, Study doorway, nearby overview/detail, quiet Watch and spacious AMDX Lab. It proposes UX1 safe Study routing, UX2 integrated Study task, UX3 operational renderers and UX4 criteria authoring. Startup active-run handling, ranking, navigation and layout remain explicit proposals. A synthetic interactive walkthrough supports meaningful whole-tool review without changing native behavior or recorded acceptance.
+
+The storyboard's old smaller companion-window target and current-state sections describing unfinished PR #72 integration are reconciled to the accepted override and merged v46 baseline. Historical checkpoint entries remain preserved. Production source/tests/tools, Alpha 0.7, schema and all 280 smoke records are unchanged; no new full-suite result or operator layout acceptance is inferred.

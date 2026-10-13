@@ -4,6 +4,8 @@ Use this file to make chat, branch, and developer handoffs deterministic and to 
 
 Current frontier: AMDX PRs #67–75 are merged into main with their exact reviewed trees, schema v46 / Alpha 0.7. Final code merge `8b7f8ae0e8e6da76bed266f771fce75d4bfaaefb`; 1,136 PASS across 89 isolated modules and all 20 operator checks 261–280 PASS. The functional maintained AMDX foundation is integrated and accepted. Next is the comprehensive whole-cockpit UX/Study implementation plan, with usable criteria authoring/evaluation and controlled legacy/history imports kept explicit. `AMDX_MAIN_SYNC_GUIDE.md` provides user sync and a consistent SQLite backup before regular-app launch; local notes/stashes remain untouched. Read the latest `PROJECT_STATE.md` for the exact main handoff. Earlier unmerged/draft statements below are historical checkpoints.
 
+Current planning deliverable: `COCKPIT_UX_IMPLEMENTATION_PLAN.md`, with a synthetic interactive workspace walkthrough. It separates implemented substrate, accepted requirements and proposed startup/layout/slice choices. This is a docs-only proposal; no native UI, schema, plan or smoke results changed. The next native slice proposed for review is UX1, Study doorway and safe staging/routing.
+
 ## Canonical handoff package
 
 A new development chat should read these documents in this order:

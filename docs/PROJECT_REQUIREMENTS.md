@@ -4,6 +4,8 @@
 **Reconciled:** 2026-10-08  
 **Role:** Canonical current product requirements and milestone roadmap.
 
+**Implementation-status clarification (2026-10-13):** Milestones A–C and the shared AMDX foundation/native consumers are implemented and merged on main, schema v46 / Alpha 0.7. Earlier descriptions of the “current frontier” and the reconciliation queue below are historical rationale, not an instruction to rebuild completed work. The active product frontier is review of the proposed [whole-cockpit UX/Study implementation plan](COCKPIT_UX_IMPLEMENTATION_PLAN.md). Its shell/startup/ranking choices are proposals; accepted 16:9, quiet Watch, shared calendar and nearby overview/detail requirements remain authoritative.
+
 Companion documents:
 
 - `docs/PROJECT_STATE.md` — exact current implementation checkpoint,
@@ -1134,9 +1136,9 @@ Cross-device Live safety requires one authoritative central service/database sta
 
 ---
 
-## 22. Near-term sequence after reconciliation
+## 22. Original reconciliation sequence — completed historical queue
 
-Subject to final operator confirmation:
+This queue records the 2026-10-08 sequence; its A–C work is now complete. Use `PROJECT_STATE.md` and `COCKPIT_UX_IMPLEMENTATION_PLAN.md` for current work.
 
 1. Merge this reconciliation/handoff documentation checkpoint.
 2. Start **Milestone A — Competency evidence loop** with a small design/inventory slice.
