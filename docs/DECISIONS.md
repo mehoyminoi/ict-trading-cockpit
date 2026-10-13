@@ -843,3 +843,12 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 Review's date resolves from the particular run's preserved starting market reference, not its latest advancing clock or an unchecked container label. Older runs lacking that reference may use an explicit saved-Day fallback; malformed original references or absence of both sources disable recording. A valid run reference can restore an older misgrouped run without rewriting container labels or claims, and its differing provenance is explained in the heading hover. In-flight older-date targets cannot record after provenance changes.
 
 The existing one-futures-day container boundary is enforced at additional-run launch before process/TDA reset: a different-date request or undated existing container with prior runs is rejected with the existing complete-day/new-day path. Same-date additional runs remain allowed. This introduces no classifier, comparison default, history panel, new confirmation/save obligation, schema or published-plan change. Final renderer/Study work remains downstream.
+
+
+## 2026-10-12 — Explicit higher occurrences and scoped read projections
+
+**Status:** operator authorized proceeding from the higher-stack review; pure foundation implemented in PR #67. Storage/native bindings remain downstream.
+
+Use the established temporal conventions to identify higher occurrences; calendar-year levels roll at New York midnight, while monthly Monday weeks and weekly days use the futures-day reference. Full quarter bounds, explicit definition revision and occurrence-derived parent/prior-Q4 IDs preserve stable meaning across clock/month changes. Friday and fifth-week remain distortion context; pre-first-Monday remains unassigned. These temporal facts do not infer AMDX phase, applicability, probability or permission.
+
+A shared read projection retains identified current heads for the requested run/channel/branch/cycle. Legacy flat values and calendar-month PO3 context do not become fabricated quartet anchors. Original day/session identities remain unchanged. Missing interpretations remain unresolved, and unsupported parent relationships remain explicit. Historical Review and future Study must deliberately provide the proper recorded reference/history basis rather than adopting the wall clock or a newer live head. No automatic classification, storage migration, published-plan change, renderer acceptance or new operator test follows from this foundation.

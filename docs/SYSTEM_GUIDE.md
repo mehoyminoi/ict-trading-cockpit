@@ -2019,3 +2019,10 @@ When this guide becomes inconsistent with canonical requirements/decisions, fix 
 The durable working/observed quartet engine and native one-entry surfaces are merged through PRs #61–66, including preserved run-date Review and pre-reset different-date launch rejection. Main is schema v41 / Alpha 0.7. Quiet current-stack orientation and entered/implied meaning are shared across TDA/Watch/Review; Watch has no AMDX history/comparison option or launch route.
 
 Higher temporal quarter facts already exist, while higher interpretation remains legacy/derived flat context. `AMDX_HIGHER_STACK_CONTRACT_REVIEW.md` proposes identified higher occurrences and a shared read projection for context-specific renderers. It distinguishes a containing quartet from its inspected child, keeps parent/child interpretations independent and preserves ambiguous temporal relationships. This is architecture review only; no higher-cycle migration, Study renderer, classifier or final 16:9 layout is implemented by the merge checkpoint.
+
+
+## Higher-cycle identity and shared projection foundation
+
+PR #67 adds a pure higher-cycle resolver and shared read projection. Identified higher quartets coexist with unchanged day/session quartets; separate factual position/state and retained AMDX claims preserve unresolved input and entered/implied meaning. Parent/prior-Q4 links identify relationships without inheriting interpretation. Calendar levels and futures-day monthly/weekly positions retain their different rollover conventions.
+
+The projection selects only the requested run/channel/branch/cycle and carries original immutable provenance. Legacy flat values stay separate; no default or conversion creates historical anchors. This layer is ready to inform subsequent durable entry and context-specific rendering, but those bindings are not implemented here. The caller supplies the explicit reference/history basis; it is not a wall-clock or as-of replay service. See `AMDX_HIGHER_CONTEXT_GUIDE.md` for concrete boundaries and the API. Schema v41 / Alpha 0.7 and existing native controls remain unchanged.

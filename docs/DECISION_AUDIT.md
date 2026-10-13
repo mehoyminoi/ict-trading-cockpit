@@ -426,3 +426,10 @@ The operator explicitly authorized merge and continuation. All six PRs were fres
 Final merge tree exactly equals `c851e9a`; source/tests/tools byte-match tested correction `e12a2d4c4d4767f32dd13c3ea795ffab18531f78`. Retain focused 77 PASS and complete 744 PASS across 70 isolated module processes; these are completed prior runs, not new merge-checkpoint executions. Smoke identities/statuses/comments, v41 and Alpha 0.7 are unchanged. Check 260 operator reports and its unreported-tooltip limitation remain authoritative.
 
 Milestone E remains current. `AMDX_HIGHER_STACK_CONTRACT_REVIEW.md` inventories existing raw higher positions versus legacy flat interpretation, proposes shared cycle/projection ownership and makes boundary examples explicit before persistence or renderer changes. This is the next architecture proposal, not a new accepted trading rule or implementation. Final 16:9 presentation, comparison exploration, classifiers and Study-first startup remain downstream. No new smoke trial is required for this documentation checkpoint.
+
+
+## 2026-10-12 — Higher temporal facts gain a pure identity/projection adapter
+
+The higher-stack proposal now has a pure resolver/projection implementation in PR #67. Existing raw quarter facts retain their calendar-versus-futures conventions. Legacy `quarter` versus raw `year`, and calendar-month PO3 versus a monthly four-week quartet, remain separate meanings. Full week bounds and static occurrence-derived parent identity avoid silently changing a crossing week's provenance. Friday/fifth-week/pre-first-Monday do not become Q5 anchors or automatic Not Applicable judgments. Existing intraday cycle payloads and all smoke results remain unchanged.
+
+This supersedes “higher mapping wholly unimplemented” only for the pure occurrence/read layer. Durable higher entry, native overview/editor binding, historical as-of querying and Study-owned selection are not implemented by it. No comparison-priority, final-layout, classifier, schema or Alpha 0.7 decision changes. The implementation and boundary cases are in `AMDX_HIGHER_CONTEXT_GUIDE.md`; completed validation/readiness is recorded in project state/handoff.
