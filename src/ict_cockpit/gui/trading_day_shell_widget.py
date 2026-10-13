@@ -1,4 +1,6 @@
 from datetime import datetime
+import sqlite3
+from uuid import uuid4
 
 from PySide6.QtCore import QTimer, Qt, Signal
 from PySide6.QtWidgets import (
@@ -23,6 +25,7 @@ from ict_cockpit.analysis.market_time import (
     current_new_york_time,
 )
 from ict_cockpit.analysis.quarter_theory import apply_time_derived_qt_context
+from ict_cockpit.analysis.amdx import payload, timestamp
 from ict_cockpit.analysis.trading_day import TradingDay, TradingDayLifecycleStatus
 from ict_cockpit.analysis.trading_day_session import TradingDaySession, TradingDayStatus
 from ict_cockpit.context_rules import ContextRuleDefinition, normalize_context_rules
@@ -67,6 +70,9 @@ class TradingDayShellWidget(QWidget):
         self.trade_plan_revision = trade_plan_revision.strip()
         self.market_context_event_provider = market_context_event_provider
         self.run_market_timestamp: datetime | None = None
+        self.calendar_repository = None
+        self.calendar_launch_context = None
+        self.instrument = "MNQ"
         self.run_study_context: dict = {}
         self.trading_day = TradingDay()
         self.trading_runs: list[TradingRun] = []
@@ -348,6 +354,13 @@ class TradingDayShellWidget(QWidget):
                 "Complete the current Trading Day, then choose Start New Trading Day."
             )
             return False
+        if self.calendar_repository is not None:
+            try:
+                self.calendar_repository.master.ensure(self.instrument, recorded_at=datetime.now().astimezone())
+            except (ValueError, TypeError, sqlite3.Error, RuntimeError) as error:
+                self.summary_label.setText(f"Run not started · {error}. Choose maintained data in AMDX Lab, then retry Start Trading Run.")
+                self.start_run_button.show()
+                return False
         self.runtime.start_new()
         if not self.trading_day.futures_day_label:
             self.trading_day.futures_day_label = str(
@@ -384,6 +397,18 @@ class TradingDayShellWidget(QWidget):
         )
         if self.playbooks:
             run.ensure_day_specific_candidate()
+        if self.calendar_repository is not None:
+            try:
+                if self.calendar_launch_context:
+                    self.calendar_launch_context()
+                prepared = self.calendar_repository.run_calendar.prepare_launch(run, instrument=self.instrument,
+                    reference=timestamp(market_time_context["captured_at"]))
+                self.calendar_repository.run_calendar.launch(prepared, operation_id=str(uuid4()),
+                    capture_id=str(uuid4()), recorded_at=datetime.now().astimezone())
+            except (ValueError, TypeError, KeyError, sqlite3.Error, RuntimeError) as error:
+                self.summary_label.setText(f"Run not started · {error}. Reload the shared context before retrying.")
+                self.start_run_button.show()
+                return False
         self.trading_day.activate_session_run(run)
         self.trading_runs.append(run)
         self.active_trading_run = run
@@ -436,7 +461,8 @@ class TradingDayShellWidget(QWidget):
             context = self._current_market_time_context()
             run.market_time_context = dict(context)
             run.add_observation(note, market_time_context=context)
-            self._save_and_reload(run)
+            if not self._save_and_reload(run):
+                self.runtime.live_watch_widget.observation_input.setText(note)
 
     def _record_live_thesis_state(self, state: str, note: str) -> None:
         run = self.active_trading_run
@@ -448,7 +474,8 @@ class TradingDayShellWidget(QWidget):
                 note,
                 market_time_context=context,
             )
-            self._save_and_reload(run)
+            if not self._save_and_reload(run):
+                self.runtime.live_watch_widget.thesis_note_input.setText(note)
 
     def _set_authorization_gate(self, gate_id: str, state: str) -> None:
         run = self.active_trading_run
@@ -498,10 +525,34 @@ class TradingDayShellWidget(QWidget):
             run.set_watch_point_state(watch_point_id, state)
         self._save_and_reload(run)
 
-    def _save_and_reload(self, run: TradingRun) -> None:
+    def _save_and_reload(self, run: TradingRun) -> bool:
+        pane = self.runtime.amdx_context_widget
+        if (self.calendar_repository is not None and (pane.binding is not None or pane._shared_needs_reload)
+                and run.status is TradingRunStatus.ACTIVE and self.runtime.current_mode.id in ("tda", "live-watch")):
+            try:
+                if pane.binding is None or pane._read_error or pane._shared_needs_reload or pane.shared_projection is None:
+                    raise ValueError("Reload AMDX before recording this action")
+                prepared = self.calendar_repository.run_calendar.prepare_capture(run.id, reference=pane.shared_projection.reference)
+                if payload(prepared.snapshot.projection) != payload(pane.shared_projection):
+                    raise ValueError("Displayed AMDX changed; reload and repeat the action")
+                self.calendar_repository.run_calendar.consume(prepared, run,
+                    operation_id=str(uuid4()), capture_id=str(uuid4()), recorded_at=datetime.now().astimezone())
+            except (ValueError, TypeError, KeyError, sqlite3.Error, RuntimeError) as error:
+                from ict_cockpit.database.trading_session_run_repository import TradingSessionRunRepository
+                saved = TradingSessionRunRepository(self.calendar_repository.connection).get_by_id(run.id)
+                if saved is not None:
+                    self.active_trading_run = saved
+                    self.trading_runs[:] = [saved if r.id == run.id else r for r in self.trading_runs]
+                    self._sync_legacy_aliases()
+                    self.runtime.load_trading_run(saved)
+                pane._shared_needs_reload = pane._read_error = True
+                pane.status_label.setText(f"Action not recorded · {error} · use Reload AMDX, then repeat")
+                pane._render()
+                return False
         self.session_run_changed.emit(run)
         self.runtime.load_trading_run(run)
         self._update_view()
+        return True
 
     def _update_interpretation_outcome(self, interpretation_outcome: str) -> None:
         run = self.active_trading_run
@@ -655,10 +706,10 @@ class TradingDayShellWidget(QWidget):
         self._sync_runtime_scroll_policy()
         self.run_history_label.setVisible(not active)
         self.run_history.setVisible(not active)
-        can_start_another = not day_complete and self.active_trading_run is None and bool(self.trading_runs)
+        can_start_another = not day_complete and self.active_trading_run is None and (bool(self.trading_runs) or self.calendar_repository is not None)
         self.start_run_button.setVisible(can_start_another)
         self.start_run_button.setEnabled(can_start_another)
-        self.start_run_button.setText("Start Another Trading Run")
+        self.start_run_button.setText("Start Another Trading Run" if self.trading_runs else "Start Trading Run")
         self.complete_day_button.setVisible(not active)
         self.complete_day_button.setEnabled(not day_complete and self.active_trading_run is None)
         self.start_new_day_button.setVisible(day_complete)

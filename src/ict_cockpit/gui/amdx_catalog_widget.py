@@ -5,7 +5,7 @@ from pathlib import Path
 import sqlite3
 from uuid import uuid4
 
-from PySide6.QtCore import QDate, QSettings, QSignalBlocker, QTime, QTimer, Qt
+from PySide6.QtCore import QDate, QSettings, QSignalBlocker, QTime, QTimer, Qt, Signal
 from PySide6.QtWidgets import (
     QAbstractItemView, QComboBox, QDateEdit, QDialog, QDialogButtonBox, QFormLayout,
     QGroupBox, QHeaderView, QHBoxLayout, QLabel, QLineEdit, QMenu, QPushButton,
@@ -39,6 +39,7 @@ def _role_text(role, subtype=None):
 
 
 class AMDXCatalogWidget(QWidget):
+    recorded = Signal(object)
     def __init__(self, repository, *, reference=None, settings=None, clock=None):
         super().__init__()
         self.repository = repository
@@ -60,7 +61,7 @@ class AMDXCatalogWidget(QWidget):
             settings = QSettings(str(Path(db).with_name(Path(db).name + ".amdx-lab.ini")), QSettings.Format.IniFormat) if db else None
         self.settings = settings
 
-        heading = QLabel("AMDX Lab · Historical catalog")
+        heading = self.heading = QLabel("AMDX Lab · Historical catalog")
         heading.setStyleSheet("font-size: 20px; font-weight: 600;")
         self.catalog_selector = QComboBox()
         self.catalog_selector.setMinimumContentsLength(20)
@@ -133,6 +134,7 @@ class AMDXCatalogWidget(QWidget):
         self.bounds_label.setWordWrap(True)
         self.basis_label = QLabel()
         self.basis_label.setWordWrap(True)
+        self.basis_label.setMinimumHeight(52)
         right.addWidget(self.target_label)
         right.addWidget(self.bounds_label)
         right.addWidget(self.basis_label)
@@ -167,6 +169,7 @@ class AMDXCatalogWidget(QWidget):
         more.addWidget(self.more_button)
         right.addLayout(more)
         rule = QLabel("One accepted choice records immediately. The other quarters show implied context; navigation records nothing.")
+        self.rule_label = rule
         rule.setWordWrap(True)
         right.addWidget(rule)
         self.definition_label = QLabel()
@@ -295,7 +298,7 @@ class AMDXCatalogWidget(QWidget):
         value = self._drafts.get(id, {})
         catalog = next((c for c in getattr(self, "catalogs", ()) if c.id == id), None)
         self._rendering = True
-        self.capture_selector.setCurrentIndex(value.get("capture", int(bool(catalog and catalog.purpose == "ForwardTest"))))
+        self.capture_selector.setCurrentIndex(value.get("capture", int(bool(catalog and getattr(catalog, "purpose", "") == "ForwardTest"))))
         self.evidence_input.setText(value.get("evidence", ""))
         self.definition_input.setText(value.get("definition", catalog.definition_ref if catalog else ""))
         self.availability_input.setText(value.get("availability", ""))
@@ -516,7 +519,7 @@ class AMDXCatalogWidget(QWidget):
             meaning = "Unresolved · no active anchor" if origin == "Unresolved" else f"{value} · {origin}"
             self.basis_label.setText(meaning + (f"\nRecorded {row.claim.recorded_at.isoformat()}" if row.claim else ""))
         self.definition_label.setText(
-            f"{self.catalog.purpose} · {self.capture_selector.currentText()}\n"
+            f"{getattr(self.catalog, 'purpose', 'Maintained calendar')} · {self.capture_selector.currentText()}\n"
             f"Definition: {self.definition_input.text().strip() or 'unspecified'}"
             if self.catalog else "")
 
@@ -536,6 +539,7 @@ class AMDXCatalogWidget(QWidget):
                 anchor_id=str(uuid4()) if role is not None else None,
                 source_ref=capture.evidence_ref or "Technician catalog entry" if role is not None else "",
                 subtype=subtype, capture=capture, clear_applicability=clear_applicability)
+            self.recorded.emit(result)
             self.refresh()
             if self._read_error:
                 self.status_label.setText("Entry recorded, but refreshed context is unavailable. Entry is disabled; use Reload to inspect the committed result.")

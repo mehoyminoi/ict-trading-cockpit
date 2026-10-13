@@ -20,7 +20,7 @@ from ict_cockpit.gui.live_watch_widget import LiveWatchWidget
 from ict_cockpit.gui.market_context_widget import MarketContextWidget
 from ict_cockpit.gui.post_market_review_widget import PostMarketReviewWidget
 from ict_cockpit.gui.qt_context_widget import QTContextWidget
-from ict_cockpit.gui.amdx_context_widget import AMDXContextWidget
+from ict_cockpit.gui.amdx_shared_context_widget import AMDXSharedContextWidget
 from ict_cockpit.gui.tda_station_runner_widget import TDAStationRunnerWidget
 from ict_cockpit.gui.tda_watch_point_widget import TDAWatchPointWidget
 from ict_cockpit.process_blueprint import ModeDefinition, ProcessBlueprint
@@ -88,7 +88,7 @@ class TradingDayRuntimeWidget(QWidget):
 
         self.tda_station_runner_widget = TDAStationRunnerWidget(blueprint)
         self.qt_context_widget = QTContextWidget()
-        self.amdx_context_widget = AMDXContextWidget()
+        self.amdx_context_widget = AMDXSharedContextWidget()
         self.market_context_widget = MarketContextWidget()
         self.qt_context_widget.context_changed.connect(self.qt_context_changed.emit)
         self.tda_watch_point_widget = TDAWatchPointWidget(self.playbooks)
@@ -222,7 +222,10 @@ class TradingDayRuntimeWidget(QWidget):
         # the remaining viewport and retains natural vertical scrolling.
         self.mode_stack.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
         runner.view_tabs.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
-        self.qt_context_widget.setVisible(visible)
+        self.qt_context_widget.setVisible(visible and self.amdx_context_widget.binding is None)
+        for label in (self.live_watch_widget.qt_summary_label, self.live_watch_widget.raw_qt_stack_label,
+                      self.live_watch_widget.qt_stack_watch_label):
+            label.setVisible(self.amdx_context_widget.binding is None)
         self.tda_watch_point_widget.setVisible(visible)
         if visible:
             selected_ids = []

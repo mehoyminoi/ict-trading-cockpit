@@ -696,10 +696,10 @@ class LiveWatchWidget(QWidget):
     def _submit_observation(self) -> None:
         note = self.observation_input.text().strip()
         if note:
-            self.observation_submitted.emit(note)
             self.observation_input.clear()
+            self.observation_submitted.emit(note)
 
     def _submit_thesis_state(self, state: ThesisState) -> None:
         note = self.thesis_note_input.text().strip()
-        self.thesis_state_submitted.emit(state.value, note)
         self.thesis_note_input.clear()
+        self.thesis_state_submitted.emit(state.value, note)

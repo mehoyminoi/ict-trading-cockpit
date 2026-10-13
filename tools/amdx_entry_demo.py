@@ -37,6 +37,8 @@ def open_demo(directory, *, review=False, date_case=False):
     connection = open_application_database(directory / "demo.db")
     try:
         window = MainWindow(TDARepository(connection), StudyFindRepository(connection))
+        # This retained trial deliberately exercises legacy instrument-unassigned run history.
+        window.trade_plan_widget.trading_day_shell_widget.calendar_repository = None
         shell = window.trade_plan_widget.trading_day_shell_widget
         if not existing:
             shell.run_environment = RunEnvironment.REPLAY

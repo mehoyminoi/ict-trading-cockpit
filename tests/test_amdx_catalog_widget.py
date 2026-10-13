@@ -308,6 +308,8 @@ def test_main_window_lab_uses_same_storage_and_cancels_entry_on_tab_exit(pane):
     try:
         lab = window.amdx_catalog_widget
         window.tabs.setCurrentWidget(lab)
+        assert lab.adoption_required and lab.target is None
+        lab.adopt_existing(widget.catalog.id)
         assert lab.active and lab.target == widget.target
         window.tabs.setCurrentWidget(window.study_find_widget)
         lab.choose(Role.M)
