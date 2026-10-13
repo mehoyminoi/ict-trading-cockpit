@@ -60,6 +60,42 @@ def test_no_active_quartet_on_closed_weekend_or_naive_reference():
         intraday_cycles(datetime(2026, 10, 8, 9))
 
 
+def test_repeated_hour_quarters_keep_written_offsets_and_distinguish_both_folds():
+    bounds = tuple(datetime(2025, 11, 2, 4 + i, tzinfo=timezone.utc).astimezone(MARKET_TIMEZONE)
+                   for i in range(5))
+    quarters = tuple(Quarter(f"fold:Q{i + 1}", i + 1, str(i + 1), bounds[i], bounds[i + 1])
+                     for i in range(4))
+    cycle = Cycle("fold", "synthetic", quarters)
+    first = datetime(2025, 11, 2, 5, 30, tzinfo=timezone.utc).astimezone(MARKET_TIMEZONE)
+    second = datetime(2025, 11, 2, 6, 30, tzinfo=timezone.utc).astimezone(MARKET_TIMEZONE)
+    assert cycle.quarter_at(first).position == 2
+    assert cycle.quarter_at(second).position == 3
+    assert quarters[1].start.isoformat() == bounds[1].isoformat()
+    assert quarters[1].end.isoformat() == bounds[2].isoformat()
+    # Increasing wall-clock labels can still describe decreasing instants.
+    with pytest.raises(ValueError, match="bounds must increase"):
+        Quarter("backward", 1, "invalid", second,
+                datetime(2025, 11, 2, 5, 45, tzinfo=timezone.utc).astimezone(MARKET_TIMEZONE))
+
+
+@pytest.mark.parametrize("channel", ["Expected", "Observed"])
+def test_repeated_hour_recording_chronology_and_payload_replay_are_instant_based(channel):
+    reference = datetime(2025, 11, 2, 5, 45, tzinfo=timezone.utc).astimezone(MARKET_TIMEZONE)
+    later = datetime(2025, 11, 2, 6, 15, tzinfo=timezone.utc).astimezone(MARKET_TIMEZONE)
+    from ict_cockpit.analysis.amdx_context import resolve_higher_cycles
+    cycle = next(c.cycle for c in resolve_higher_cycles(reference) if c.cycle.layer == "year")
+    history = InterpretationHistory()
+    for index, (recorded, role) in enumerate(((reference, Role.D), (later, Role.M))):
+        method = history.revise_working if channel == "Expected" else history.revise_observed
+        history = method(claim_id=f"fold-claim-{index}", run_id="r", branch_id="working",
+            channel=channel, cycle=cycle, quarter_id=cycle.quarters[2].id,
+            anchor=Anchor(f"fold-anchor-{index}", cycle.quarters[2].id, role, "synthetic"),
+            recorded_at=recorded, market_reference=reference)
+    assert history.claims[0].recorded_at.isoformat() == reference.isoformat()
+    assert history.claims[1].recorded_at.isoformat() == later.isoformat()
+    assert InterpretationHistory.from_payload(history.to_payload()) == history
+
+
 @pytest.mark.parametrize("position,role,expected", [
     (1, Role.A, Profile.AMDX), (2, Role.M, Profile.AMDX),
     (3, Role.D, Profile.AMDX), (4, Role.X, Profile.AMDX),

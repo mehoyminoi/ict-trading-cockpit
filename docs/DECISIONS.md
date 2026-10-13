@@ -852,3 +852,21 @@ The existing one-futures-day container boundary is enforced at additional-run la
 Use the established temporal conventions to identify higher occurrences; calendar-year levels roll at New York midnight, while monthly Monday weeks and weekly days use the futures-day reference. Full quarter bounds, explicit definition revision and occurrence-derived parent/prior-Q4 IDs preserve stable meaning across clock/month changes. Friday and fifth-week remain distortion context; pre-first-Monday remains unassigned. These temporal facts do not infer AMDX phase, applicability, probability or permission.
 
 A shared read projection retains identified current heads for the requested run/channel/branch/cycle. Legacy flat values and calendar-month PO3 context do not become fabricated quartet anchors. Original day/session identities remain unchanged. Missing interpretations remain unresolved, and unsupported parent relationships remain explicit. Historical Review and future Study must deliberately provide the proper recorded reference/history basis rather than adopting the wall clock or a newer live head. No automatic classification, storage migration, published-plan change, renderer acceptance or new operator test follows from this foundation.
+
+
+## 2026-10-12 — Higher entry retains existing transactions and run-owned observation time
+
+**Status:** operator authorized proceeding; backend adapter implemented in PR #68, native binding downstream.
+
+Reuse the existing v41 cycle/claim/working/observed/pair/receipt tables and action policies for higher interpretation. Consistent read snapshots include original reference, scoped history and current optional pairing heads. Freeze selected run/channel/cycle/quarter/reference/heads before input. New higher observed entry resolves an actual preserved run-start timestamp and validates it after obtaining the write transaction; a containing Day alone cannot establish higher calendar/futures identity. This refines higher availability only, leaving the accepted lower legacy-Day fallback unchanged.
+
+Immutable exact retries use original receipts/results even after current reference/resolver changes; new actions validate the current canonical identity and inspected heads. Legacy maps/run records are not converted or rewritten. No migration, separate store, new Save obligation, comparison default, native controls, classifier or published-plan change is introduced. Future UI bindings retain their process permission and active-gesture checks; historical Study basis is separate. See `AMDX_HIGHER_PERSISTENCE_GUIDE.md`.
+
+
+## 2026-10-13 — Exact timestamp identity and pending higher Review selection
+
+**Status:** timestamp correction implemented and developer verified; additional Review selection is proposed, not accepted or implemented.
+
+Saved reference identity and chronological domain replay retain the actual numeric-offset instant through a repeated daylight-saving hour. This corrects the existing provenance contract without changing serialized action meaning or schema. See source `9c476df520efec8a7e50a04c015e0de4da78d850 and final 313-focused/844-complete evidence in project state.
+
+`AMDX_HIGHER_REVIEW_PERIOD_CONTRACT.md` recommends whole reviewed futures-day higher orientation with the original run reference retained, no interpretation writes on navigation and immutable scope proof for additional Observed references. Do not treat its candidate controls or future metadata migration as adopted policy. Spacious full-stack AMDX in Lab remains accepted product direction from the earlier cockpit walkthrough; that presentation and broader Study-owned historical basis remain unimplemented.
