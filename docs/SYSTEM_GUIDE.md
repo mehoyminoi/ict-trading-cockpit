@@ -2026,3 +2026,10 @@ Higher temporal quarter facts already exist, while higher interpretation remains
 PR #67 adds a pure higher-cycle resolver and shared read projection. Identified higher quartets coexist with unchanged day/session quartets; separate factual position/state and retained AMDX claims preserve unresolved input and entered/implied meaning. Parent/prior-Q4 links identify relationships without inheriting interpretation. Calendar levels and futures-day monthly/weekly positions retain their different rollover conventions.
 
 The projection selects only the requested run/channel/branch/cycle and carries original immutable provenance. Legacy flat values stay separate; no default or conversion creates historical anchors. This layer is ready to inform subsequent durable entry and context-specific rendering, but those bindings are not implemented here. The caller supplies the explicit reference/history basis; it is not a wall-clock or as-of replay service. See `AMDX_HIGHER_CONTEXT_GUIDE.md` for concrete boundaries and the API. Schema v41 / Alpha 0.7 and existing native controls remain unchanged.
+
+
+## Durable higher-context adapter
+
+The PR #68 follow-up now supplies `AMDXRepository.context` over the existing v41 tables. It reads exact saved legacy maps and an atomic scoped source/pair snapshot, prepares higher targets and records through the existing working/observed actions. Original reference is checked for new observed requests inside the owned write transaction; committed retries preserve their original basis/result. Registry/claim/pair/receipt writes roll back together. Existing intraday behavior and day-only fallback are unchanged.
+
+Connection/process and normal MainWindow reopen retain higher history without adding controls or converting legacy values. The caller still owns process permission and active gesture checks; native higher binding is the next step. Missing original timestamp explicitly makes higher observed capture unavailable. See `AMDX_HIGHER_PERSISTENCE_GUIDE.md`; schema v41 / Alpha 0.7 and all existing smoke results remain unchanged.

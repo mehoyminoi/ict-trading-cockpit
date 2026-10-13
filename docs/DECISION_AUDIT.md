@@ -433,3 +433,10 @@ Milestone E remains current. `AMDX_HIGHER_STACK_CONTRACT_REVIEW.md` inventories 
 The higher-stack proposal now has a pure resolver/projection implementation in PR #67. Existing raw quarter facts retain their calendar-versus-futures conventions. Legacy `quarter` versus raw `year`, and calendar-month PO3 versus a monthly four-week quartet, remain separate meanings. Full week bounds and static occurrence-derived parent identity avoid silently changing a crossing week's provenance. Friday/fifth-week/pre-first-Monday do not become Q5 anchors or automatic Not Applicable judgments. Existing intraday cycle payloads and all smoke results remain unchanged.
 
 This supersedes “higher mapping wholly unimplemented” only for the pure occurrence/read layer. Durable higher entry, native overview/editor binding, historical as-of querying and Study-owned selection are not implemented by it. No comparison-priority, final-layout, classifier, schema or Alpha 0.7 decision changes. The implementation and boundary cases are in `AMDX_HIGHER_CONTEXT_GUIDE.md`; completed validation/readiness is recorded in project state/handoff.
+
+
+## 2026-10-12 — Higher persistence no longer deferred as a backend capability
+
+PR #68 supplies the higher entry/restore adapter over v41; earlier “pure-only/no durable higher entry” statements remain historical for #67. Existing action policies, registry content, receipts and retry meaning are reused. New observed entry checks the actual original run timestamp under the owned write lock; a date-only legacy Day cannot supply invented higher provenance. The accepted intraday fallback and native surfaces remain unchanged. Missing/malformed higher reference is explicit availability, not an inferred phase or default Not Applicable answer.
+
+No new schema, legacy conversion, action policy, Watch history/comparison route, renderer acceptance or Alpha 0.7 rule follows. Native binding and Study-owned/as-of selection remain downstream. The focused/full evidence is in state/handoff and the API in `AMDX_HIGHER_PERSISTENCE_GUIDE.md`.
