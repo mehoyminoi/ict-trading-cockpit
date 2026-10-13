@@ -2,7 +2,7 @@
 
 Use this file to make chat, branch, and developer handoffs deterministic and to prevent architectural regression when long conversation history is unavailable.
 
-Current consolidation frontier: `AMDX_CONSOLIDATION_REVIEW.md` reviews PRs #67–75 and the direct main-v41 → final-v46 path. All operator checks 261–280 are PASS; merge is still awaiting separate authorization. The functional AMDX foundation is integrated; next product work is the whole-cockpit UX/Study plan, with criteria authoring/evaluation and controlled legacy/history imports preserved as subsequent milestones. Read the latest `PROJECT_STATE.md` checkpoint for exact publication and validation evidence.
+Current frontier: AMDX PRs #67–75 are merged into main with their exact reviewed trees, schema v46 / Alpha 0.7. Final code merge `8b7f8ae0e8e6da76bed266f771fce75d4bfaaefb`; 1,136 PASS across 89 isolated modules and all 20 operator checks 261–280 PASS. The functional maintained AMDX foundation is integrated and accepted. Next is the comprehensive whole-cockpit UX/Study implementation plan, with usable criteria authoring/evaluation and controlled legacy/history imports kept explicit. `AMDX_MAIN_SYNC_GUIDE.md` provides user sync and a consistent SQLite backup before regular-app launch; local notes/stashes remain untouched. Read the latest `PROJECT_STATE.md` for the exact main handoff. Earlier unmerged/draft statements below are historical checkpoints.
 
 ## Canonical handoff package
 

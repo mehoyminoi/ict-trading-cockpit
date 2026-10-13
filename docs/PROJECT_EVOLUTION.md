@@ -512,3 +512,8 @@ After operator acceptance of maintained Observed Review (270–274), the shared 
 ## 2026-10-13 — AMDX consolidation before the next UX frontier
 
 Operator acceptance of bounded higher Review completes checks 261–280 across the historical/shared-native/Observed/higher integration. The consolidation review treats #67–75 as one linear stack, verifies merge order/tree preservation and strengthens direct compatibility with actual main's v41 run/Review data, including late migration rollback. It preserves the earlier purpose-catalog clarification, legacy unknown ownership, immutable operational context and unfinished final renderer/criteria/import scope. This is a stabilization/review checkpoint; merge requires separate authorization before the whole-cockpit UX/Study plan becomes the next active product milestone. See `AMDX_CONSOLIDATION_REVIEW.md`.
+
+
+## 2026-10-13 — Consolidated AMDX foundation becomes main
+
+After explicit approval of the reviewed nine-PR merge sequence, #67–75 were merged into main in order with merge commits and exact-tree verification. The final code merge `8b7f8ae` is identical to reviewed checkpoint `15e64af`; 1,136-test validation and operator checks 261–280 remain applicable. Main advances from v41 to v46 without a Trade Plan revision change. The maintained historical/operational calendar, immutable run provenance and bounded Observed Review are now the stable foundation for the next whole-cockpit UX/Study implementation plan. Regular-app database backup/sync is documented separately; no user database was opened by the agent and no final renderer/criteria/import work is implied by the merge.

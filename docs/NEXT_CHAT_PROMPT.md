@@ -48,7 +48,7 @@ If the repository documents themselves contain an unresolved contradiction, repo
 
 ## Step 3 — Verify the checkpoint before coding
 
-Latest frontier: `feature/amdx-higher-review-v1` implements bounded higher Observed Review on top of #74 acceptance `9d6ab3e`. Schema v46, Alpha 0.7, main `6dd43c8` (v41). Read the latest `PROJECT_STATE.md` checkpoint for publication/test evidence. Checks 270–280 are operator PASS; PR #75 is ready for review after the acceptance checkpoint. The stable consolidation review is recorded in `AMDX_CONSOLIDATION_REVIEW.md`; next is separately authorized merge of #67–75 in order, then full-cockpit/Study/criteria/import work. Keep the user's local smoke notes and earlier saved stashes intact. Do not infer merge authorization from a continuation or functional PASS.
+Latest frontier: AMDX PRs #67–75 are merged into `main`, schema v46 / Alpha 0.7. Final code merge `8b7f8ae0e8e6da76bed266f771fce75d4bfaaefb` has the exact reviewed consolidation tree from `15e64af8d51f946696e9927b5ce731857bdc8602`. Complete validation: 1,136 PASS / 89 isolated modules / 450.24s; all 20 operator checks 261–280 PASS. Read the latest `PROJECT_STATE.md` and `AMDX_CONSOLIDATION_REVIEW.md`. User sync/database backup is documented in `AMDX_MAIN_SYNC_GUIDE.md`; preserve local smoke notes and earlier stashes. The next active product milestone is the comprehensive whole-cockpit UX/Study implementation plan, keeping final rendering, criteria authoring/evaluation and controlled legacy/history import scope explicit. Do not resume the historical unmerged-stack/merge-approval task or infer new feature approval beyond the current milestone.
 
 Report back to me with:
 

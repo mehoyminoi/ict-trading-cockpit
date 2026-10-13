@@ -1,6 +1,6 @@
 # AMDX consolidation review
 
-Review date: **2026-10-13 (America/Denver)**. This checkpoint reviews the nine stacked AMDX PRs as one integration. It does not merge them or open the operator's regular database. The complete final regression passed; the integration is ready for the separately authorized merge.
+Review date: **2026-10-13 (America/Denver)**. This checkpoint reviews the nine stacked AMDX PRs as one integration. **The operator subsequently approved the ordered merge, and all nine PRs are now merged into main.** Actual merge results are recorded below; the earlier review/procedure remains historical evidence. The operator's regular database was not opened.
 
 ## Baseline and reviewed sequence
 
@@ -18,7 +18,7 @@ Main remains **`6dd43c845940874000f46371965441dec262e77a`**, schema **v41**, Tra
 | 8 | [#74](https://github.com/mehoyminoi/ict-trading-cockpit/pull/74) | `9d6ab3e` | v45 | Maintained Observed Review and immutable assessments |
 | 9 | [#75](https://github.com/mehoyminoi/ict-trading-cockpit/pull/75) | `53bcf6b` plus this consolidation checkpoint | v46 | Bounded higher Review, retained scope proof and final compatibility evidence |
 
-All nine are open, ready for review, and GitHub reports clean mergeability. Each head contains the preceding reviewed head; #67 contains current main. Local simulation of **nine two-parent merge commits** produces the exact reviewed tree at each stage, without moving branches or the index. No unrelated main changes need reconciliation. There are no GitHub commit statuses or check runs attached to the entry tip; the aggregate status says pending because its count is zero. Validation comes from the recorded developer suite and operator trials, not an unobserved GitHub CI run.
+At review time, all nine were open, ready for review, and GitHub reported clean mergeability. Each head contains the preceding reviewed head; #67 contains current main. Local simulation of **nine two-parent merge commits** produces the exact reviewed tree at each stage, without moving branches or the index. No unrelated main changes need reconciliation. There are no GitHub commit statuses or check runs attached to the entry tip; the aggregate status says pending because its count is zero. Validation comes from the recorded developer suite and operator trials, not an unobserved GitHub CI run.
 
 The earlier independent Backtest/ForwardTest catalog interpretation in #69–70 was refined by #71–73. The final normal cockpit uses one maintained calendar per instrument. Purpose/environment remains provenance; it is not a recurring destination chooser. Old collections and unknown legacy ownership remain preserved instead of being silently combined.
 
@@ -55,4 +55,25 @@ Existing unbound run-owned data remains available through its legacy path. It is
 4. Verify every intermediate main tree matches the corresponding reviewed feature tree. At the end verify main matches the final #75 checkpoint tree, the nine PRs are merged, and production source has not drifted. No squash/rebase rewrite is needed for this linear stack.
 5. Publish a main handoff checkpoint and provide exact user-side sync commands. Before opening the regular application on v46, preserve local smoke notes/stashes and take a consistent SQLite backup of the regular v41 database, including committed WAL content. An old application requires an unmigrated database copy; switching Git branches does not downgrade SQLite. The user's regular database has not been migrated by this review.
 
-Merge authorization is still outstanding. The next product milestone after consolidation is a comprehensive whole-cockpit UX/Study implementation plan using the accepted 16:9 primary frame, quiet Watch, analytical TDA and spacious Lab requirements, rather than another speculative AMDX storage layer. Keep comparison exploration lower priority in Study/Review.
+The separate merge authorization was supplied and the procedure completed; see the actual result below. The next product milestone after consolidation is a comprehensive whole-cockpit UX/Study implementation plan using the accepted 16:9 primary frame, quiet Watch, analytical TDA and spacious Lab requirements, rather than another speculative AMDX storage layer. Keep comparison exploration lower priority in Study/Review.
+
+
+## Actual merge result — 2026-10-13
+
+The operator explicitly approved the ordered merge-commit sequence after this review. All nine PRs are closed/merged; each was retargeted to main immediately before merging, with its exact expected head and resulting tree/parent/state checks. Main's first-parent chain contains these nine merges only relative to the reviewed baseline. Feature branches remain available.
+
+| PR | Merge commit | Tree verification |
+| --- | --- | --- |
+| #67 | `f1155ff4a0509252df4f34e1a5b0877643413e00` | Exact reviewed tree |
+| #68 | `87c7b63ec277cba5554ffe7fb84ea4ee976deb66` | Exact reviewed tree |
+| #69 | `d047f8669c21d0821d5ed8a6bb1854002a570df8` | Exact reviewed tree |
+| #70 | `dea40481123859d57fc1e03222d04a84ff8a628d` | Exact reviewed tree |
+| #71 | `5a4c20c65550e1a96052577d0dc5d143eeef5144` | Exact reviewed tree |
+| #72 | `fb1340ec5ff768a5ac73920a433bb8b5425dac43` | Exact reviewed tree |
+| #73 | `329cf1f4bc86b6d5c730f8b5d74ef8b604e33868` | Exact reviewed tree |
+| #74 | `69619c43a8e1e5ed2c8fb661d5fc4dc3a96aa30b` | Exact reviewed tree |
+| #75 | `8b7f8ae0e8e6da76bed266f771fce75d4bfaaefb` | Exact reviewed tree |
+
+Final code merge `8b7f8ae0e8e6da76bed266f771fce75d4bfaaefb` has the complete tree `9d8b21724433523027e70aedc784b166626fa217`, exactly equal to reviewed/tested #75 checkpoint `15e64af8d51f946696e9927b5ce731857bdc8602`. All 1,136 passing tests and 20 operator PASS results remain applicable. A subsequent main commit updates handoff/sync documentation only; it does not change production source, tests, schema, plan or smoke results.
+
+See `AMDX_MAIN_SYNC_GUIDE.md` before regular-app launch for main pull commands and a consistent backup of the configured SQLite database. The user database was not touched by this merge. The next product milestone is the comprehensive whole-cockpit UX/Study implementation plan.
