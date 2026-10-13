@@ -98,11 +98,11 @@ def _validate_launch_reference(binding, reference):
             raise ValueError("Launch calendar reference differs from saved run-start context")
 
 
-def _read_projection(value, master_archive):
+def _read_projection(value, master_archive, *, channel="Expected"):
     if set(value) != set(StackProjection.__dataclass_fields__):
         raise ValueError("Unsupported captured projection fields")
     master, owner, history = read_master_archive(master_archive)
-    if (value["run_id"], value["channel"], value["branch_id"]) != (owner.owner_id, "Expected", "working"):
+    if channel not in ("Expected", "Observed") or (value["run_id"], value["channel"], value["branch_id"]) != (owner.owner_id, channel, "working"):
         raise ValueError("Run capture requires the maintained working interpretation")
     reference = timestamp(value["reference"])
     if type(value["market_open"]) is not bool or value["legacy_values"] != []:
@@ -135,7 +135,7 @@ def _read_projection(value, master_archive):
         ):
             raise ValueError("Unsupported retained inactive position")
         head = next((c for c in reversed(history.claims) if
-                     (c.cycle.id, c.channel, c.branch_id) == (context.cycle.id, "Expected", "working")), None)
+                     (c.cycle.id, c.channel, c.branch_id) == (context.cycle.id, channel, "working")), None)
         if head is not None and head.cycle != context.cycle:
             raise ValueError("Captured cycle differs from its original claim")
         if item["claim"] != payload(head):
@@ -144,7 +144,7 @@ def _read_projection(value, master_archive):
         if item["inference"] != payload(inference):
             raise ValueError("Captured inference differs from retained anchors")
         rows.append(ProjectedCycle(context, head, inference))
-    return master, StackProjection(owner.owner_id, "Expected", "working", reference,
+    return master, StackProjection(owner.owner_id, channel, "working", reference,
                                    value["market_open"], tuple(rows), ())
 
 
@@ -386,9 +386,10 @@ class AMDXRunCalendarRepository:
 
     def _reserve(self, request):
         for identity in (request["id"], request["capture_id"]):
-            for table, column in (("amdx_run_calendar_command", "id"), ("amdx_run_capture", "id"),
+            for table, column in (("amdx_run_observed_command", "id"), ("amdx_run_calendar_command", "id"), ("amdx_run_capture", "id"),
                 ("amdx_catalog_command", "id"), ("amdx_master_binding", "id"), ("amdx_claim", "id"),
-                ("amdx_working_command", "id"), ("amdx_observed_command", "id"), ("amdx_review_command", "id")):
+                ("amdx_working_command", "id"), ("amdx_observed_command", "id"), ("amdx_observed_command", "comparison_id"),
+                ("amdx_review_command", "id"), ("amdx_comparison", "id")):
                 if self.connection.execute(f"SELECT 1 FROM {table} WHERE {column}=?", (identity,)).fetchone():
                     raise ValueError("Run operation/capture identity is already reserved")
 

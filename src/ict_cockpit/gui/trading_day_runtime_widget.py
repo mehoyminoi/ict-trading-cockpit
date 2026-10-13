@@ -223,6 +223,8 @@ class TradingDayRuntimeWidget(QWidget):
         self.mode_stack.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
         runner.view_tabs.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
         self.qt_context_widget.setVisible(visible and self.amdx_context_widget.binding is None)
+        self.post_market_review_widget.qt_review_frame.setVisible(self.amdx_context_widget.binding is None)
+        self.post_market_review_widget.shared_amdx = self.amdx_context_widget.binding is not None
         for label in (self.live_watch_widget.qt_summary_label, self.live_watch_widget.raw_qt_stack_label,
                       self.live_watch_widget.qt_stack_watch_label):
             label.setVisible(self.amdx_context_widget.binding is None)

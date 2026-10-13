@@ -99,3 +99,8 @@ The initial contract checkpoint changed documentation only: runtime source remai
 ## Run capture storage implementation checkpoint
 
 `AMDX_RUN_CALENDAR_CAPTURE_GUIDE.md` records v44 immutable launch/run binding, full stack/absence packets and owned launch/context/working-edit receipts with original retries, stale vector/parent guards and standalone reconstruction. This supersedes the absent-storage finding for those primitives. Native automatic use, actual decision/evidence consumption, new Observed Review coupling/proof and legacy run assignment/import remain additional integration; no cross-area native sharing is inferred.
+
+
+## Maintained Observed Review implementation checkpoint
+
+`AMDX_REVIEW_CALENDAR_GUIDE.md` records schema v45 and native bound session/day assessment: one maintained Observed quartet plus an immutable run receipt of its exact resulting revision, atomically committed. This implements the shared Observed assessment boundary without duplicating a second phase store or selecting an Expected baseline. Original Expected packets and legacy run-owned records remain unchanged. Backend higher targets keep their original-reference guard; broader bounded higher-period proof/selection, legacy import, final renderers and empirical classifiers remain separate. Operator checks 270–274 are PASS from the explicit 2026-10-13 report; this accepts the documented functional scope, not expanded higher-period entry or final rendering.

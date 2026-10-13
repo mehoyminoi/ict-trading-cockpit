@@ -56,6 +56,9 @@ class AMDXReviewRepository:
     def require_free_identity(self, id: str) -> None:
         """Claims/working commands cannot reuse an existing Review identity."""
         require_id(id)
+        if self.connection.execute("PRAGMA user_version").fetchone()[0] >= 45 and self.connection.execute(
+            "SELECT 1 FROM amdx_run_observed_command WHERE id=?", (id,)).fetchone():
+            raise ValueError("A shared run assessment identity cannot be reused")
         if self.connection.execute("SELECT 1 FROM amdx_comparison WHERE id = ?", (id,)).fetchone():
             raise ValueError("A Review identity cannot be reused for another action")
         if self.connection.execute("SELECT 1 FROM amdx_observed_command WHERE id=? OR comparison_id=?", (id, id)).fetchone():
