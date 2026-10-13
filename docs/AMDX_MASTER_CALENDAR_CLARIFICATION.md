@@ -1,6 +1,6 @@
 # One maintained AMDX stackup calendar
 
-**Status: explicit product clarification, 2026-10-13. Shared ownership/rendering integration is not yet implemented.** The operator meant one maintained AMDX stackup calendar, usable across Lab/backtesting, TDA, Watch and Review. Purpose-specific collections were a developer interpretation of “catalog”; they are not the intended primary ownership model.
+**Status: explicit product clarification, 2026-10-13. Canonical backend ownership is now implemented in v43; shared native/rendering and run capture integration remain pending.** The operator meant one maintained AMDX stackup calendar, usable across Lab/backtesting, TDA, Watch and Review. Purpose-specific collections were a developer interpretation of “catalog”; they are not the intended primary ownership model.
 
 The master calendar is the continuously maintained, revision-preserving AMDX timeline for an instrument. Historical backfill and current interpretation contribute to this same underlying timeline. Different cockpit areas present and operate on the relevant slice, without requiring the technician to choose or synchronize separate Backtest/ForwardTest catalogs.
 
@@ -33,7 +33,7 @@ This preserves the earlier provenance insight without making separately run-owne
 
 Reusable foundation: stable instrument-aware collection metadata, temporal identities, aware timestamps/DST handling, coupled AMDX/XAMD actions, legal quarter choices/direct subtype controls, immutable revision/no-op receipts, archive validation, scoped stale/transaction handling and the native full-stack/adjacent editor.
 
-Current limits: the v42 catalog owner is a user-created collection, allowing separate collections on the same instrument; the native Lab creates/selects those collections. TDA/Watch still use their run-owned AMDX path and do not automatically read or update the Lab collection. There is no canonical instrument-to-master mapping or run snapshot-reference integration yet. Thus the desired shared behavior is achievable from this implementation, but is not already delivered end to end.
+Limits at the initial clarification checkpoint, before the v43 foundation: the v42 catalog owner is a user-created collection, allowing separate collections on the same instrument; the native Lab creates/selects those collections. TDA/Watch still use their run-owned AMDX path and do not automatically read or update the Lab collection. There is no canonical instrument-to-master mapping or run snapshot-reference integration yet. Thus the desired shared behavior is achievable from this implementation, but is not already delivered end to end.
 
 An actual disposable v42 check verified that one collection exposes the same recorded yearly backfill at multiple reference points, while another purpose collection has an independent empty head. This demonstrates that temporal identity/history are reusable and that owner selection/consumer binding is the boundary to change. It does not demonstrate current shared TDA/Watch behavior.
 
@@ -51,3 +51,8 @@ The detailed shared write/snapshot/channel contract comes before changing persis
 Checks 261–264 remain PASS for the tested native entry/subtype/historical occurrence/restart behaviors. Those results do not accept separate purpose catalogs as the final architecture or the current controls as the final renderer. No runtime, schema, action policy or data was changed by this clarification. Source remains `678e9a0`, schema v42 / Alpha 0.7, with the completed 97-focused/936-complete evidence retained. All 264 smoke records are unchanged.
 
 The shared owner/action/run capture specification is now recorded in `AMDX_MASTER_CALENDAR_CONTRACT.md`, replacing the earlier collector-first plan. Next implement canonical binding and the shared read/target foundation, followed by atomic run capture and native integration. None of that integration is implemented by these documentation checkpoints; no new smoke trial or terminal action is required for them.
+
+
+## Foundation implementation update
+
+Canonical first instrument/ledger binding and the shared read/target facade are now implemented in schema v43; see `AMDX_MASTER_CALENDAR_GUIDE.md`. This supersedes the earlier absent-mapping finding for the new backend. Native Lab/TDA/Watch still use their existing paths, and persisted run capture references are not yet implemented. The product clarification and remaining integration boundaries stand; no cross-area native sharing is claimed.
