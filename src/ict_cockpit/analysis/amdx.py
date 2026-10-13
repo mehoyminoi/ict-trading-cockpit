@@ -14,9 +14,10 @@ from ict_cockpit.analysis.market_time import (
 
 
 STRUCTURAL_REVISION = "amdx-xamd-v1"
-PAYLOAD_VERSION = 2
+PAYLOAD_VERSION = 3
 LEGACY_POLICY = "accumulate-v1"
 WORKING_POLICY = "revise-working-v1"
+OBSERVED_POLICY = "revise-observed-v1"
 
 
 class Role(str, Enum):
@@ -288,7 +289,7 @@ class InterpretationHistory:
         """Original accumulation policy; retained for historical replay/analytical use."""
         previous = self._validate_action(**kwargs)
         if previous and previous.action_policy != LEGACY_POLICY:
-            raise ValueError("Legacy accumulation cannot follow a working revision; use revise_working")
+            raise ValueError("Legacy accumulation cannot follow a versioned revision; use the scoped revision action")
         claim_id, run_id, branch_id, channel = (kwargs[k] for k in ("claim_id", "run_id", "branch_id", "channel"))
         cycle, quarter_id, anchor = (kwargs[k] for k in ("cycle", "quarter_id", "anchor"))
         recorded_at, market_reference = (kwargs[k] for k in ("recorded_at", "market_reference"))
@@ -301,9 +302,16 @@ class InterpretationHistory:
         return InterpretationHistory(self.claims + (claim,))
 
     def revise_working(self, *, clear_applicability: bool = False, **kwargs) -> "InterpretationHistory":
+        return self._revise(WORKING_POLICY, clear_applicability=clear_applicability, **kwargs)
+
+    def revise_observed(self, *, clear_applicability: bool = False, **kwargs) -> "InterpretationHistory":
+        return self._revise(OBSERVED_POLICY, clear_applicability=clear_applicability, **kwargs)
+
+    def _revise(self, policy: str, *, clear_applicability: bool = False, **kwargs) -> "InterpretationHistory":
         previous = self._validate_action(**kwargs)
-        if kwargs["branch_id"] != "working" or kwargs["channel"] != "Expected":
-            raise ValueError("Working revisions require the manual Expected/working scope")
+        channel = "Expected" if policy == WORKING_POLICY else "Observed"
+        if policy not in (WORKING_POLICY, OBSERVED_POLICY) or kwargs["branch_id"] != "working" or kwargs["channel"] != channel:
+            raise ValueError(f"Revisions require the manual {channel}/working scope")
         if type(clear_applicability) is not bool:
             raise ValueError("clear_applicability must be a boolean")
         cycle, quarter_id, anchor = (kwargs[k] for k in ("cycle", "quarter_id", "anchor"))
@@ -340,19 +348,22 @@ class InterpretationHistory:
         retained = {a.id for a in active + applicability}
         claim = Claim(kwargs["claim_id"], kwargs["run_id"], kwargs["branch_id"], kwargs["channel"],
                       cycle, active, inference, kwargs["recorded_at"], kwargs["market_reference"],
-                      quarter_id, "ClearApplicability" if clear_applicability else "ReviseWorking" if anchor else "ClearWorking",
-                      action_policy=WORKING_POLICY, basis_claim_id=previous.id if previous else None,
+                      quarter_id, "ClearApplicability" if clear_applicability else (
+                          "ReviseWorking" if policy == WORKING_POLICY else "ReviseObserved") if anchor else (
+                          "ClearWorking" if policy == WORKING_POLICY else "ClearObserved"),
+                      action_policy=policy, basis_claim_id=previous.id if previous else None,
                       retired_anchor_ids=tuple(a.id for a in before if a.id not in retained),
                       applicability=applicability, action_anchor=anchor)
         return InterpretationHistory(self.claims + (claim,))
 
     def to_payload(self) -> dict:
-        version = PAYLOAD_VERSION if any(c.action_policy != LEGACY_POLICY for c in self.claims) else 1
+        version = 3 if any(c.action_policy == OBSERVED_POLICY for c in self.claims) else (
+            2 if any(c.action_policy == WORKING_POLICY for c in self.claims) else 1)
         return {"version": version, "claims": [claim_payload(c) for c in self.claims]}
 
     @classmethod
     def from_payload(cls, value: dict) -> "InterpretationHistory":
-        if value.get("version") not in (1, PAYLOAD_VERSION):
+        if value.get("version") not in (1, 2, 3):
             raise ValueError("Unsupported AMDX history payload version")
         claims = []
         for item in value["claims"]:
@@ -361,7 +372,9 @@ class InterpretationHistory:
             cycle = cycle_from_payload(item["cycle"])
             anchors = tuple(Anchor(**a) for a in item["anchors"])
             policy = item.get("action_policy", LEGACY_POLICY)
-            if policy not in (LEGACY_POLICY, WORKING_POLICY) or (policy != LEGACY_POLICY and value["version"] == 1):
+            if policy not in (LEGACY_POLICY, WORKING_POLICY, OBSERVED_POLICY) or (
+                policy == WORKING_POLICY and value["version"] < 2
+            ) or (policy == OBSERVED_POLICY and value["version"] < 3):
                 raise ValueError("Unsupported action policy/history version")
             applicability = tuple(Anchor(**a) for a in item.get("applicability", ()))
             inference = infer_profile(cycle, anchors + applicability)
@@ -376,8 +389,10 @@ class InterpretationHistory:
             # Validate the action transcript rather than accepting inconsistent active snapshots.
             action_anchor = (next((a for a in anchors if a.quarter_id == claim.action_quarter_id), None)
                              if policy == LEGACY_POLICY else claim.action_anchor)
-            allowed = ("Accept", "Clear") if policy == LEGACY_POLICY else ("ReviseWorking", "ClearWorking", "ClearApplicability")
-            if claim.action not in allowed or (claim.action in ("Accept", "ReviseWorking")) != (action_anchor is not None):
+            allowed = (("Accept", "Clear") if policy == LEGACY_POLICY else
+                       ("ReviseWorking", "ClearWorking", "ClearApplicability") if policy == WORKING_POLICY else
+                       ("ReviseObserved", "ClearObserved", "ClearApplicability"))
+            if claim.action not in allowed or (claim.action in ("Accept", "ReviseWorking", "ReviseObserved")) != (action_anchor is not None):
                 raise ValueError("Invalid stored action")
             arguments = dict(
                 claim_id=claim.id, run_id=claim.run_id, branch_id=claim.branch_id,
@@ -386,7 +401,8 @@ class InterpretationHistory:
             )
             history = cls(tuple(claims))
             updated = (history.accept(**arguments) if policy == LEGACY_POLICY else
-                       history.revise_working(**arguments, clear_applicability=claim.action == "ClearApplicability"))
+                       (history.revise_working if policy == WORKING_POLICY else history.revise_observed)(
+                           **arguments, clear_applicability=claim.action == "ClearApplicability"))
             if len(updated.claims) != len(claims) + 1 or updated.claims[-1] != claim or set(claim_payload(claim)) != set(item):
                 raise ValueError("Stored profile snapshot disagrees with action history")
             claims.append(claim)

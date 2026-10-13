@@ -316,10 +316,10 @@ def test_v39_migration_preserves_claim_receipt_and_run_bytes_and_guards_old_read
     assert connection.execute("PRAGMA user_version").fetchone()[0] == 39
     assert not connection.execute("SELECT name FROM sqlite_master WHERE name LIKE 'amdx_review_%' OR name LIKE 'amdx_comparison%'").fetchall()
     initialize_schema(connection)
-    assert connection.execute("PRAGMA user_version").fetchone()[0] == CURRENT_SCHEMA_VERSION == 40
+    assert connection.execute("PRAGMA user_version").fetchone()[0] == CURRENT_SCHEMA_VERSION == 41
     for table in tables:
         assert connection.execute(f"SELECT * FROM {table}").fetchall() == before[table]
-    with pytest.raises(RuntimeError, match="Unsupported database schema version: 40"):
+    with pytest.raises(RuntimeError, match=f"Unsupported database schema version: {CURRENT_SCHEMA_VERSION}"):
         old_schema['initialize_schema'](connection)
     repo=AMDXRepository(connection)
     assert repo.review.get_history(run.id).comparisons == ()

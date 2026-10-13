@@ -387,3 +387,15 @@ See `AMDX_REVIEW_PERSISTENCE_GUIDE.md`. No new classifier, event likelihood, com
 | Watch comparison access | No option or launch route needed from Watch. | EXCLUDED from Watch |
 
 This supersedes earlier OPEN/proposed decision wording, without claiming new implementation or UI acceptance. See `AMDX_REVIEW_INTERACTION_CONTRACT_REVIEW.md`.
+
+## 2026-10-12 — Observed entry action implemented
+
+| Accepted behavior | Implementation | Status |
+| --- | --- | --- |
+| One-entry observed correction | Independent observed policy shares structural rules and preserves earlier claims. | IMPLEMENTED domain/action |
+| Unchanged input | No source or pair revision; original nullable results and both IDs retained in immutable receipts. | IMPLEMENTED / v41 |
+| Historical meaning | Legacy v1 and Expected v2 retain original replay/serialization; observed revision uses v3. | PRESERVED / named policy boundary |
+| Comparison priority | No automatic expected selection; existing explicit/null basis is preserved. No controls or Watch access added. | PRESERVED / UI deferred |
+| Native observed editor | Backend is ready for a permitted Review adapter and gesture/restart verification. | NEXT / not implemented |
+
+See `AMDX_OBSERVED_REVISION_GUIDE.md`. No classifier, published plan, gate or operator smoke result is introduced.

@@ -814,3 +814,13 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 **Priority:** comparison is lower priority and belongs in Study/Review for purposeful exploration if needed. Do not add a comparison option or launch route to Watch. Further comparison UI/research expansion is deferred; current-stack orientation and efficient AMDX entry remain the focus.
 
 **Consequences:** retain the completed v40 persistence substrate. The next shared-action refinement supports observed entry without requiring comparison controls or a baseline choice. Preserve original observed accumulation replay when introducing the new versioned action. Final controls/layout remain separate; no source, schema, operator smoke or merge change accompanies this acceptance record.
+
+## 2026-10-12 — Versioned observed quartet revision
+
+**Status:** operator accepted the entry behavior and authorized proceeding. Shared action/domain/storage implemented on `feature/amdx-observed-revision-v1`; native Review binding remains downstream.
+
+**Decision:** use independent `revise-observed-v1`, sharing the accepted structural correction logic with Expected working revision without changing its policy. One valid entry keeps compatible manual anchors and retires contradictions, with the same subtype/Unknown/applicability/clear semantics. Earlier observed judgments remain immutable; Expected and parent/child context remain independent.
+
+**Persistence:** schema v41 adds immutable observed-command receipts. Changed source/pair metadata/receipt commit together; unchanged meaning reserves both identities without a source/pair revision. Snapshot counts preserve exact replay of changed/no-op original requests after later edits. Scoped heads and cross-action identity checks remain explicit; failures roll back the entire action. Existing selected basis is carried, or None remains unselected; no first/latest fallback or comparison UI is added.
+
+**Compatibility:** version-3 observed claims retain their own action policy. Original v1/v2 payloads and old v40 record bytes are preserved. Atomic v40 migration adds no guessed history; older bootstrap rejects v41. Existing legacy analytical accumulation and exact old retries remain valid, but new accumulation cannot follow an observed revision in that same scope. Alpha 0.7 and process gates are unchanged.
