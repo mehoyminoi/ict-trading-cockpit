@@ -48,7 +48,7 @@ If the repository documents themselves contain an unresolved contradiction, repo
 
 ## Step 3 — Verify the checkpoint before coding
 
-Latest frontier: `feature/amdx-higher-review-v1` implements bounded higher Observed Review on top of #74 acceptance `9d6ab3e`. Schema v46, Alpha 0.7, main `6dd43c8` (v41). Read the latest `PROJECT_STATE.md` checkpoint for publication/test evidence. Checks 270–280 are operator PASS; PR #75 is ready for review after the acceptance checkpoint. Next comes stable consolidation and separately authorized merge, then full-cockpit/Study/criteria/import work. Keep the user's local smoke notes and earlier saved stashes intact. Do not infer merge authorization from a continuation or functional PASS.
+Latest frontier: `feature/amdx-higher-review-v1` implements bounded higher Observed Review on top of #74 acceptance `9d6ab3e`. Schema v46, Alpha 0.7, main `6dd43c8` (v41). Read the latest `PROJECT_STATE.md` checkpoint for publication/test evidence. Checks 270–280 are operator PASS; PR #75 is ready for review after the acceptance checkpoint. The stable consolidation review is recorded in `AMDX_CONSOLIDATION_REVIEW.md`; next is separately authorized merge of #67–75 in order, then full-cockpit/Study/criteria/import work. Keep the user's local smoke notes and earlier saved stashes intact. Do not infer merge authorization from a continuation or functional PASS.
 
 Report back to me with:
 
