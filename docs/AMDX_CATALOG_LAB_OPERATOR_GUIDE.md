@@ -76,3 +76,8 @@ If a point is unclear or different, stop there and report its number, the **Sele
 ## Scope and next work
 
 This trial checks entry, independent historical occurrences, direct subtype input and restoration. Exact control/layout refinement remains open to hands-on feedback. Current global application geometry, bulk import, automatic linkage of trading-run captures, higher run Review selection, historical as-of reconstruction and statistics are separate work. This slice adds no Watch history/comparison route, automatic classifier, startup policy or Trade Plan rule adoption. Schema remains v42 / Alpha 0.7 on this unmerged stack. Operator checks 261–264 begin NOT TESTED; all previous 260 records retain their results.
+
+
+## Developer checkpoint
+
+Source `678e9a0835a442f1de42ec6761bfcd7116fc6bad`, draft PR #70. Final focused **97 PASS in 23.81s**, including **32 new native/trial cases**; complete **936 PASS across 77 isolated module processes in 581.68s**, collection-matched counts, clean exits and no failures/errors/skips or pytest warnings. All regression work finished. Mouse/keyboard gestures, all levels, scope/metadata changes, stale/write/read recovery, exact reference/capture restore and retained presets/reopen are covered. Native standalone layout inspected at 1344×756 and 1280×720. Python 3.10 grammar passes; execution is Python 3.12. Developer verification is separate from the four pending operator results; keep draft until that review. Schema v42 / Alpha 0.7 unchanged, main untouched and no merge.
