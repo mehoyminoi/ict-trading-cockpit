@@ -2,6 +2,8 @@
 
 The normal MNQ Lab, new-run TDA and Watch now use one maintained calendar. This trial checks shared data behavior using the current native controls. Final cockpit rendering, Study-first startup and macropad navigation remain later work.
 
+Operator acceptance, 2026-10-13 (America/Denver): all five checkpoints 265–269 passed. The operator also reported that this step-by-step guide was helpful. The instructions below are retained for repeat trials.
+
 ## Get the trial
 
 Close any older demo window first. From your repository:

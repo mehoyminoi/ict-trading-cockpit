@@ -1048,21 +1048,23 @@ Use `AMDX_CATALOG_LAB_OPERATOR_GUIDE.md` and `python tools/amdx_catalog_lab_demo
 
 ## Shared maintained AMDX calendar — native trial
 
-Use `AMDX_SHARED_NATIVE_OPERATOR_GUIDE.md` and `python tools/amdx_shared_calendar_demo.py --data-dir /tmp/ict-amdx-shared-native-v0`. The separate retained synthetic MNQ Replay fixture starts with Yearly AMDX; final rendering remains deferred. Existing 264 records are preserved. Checks 265–269 await operator results.
+Use `AMDX_SHARED_NATIVE_OPERATOR_GUIDE.md` and `python tools/amdx_shared_calendar_demo.py --data-dir /tmp/ict-amdx-shared-native-v0`. The separate retained synthetic MNQ Replay fixture starts with Yearly AMDX; final rendering remains deferred. Existing 264 records are preserved. Checks 265–269 are PASS from the explicit 2026-10-13 operator report.
 
-- [NOT TESTED] Historical Observed backfill uses the maintained MNQ Lab with immediate Yearly Q3=D entry and no collection destination or run creation.
+Operator report, 2026-10-13 (America/Denver): “All checks passed. The step by step guide was helpful.” Checks 265–269 are PASS from that explicit report. No separate additional observations, local note commit or user-side push are inferred.
+
+- [PASS] Historical Observed backfill uses the maintained MNQ Lab with immediate Yearly Q3=D entry and no collection destination or run creation.
   - Where: guide checkpoint 265, Shared trial historical 1985 preset.
   - Expected: 1985 Yearly AMDX / Q3 D entered; maintained-calendar heading.
-- [NOT TESTED] Bound Watch shows the quiet shared current stack and records 90m Q3=M plus direct one-click Q1 X(R).
+- [PASS] Bound Watch shows the quiet shared current stack and records 90m Q3=M plus direct one-click Q1 X(R).
   - Where: guide checkpoint 266, Shared trial Watch preset, top Working AMDX 90m row.
   - Expected: 90m XAMD / M and X(R) entered; higher Yearly AMDX; no history/comparison list.
-- [NOT TESTED] Full stack from Watch records a larger Expected Yearly thesis edit and returns the same current profile to Watch.
+- [PASS] Full stack from Watch records a larger Expected Yearly thesis edit and returns the same current profile to Watch.
   - Where: guide checkpoint 267, Full AMDX stack, Yearly Q3=M, return Trade Plan tab.
   - Expected: Yearly XAMD in both views; 90m entry unchanged; no separate Save.
-- [NOT TESTED] Same-directory restart retains the shared current stack and independent older Observed backfill without re-entry.
+- [PASS] Same-directory restart retains the shared current stack and independent older Observed backfill without re-entry.
   - Where: guide checkpoint 268, window-X close/reopen and historical preset inspection.
   - Expected: current Yearly/90m XAMD; 1985 Observed Yearly AMDX/Q3 D remains.
-- [NOT TESTED] Review opens the immutable original launch stack read-only after later current-calendar corrections.
+- [PASS] Review opens the immutable original launch stack read-only after later current-calendar corrections.
   - Where: guide checkpoint 269, Review preset, Working context captured at run launch, Full AMDX stack.
   - Expected: retained launch Yearly AMDX and absent 90m Unresolved; disabled phase/reference controls; current correction does not replace captured basis.
 
