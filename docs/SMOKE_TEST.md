@@ -1022,11 +1022,12 @@ Use `AMDX_OBSERVED_ENTRY_OPERATOR_GUIDE.md`, branch `feature/amdx-observed-entry
 
 ### AMDX Review date provenance — focused correction smoke
 
-Use `AMDX_REVIEW_DATE_OPERATOR_GUIDE.md` and `python tools/amdx_review_date_demo.py --data-dir /tmp/ict-amdx-review-date-v1`. Check 260 is NOT TESTED. All previous 259 identities/statuses/comments are preserved; schema v41 / Alpha 0.7 are unchanged.
+Use `AMDX_REVIEW_DATE_OPERATOR_GUIDE.md` and `python tools/amdx_review_date_demo.py --data-dir /tmp/ict-amdx-review-date-v1`. Check 260 is PASS from the guided operator reports on 2026-10-12. All previous 259 identities/statuses/comments are preserved; schema v41 / Alpha 0.7 are unchanged.
 
-- [NOT TESTED] Review uses its run's preserved original date despite older container labeling, survives clock rollover/restart, and rejects a different-date additional run before resetting process state.
+- [PASS] Review uses its run's preserved original date despite older container labeling, survives clock rollover/restart, and rejects a different-date additional run before resetting process state.
   - Where: separate retained date-provenance sandbox, synthetic container 2026-10-08 / run reference 2026-10-09; follow the four numbered guide checkpoints.
   - Expected: Observed date 2026-10-09; enter NYAM 90m Q3=M for XAMD; advance clock to Trading Day 2026-10-10 without moving the target/recording; reopen the same run/profile, inspecting NYAM if needed; after concluding, a different-date additional launch says Run not started with the explicit new-day path and no reset/new run.
+  - Operator guided report, 2026-10-12 (America/Denver): upper Trading Day advanced to October 10 while Observed AMDX remained October 9; NYAM 90m Q3=M was entered and the profile was XAMD. After window-X close and same-directory reopen, the date remained October 9; selecting NYAM restored XAMD and Q3 entered without another phase choice. After Conclude Trading Run, Start Another Trading Run created no second run and displayed: "Run not started - selected reference belongs to Trading Day 2026-10-13. Complete the current Trading Day, then choose Start New Trading Day". The October 13 request is the live reference after restart, not a change to the saved Review date. The heading-tooltip inspection was not separately reported; no operator hover acceptance is inferred.
 
 ## Reporting results
 

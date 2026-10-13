@@ -2,7 +2,7 @@
 
 Reviewed published checkpoint `1fc19d1b07195bc15b1d91670de9e9377e12f319`, application source `0efa822c5924c35ff6f654e649daacd5c237dbde`, against the accepted working/observed action, persistence and Watch/Review boundaries.
 
-**Original review result: one integration-blocking finding in PR #66.** A subsequent source correction is implemented below; final developer validation passed (744 tests across all 70 isolated module processes) and focused operator check 260 remains pending. No additional blocker was found in the reviewed domain/storage contracts. PRs #63–65 are now ready for review; #61/#62/#66 remain ready. Ready status does not imply approval or merge. All six PRs remain unmerged.
+**Original review result: one integration-blocking finding in PR #66.** A subsequent source correction is implemented below; final developer validation passed (744 tests across all 70 isolated module processes) and focused operator check 260 is now PASS from the guided 2026-10-12 reports. No additional blocker was found in the reviewed domain/storage contracts. PRs #63–65 are now ready for review; #61/#62/#66 remain ready. Ready status does not imply approval or merge. All six PRs remain unmerged.
 
 ## Finding — a later run can review the containing day's earlier date
 
@@ -88,4 +88,11 @@ Focused **77 passed in 784.90s**, covering 24 new cases (15 pure date / 9 native
 
 `AMDX_REVIEW_DATE_OPERATOR_GUIDE.md` provides one new operator check 260, NOT TESTED. Its retained separate native fixture deliberately constructs the older-label discrepancy only in synthetic data; it is not original operator data or a migration. Previous 259 records remain unchanged. Schema v41 / Alpha 0.7 / action and archive policies remain unchanged. No merge/retarget occurs. Reassess integration after full verification and this focused check.
 
-**Developer reassessment:** the source-level date blocker is corrected and covered by passing native regressions, actual restoration, the preserved-reference fixture and the complete module-isolated suite. The implementation finding is resolved at `e12a2d4`; check 260 remains pending for the new targeted operator path before integration. Previous accepted results are not reinterpreted. All verification processes have exited; no merges occurred.
+**Developer reassessment:** the source-level date blocker is corrected and covered by passing native regressions, actual restoration, the preserved-reference fixture and the complete module-isolated suite. The implementation finding is resolved at `e12a2d4`; check 260 is now PASS for the targeted operator path; dependency-order integration can be reassessed. Previous accepted results are not reinterpreted. All verification processes have exited; no merges occurred.
+
+
+## Operator correction trial — 2026-10-12
+
+Operator guided report, 2026-10-12 (America/Denver): upper Trading Day advanced to October 10 while Observed AMDX remained October 9; NYAM 90m Q3=M was entered and the profile was XAMD. After window-X close and same-directory reopen, the date remained October 9; selecting NYAM restored XAMD and Q3 entered without another phase choice. After Conclude Trading Run, Start Another Trading Run created no second run and displayed: "Run not started - selected reference belongs to Trading Day 2026-10-13. Complete the current Trading Day, then choose Start New Trading Day". The October 13 request is the live reference after restart, not a change to the saved Review date. The heading-tooltip inspection was not separately reported; no operator hover acceptance is inferred.
+
+The date/rollover/restart/launch-guard acceptance gap is closed. Earlier pending-trial statements describe pre-trial checkpoints. Source/tests/tools remain byte-identical to `e12a2d4`; retain its completed 744-pass module-isolated result rather than claiming a fresh application run. Reassess #61 → #62 → #63 → #64 → #65 → #66 integration with preserved ancestry and current-head verification; all PRs remain ready/unmerged, and no merge/retarget occurs in this documentation checkpoint. Final rendering and comparison exploration remain deferred.

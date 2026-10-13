@@ -838,7 +838,7 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 
 ## 2026-10-12 — Run-owned Review date correction
 
-**Status:** correction of the accepted reviewed-scope contract, implemented with focused 77-pass and complete module-isolated 744-pass validation; focused check 260 pending.
+**Status:** correction of the accepted reviewed-scope contract, implemented with focused 77-pass and complete module-isolated 744-pass validation; focused check 260 operator PASS from the guided 2026-10-12 date/rollover/restart/launch-guard reports; hover inspection not separately reported.
 
 Review's date resolves from the particular run's preserved starting market reference, not its latest advancing clock or an unchecked container label. Older runs lacking that reference may use an explicit saved-Day fallback; malformed original references or absence of both sources disable recording. A valid run reference can restore an older misgrouped run without rewriting container labels or claims, and its differing provenance is explained in the heading hover. In-flight older-date targets cannot record after provenance changes.
 
