@@ -1,6 +1,6 @@
 # Higher-stack AMDX — architecture review
 
-**Status:** proposed next contract after accepted PRs #61–66 merged on 2026-10-12. This document changes no application behavior, schema, trading rules or operator smoke requirements.
+**Status:** the operator authorized proceeding on 2026-10-12. The pure resolver/read-projection foundation is now implemented separately in PR #67; persistence and native binding remain downstream. This document adds no schema, trading rules or operator smoke requirements.
 
 ## Purpose and current implementation
 
@@ -54,3 +54,10 @@ Keep legacy flat values with their original provenance. Display them as legacy/d
 4. Bind quiet higher-stack orientation and adjacent editing through the shared actions. Evaluate Study-owned selection separately; final layout remains a context-specific projection.
 
 No new smoke test is requested by this architecture document. The next review should settle temporal occurrence/relationship examples and the proposed run-owned interpretation model before committing a storage migration or new mature renderer. Actual price/news classifiers, rule priorities, empirical statistics and published Trade Plan adoption remain separate work.
+
+
+## Pure foundation follow-up — 2026-10-12
+
+`analysis/amdx_context.py` implements the higher occurrence and shared read projection foundation. The boundary examples and API are in `AMDX_HIGHER_CONTEXT_GUIDE.md`. Calendar-versus-futures time, pre-first-Monday, Friday/fifth-week, full cross-month weeks and DST bounds retain the existing raw conventions. Weekly parent identity is derived from its own Monday, so selecting another month never changes an existing week's content. Intraday IDs remain unchanged; legacy values never become inferred anchors. Projections select only the requested run/channel/branch/cycle and retain the original immutable claim. Empty history stays Unresolved.
+
+No storage/GUI binding, historical as-of replay, Study-owned selector or migration is added. Future Review must deliberately supply its validated original reference, and retrospective Study must select its recorded information/history basis explicitly. Final development verification and publication are recorded in the project state/handoff.
