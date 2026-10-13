@@ -502,3 +502,8 @@ The architectural frontier stays context maturity. The next proposed contract co
 ## 2026-10-12 — Historical AMDX accumulation moves into the early foundation
 
 The operator made comprehensive historical/forward-test entry across all layers explicit, as far back as needed, initially for MNQ with possible later NNQ use. This changes the next architectural sequence before native higher binding: catalog ownership must be independent of trading runs and retain explicit instrument/capture provenance. PR #69 implements the first v42 catalog backend while preserving existing run history. The bounded higher Review selector remains a separate integration, and mature Lab will provide spacious catalog-backed analysis. Native input, automatic run linkage, bulk imports and statistics follow; no comparison controls are added to Watch.
+
+
+## 2026-10-13 — Shared calendar reaches bounded higher Review
+
+After operator acceptance of maintained Observed Review (270–274), the shared master calendar now supports higher-stack Review across distinct calendar contexts within a run's original futures day. Context selection is quiet/read-only; legal immediate input records both canonical Observed and immutable assessment proof. The existing receipt owns that proof, avoiding a redundant interpretation or metadata store. Original launch Expected and earlier v1 assessments remain intact, including nullable heads and unknown information availability. A native boundary trial adds checks 275–280 pending operator acceptance. This completes the next functional integration slice before stable consolidation; it does not complete final rendering, criteria/classification, broad legacy imports or the Study-first workflow.
