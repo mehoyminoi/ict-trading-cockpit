@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 41
+CURRENT_SCHEMA_VERSION = 42
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -131,6 +131,9 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 40:
             _migrate_version_40_to_41(connection)
             version = 41
+        if version == 41:
+            _migrate_version_41_to_42(connection)
+            version = 42
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -991,3 +994,40 @@ def _migrate_version_40_to_41(connection: sqlite3.Connection) -> None:
         BEGIN SELECT RAISE(ABORT, 'Observed AMDX history is immutable'); END
     """)
     connection.execute("PRAGMA user_version = 41")
+
+
+def _migrate_version_41_to_42(connection: sqlite3.Connection) -> None:
+    if not connection.in_transaction:
+        connection.execute("BEGIN")
+    connection.execute("""
+        CREATE TABLE amdx_catalog (
+            id TEXT NOT NULL PRIMARY KEY,
+            instrument TEXT NOT NULL,
+            payload_json TEXT NOT NULL
+        )
+    """)
+    connection.execute("CREATE INDEX idx_amdx_catalog_instrument ON amdx_catalog(instrument)")
+    connection.execute("""
+        CREATE TABLE amdx_catalog_command (
+            sequence INTEGER PRIMARY KEY,
+            id TEXT NOT NULL UNIQUE,
+            catalog_id TEXT NOT NULL REFERENCES amdx_catalog(id) ON DELETE RESTRICT,
+            cycle_id TEXT NOT NULL REFERENCES amdx_cycle_identity(id) ON DELETE RESTRICT,
+            channel TEXT NOT NULL CHECK(channel IN ('Expected', 'Observed')),
+            payload_json TEXT NOT NULL
+        )
+    """)
+    connection.execute("CREATE INDEX idx_amdx_catalog_command_scope ON amdx_catalog_command(catalog_id,cycle_id,channel,sequence)")
+    for table in ("amdx_catalog", "amdx_catalog_command"):
+        for operation in ("UPDATE", "DELETE"):
+            connection.execute(f"""
+                CREATE TRIGGER {table}_no_{operation.lower()} BEFORE {operation} ON {table}
+                BEGIN SELECT RAISE(ABORT, 'AMDX catalog history is immutable'); END
+            """)
+        conflict = "id=NEW.id" + (" OR sequence=NEW.sequence" if table.endswith("_command") else "")
+        connection.execute(f"""
+            CREATE TRIGGER {table}_no_replace BEFORE INSERT ON {table}
+            WHEN EXISTS (SELECT 1 FROM {table} WHERE {conflict})
+            BEGIN SELECT RAISE(ABORT, 'AMDX catalog history is immutable'); END
+        """)
+    connection.execute("PRAGMA user_version = 42")

@@ -1,6 +1,6 @@
 # Higher AMDX Review-period selection
 
-**Status: concrete proposal for review, not an implemented selector.** The v41 adapter in PR #68 currently restores higher Observed context from the saved run-start timestamp only. The timestamp correction in source `9c476df520efec8a7e50a04c015e0de4da78d850` is implemented; the additional selection and proof storage described here are not. Native binding follows this contract review.
+**Status: continuation authorized from this proposal; selector not implemented.** The later all-layer historical-catalog requirement takes priority for ownership/storage before native binding. The v41 adapter in PR #68 currently restores higher Observed context from the saved run-start timestamp only. The timestamp correction in source `9c476df520efec8a7e50a04c015e0de4da78d850` is implemented; the additional selection and proof storage described here are not. Native binding follows this contract review.
 
 The recommendation is to let Review inspect higher context on either side of a calendar boundary inside its own futures trading day. Keep the original run reference intact, default to its context, and offer another orientation only when it changes the higher stack. Choosing orientation alone records no AMDX judgment and adds no completion or Save obligation.
 
@@ -40,7 +40,7 @@ Recommend remembering a valid orientation while navigating within the same Revie
 
 Additional Observed references cannot safely be enabled merely by loosening the v0 guard: that would lose the distinction between the original source and deliberately selected context. Recommend immutable scope metadata tied to the Observed command, written atomically with its existing source/pair/receipt transaction. Preserve the original reference, reviewed bounds/timezone/policy revision, selected reference/source kind, cycle/quarter and inspected heads, including accepted no-op commands with nullable original results.
 
-An additive metadata table is the recommended engineering approach, requiring a future migration and explicit archive/export coverage before implementation. **Current schema remains v41; no v42 migration is present or authorized by this document.** This would not be a second interpretation store or a new trading/action policy. Old commands retain their exact original receipts and v0 reference meaning, with no invented retroactive proof. A command identity cannot be reused to attach a different proof. Exact committed retries return their original result even after current source/selection changes; new requests validate current provenance and scope. Broad Study replay and historical information availability require their own contract.
+An additive metadata table is the recommended engineering approach, requiring a future migration and explicit archive/export coverage before implementation. **This Review-scope migration remains unimplemented.** The subsequent catalog branch introduces v42 for independent catalog ownership; additional Review proof would need its own additive migration. Main remains v41. This would not be a second interpretation store or a new trading/action policy. Old commands retain their exact original receipts and v0 reference meaning, with no invented retroactive proof. A command identity cannot be reused to attach a different proof. Exact committed retries return their original result even after current source/selection changes; new requests validate current provenance and scope. Broad Study replay and historical information availability require their own contract.
 
 ## Worked cases
 
@@ -74,3 +74,8 @@ Eighteen temporal assertions against the existing resolver verify ordinary-day d
 The implemented DST correction passed **313 focused tests in 13.20s**, then the complete **844-test suite across 72 isolated module processes in 508.64s**, with no failures/errors/skips or pytest warnings. All counts matched collection and all processes exited. ISO payload offsets, schema v41, Alpha 0.7 and all 260 smoke records are retained. No new operator trial is requested for this backend/document checkpoint.
 
 Next: review the whole-day/default/explicit-orientation semantics above, implement the accepted scope proof/selection layer, then bind the quiet higher overview and adjacent input with complete gesture checks. The mature spacious Lab remains a planned presentation of the shared foundation, not a feature completed by this contract.
+
+
+## Historical-catalog refinement — operator requirement 2026-10-12
+
+`AMDX_HISTORICAL_CATALOG_GUIDE.md` supplies independent broad historical/forward collection ownership in PR #69. This proposal still describes Review of one run; its futures-day window is not a global catalog limit. The operator authorized continuation, then clarified the historical requirement before the Review migration/native selector was implemented. Catalog foundation is now the immediate slice, followed by efficient historical entry and bounded run Review integration. No current-clock fallback or asset mixing is introduced.

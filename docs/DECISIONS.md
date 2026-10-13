@@ -870,3 +870,12 @@ Immutable exact retries use original receipts/results even after current referen
 Saved reference identity and chronological domain replay retain the actual numeric-offset instant through a repeated daylight-saving hour. This corrects the existing provenance contract without changing serialized action meaning or schema. See source `9c476df520efec8a7e50a04c015e0de4da78d850 and final 313-focused/844-complete evidence in project state.
 
 `AMDX_HIGHER_REVIEW_PERIOD_CONTRACT.md` recommends whole reviewed futures-day higher orientation with the original run reference retained, no interpretation writes on navigation and immutable scope proof for additional Observed references. Do not treat its candidate controls or future metadata migration as adopted policy. Spacious full-stack AMDX in Lab remains accepted product direction from the earlier cockpit walkthrough; that presentation and broader Study-owned historical basis remain unimplemented.
+
+
+## 2026-10-12 — Historical all-layer AMDX catalog is foundational
+
+**Status:** explicit operator requirement, with continuation authorized. Backend implementation source `d9ccb4422cf9f2f517e38869acb8f57e143e344f` is in unmerged PR #69; final verification is recorded in project state.
+
+Support historical entry across every AMDX layer as far back as needed, with no arbitrary recent-history cutoff or dependence on fabricated trading runs. Accumulated backtest/forward-test data is an early foundation of the process, not a later visual refinement. Independent collections retain instrument identity, definition/evidence references, actual entry time, studied time and declared retrospective/forward basis. MNQ defaults suffice for initial use; preserve storage separation for later instruments without requiring multi-instrument UI now. Existing unknown asset ownership is not guessed.
+
+The initial catalog reuses the pure versioned quartet actions with tagged collection ownership, immutable command/result history and archives. It does not create run-owned claims/pairs or classify backfilled expectations as prospective predictions. Catalog storage requires schema v42 in this branch; main stays v41. Native catalog input, automatic run linkage, imports, analytics and bounded run Review selection remain subsequent integration. See `AMDX_HISTORICAL_CATALOG_GUIDE.md`.
