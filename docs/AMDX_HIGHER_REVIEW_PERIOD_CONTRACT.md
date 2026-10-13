@@ -1,6 +1,6 @@
 # Higher AMDX Review-period selection
 
-**Current status: implemented in `feature/amdx-higher-review-v1`, schema v46; operator checks 275–280 pending.** See `AMDX_HIGHER_REVIEW_GUIDE.md`. Bounded proof now lives inside immutable version-2 assessment receipts, atomically with maintained Observed; this supersedes the proposed redundant metadata table. The following proposal and older checkpoint notes are retained as historical rationale.
+**Current status: implemented in `feature/amdx-higher-review-v1`, schema v46; operator checks 275–280 PASS from the 2026-10-13 report.** See `AMDX_HIGHER_REVIEW_GUIDE.md`. Bounded proof now lives inside immutable version-2 assessment receipts, atomically with maintained Observed; this supersedes the proposed redundant metadata table. The following proposal and older checkpoint notes are retained as historical rationale.
 
 **Historical status: continuation authorized from this proposal; selector not implemented at that checkpoint.** The later all-layer historical-catalog requirement takes priority for ownership/storage before native binding. The v41 adapter in PR #68 currently restores higher Observed context from the saved run-start timestamp only. The timestamp correction in source `9c476df520efec8a7e50a04c015e0de4da78d850` is implemented; the additional selection and proof storage described here are not. Native binding follows this contract review.
 

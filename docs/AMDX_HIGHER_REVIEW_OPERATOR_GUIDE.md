@@ -4,6 +4,8 @@ This trial checks higher-stack Review within one run's reviewed futures day. It 
 
 Published code checkpoint: `310c4747d208ebb6a5852ca30008d0fd4d790390`. The branch also includes its guide/checkpoint documentation.
 
+Operator acceptance, 2026-10-13 (America/Denver): checks **275–280 PASS**, from the explicit report “275-280 passed”. Local notes and their Git status were not supplied or inspected. These instructions remain available for repeat trials.
+
 ## Get the trial
 
 Close older demo windows. Preserve local smoke notes on their current branch before switching. Leave earlier saved stashes intact; do not apply them over this branch during the trial.
@@ -94,4 +96,4 @@ Expected: **X(R) entered / AMDX** remains. Neither the calendar nor the run asse
 
 Expected: the assessment retains the scope of the last successful entry from checkpoint 277. Later navigation and the failed attempt did not replace it. **Captured launch stack** remains the separate original Expected stack, with its originally unresolved profiles intact.
 
-Report **275–280 PASS / FAIL / QUESTION / NOT TESTED**, with the checkpoint and exact visible outcome for anything unclear. Automated tests do not mark these operator checks PASS. Final cockpit/Lab rendering is a later milestone.
+Report **275–280 PASS / FAIL / QUESTION / NOT TESTED**, with the checkpoint and exact visible outcome for anything unclear. The current PASS records come from the operator report, separately from automated verification. Final cockpit/Lab rendering is a later milestone.

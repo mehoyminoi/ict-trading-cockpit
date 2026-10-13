@@ -1092,24 +1092,26 @@ Operator report, 2026-10-13 (America/Denver): checks 270–274 passed; smoke-tes
 
 ## Bounded higher Observed Review — native trial
 
-Use `AMDX_HIGHER_REVIEW_OPERATOR_GUIDE.md` and `python tools/amdx_higher_review_demo.py --data-dir /tmp/ict-amdx-higher-review-v1`. This separate retained synthetic MNQ fixture uses the 2026/2027 calendar boundary; its future reference is not market data or a prediction. Schema v46 / Alpha 0.7. Earlier 274 identities/results/comments remain exact; checks 275–280 await operator testing.
+Use `AMDX_HIGHER_REVIEW_OPERATOR_GUIDE.md` and `python tools/amdx_higher_review_demo.py --data-dir /tmp/ict-amdx-higher-review-v1`. This separate retained synthetic MNQ fixture uses the 2026/2027 calendar boundary; its future reference is not market data or a prediction. Schema v46 / Alpha 0.7. Earlier 274 identities/results/comments remain exact; checks 275–280 are PASS from the explicit 2026-10-13 operator report.
 
-- [NOT TESTED] Higher Review defaults to the exact original launch context and records Yearly Q1 X(C) immediately.
+Operator report, 2026-10-13 (America/Denver): “275-280 passed”. This records the reported functional result. Local notes and their commit/push status were not supplied or inspected.
+
+- [PASS] Higher Review defaults to the exact original launch context and records Yearly Q1 X(C) immediately.
   - Where: guide checkpoint 275, Review full AMDX stack, Original launch / 2027 Yearly Q1.
   - Expected: reviewed day January 1, explicit original/selected references and whole-day bounds, XAMD / Q1 X(C) entered without Save.
-- [NOT TESTED] Selecting the preceding evening exposes separate higher occurrences without inheriting phase judgments.
+- [PASS] Selecting the preceding evening exposes separate higher occurrences without inheriting phase judgments.
   - Where: guide checkpoint 276, Reviewed day start / December 31 context.
   - Expected: 2026 yearly Q4, 2023 quadrennial and 2011 16-year occurrences all Unresolved; original reference and reviewed day remain January 1.
-- [NOT TESTED] Direct X(R) records the old-year AMDX profile while navigation preserves the independent new-year XAMD and intraday selection.
+- [PASS] Direct X(R) records the old-year AMDX profile while navigation preserves the independent new-year XAMD and intraday selection.
   - Where: guide checkpoint 277, December 31 Yearly Q4 X(R), switch between contexts, close editor.
   - Expected: old-year AMDX / X(R), new-year XAMD / X(C), no navigation entries or retargeted NYAM.
-- [NOT TESTED] Inactive monthly and weekly positions remain inspectable without an automatically selected input quarter.
+- [PASS] Inactive monthly and weekly positions remain inspectable without an automatically selected input quarter.
   - Where: guide checkpoint 278, Monthly and Weekly left occurrence cells.
   - Expected: monthly Unassigned / weekly Distortion, disabled phase buttons until explicit Q1–Q4; no Q5 or automatic Not Applicable.
-- [NOT TESTED] A failed higher assessment rolls back the calendar judgment and requires deliberate recovery without replay.
+- [PASS] A failed higher assessment rolls back the calendar judgment and requires deliberate recovery without replay.
   - Where: guide checkpoint 279, fixture failure menu, attempt old-year Q4 X(C), remove fault and Reload.
   - Expected: Entry not recorded / disabled controls, old-year X(R) / AMDX retained; no partial command or automatic retry.
-- [NOT TESTED] Restart restores valid higher navigation and both independent profiles while the captured assessment retains its original scope read-only.
+- [PASS] Restart restores valid higher navigation and both independent profiles while the captured assessment retains its original scope read-only.
   - Where: guide checkpoint 280, same-directory window-X restart, higher editor, Captured run assessment.
   - Expected: old-year Q4 X(R) / AMDX and new-year Q1 X(C) / XAMD; retained proof distinguishes January 1 launch from December 31 selection; original Expected launch remains unresolved.
 
