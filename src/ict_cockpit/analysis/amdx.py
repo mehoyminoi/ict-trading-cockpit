@@ -63,6 +63,16 @@ def timestamp(value: str) -> datetime:
     return aware(datetime.fromisoformat(value.replace("Z", "+00:00")))
 
 
+def canonical_timestamp(value: datetime) -> datetime:
+    """Keep the exact written offset/instant, without ZoneInfo fold equality.
+
+    Domain records already serialize ISO timestamps with numeric offsets.
+    Match that representation in memory so valid repeated-hour values replay
+    and compare correctly, without changing their serialized content.
+    """
+    return timestamp(aware(value).isoformat())
+
+
 def require_id(value: str) -> None:
     if not isinstance(value, str) or not value.strip():
         raise ValueError("An explicit non-empty identity is required")
@@ -80,7 +90,9 @@ class Quarter:
         require_id(self.id)
         if type(self.position) is not int or self.position not in range(1, 5):
             raise ValueError("Quarter position must be 1 through 4")
-        if aware(self.start) >= aware(self.end):
+        object.__setattr__(self, "start", canonical_timestamp(self.start))
+        object.__setattr__(self, "end", canonical_timestamp(self.end))
+        if self.start >= self.end:
             raise ValueError("Quarter bounds must increase")
 
 
@@ -240,6 +252,10 @@ class Claim:
     retired_anchor_ids: tuple[str, ...] = ()
     applicability: tuple[Anchor, ...] = ()
     action_anchor: Anchor | None = None
+
+    def __post_init__(self):
+        object.__setattr__(self, "recorded_at", canonical_timestamp(self.recorded_at))
+        object.__setattr__(self, "market_reference", canonical_timestamp(self.market_reference))
 
 
 def claim_payload(claim: Claim) -> dict:

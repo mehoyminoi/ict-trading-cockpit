@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from ict_cockpit.analysis.amdx import (
-    Claim, InterpretationHistory, Role, aware, payload, require_id, timestamp,
+    Claim, InterpretationHistory, Role, aware, canonical_timestamp, payload, require_id, timestamp,
 )
 
 
@@ -31,6 +31,10 @@ class Comparison:
     recorded_at: datetime
     market_reference: datetime
     policy: str = PAIRING_POLICY
+
+    def __post_init__(self):
+        object.__setattr__(self, "recorded_at", canonical_timestamp(self.recorded_at))
+        object.__setattr__(self, "market_reference", canonical_timestamp(self.market_reference))
 
     @property
     def scope(self) -> tuple[str, str, str]:

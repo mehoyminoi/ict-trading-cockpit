@@ -10,7 +10,7 @@ from threading import Barrier
 
 import pytest
 
-from ict_cockpit.analysis.amdx import Profile, Role, XSubtype
+from ict_cockpit.analysis.amdx import Profile, Role, XSubtype, payload
 from ict_cockpit.analysis.amdx_context import HIGHER_LEVELS
 from ict_cockpit.analysis.amdx_review import StaleComparison
 from ict_cockpit.analysis.market_time import MARKET_TIMEZONE, build_market_time_context
@@ -213,6 +213,33 @@ def test_equivalent_utc_z_original_reference_does_not_invalidate_inspected_meani
     TradingSessionRunRepository(connection).save(run)
     assert write(repo, inspected).claim.market_reference == REFERENCE
     assert snapshot(repo, run, "Observed").projection.reference == REFERENCE
+
+
+def test_repeated_dst_hour_change_rejects_original_observed_target(store):
+    connection, repo, run, _ = store
+    run.market_context_snapshot = {"reference_market_time": "2025-11-02T01:30:00-04:00"}
+    TradingSessionRunRepository(connection).save(run)
+    inspected = target(repo, run, "Observed")
+    run.market_context_snapshot = {"reference_market_time": "2025-11-02T01:30:00-05:00"}
+    TradingSessionRunRepository(connection).save(run)
+    with pytest.raises(StaleAMDXUpdate, match="reference changed"):
+        write(repo, inspected)
+    assert counts(connection) == (0,) * len(TABLES)
+
+
+def test_repeated_dst_hour_exact_retry_retains_original_instant(store):
+    connection, repo, run, _ = store
+    run.market_context_snapshot = {"reference_market_time": "2025-11-02T01:30:00-04:00"}
+    TradingSessionRunRepository(connection).save(run)
+    inspected = target(repo, run, "Observed")
+    first = write(repo, inspected)
+    run.market_context_snapshot = {"reference_market_time": "2025-11-02T01:30:00-05:00"}
+    TradingSessionRunRepository(connection).save(run)
+    before = counts(connection)
+    retry = write(repo, inspected)
+    assert payload(retry) == payload(first)
+    assert retry.claim.market_reference.isoformat() == "2025-11-02T01:30:00-04:00"
+    assert counts(connection) == before
 
 
 @pytest.mark.parametrize("channel", ["Expected", "Observed"])

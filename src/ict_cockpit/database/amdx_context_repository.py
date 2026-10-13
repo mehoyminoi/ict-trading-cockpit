@@ -4,7 +4,7 @@ No migration, legacy conversion, live clock or UI policy. Callers own process
 permissions; targets retain the inspected run/channel/cycle/reference/heads.
 """
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 
 from ict_cockpit.analysis.amdx import Anchor, Cycle, Role, XSubtype, aware, require_id, timestamp
@@ -163,7 +163,9 @@ class AMDXContextRepository:
                 # only a new request is checked against current provenance.
                 if not retry:
                     current = self._saved_reference(self._run_fields(target.run_id)[0])
-                    if current != as_new_york(target.market_reference):
+                    # Same-zone datetime equality ignores the repeated-hour
+                    # fold. Compare actual instants, including their offsets.
+                    if current.astimezone(timezone.utc) != target.market_reference.astimezone(timezone.utc):
                         raise StaleAMDXUpdate("Saved run-start reference changed; reload higher context before entry")
                 return self.amdx.review._revise_observed_locked(**arguments,
                     comparison_id=comparison_id, expected_observed_head_id=target.expected_head_id,
