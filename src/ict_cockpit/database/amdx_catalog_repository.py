@@ -8,6 +8,7 @@ from ict_cockpit.analysis.amdx import (
     claim_payload, cycle_from_payload, payload, require_id, timestamp,
 )
 from ict_cockpit.analysis.amdx_catalog import CATALOG_POLICY, CaptureBasis, Catalog
+from ict_cockpit.analysis.amdx_master import MasterCalendar, master_owner_payload, read_master_owner
 from ict_cockpit.analysis.amdx_context import project_stack, resolve_stack_cycles
 from ict_cockpit.database.amdx_repository import StaleAMDXUpdate, WorkingRevisionResult, _json
 
@@ -87,12 +88,15 @@ def _result_payload(result):
 def read_catalog_archive(value):
     """Validate a self-contained archive, including original no-op provenance."""
     if set(value) != {"version", "policy", "catalog", "commands"} or (
-        type(value["version"]) is not int or value["version"] != 1 or value["policy"] != CATALOG_POLICY
+        type(value["version"]) is not int or value["version"] not in (1, 2) or value["policy"] != CATALOG_POLICY
     ):
         raise ValueError("Unsupported catalog archive envelope")
-    if set(value["catalog"]) != set(Catalog.__dataclass_fields__):
-        raise ValueError("Unsupported catalog identity fields")
-    catalog = Catalog(**value["catalog"])
+    if value["version"] == 1:
+        if set(value["catalog"]) != set(Catalog.__dataclass_fields__):
+            raise ValueError("Unsupported catalog identity fields")
+        catalog = Catalog(**value["catalog"])
+    else:
+        catalog = read_master_owner(value["catalog"])
     history, _ = _replay(catalog, value["commands"])
     return catalog, history
 
@@ -103,6 +107,8 @@ class AMDXCatalogRepository:
         self.connection = amdx.connection
 
     def create(self, catalog: Catalog):
+        if not isinstance(catalog, Catalog):
+            raise ValueError("Master owners require the canonical master creation action")
         encoded = _json(payload(catalog))
         with self.amdx._transaction():
             existing = self.connection.execute("SELECT payload_json FROM amdx_catalog WHERE id=?", (catalog.id,)).fetchone()
@@ -120,9 +126,10 @@ class AMDXCatalogRepository:
         if row is None:
             raise ValueError("Catalog does not exist")
         value = json.loads(row[1])
-        if set(value) != set(Catalog.__dataclass_fields__):
-            raise ValueError("Unsupported catalog identity fields")
-        catalog = Catalog(**value)
+        if set(value) == set(Catalog.__dataclass_fields__):
+            catalog = Catalog(**value)
+        else:
+            catalog = read_master_owner(value)
         if (catalog.id, catalog.instrument) != (catalog_id, row[0]):
             raise ValueError("Catalog payload disagrees with stored ownership")
         return catalog
@@ -130,7 +137,9 @@ class AMDXCatalogRepository:
     def list_catalogs(self, *, instrument=None):
         rows = self.connection.execute("SELECT id FROM amdx_catalog WHERE (? IS NULL OR instrument=?) ORDER BY rowid",
                                        (instrument, instrument)).fetchall()
-        return tuple(self.get(r[0]) for r in rows)
+        # Preserve the old collection chooser's contract. Normal master access
+        # uses amdx.master and never adds a fabricated Backtest/ForwardTest purpose.
+        return tuple(c for r in rows if isinstance(c := self.get(r[0]), Catalog))
 
     def _commands(self, catalog):
         rows = self.connection.execute("SELECT id,cycle_id,channel,payload_json FROM amdx_catalog_command WHERE catalog_id=? ORDER BY sequence",
@@ -238,4 +247,6 @@ class AMDXCatalogRepository:
             catalog = self.get(catalog_id)
             commands = self._commands(catalog)
             _replay(catalog, commands)
-            return dict(version=1, policy=CATALOG_POLICY, catalog=payload(catalog), commands=commands)
+            is_master = isinstance(catalog, MasterCalendar)
+            return dict(version=2 if is_master else 1, policy=CATALOG_POLICY,
+                        catalog=master_owner_payload(catalog) if is_master else payload(catalog), commands=commands)

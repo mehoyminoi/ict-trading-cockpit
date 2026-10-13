@@ -46,6 +46,8 @@ class AMDXRepository:
         self.context = AMDXContextRepository(self)
         from ict_cockpit.database.amdx_catalog_repository import AMDXCatalogRepository
         self.catalog = AMDXCatalogRepository(self)
+        from ict_cockpit.database.amdx_master_repository import AMDXMasterRepository
+        self.master = AMDXMasterRepository(self)
 
     @contextmanager
     def _transaction(self):

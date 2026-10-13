@@ -1491,3 +1491,8 @@ Broader thesis changes should have easy full-stack inspection and full TDA/Retur
 ### Shared calendar implementation specification — 2026-10-13
 
 `AMDX_MASTER_CALENDAR_CONTRACT.md` develops the accepted master-calendar ownership requirement into canonical instrument binding, shared working/observed actions and immutable run capture/retry/transition rules. Normal areas use the same maintained owner; a run retains exact captured revisions and explicit absent heads rather than today's head. No purpose/destination chooser or extra Save is required for normal entry. Technical transaction/capture boundaries are developer implementation choices following authorization to proceed, not separately confirmed product wishes. This remains unimplemented; current source/schema and smoke results are unchanged.
+
+
+## 2026-10-13 — Canonical master foundation implemented
+
+PR #71/source `8269b64` implements canonical first instrument/ledger binding, purpose-independent owner metadata, clean initialization or deliberate existing-ledger adoption, consistent shared reads/pinned targets and self-contained binding/ledger archives. Schema v43 preserves all actual v42 source rows and invents no assets/bindings. Existing v1 collection archive semantics remain intact; no working/observed or conflicting-source merge occurs. Focused 263 PASS (34 new cases), complete 970 PASS across 79 isolated module processes in 259.56s, clean exits/no pytest warnings. GUI/tools and all 264 smoke records are unchanged. Native shared ownership and persisted run captures remain unimplemented; owned run capture integration is next. #67–71 remain unmerged, main `6dd43c8` (v41), Alpha 0.7. See `AMDX_MASTER_CALENDAR_GUIDE.md` for API/transaction/transition boundaries.

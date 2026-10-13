@@ -54,7 +54,7 @@ def test_actual_e6_writer_restores_in_e7_normal_window_without_reseeding(tmp_pat
             run = shell.active_trading_run
             assert shell.runtime.session.current_mode_id == ("live-watch" if attempt == 0 else "post-market")
             assert run.id == evidence["run_id"]
-            assert conn.execute("PRAGMA user_version").fetchone()[0] == CURRENT_SCHEMA_VERSION == 42
+            assert conn.execute("PRAGMA user_version").fetchone()[0] == CURRENT_SCHEMA_VERSION == 43
             assert TradingSessionRunRepository(conn).amdx.get_history(run.id).claims == ()
             assert TradingSessionRunRepository(conn).amdx.get_evaluations(run.id) == ()
             assert run.context_rule_snapshot == []

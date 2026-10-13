@@ -1,6 +1,6 @@
 # Shared AMDX calendar and captured run context
 
-**Status: implementation contract following the operator's shared-calendar clarification and authorization to proceed, 2026-10-13. Not an implemented migration or consumer binding.** Product ownership follows `AMDX_MASTER_CALENDAR_CLARIFICATION.md`; the detailed transaction and capture design below is the developer's implementation specification, not a claim of additional operator acceptance.
+**Status: implementation contract following the operator's shared-calendar clarification and authorization to proceed, 2026-10-13. Canonical first-binding/read-target foundation is now implemented in schema v43; run captures and native consumer binding remain unimplemented.** Product ownership follows `AMDX_MASTER_CALENDAR_CLARIFICATION.md`; the detailed transaction and capture design below is the developer's implementation specification, not a claim of additional operator acceptance.
 
 One maintained calendar per instrument supplies Lab, TDA and Watch. Areas and Backtest/ForwardTest/Live purposes are views and provenance, not default calendar owners. Run captures preserve the basis actually used without making a separate everyday calendar for each run. MNQ is the initial instrument; NNQ remains a distinct identity.
 
@@ -88,4 +88,9 @@ Normal clean-data use has no repeated migration choice. Missing/malformed bindin
 
 Implement the canonical master binding and shared read/target facade first, including versioned owner metadata, deliberate legacy adoption and focused actual v42 migration/reopen/concurrency tests. Then add immutable run instrument/capture identity and the owned write/capture helpers before rebinding native consumers. Do not advertise cross-area sharing until Lab/TDA/Watch are actually bound and the above evidence passes. Final renderer, bulk ingestion/performance, broad as-of queries, classifiers and Study-first startup remain separate.
 
-This checkpoint changes documentation only: runtime source remains `678e9a0`, schema v42 / Alpha 0.7, and all 264 smoke records are unchanged. Retain prior 97-focused/936-complete validation; it is not a new validation of this proposed integration. The disposable existing-ledger probe and document checks recorded in project state verify reuse boundaries only. No new user smoke trial or merge is requested.
+The initial contract checkpoint changed documentation only: runtime source remained `678e9a0`, schema v42 / Alpha 0.7, and all 264 smoke records are unchanged. Retain prior 97-focused/936-complete validation; it is not a new validation of this proposed integration. The disposable existing-ledger probe and document checks recorded in project state verify reuse boundaries only. No new user smoke trial or merge is requested.
+
+
+## Foundation implementation checkpoint
+
+`AMDX_MASTER_CALENDAR_GUIDE.md` records the implemented first canonical binding, purpose-independent versioned owner metadata, deliberate existing-ledger adoption, shared read/target facade and portable binding/ledger archive. Schema v43 preserves existing v42 data and assigns nothing automatically. This supersedes the documentation-only state for those foundation pieces, not for run captures/native integration or first-binding supersession. The detailed run/channel/write contract above remains the next integration boundary. Existing native smoke records are unchanged.
