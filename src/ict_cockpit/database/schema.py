@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 45
+CURRENT_SCHEMA_VERSION = 46
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -143,6 +143,11 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 44:
             _migrate_version_44_to_45(connection)
             version = 45
+        if version == 45:
+            # Versioned bounded Review proofs live inside immutable assessment receipts.
+            # Older readers must not open a database that may contain envelope v2.
+            connection.execute("PRAGMA user_version = 46")
+            version = 46
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")

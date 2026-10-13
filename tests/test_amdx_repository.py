@@ -321,7 +321,7 @@ def test_actual_v37_schema_migrates_without_rewriting_legacy_rows_or_inventing_h
     before = connection.execute("SELECT * FROM trading_session_run WHERE id = ?", (run.id,)).fetchone()
     connection.close()
     connection = open_application_database(database)
-    assert connection.execute("PRAGMA user_version").fetchone()[0] == CURRENT_SCHEMA_VERSION == 45
+    assert connection.execute("PRAGMA user_version").fetchone()[0] == CURRENT_SCHEMA_VERSION == 46
     assert connection.execute("SELECT * FROM trading_session_run WHERE id = ?", (run.id,)).fetchone() == before
     repo = TradingSessionRunRepository(connection)
     assert repo.get_by_id(run.id).qt_context == run.qt_context

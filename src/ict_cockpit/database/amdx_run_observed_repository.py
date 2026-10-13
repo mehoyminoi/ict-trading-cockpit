@@ -6,6 +6,7 @@ import json
 from ict_cockpit.analysis.amdx import canonical_timestamp, payload, require_id, timestamp
 from ict_cockpit.analysis.amdx_catalog import CaptureBasis
 from ict_cockpit.analysis.amdx_context import HIGHER_LEVELS
+from ict_cockpit.analysis.amdx_review_scope import make_scope, orientations, validate_scope
 from ict_cockpit.analysis.market_time import futures_trading_day_for
 from ict_cockpit.database.amdx_master_repository import MasterTarget
 from ict_cockpit.database.amdx_repository import StaleAMDXUpdate, _json
@@ -19,6 +20,7 @@ POLICY = "amdx-run-observed-calendar-v1"
 class PreparedRunObservation:
     basis_json: str
     target: MasterTarget
+    scope_proof_json: str | None = None
 
 
 @dataclass(frozen=True)
@@ -42,7 +44,7 @@ class RunObservationResult:
         return "Run assessment"
 
 
-def _scope(binding, launch, context, target):
+def _scope(binding, launch, context, target, scope_proof=None, projection=None):
     original = _read_packet(launch)
     if original.reason != "Launch" or launch["binding"] != binding or original.operation_id != binding["launch_operation_id"]:
         raise ValueError("Observed assessment requires the original launch basis")
@@ -67,9 +69,13 @@ def _scope(binding, launch, context, target):
     ) != (binding["catalog_id"], binding["instrument"], "Observed"):
         raise ValueError("Observed target has different instrument/binding/channel")
     if cycle["layer"] in HIGHER_LEVELS:
-        if canonical_timestamp(reference) != canonical_timestamp(original.projection.reference):
-            raise ValueError("Higher Review is limited to the original launch reference until bounded scope proof is implemented")
+        if scope_proof is not None:
+            validate_scope(scope_proof, binding, launch, reference, [r["context"] for r in projection["cycles"][:5]])
+        elif canonical_timestamp(reference) != canonical_timestamp(original.projection.reference):
+            raise ValueError("Higher Review is limited to the original launch reference without explicit bounded scope proof")
     elif cycle["layer"] in ("day", "session"):
+        if scope_proof is not None:
+            raise ValueError("Higher scope proof cannot authorize intraday assessment")
         if futures_trading_day_for(reference) != futures_trading_day_for(original.projection.reference):
             raise ValueError("Observed assessment is outside its original reviewed trading day")
     else:
@@ -78,21 +84,23 @@ def _scope(binding, launch, context, target):
 
 def _read_command(value):
     if set(value) != {"version", "policy", "request", "result"} or type(value["version"]) is not int or (
-        value["version"] != 1 or value["policy"] != POLICY
+        value["version"] not in (1, 2) or value["policy"] != POLICY
     ):
         raise ValueError("Unsupported run Observed envelope")
     request, result = value["request"], value["result"]
-    if set(request) != {"id", "recorded_at", "basis", "target", "calendar_request"} or set(result) != {
+    if set(request) != ({"id", "recorded_at", "basis", "target", "calendar_request"} | ({"scope_proof"} if value["version"] == 2 else set())) or set(result) != {
         "master", "projection", "calendar_command"
     }:
         raise ValueError("Unsupported run Observed fields")
     if set(request["target"]) != {"binding", "target"}:
         raise ValueError("Unsupported run Observed target fields")
+    if value["version"] == 2 and not isinstance(request["scope_proof"], dict):
+        raise ValueError("Higher assessment requires explicit scope proof")
     basis = request["basis"]
     if set(basis) != {"binding", "run_context", "launch", "parent_id", "master", "projection"}:
         raise ValueError("Unsupported run assessment basis")
     binding = _read_run_binding(basis["binding"])
-    _scope(binding, basis["launch"], basis["run_context"], request["target"])
+    _scope(binding, basis["launch"], basis["run_context"], request["target"], request.get("scope_proof"), basis["projection"])
     before_binding, before = _read_projection(basis["projection"], basis["master"], channel="Observed")
     after_binding, after = _read_projection(result["projection"], result["master"], channel="Observed")
     if before_binding != after_binding or payload(before_binding) != request["target"]["binding"] or (
@@ -128,11 +136,13 @@ def _read_command(value):
 
 
 def read_run_observed_archive(value):
-    if set(value) != {"version", "policy", "run_id", "commands"} or type(value["version"]) is not int or value["version"] != 1 or value["policy"] != POLICY:
+    if set(value) != {"version", "policy", "run_id", "commands"} or type(value["version"]) is not int or value["version"] not in (1, 2) or value["policy"] != POLICY:
         raise ValueError("Unsupported run Observed archive")
     require_id(value["run_id"])
     results, known, parent, binding = [], set(), None, None
     for command in value["commands"]:
+        if command["version"] > value["version"]:
+            raise ValueError("Archive version does not support its assessment")
         result = _read_command(command)
         basis = command["request"]["basis"]
         if result.id in known or result.run_id != value["run_id"] or basis["parent_id"] != parent or (
@@ -154,18 +164,25 @@ class AMDXRunObservedRepository:
         row = self.connection.execute("SELECT id FROM amdx_run_observed_command WHERE run_id=? ORDER BY sequence DESC LIMIT 1", (run_id,)).fetchone()
         return row[0] if row else None
 
-    def prepare(self, run_id, *, reference, level, position):
+    def higher_orientations(self, run_id):
+        with self.amdx.review._snapshot():
+            binding = self.amdx.run_calendar.get_binding(run_id)
+            launch = self.amdx.run_calendar.get_result(binding["launch_operation_id"]).capture
+            return orientations(launch.projection.reference)
+
+    def prepare(self, run_id, *, reference, level, position, higher_scope=False):
         with self.amdx.review._snapshot():
             binding = self.amdx.run_calendar.get_binding(run_id)
             context = self.amdx.run_calendar._run_context(run_id)
             launch = self.amdx.run_calendar.get_result(binding["launch_operation_id"]).capture.packet
             target = self.amdx.master.prepare_target(binding["instrument"], reference=reference,
                 level=level, position=position, channel="Observed")
-            _scope(binding, launch, context, payload(target))
             projection = self.amdx.master.load_stack(binding["instrument"], reference=reference, channel="Observed").projection
+            proof = make_scope(binding, launch, reference) if higher_scope else None
+            _scope(binding, launch, context, payload(target), proof, payload(projection))
             basis = dict(binding=binding, run_context=context, launch=launch, parent_id=self._head(run_id),
                 master=self.amdx.master.export_archive(binding["instrument"]), projection=payload(projection))
-            return PreparedRunObservation(_json(basis), target)
+            return PreparedRunObservation(_json(basis), target, _json(proof) if proof is not None else None)
 
     def revise(self, prepared, *, operation_id, recorded_at, role=None, anchor_id=None,
                source_ref="", subtype=None, note="", clear_applicability=False, capture=None):
@@ -177,6 +194,8 @@ class AMDXRunObservedRepository:
             capture=capture or CaptureBasis(kind="HistoricalEntry"))
         request = dict(id=operation_id, recorded_at=recorded_at.isoformat(), basis=basis,
             target=payload(prepared.target), calendar_request=calendar_request)
+        if prepared.scope_proof_json is not None:
+            request["scope_proof"] = json.loads(prepared.scope_proof_json)
         with self.amdx._transaction():
             saved = self.connection.execute("SELECT payload_json FROM amdx_run_observed_command WHERE id=?", (operation_id,)).fetchone()
             if saved:
@@ -185,10 +204,11 @@ class AMDXRunObservedRepository:
                 return self.get_result(operation_id)
             self.amdx.run_calendar._reserve(dict(id=operation_id, capture_id=operation_id))
             binding = basis["binding"]
-            _scope(binding, basis["launch"], basis["run_context"], request["target"])
+            _scope(binding, basis["launch"], basis["run_context"], request["target"], request.get("scope_proof"), basis["projection"])
             current = self.prepare(binding["run_id"], reference=prepared.target.target.market_reference,
                 level=prepared.target.target.cycle.layer,
-                position=next(q.position for q in prepared.target.target.cycle.quarters if q.id == prepared.target.target.quarter_id))
+                position=next(q.position for q in prepared.target.target.cycle.quarters if q.id == prepared.target.target.quarter_id),
+                higher_scope=prepared.scope_proof_json is not None)
             if current != prepared:
                 raise StaleAMDXUpdate("Inspected Observed calendar/run basis changed; use Reload AMDX")
             if basis["parent_id"] and recorded_at < self.get_result(basis["parent_id"]).recorded_at:
@@ -199,7 +219,7 @@ class AMDXRunObservedRepository:
             projection = self.amdx.master.load_stack(binding["instrument"],
                 reference=prepared.target.target.market_reference, channel="Observed").projection
             result = dict(master=master, projection=payload(projection), calendar_command=master["ledger"]["commands"][-1])
-            command = dict(version=1, policy=POLICY, request=request, result=result)
+            command = dict(version=2 if prepared.scope_proof_json is not None else 1, policy=POLICY, request=request, result=result)
             receipt = _read_command(command)
             self.connection.execute("INSERT INTO amdx_run_observed_command(id,run_id,catalog_id,catalog_command_id,parent_id,payload_json) VALUES (?,?,?,?,?,?)",
                 (operation_id, binding["run_id"], binding["catalog_id"], operation_id, basis["parent_id"], receipt.packet_json))
@@ -228,7 +248,8 @@ class AMDXRunObservedRepository:
             rows = self.connection.execute("SELECT id,payload_json FROM amdx_run_observed_command WHERE run_id=? ORDER BY sequence", (run_id,)).fetchall()
             for id, _ in rows:
                 self.get_result(id)
-            archive = dict(version=1, policy=POLICY, run_id=run_id, commands=[json.loads(row[1]) for row in rows])
+            commands = [json.loads(row[1]) for row in rows]
+            archive = dict(version=max((c["version"] for c in commands), default=1), policy=POLICY, run_id=run_id, commands=commands)
             read_run_observed_archive(archive)
             return archive
 

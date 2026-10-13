@@ -1,3 +1,4 @@
+import sqlite3
 from PySide6.QtCore import QTimer
 from PySide6.QtGui import QAction, QKeySequence
 from PySide6.QtWidgets import (
@@ -467,6 +468,31 @@ class MainWindow(QMainWindow):
         self.tda_station_session_repository.save(shell.runtime.tda_station_runner_widget.session)
 
     def _open_amdx_stack(self, scope):
+        if scope.get("review_run_id") is not None:
+            from ict_cockpit.gui.amdx_review_stack_dialog import AMDXReviewStackDialog
+            shell = self.trade_plan_widget.trading_day_shell_widget
+            run_id = scope["review_run_id"]
+            def allowed():
+                run = shell.active_trading_run
+                return (run is not None and run.id == run_id and shell.runtime.current_mode.id == "post-market"
+                    and self.tabs.currentWidget() is self.trade_plan_widget)
+            if not allowed():
+                return
+            try:
+                dialog = AMDXReviewStackDialog(self.trading_session_run_repository.amdx, run_id, self, allowed=allowed)
+                def update_active(_index):
+                    dialog.pane.set_active(allowed())
+                self.tabs.currentChanged.connect(update_active)
+                try:
+                    dialog.exec()
+                finally:
+                    self.tabs.currentChanged.disconnect(update_active)
+                    dialog.pane.set_active(False)
+                    dialog.deleteLater()
+                shell._refresh_market_time_display()
+            except (ValueError, TypeError, sqlite3.Error, RuntimeError) as error:
+                self.status_bar.showMessage(f"Higher Review unavailable: {error}", 6000)
+            return
         if scope.get("capture") is not None:
             from ict_cockpit.gui.amdx_captured_stack_dialog import AMDXCapturedStackDialog
             dialog = AMDXCapturedStackDialog(scope["capture"], self.trading_session_run_repository.amdx, self)
