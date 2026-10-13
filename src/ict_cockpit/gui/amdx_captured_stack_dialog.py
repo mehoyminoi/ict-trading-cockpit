@@ -49,6 +49,11 @@ class AMDXCapturedStackDialog(QDialog):
         self.resize(1344, 756)
         layout = QVBoxLayout(self)
         layout.addWidget(QLabel(f"Captured at {capture.reason.lower()} · reference {capture.projection.reference.isoformat()} · read-only"))
+        proof = capture.packet.get("request", {}).get("scope_proof")
+        if proof:
+            scope = QLabel(f'Reviewed Trading Day {proof["reviewed_day"]} · original {proof["original_reference"]} · selected {proof["selected_reference"]} · {proof["source"]}\n{proof["window_start"]} → {proof["window_end"]} (end excluded) · {proof["policy"]}')
+            scope.setWordWrap(True)
+            layout.addWidget(scope)
         self.pane = _CapturedPane(_CapturedSource(capture, amdx), reference=capture.projection.reference)
         self.pane.heading.setText("AMDX · retained run context")
         self.pane.channel_selector.setCurrentText(capture.projection.channel)

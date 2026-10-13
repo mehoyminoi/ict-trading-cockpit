@@ -2,6 +2,8 @@
 
 Use this file to make chat, branch, and developer handoffs deterministic and to prevent architectural regression when long conversation history is unavailable.
 
+Current consolidation frontier: `AMDX_CONSOLIDATION_REVIEW.md` reviews PRs #67–75 and the direct main-v41 → final-v46 path. All operator checks 261–280 are PASS; merge is still awaiting separate authorization. The functional AMDX foundation is integrated; next product work is the whole-cockpit UX/Study plan, with criteria authoring/evaluation and controlled legacy/history imports preserved as subsequent milestones. Read the latest `PROJECT_STATE.md` checkpoint for exact publication and validation evidence.
+
 ## Canonical handoff package
 
 A new development chat should read these documents in this order:

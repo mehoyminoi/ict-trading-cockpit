@@ -40,6 +40,9 @@ class AMDXSharedContextWidget(AMDXContextWidget):
         self.reload_button.clicked.connect(self._deliberate_reload)
         self.assessment_button = QPushButton("Captured run assessment")
         self.assessment_button.clicked.connect(self._open_assessment)
+        self.review_stack_button = QPushButton("Review full AMDX stack")
+        self.review_stack_button.clicked.connect(self._open_review_stack)
+        controls.addWidget(self.review_stack_button)
         controls.addWidget(self.full_stack_button)
         controls.addWidget(self.reload_button)
         controls.addWidget(self.assessment_button)
@@ -246,6 +249,10 @@ class AMDXSharedContextWidget(AMDXContextWidget):
                 + f" · {error} · use Reload AMDX")
             self._render()
 
+    def _open_review_stack(self):
+        if self.binding and self.channel == "Observed" and self._surface_active and not self._read_error:
+            self.open_stack.emit(dict(review_run_id=self.run.id))
+
     def _open_assessment(self):
         if self.observed_capture and not self._read_error:
             self.open_stack.emit(dict(capture=self.observed_capture, instrument=self.binding["instrument"], run_id=self.run.id))
@@ -260,9 +267,12 @@ class AMDXSharedContextWidget(AMDXContextWidget):
         super()._render()
         if self._loading or not hasattr(self, "captured_label"):
             return
+        self.review_stack_button.setVisible(self.binding is not None and self.channel == "Observed")
+        self.review_stack_button.setEnabled(not self._read_error and self._surface_active)
         self.captured_label.hide()
         self.assessment_button.setVisible(self.channel == "Observed" and self.observed_capture is not None)
         self.assessment_button.setEnabled(not self._read_error)
+        self.full_stack_button.setText("Captured launch stack" if self.channel == "Observed" else "Full AMDX stack")
         self.full_stack_button.setVisible(self.binding is not None)
         self.reload_button.setVisible(self.binding is not None or self._shared_needs_reload)
         self.full_stack_button.setEnabled(not self._read_error)

@@ -45,13 +45,13 @@ def test_actual_v42_migration_preserves_every_source_row_and_assigns_nothing(tmp
         assert not connection.execute("SELECT name FROM sqlite_master WHERE name LIKE '%master_binding%' OR name='idx_amdx_catalog_owner_instrument'").fetchall()
         assert {n:connection.execute(f'SELECT * FROM "{n}"').fetchall() for n in names}==before
     initialize_schema(connection)
-    assert connection.execute('PRAGMA user_version').fetchone()[0]==45
+    assert connection.execute('PRAGMA user_version').fetchone()[0]==46
     assert {n:connection.execute(f'SELECT * FROM "{n}"').fetchall() for n in names}==before
     assert not connection.execute('SELECT * FROM amdx_master_binding').fetchall()
     assert repo.catalog.export_archive(cat.id)==archive
     with pytest.raises(ValueError,match='no canonical'):
         repo.master.resolve('MNQ')
-    with pytest.raises(RuntimeError,match='Unsupported database schema version: 45'):
+    with pytest.raises(RuntimeError,match='Unsupported database schema version: 46'):
         previous(connection)
     assert not connection.execute('PRAGMA foreign_key_check').fetchall()
     connection.close()
