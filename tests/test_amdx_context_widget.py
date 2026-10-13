@@ -33,6 +33,9 @@ def cockpit(tmp_path):
     connection = open_application_database(tmp_path / "ui.db")
     window = MainWindow(TDARepository(connection), StudyFindRepository(connection))
     shell = window.trade_plan_widget.trading_day_shell_widget
+    # Preserve the instrument-unassigned legacy fixture and its accepted run-owned API.
+    # Normal shared launches are exercised by test_amdx_shared_native.py.
+    shell.calendar_repository = None
     shell.run_environment = RunEnvironment.REPLAY
     shell.run_market_timestamp = reference()
     assert shell.start_trading_run()

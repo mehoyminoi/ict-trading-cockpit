@@ -1,5 +1,7 @@
 # Immutable run context and atomic calendar updates
 
+Current native integration is documented in `AMDX_SHARED_NATIVE_GUIDE.md`; this document retains the scope and evidence of its earlier foundation checkpoint.
+
 This slice implements the run binding/capture and transaction primitives from `AMDX_MASTER_CALENDAR_CONTRACT.md`. Native Lab/TDA/Watch and existing decision/evidence/Observed Review actions are not rebound yet. There is no new visible workflow or operator trial in this backend checkpoint.
 
 ## Implemented data and actions

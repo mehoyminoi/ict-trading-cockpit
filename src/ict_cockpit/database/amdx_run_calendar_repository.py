@@ -58,9 +58,9 @@ class RunCalendarResult:
     calendar_result: WorkingRevisionResult | None = None
 
 
-def _envelope(value, fields):
+def _envelope(value, fields, versions=(1,)):
     if set(value) != set(fields) | {"version", "policy"} or (
-        type(value["version"]) is not int or value["version"] != 1 or value["policy"] != RUN_CALENDAR_POLICY
+        type(value["version"]) is not int or value["version"] not in versions or value["policy"] != RUN_CALENDAR_POLICY
     ):
         raise ValueError("Unsupported run calendar envelope")
 
@@ -177,11 +177,22 @@ def _read_packet(value):
 
 
 def _read_operation(command):
-    _envelope(command, {"request", "result"})
+    _envelope(command, {"request", "result"}, versions=(1, 2))
     request = command["request"]
-    if set(request) != {"id", "capture_id", "run_id", "operation", "recorded_at", "reason",
-                       "parent_capture_id", "binding", "run_context", "snapshot", "master_target", "calendar_request"}:
+    fields = {"id", "capture_id", "run_id", "operation", "recorded_at", "reason",
+              "parent_capture_id", "binding", "run_context", "snapshot", "master_target", "calendar_request"}
+    if command["version"] == 2:
+        fields.add("updated_run_context")
+        if request.get("operation") != "Capture":
+            raise ValueError("Run consumption requires a context-use operation")
+    if set(request) != fields:
         raise ValueError("Unsupported run calendar request fields")
+    original = request["binding"]["run_basis"]
+    if set(request["run_context"]) != set(original) or any(
+        request["run_context"][key] != original[key] for key in
+        ("id", "trading_day_id", "process_session_id", "run_environment", "run_purpose")
+    ):
+        raise ValueError("Inspected run context has inconsistent ownership")
     if set(command["result"]) != {"capture"}:
         raise ValueError("Unsupported run calendar result fields")
     packet = command["result"]["capture"]
@@ -189,7 +200,7 @@ def _read_operation(command):
     if (capture.operation_id, capture.id, capture.run_id, packet["recorded_at"], capture.reason,
         packet["binding"], packet["run_context"]) != (
         request["id"], request["capture_id"], request["run_id"], request["recorded_at"], request["reason"],
-        request["binding"], request["run_context"]
+        request["binding"], request.get("updated_run_context", request["run_context"])
     ):
         raise ValueError("Run calendar result differs from original request")
     if set(request["snapshot"]) != set(MasterSnapshot.__dataclass_fields__):
@@ -402,10 +413,11 @@ class AMDXRunCalendarRepository:
         view = self.amdx.master.load_stack(request["binding"]["instrument"], reference=timestamp(request["snapshot"]["projection"]["reference"]))
         packet = dict(version=1, policy=RUN_CALENDAR_POLICY, id=request["capture_id"], run_id=request["run_id"],
             operation_id=request["id"], recorded_at=request["recorded_at"], reason=request["reason"], binding=request["binding"],
-            run_context=request["run_context"], master=self.amdx.master.export_archive(request["binding"]["instrument"]),
+            run_context=request.get("updated_run_context", request["run_context"]), master=self.amdx.master.export_archive(request["binding"]["instrument"]),
             projection=payload(view.projection), unavailable_levels=[] if view.projection.market_open else
             [dict(level=level, reason="Closed") for level in ("day", "session")])
-        command = dict(version=1, policy=RUN_CALENDAR_POLICY, request=request, result=dict(capture=packet))
+        command = dict(version=2 if "updated_run_context" in request else 1,
+                       policy=RUN_CALENDAR_POLICY, request=request, result=dict(capture=packet))
         result = _read_operation(command)
         self.connection.execute("INSERT INTO amdx_run_capture(id,run_id,operation_id,payload_json) VALUES (?,?,?,?)",
             (request["capture_id"], request["run_id"], request["id"], _json(packet)))
@@ -467,6 +479,25 @@ class AMDXRunCalendarRepository:
                 raise ValueError("Working edit target has different binding/channel/reference")
             self.amdx.master.validate_target(target)
             self.amdx.catalog._revise_locked(target.target, calendar_request)
+            return self._store_capture(request)
+
+    def consume(self, prepared: PreparedRunCapture, updated_run, *, operation_id, capture_id, recorded_at):
+        """Commit a run data action and the exact working basis it consumed together."""
+        from ict_cockpit.database.trading_session_run_repository import RUN_COLUMNS, TradingSessionRunRepository
+        writer = TradingSessionRunRepository(self.connection)
+        values = writer._values_for_run(updated_run)
+        request = self._request(prepared, operation_id=operation_id, capture_id=capture_id,
+                                recorded_at=recorded_at, operation="Capture", reason="ContextUse")
+        request["updated_run_context"] = dict(zip(RUN_COLUMNS, values))
+        if request["updated_run_context"]["id"] != prepared.run_id:
+            raise ValueError("Run consumption has different run ownership")
+        with self.amdx._transaction():
+            existing = self._existing(request)
+            if existing is not None:
+                return existing
+            self._reserve(request)
+            self._validate_current(request, prepared.snapshot)
+            writer._save_values_locked(values)
             return self._store_capture(request)
 
     def get_result(self, operation_id):

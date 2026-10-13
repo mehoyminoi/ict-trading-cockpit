@@ -55,7 +55,7 @@ from ict_cockpit.database.context_capture_repository import ContextCaptureReposi
 from ict_cockpit.gui.feedback_dialog import FeedbackDialog
 from ict_cockpit.gui.study_find_review_widget import StudyFindReviewWidget
 from ict_cockpit.gui.study_find_widget import StudyFindWidget
-from ict_cockpit.gui.amdx_catalog_widget import AMDXCatalogWidget
+from ict_cockpit.gui.amdx_master_lab_widget import AMDXMasterLabWidget
 from ict_cockpit.gui.summary_template_workbench_widget import (
     SummaryTemplateWorkbenchWidget,
 )
@@ -207,7 +207,7 @@ class MainWindow(QMainWindow):
             self.summary_template_workbench_widget,
             "Workbench",
         )
-        self.amdx_catalog_widget = AMDXCatalogWidget(self.trading_session_run_repository.amdx.catalog)
+        self.amdx_catalog_widget = AMDXMasterLabWidget(self.trading_session_run_repository.amdx.master)
         self.tabs.addTab(self.amdx_catalog_widget, "AMDX Lab")
         self.amdx_catalog_widget.set_active(False)
         self.tabs.currentChanged.connect(lambda _index: self.amdx_catalog_widget.set_active(
@@ -229,7 +229,14 @@ class MainWindow(QMainWindow):
             self.save_trading_day_session
         )
         shell = self.trade_plan_widget.trading_day_shell_widget
+        shell.calendar_repository = self.trading_session_run_repository.amdx
+        shell.calendar_launch_context = self._save_calendar_launch_context
         shell.runtime.amdx_context_widget.set_repository(self.trading_session_run_repository.amdx)
+        shell.runtime.amdx_context_widget.open_stack.connect(self._open_amdx_stack)
+        shell.runtime.amdx_context_widget.recorded.connect(lambda _result: self.amdx_catalog_widget.refresh())
+        self.amdx_catalog_widget.recorded.connect(lambda _result: shell._refresh_market_time_display())
+        self.tabs.currentChanged.connect(lambda _index: shell.runtime.amdx_context_widget.set_active(
+            self.tabs.currentWidget() is self.trade_plan_widget))
         shell.runtime.qt_context_widget.set_intraday_read_only(True)
         shell.runtime.post_market_review_widget.set_coupled_intraday(True)
         shell.trading_day_changed.connect(self.save_trading_day)
@@ -438,7 +445,12 @@ class MainWindow(QMainWindow):
         self.status_bar.showMessage("Trading Day saved", 1200)
 
     def save_trading_session_run(self, session_run) -> None:
-        self.trading_session_run_repository.save(session_run)
+        from ict_cockpit.database.trading_session_run_repository import RUN_COLUMNS
+        values = self.trading_session_run_repository._values_for_run(session_run)
+        stored = self.trading_session_run_repository.connection.execute(
+            "SELECT " + ",".join(RUN_COLUMNS) + " FROM trading_session_run WHERE id=?", (session_run.id,)).fetchone()
+        if stored is None or tuple(stored) != values:
+            self.trading_session_run_repository.save(session_run)
         self.competency_evidence_repository.replace_from_study_review(
             trade_plan_id=self.trade_plan.id,
             trading_run=session_run,
@@ -447,6 +459,31 @@ class MainWindow(QMainWindow):
             f"{session_run.session_name} Trading Run saved",
             1200,
         )
+
+    def _save_calendar_launch_context(self):
+        shell = self.trade_plan_widget.trading_day_shell_widget
+        self.trading_day_repository.save(shell.trading_day)
+        self.trading_day_session_repository.save(shell.runtime.session)
+        self.tda_station_session_repository.save(shell.runtime.tda_station_runner_widget.session)
+
+    def _open_amdx_stack(self, scope):
+        if scope.get("capture") is not None:
+            from ict_cockpit.gui.amdx_captured_stack_dialog import AMDXCapturedStackDialog
+            dialog = AMDXCapturedStackDialog(scope["capture"], self.trading_session_run_repository.amdx, self)
+            dialog.exec()
+            return
+        pane = self.amdx_catalog_widget
+        if scope["instrument"] != pane.instrument:
+            self.status_bar.showMessage("The current native Lab is configured for MNQ; another instrument is not substituted.", 5000)
+            return
+        pane.run_scope = None
+        pane.channel_selector.setCurrentText("Expected")
+        pane.set_reference(scope["reference"])
+        run = self.trade_plan_widget.trading_day_shell_widget.active_trading_run
+        if run is not None and run.id == scope.get("run_id"):
+            pane.inspect_run(run.id)
+            pane.capture_selector.setCurrentIndex(int(run.environment.value in ("Live", "Forward Test")))
+        self.tabs.setCurrentWidget(pane)
 
     def save_tda(self, tda) -> None:
         self.tda_draft_save_timer.stop()

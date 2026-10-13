@@ -477,3 +477,75 @@ def test_malformed_launch_context_object_fails_before_any_write(store,context):
     with pytest.raises(ValueError,match='must be an object'):
         repo.run_calendar.launch(prepared,operation_id='bad',capture_id='bad-capture',recorded_at=RECORDED)
     assert counts(connection)==before
+
+
+def test_consumed_action_and_context_are_atomic_and_mixed_archive_replays(store):
+    connection,repo,run,_,_=store
+    _,initial=launch(repo,run)
+    prepared=repo.run_calendar.prepare_capture(run.id,reference=REFERENCE)
+    run.add_observation('decision using displayed context')
+    result=repo.run_calendar.consume(prepared,run,operation_id='decision',capture_id='decision-capture',recorded_at=RECORDED)
+    assert TradingSessionRunRepository(connection).get_by_id(run.id).evidence[-1].note=='decision using displayed context'
+    assert result.capture.packet['run_context']['evidence_json']!=initial.capture.packet['run_context']['evidence_json']
+    assert counts(connection)[1]==0
+    archive=repo.run_calendar.export_archive(run.id)
+    assert [command['version'] for command in archive['commands']]==[1,2]
+    assert read_run_calendar_archive(archive)[1]==(initial,result)
+    bad=deepcopy(archive)
+    bad['commands'][-1]['request']['run_context']['id']='another run'
+    with pytest.raises(ValueError,match='ownership'):
+        read_run_calendar_archive(bad)
+
+
+@pytest.mark.parametrize('table',['amdx_run_capture','amdx_run_calendar_command'])
+def test_consumed_action_failure_rolls_back_run_data_and_capture(store,table):
+    connection,repo,run,_,_=store
+    launch(repo,run)
+    prepared=repo.run_calendar.prepare_capture(run.id,reference=REFERENCE)
+    before=counts(connection)
+    original=connection.execute('SELECT * FROM trading_session_run WHERE id=?',(run.id,)).fetchone()
+    run.add_observation('must not be partially saved')
+    connection.execute(f"CREATE TRIGGER injected BEFORE INSERT ON {table} BEGIN SELECT RAISE(ABORT,'injected'); END")
+    with pytest.raises(sqlite3.IntegrityError,match='injected'):
+        repo.run_calendar.consume(prepared,run,operation_id='decision',capture_id='decision-capture',recorded_at=RECORDED)
+    assert counts(connection)==before
+    assert connection.execute('SELECT * FROM trading_session_run WHERE id=?',(run.id,)).fetchone()==original
+
+
+def test_consumption_exact_retry_keeps_original_action_and_capture_after_newer_data(store,monkeypatch):
+    connection,repo,run,_,_=store
+    launch(repo,run)
+    prepared=repo.run_calendar.prepare_capture(run.id,reference=REFERENCE)
+    run.add_observation('original decision')
+    args=dict(operation_id='decision',capture_id='decision-capture',recorded_at=RECORDED)
+    original=repo.run_calendar.consume(prepared,run,**args)
+    edit(repo,run,id='later',role=Role.M)
+    def changed(*args,**kwargs):
+        raise AssertionError('Original receipt must not resolve current context')
+    monkeypatch.setattr('ict_cockpit.analysis.amdx_context.resolve_stack_cycles',changed)
+    assert repo.run_calendar.consume(prepared,run,**args)==original
+    assert len(TradingSessionRunRepository(connection).get_by_id(run.id).evidence)==1
+    run.add_observation('different retry')
+    with pytest.raises(ValueError,match='identity cannot'):
+        repo.run_calendar.consume(prepared,run,**args)
+
+
+@pytest.mark.parametrize('what',['head','run','parent'])
+def test_stale_consumption_does_not_save_action(store,what):
+    connection,repo,run,_,_=store
+    launch(repo,run)
+    prepared=repo.run_calendar.prepare_capture(run.id,reference=REFERENCE)
+    if what=='head':
+        edit(repo,run,id='outside')
+    elif what=='parent':
+        repo.run_calendar.capture(prepared,operation_id='other',capture_id='other-capture',recorded_at=RECORDED)
+    else:
+        run.review_takeaway='another writer'
+        TradingSessionRunRepository(connection).save(run)
+    before=counts(connection)
+    original=connection.execute('SELECT * FROM trading_session_run WHERE id=?',(run.id,)).fetchone()
+    run.add_observation('stale decision')
+    with pytest.raises(StaleAMDXUpdate):
+        repo.run_calendar.consume(prepared,run,operation_id='stale',capture_id='stale-capture',recorded_at=RECORDED)
+    assert counts(connection)==before
+    assert connection.execute('SELECT * FROM trading_session_run WHERE id=?',(run.id,)).fetchone()==original

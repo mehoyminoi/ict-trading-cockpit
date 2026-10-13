@@ -1,5 +1,7 @@
 # Canonical AMDX calendar foundation
 
+Current native integration is documented in `AMDX_SHARED_NATIVE_GUIDE.md`; this document retains the scope and evidence of its earlier foundation checkpoint.
+
 This slice implements canonical instrument ownership and shared read/target access from `AMDX_MASTER_CALENDAR_CONTRACT.md`. It does not yet bind native Lab/TDA/Watch to that owner or persist run captures. Existing native entry behavior and smoke identities are unchanged.
 
 ## Implemented ownership
