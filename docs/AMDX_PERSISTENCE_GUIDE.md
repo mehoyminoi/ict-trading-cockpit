@@ -71,6 +71,6 @@ The focused domain/storage/E6/E7/compatibility/database group passed **133 tests
 
 ## Next boundary
 
-The minimal shared Watch/TDA entry is functionally accepted in PR #61. The follow-up implements one-entry quartet revision and valid role choices; see `AMDX_QUARTET_REVISION_OPERATOR_GUIDE.md`. It preserves pinning, reports failures, restores mixed histories and distinguishes entered/implied meaning. Four new hands-on checks are pending; broader renderers and comparison policy remain open.
+The minimal shared Watch/TDA entry is functionally accepted in PR #61. The follow-up implements one-entry quartet revision and valid role choices; see `AMDX_QUARTET_REVISION_OPERATOR_GUIDE.md`. It preserves pinning, reports failures, restores mixed histories and distinguishes entered/implied meaning. Four follow-up checks 251–254 are operator accepted. The native observed-entry follow-up now binds independent one-entry correction in Review, with new checks 255–259 pending; see `AMDX_OBSERVED_ENTRY_OPERATOR_GUIDE.md`. Direct one-click X(C)/X(R) is implemented, while broader renderers and purposeful comparison controls remain downstream.
 
 Review default pairing, higher-order cycle mapping, note-draft semantics, keyboard/macro-pad and coverflow details, real price/news classifiers, plan-editing UI and broad Lab statistics remain separately defined work. No new entry/completion/competency gate is introduced by stored AMDX uncertainty.

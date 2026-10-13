@@ -339,8 +339,16 @@ class TradingDayShellWidget(QWidget):
     def start_trading_run(self) -> bool:
         if self.trading_day.status is TradingDayLifecycleStatus.COMPLETE or self.active_trading_run is not None:
             return False
-        self.runtime.start_new()
         market_time_context = self._market_time_context_for_new_run()
+        requested_day = str(market_time_context.get("futures_trading_day", ""))
+        if ((self.trading_day.futures_day_label and self.trading_day.futures_day_label != requested_day)
+                or (self.trading_runs and not self.trading_day.futures_day_label)):
+            self.summary_label.setText(
+                f"Run not started · selected reference belongs to Trading Day {requested_day}. "
+                "Complete the current Trading Day, then choose Start New Trading Day."
+            )
+            return False
+        self.runtime.start_new()
         if not self.trading_day.futures_day_label:
             self.trading_day.futures_day_label = str(
                 market_time_context.get("futures_trading_day", "")
@@ -380,6 +388,7 @@ class TradingDayShellWidget(QWidget):
         self.trading_runs.append(run)
         self.active_trading_run = run
         self._sync_legacy_aliases()
+        self.runtime.review_day_label = self.trading_day.futures_day_label
         self.runtime.load_trading_run(run)
         self.trading_day_changed.emit(self.trading_day)
         self.session_run_changed.emit(run)
@@ -565,6 +574,7 @@ class TradingDayShellWidget(QWidget):
 
     def load_state(self, trading_day: TradingDay, session_runs: list[TradingRun], *, process_session: TradingDaySession | None = None, tda_session=None) -> None:
         self.trading_day = trading_day
+        self.runtime.review_day_label = trading_day.futures_day_label
         self.trading_runs = list(session_runs)
         self.active_trading_run = next(
             (run for run in self.trading_runs if run.id == trading_day.active_session_run_id and run.status is TradingRunStatus.ACTIVE),

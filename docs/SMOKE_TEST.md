@@ -1000,6 +1000,35 @@ Use `AMDX_QUARTET_REVISION_OPERATOR_GUIDE.md` on `feature/amdx-quartet-revision-
   - Where: XAMD with explicit Q1=X(?) and Q3=M; choose Q3=Unknown, Not Applicable, Unknown, Clear Not Applicable; mark Not Applicable again and restore with Q3=M; restart using the same sandbox directory.
   - Expected: conditional Unknown / M is honest; Unknown does not undo Not Applicable; clear does not restore old phases; one valid input restores XAMD; the same run and committed profile reopen without Save or reseeding.
 
+### AMDX observed quartet entry — native Review smoke
+
+Use `AMDX_OBSERVED_ENTRY_OPERATOR_GUIDE.md`, branch `feature/amdx-observed-entry-v1` and `python tools/amdx_observed_entry_demo.py --data-dir /tmp/ict-amdx-observed-v1`. Checks 255–259 are PASS from the operator’s 2026-10-12 report, “All points passed,” following clarification of check 258 and fresh-sandbox restart guidance. No separate per-check log, fixture/run ID, local runtime version or elapsed time was supplied. The original premature-close error’s cause remains unconfirmed; the report accepts the functional retest, not a diagnosis of that original fixture. All previous 254 identities/statuses/comments are preserved. Schema v41 / Alpha 0.7; comparison controls remain deferred.
+
+- [PASS] Review shows the saved reviewed-day quartet and records an independent observed phase immediately without Save, baseline choice or station completion.
+  - Where: synthetic Review fixture, NYAM 90m Q3; choose M.
+  - Expected: child XAMD, Day unresolved, entered/implied distinctions and quiet higher context; no AMDX comparison/history panel.
+- [PASS] Observed quartet correction needs one new valid entry, with one-click X(C)/X(R) and no subtype transfer to a different X quarter.
+  - Where: Day NYPM/Q4; choose X(R), then X(C), then Day NYAM/Q3=M.
+  - Expected: AMDX with R then C; new Q3=M gives XAMD and Asia X(?), with child profile unchanged and prior judgments retained.
+- [PASS] Review enforces structural positions and distinguishes repeated explicit no-op, Unknown, whole-quartet applicability and clear.
+  - Where: inspect Day Q1–Q4; repeat Q3=M; choose Unknown, Not Applicable, Clear Not Applicable, then Q3=M.
+  - Expected: roles A/X, A/M, M/D, D/X; repeated explicit choice reports Already current; clear never revives retired anchors; one valid choice restores XAMD.
+- [PASS] Reviewed-day/session targets survive clock rollover and failed observed writes preserve committed meaning until deliberate retry.
+  - Where: inspect all sessions, select NYAM 90m Q3, advance Demo reference into another trading day; enable simulated observed write failure and choose D, disable it and choose D again.
+  - Expected: reviewed date remains 2026-10-08; navigation records nothing; failure says Not recorded and retains XAMD; deliberate retry gives AMDX with no partial/automatic action.
+- [PASS] Restart restores the same Review run and committed observed quartets after rollover without Save or reseeding.
+  - Where: disable fixture fault; close/reopen the same observed demo directory and inspect edited NYAM if necessary.
+  - Expected: same run, Review mode, saved reviewed date and Day/90m judgments; transient navigation is not mistaken for interpretation history.
+
+### AMDX Review date provenance — focused correction smoke
+
+Use `AMDX_REVIEW_DATE_OPERATOR_GUIDE.md` and `python tools/amdx_review_date_demo.py --data-dir /tmp/ict-amdx-review-date-v1`. Check 260 is PASS from the guided operator reports on 2026-10-12. All previous 259 identities/statuses/comments are preserved; schema v41 / Alpha 0.7 are unchanged.
+
+- [PASS] Review uses its run's preserved original date despite older container labeling, survives clock rollover/restart, and rejects a different-date additional run before resetting process state.
+  - Where: separate retained date-provenance sandbox, synthetic container 2026-10-08 / run reference 2026-10-09; follow the four numbered guide checkpoints.
+  - Expected: Observed date 2026-10-09; enter NYAM 90m Q3=M for XAMD; advance clock to Trading Day 2026-10-10 without moving the target/recording; reopen the same run/profile, inspecting NYAM if needed; after concluding, a different-date additional launch says Run not started with the explicit new-day path and no reset/new run.
+  - Operator guided report, 2026-10-12 (America/Denver): upper Trading Day advanced to October 10 while Observed AMDX remained October 9; NYAM 90m Q3=M was entered and the profile was XAMD. After window-X close and same-directory reopen, the date remained October 9; selecting NYAM restored XAMD and Q3 entered without another phase choice. After Conclude Trading Run, Start Another Trading Run created no second run and displayed: "Run not started - selected reference belongs to Trading Day 2026-10-13. Complete the current Trading Day, then choose Start New Trading Day". The October 13 request is the live reference after restart, not a change to the saved Review date. The heading-tooltip inspection was not separately reported; no operator hover acceptance is inferred.
+
 ## Reporting results
 
 

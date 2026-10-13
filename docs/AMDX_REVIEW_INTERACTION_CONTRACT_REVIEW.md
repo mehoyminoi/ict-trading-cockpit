@@ -45,6 +45,8 @@ The v40 backend can already retain explicit and null pairings, alternate selecti
 
 Implement the accepted behavior through a named versioned Observed action with preserved original accumulation replay and migration/receipt compatibility before connecting controls. Current Expected `revise-working-v1` remains separate. No existing observation is reinterpreted as having used the new policy.
 
+**Native follow-up implemented:** `feature/amdx-observed-entry-v1` now binds the accepted action in Post-Market Review with saved reviewed-day targets, all-session access, immediate capture, direct X(C)/X(R), stale/failure/read recovery and restart. See `AMDX_OBSERVED_ENTRY_OPERATOR_GUIDE.md`; new checks 255–259 await operator acceptance. This adds no comparison controls or Watch route and changes neither schema v41 nor Alpha 0.7.
+
 Application binding must respect existing run/process permissions, save only deliberate accepted actions, pin cycle/reference/basis through a gesture, and restore committed meaning after restart. Observation/pair transactions never certify Review or update competency/authorization state. Free-text note drafts remain separate unimplemented work; phase entry must not wait for a note.
 
 Final primary 16:9 rendering, quiet whole-stack orientation, direct one-click X(C)/X(R) and future keyboard/macro-pad adapters remain shared requirements. This contract chooses behavior, not a final control arrangement. Event/change aggregation remains later research with defined context and samples.

@@ -19,7 +19,9 @@ from ict_cockpit.database.tda_repository import TDARepository
 from ict_cockpit.gui.main_window import MainWindow
 
 
-def open_demo(directory):
+def open_demo(directory, *, review=False, date_case=False):
+    if date_case and not review:
+        raise ValueError("The date-provenance fixture requires Review mode")
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=True)
     manifest = directory / "amdx-entry-fixture.json"
@@ -27,7 +29,8 @@ def open_demo(directory):
     if not existing and any(directory.iterdir()):
         raise ValueError("Use an empty AMDX sandbox directory; existing files will not be replaced")
     metadata = json.loads(manifest.read_text()) if existing else None
-    if metadata is not None and metadata.get("kind") != "AMDX entry fixture v1":
+    kind = "AMDX review date fixture v1" if date_case else "AMDX observed entry fixture v1" if review else "AMDX entry fixture v1"
+    if metadata is not None and metadata.get("kind") != kind:
         raise ValueError("This directory is not an AMDX entry sandbox")
     if existing and not (directory / "demo.db").exists():
         raise ValueError("The saved sandbox database is missing; it will not be reseeded")
@@ -37,18 +40,38 @@ def open_demo(directory):
         shell = window.trade_plan_widget.trading_day_shell_widget
         if not existing:
             shell.run_environment = RunEnvironment.REPLAY
-            shell.run_market_timestamp = datetime(2026, 10, 8, 9, 15, tzinfo=MARKET_TIMEZONE)
+            shell.run_market_timestamp = datetime(2026, 10, 9 if date_case else 8, 9, 15, tzinfo=MARKET_TIMEZONE)
             if not shell.start_trading_run():
                 raise ValueError("Unable to start the synthetic Replay run")
-            metadata = {"kind": "AMDX entry fixture v1", "run_id": shell.active_trading_run.id}
+            if review:
+                # Explicit synthetic override, through the normal process actions.
+                # No trading rules, evidence or completed TDA are fabricated.
+                if not shell.runtime.apply_transition("finish-tda", override_incomplete=True):
+                    raise ValueError("Unable to advance synthetic TDA")
+                if not shell.runtime.apply_transition("live-finish"):
+                    raise ValueError("Unable to open synthetic Review")
+            if date_case:
+                # Synthetic older grouping discrepancy, confined to this new
+                # fixture. Production resolution never rewrites its container.
+                shell.trading_day.futures_day_label = "2026-10-08"
+                window.save_trading_day(shell.trading_day)
+                shell.runtime.review_day_label = shell.trading_day.futures_day_label
+                shell._update_view()
+            metadata = {"kind": kind, "run_id": shell.active_trading_run.id}
             manifest.write_text(json.dumps(metadata, indent=2))
         if shell.active_trading_run is None or shell.active_trading_run.id != metadata["run_id"]:
             raise ValueError("The saved fixture has been concluded; use a new empty directory for another run")
         window.trade_plan_widget.focus_runtime()
-        window.setWindowTitle("AMDX entry sandbox · synthetic Replay · separate database")
-        notice = QLabel(f"Synthetic AMDX entry sandbox · {directory / 'demo.db'} · restart with the same command")
+        if review and shell.runtime.current_mode.id != "post-market":
+            raise ValueError("The retained observed fixture is not in Review; use a new empty directory")
+        window.setWindowTitle("AMDX observed entry sandbox · synthetic Replay" if review else "AMDX entry sandbox · synthetic Replay · separate database")
+        notice = QLabel(f"Synthetic {'Review (incomplete TDA overridden)' if review else 'AMDX entry'} sandbox · {directory / 'demo.db'} · restart with the same command")
         notice.setWordWrap(True)
         window.statusBar().addPermanentWidget(notice, 1)
+        if date_case:
+            notice.setText(f"Synthetic date mismatch · container 2026-10-08 · run starts 2026-10-09 · "
+                           f"expected Observed date 2026-10-09 · {directory / 'demo.db'}")
+            window.setWindowTitle("AMDX Review date sandbox · preserved run-start reference")
         menu = window.menuBar().addMenu("Demo reference")
         advance = QAction("Advance by 90 minutes", window)
         def advance_reference():
@@ -62,6 +85,19 @@ def open_demo(directory):
         advance.triggered.connect(advance_reference)
         menu.addAction(advance)
         window.amdx_demo_advance = advance
+        if review:
+            failure = QAction("Simulate observed write failure", window)
+            failure.setCheckable(True)
+            trigger = "amdx_demo_observed_failure"
+            failure.setChecked(connection.execute("SELECT 1 FROM sqlite_master WHERE type='trigger' AND name=?", (trigger,)).fetchone() is not None)
+            def set_failure(enabled):
+                if enabled:
+                    connection.execute(f"CREATE TRIGGER IF NOT EXISTS {trigger} BEFORE INSERT ON amdx_observed_command BEGIN SELECT RAISE(ABORT, 'synthetic observed write failure'); END")
+                else:
+                    connection.execute(f"DROP TRIGGER IF EXISTS {trigger}")
+            failure.toggled.connect(set_failure)
+            menu.addAction(failure)
+            window.amdx_demo_failure = failure
         return connection, window
     except Exception:
         if "window" in locals():

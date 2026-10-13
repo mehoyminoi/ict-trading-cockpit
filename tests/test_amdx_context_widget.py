@@ -95,7 +95,7 @@ def test_watch_and_tda_share_one_panel_without_reanalysis_or_new_authorization(c
     assert pane.table.item(0, 4).text() == "AMDX"
 
 
-def test_inspection_render_clock_and_review_never_append_history(cockpit):
+def test_inspection_render_clock_and_entering_review_never_append_history(cockpit):
     window, shell, connection = cockpit
     pane = widget(shell)
     for i in range(4):
@@ -107,9 +107,9 @@ def test_inspection_render_clock_and_review_never_append_history(cockpit):
     shell.runtime.apply_transition("finish-tda", override_incomplete=True)
     shell.runtime.apply_transition("live-finish")
     assert pane.mode_id == "post-market"
-    pane.choose(Role.D)
     assert history(window, shell).claims == ()
-    assert not pane.phase_buttons[Role.D].isVisible()
+    assert not pane.phase_buttons[Role.D].isHidden()
+    assert pane.channel == "Observed"
 
 
 def test_successful_current_input_follows_new_90m_quarter_without_follow_button_obligation(cockpit):

@@ -824,3 +824,22 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 **Persistence:** schema v41 adds immutable observed-command receipts. Changed source/pair metadata/receipt commit together; unchanged meaning reserves both identities without a source/pair revision. Snapshot counts preserve exact replay of changed/no-op original requests after later edits. Scoped heads and cross-action identity checks remain explicit; failures roll back the entire action. Existing selected basis is carried, or None remains unselected; no first/latest fallback or comparison UI is added.
 
 **Compatibility:** version-3 observed claims retain their own action policy. Original v1/v2 payloads and old v40 record bytes are preserved. Atomic v40 migration adds no guessed history; older bootstrap rejects v41. Existing legacy analytical accumulation and exact old retries remain valid, but new accumulation cannot follow an observed revision in that same scope. Alpha 0.7 and process gates are unchanged.
+
+## 2026-10-12 — Native observed quartet entry
+
+**Status:** accepted entry behavior implemented; checks 255–259 operator PASS on 2026-10-12 from “All points passed,” following clarification/retest guidance.
+
+**Implementation:** the shared fixed AMDX panel edits Expected/working in TDA/Watch and Observed/working in Post-Market Review. The saved Trading Day supplies Review's date; all four sessions are available without following today's clock into another day. Missing saved identity disables capture. One accepted choice commits immediately with both observed/pair heads pinned through its gesture. Failures and stale writes retain meaning, with no automatic replay; read failure disables writes while keeping committed context. Direct X(C)/X(R) buttons now satisfy one-click entry in both channels.
+
+**Presentation:** current observed profiles, entered/implied distinctions and structural hover context remain near the input. The application-backed path hides flat intraday observed controls and the old descriptive comparison list while preserving stored values and higher legacy fields. No AMDX comparison/history control or Watch launch route is added. Selected pairing provenance, if already present, is retained quietly by the shared action; routine capture has no first/latest default.
+
+**Boundary:** schema v41 and Alpha 0.7 are unchanged. `AMDX_OBSERVED_ENTRY_OPERATOR_GUIDE.md` supplies a retained synthetic normal-window Review fixture and new checks 255–259. Existing 254 records retain their results. Final 16:9 geometry, higher-order cycle mapping, rule classifiers, shortcut assignments, notes drafts and purposeful Study/Review comparison remain downstream. The later functional report accepts this narrow Review entry behavior. It does not accept the final renderer or authorize a merge.
+
+
+## 2026-10-12 — Run-owned Review date correction
+
+**Status:** correction of the accepted reviewed-scope contract, implemented with focused 77-pass and complete module-isolated 744-pass validation; focused check 260 operator PASS from the guided 2026-10-12 date/rollover/restart/launch-guard reports; hover inspection not separately reported.
+
+Review's date resolves from the particular run's preserved starting market reference, not its latest advancing clock or an unchecked container label. Older runs lacking that reference may use an explicit saved-Day fallback; malformed original references or absence of both sources disable recording. A valid run reference can restore an older misgrouped run without rewriting container labels or claims, and its differing provenance is explained in the heading hover. In-flight older-date targets cannot record after provenance changes.
+
+The existing one-futures-day container boundary is enforced at additional-run launch before process/TDA reset: a different-date request or undated existing container with prior runs is rejected with the existing complete-day/new-day path. Same-date additional runs remain allowed. This introduces no classifier, comparison default, history panel, new confirmation/save obligation, schema or published-plan change. Final renderer/Study work remains downstream.

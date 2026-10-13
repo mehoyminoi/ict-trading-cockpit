@@ -1,19 +1,21 @@
-"""Shared compact working AMDX entry; rendering/navigation never records a phase."""
+"""Shared working/observed AMDX entry; navigation never records a phase."""
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime, time
 import sqlite3
 from uuid import uuid4
 
 from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtWidgets import (
-    QAbstractItemView, QFrame, QHeaderView, QHBoxLayout, QLabel, QMenu,
+    QAbstractItemView, QComboBox, QFrame, QHeaderView, QHBoxLayout, QLabel, QMenu,
     QPushButton, QTableWidget, QTableWidgetItem, QVBoxLayout,
 )
 
 from ict_cockpit.analysis.amdx import (
     Anchor, Cycle, InterpretationHistory, Role, XSubtype, available_roles, infer_profile, intraday_cycles, timestamp,
 )
-from ict_cockpit.analysis.market_time import MARKET_TIMEZONE
+from ict_cockpit.analysis.market_time import MARKET_TIMEZONE, futures_trading_day_for
+from ict_cockpit.analysis.amdx_review import StaleComparison
+from ict_cockpit.analysis.amdx_review_date import resolve_review_date
 from ict_cockpit.analysis.quarter_theory import QT_LEVELS, normalize_qt_context
 from ict_cockpit.database.amdx_repository import StaleAMDXUpdate
 
@@ -24,6 +26,8 @@ class EditTarget:
     cycle: Cycle
     quarter_id: str
     expected_head_id: str | None
+    channel: str = "Expected"
+    comparison_head_id: str | None = None
 
 
 def role_text(role, subtype=None):
@@ -42,6 +46,12 @@ class AMDXContextWidget(QFrame):
         self.reference = None
         self.cycles = ()
         self.history = InterpretationHistory()
+        self.comparisons = ()
+        self.review_day_label = ""
+        self._container_day_label = ""
+        self._review_date_error = ""
+        self._review_date_detail = ""
+        self.review_sessions = ()
         self.target = None
         self._pinned = False
         self._read_error = False
@@ -58,6 +68,11 @@ class AMDXContextWidget(QFrame):
         bar.setContentsMargins(0, 0, 0, 0)
         bar.setSpacing(3)
         bar.addWidget(self.target_label, 1)
+        self.session_selector = QComboBox()
+        self.session_selector.addItems(["Asia", "London", "NYAM", "NYPM"])
+        self.session_selector.setToolTip("Inspect this session in the reviewed trading day; selecting it records nothing.")
+        self.session_selector.currentIndexChanged.connect(self._select_review_session)
+        bar.addWidget(self.session_selector)
         self.phase_buttons = {}
         for role in (Role.A, Role.M, Role.D, Role.X):
             button = QPushButton("X(?)" if role is Role.X else role.value)
@@ -67,6 +82,15 @@ class AMDXContextWidget(QFrame):
             button.released.connect(self._schedule_end_gesture)
             button.clicked.connect(lambda _checked=False, r=role: self.choose(r))
             self.phase_buttons[role] = button
+            bar.addWidget(button)
+        self.subtype_buttons = {}
+        for subtype in XSubtype:
+            button = QPushButton(f"X({subtype.value})")
+            button.setMaximumWidth(48)
+            button.pressed.connect(self._begin_gesture)
+            button.released.connect(self._schedule_end_gesture)
+            button.clicked.connect(lambda _checked=False, s=subtype: self.choose(Role.X, s))
+            self.subtype_buttons[subtype] = button
             bar.addWidget(button)
         self.more_button = QPushButton("…")
         self.more_button.setMaximumWidth(32)
@@ -123,15 +147,34 @@ class AMDXContextWidget(QFrame):
     def set_repository(self, repository):
         self.repository = repository
 
-    def load_context(self, run, market_context, mode_id):
+    @property
+    def channel(self):
+        return "Observed" if self.mode_id == "post-market" else "Expected"
+
+    def load_context(self, run, market_context, mode_id, *, review_day_label=None):
         changed_run = (self.run.id if self.run else None) != (run.id if run else None)
+        changed_channel = (mode_id == "post-market") != (self.mode_id == "post-market")
         self.run, self.mode_id = run, mode_id
+        if review_day_label is not None:
+            self._container_day_label = review_day_label
+        prior_date_error = self._review_date_error
+        prior_date = self.review_day_label
+        resolved = resolve_review_date(run, self._container_day_label)
+        self.review_day_label = resolved.day_label
+        self._review_date_error, self._review_date_detail = resolved.error, resolved.detail
+        changed_date = prior_date != self.review_day_label
+        if prior_date_error and not self._review_date_error:
+            self.status_label.setText("")
         if changed_run:
             self.target, self._pinned = None, False
-            self._gesture_target = self._gesture_reference = None
-            self._gesture_clear_applicability = None
+            # An in-flight gesture retains its old run so release cannot write
+            # into a newly loaded run. choose() rejects that ownership change.
             self.status_label.setText("")
             self.history = InterpretationHistory()
+            self.comparisons = ()
+        if changed_channel or (self.channel == "Observed" and changed_date):
+            self.target, self._pinned = None, False
+            self.status_label.setText("")
         self.reference = None
         self.cycles = ()
         try:
@@ -144,7 +187,11 @@ class AMDXContextWidget(QFrame):
         self._read_error = False
         if self.repository is not None and run:
             try:
-                self.history = self.repository.get_history(run.id)
+                if self.channel == "Observed":
+                    review = self.repository.review.get_history(run.id)
+                    self.history, self.comparisons = review.interpretations, review.comparisons
+                else:
+                    self.history = self.repository.get_history(run.id)
                 if prior_read_error:
                     self.status_label.setText("")
             except (ValueError, TypeError, KeyError, sqlite3.Error, RuntimeError) as error:
@@ -152,6 +199,8 @@ class AMDXContextWidget(QFrame):
                 self.status_label.setText(f"History unavailable · {error}")
         else:
             self.history = InterpretationHistory()
+        if self.channel == "Observed":
+            self._load_review_cycles(changed_run or changed_channel or changed_date)
         if not self._pinned and self._gesture_target is None:
             self._set_current_target()
         # Preserve the selected scope even when its session/day leaves the clock's view.
@@ -169,7 +218,55 @@ class AMDXContextWidget(QFrame):
 
     def _head(self, cycle):
         return next((c for c in reversed(self.history.claims) if
-                     c.cycle.id == cycle.id and c.branch_id == "working" and c.channel == "Expected"), None)
+                     c.cycle.id == cycle.id and c.branch_id == "working" and c.channel == self.channel), None)
+
+    def _edit_target(self, cycle, quarter_id):
+        head = self._head(cycle)
+        pair = next((p for p in reversed(self.comparisons) if p.run_id == self.run.id
+                     and p.branch_id == "working" and p.cycle_id == cycle.id), None)
+        return EditTarget(self.run.id, cycle, quarter_id, head.id if head else None,
+                          self.channel, pair.id if pair and self.channel == "Observed" else None)
+
+    def _load_review_cycles(self, initialize):
+        # The run's saved starting reference wins over a mislabeled container.
+        self.review_sessions = ()
+        self.cycles = ()
+        if self.run is None:
+            self.target = None
+            return
+        if self._review_date_error:
+            self.target = None
+            self.status_label.setText(f"Review date unavailable · {self._review_date_error} · recording disabled")
+            return
+        try:
+            reviewed_date = date.fromisoformat(self.review_day_label)
+            day, _ = intraday_cycles(datetime.combine(reviewed_date, time(9), MARKET_TIMEZONE))
+            self.review_sessions = tuple(intraday_cycles(q.start)[1] for q in day.quarters)
+        except (ValueError, TypeError, IndexError):
+            self.target = None
+            self.status_label.setText("Reviewed trading day unavailable · recording disabled")
+            return
+        index = self.session_selector.currentIndex()
+        if initialize:
+            parent = day.quarter_at(self.reference) if self.reference else None
+            index = parent.position - 1 if parent else 0
+            self.session_selector.blockSignals(True)
+            self.session_selector.setCurrentIndex(index)
+            self.session_selector.blockSignals(False)
+        self.cycles = (day, self.review_sessions[index])
+        if initialize or self.target is None:
+            cycle = self.cycles[-1]
+            quarter = cycle.quarter_at(self.reference) if self.reference else None
+            self.target = self._edit_target(cycle, (quarter or cycle.quarters[0]).id)
+            self._pinned = True
+
+    def _select_review_session(self, index):
+        if self.channel != "Observed" or not self.review_sessions or self._gesture_target:
+            return
+        cycle = self.review_sessions[index]
+        self.cycles = (self.cycles[0], cycle)
+        self.target, self._pinned = self._edit_target(cycle, cycle.quarters[0].id), True
+        self._render()
 
     def _set_current_target(self):
         if not self.cycles or self.reference is None or self.run is None:
@@ -180,15 +277,18 @@ class AMDXContextWidget(QFrame):
         if quarter is None:
             self.target = None
             return
-        head = self._head(cycle)
-        self.target = EditTarget(self.run.id, cycle, quarter.id, head.id if head else None)
+        self.target = self._edit_target(cycle, quarter.id)
 
     def select_quarter(self, row, column):
         if not 0 <= row < len(self.cycles) or not 0 <= column < 4 or not self.run:
             return
         cycle = self.cycles[row]
-        head = self._head(cycle)
-        self.target = EditTarget(self.run.id, cycle, cycle.quarters[column].id, head.id if head else None)
+        self.target = self._edit_target(cycle, cycle.quarters[column].id)
+        if self.channel == "Observed" and row == 0 and self.review_sessions:
+            self.session_selector.blockSignals(True)
+            self.session_selector.setCurrentIndex(column)
+            self.session_selector.blockSignals(False)
+            self.cycles = (cycle, self.review_sessions[column])
         self._pinned = True
         self._render()
 
@@ -197,6 +297,8 @@ class AMDXContextWidget(QFrame):
             self.select_quarter(row, column)
 
     def follow_current(self):
+        if self.channel == "Observed":
+            return
         self._pinned = False
         self.target = None
         self._gesture_target = self._gesture_reference = None
@@ -210,6 +312,7 @@ class AMDXContextWidget(QFrame):
         self._gesture_generation += 1
         self._gesture_target, self._gesture_reference = self.target, self.reference
         self._gesture_clear_applicability = self._has_applicability()
+        self.session_selector.setEnabled(False)
 
     def _has_applicability(self):
         head = self._head(self.target.cycle) if self.target else None
@@ -232,6 +335,8 @@ class AMDXContextWidget(QFrame):
         self._gesture_clear_applicability = None
         if not self._pinned:
             self._reload_context()
+        else:
+            self._render()
 
     def choose(self, role, subtype=None, *, clear_applicability=False):
         target = self._gesture_target or self.target
@@ -239,34 +344,49 @@ class AMDXContextWidget(QFrame):
         self._gesture_target = self._gesture_reference = None
         self._gesture_clear_applicability = None
         if (not target or not reference or not self.repository or self._read_error or not self.run
-                or target.run_id != self.run.id or self.mode_id not in ("tda", "live-watch")):
+                or target.run_id != self.run.id or target.channel != self.channel
+                or (self.channel == "Observed" and (self._review_date_error
+                    or futures_trading_day_for(target.cycle.quarters[0].start).isoformat() != self.review_day_label))
+                or self.mode_id not in ("tda", "live-watch", "post-market")):
+            self._reload_context()
             return
-        anchor = Anchor(str(uuid4()), target.quarter_id, role, "Technician / working AMDX", subtype) if role else None
+        anchor = Anchor(str(uuid4()), target.quarter_id, role,
+                        "Technician / observed AMDX" if self.channel == "Observed" else "Technician / working AMDX", subtype) if role else None
         try:
-            result = self.repository.revise_working(
-                claim_id=str(uuid4()), run_id=target.run_id, branch_id="working", channel="Expected",
+            arguments = dict(
+                claim_id=str(uuid4()), run_id=target.run_id, branch_id="working",
                 cycle=target.cycle, quarter_id=target.quarter_id, anchor=anchor,
                 recorded_at=datetime.now().astimezone(), market_reference=reference,
-                expected_head_id=target.expected_head_id,
                 clear_applicability=clear_applicability,
             )
+            if self.channel == "Observed":
+                result = self.repository.review.revise_observed(
+                    **arguments, comparison_id=str(uuid4()),
+                    expected_observed_head_id=target.expected_head_id,
+                    expected_comparison_head_id=target.comparison_head_id,
+                )
+            else:
+                result = self.repository.revise_working(
+                    **arguments, channel="Expected", expected_head_id=target.expected_head_id,
+                )
         except (ValueError, TypeError, KeyError, sqlite3.Error, RuntimeError) as error:
             self.status_label.setText(f"Not recorded · {error}")
             # Keep a failed choice's scope visible for a deliberate retry or release.
             self.target, self._pinned = target, True
-            if isinstance(error, StaleAMDXUpdate):
+            if isinstance(error, (StaleAMDXUpdate, StaleComparison)):
                 # Refresh the inspected head, but require another deliberate choice.
                 # The gesture's earlier reference belongs to the attempted claim,
                 # not to the clock that continues advancing behind the pin.
                 self._reload_context()
-                head = self._head(target.cycle)
-                self.target = EditTarget(target.run_id, target.cycle, target.quarter_id, head.id if head else None)
+                self.target = self._edit_target(target.cycle, target.quarter_id)
             self._render()
             return
         claim = result.claim
         if result.changed and all(c.id != claim.id for c in self.history.claims):
             self.history = InterpretationHistory(self.history.claims + (claim,))
-        self.target = EditTarget(target.run_id, target.cycle, target.quarter_id, claim.id if claim else None)
+        if self.channel == "Observed" and result.changed:
+            self.comparisons += (result.comparison,)
+        self.target = self._edit_target(target.cycle, target.quarter_id)
         self.status_label.setText(("Recorded · " if result.changed else "Already current · ")
                                   + (claim.inference.state if claim else "Unassigned") + " · entered anchors / implied siblings")
         self._reload_context()
@@ -323,17 +443,23 @@ class AMDXContextWidget(QFrame):
         parent = next((q for c in self.cycles for q in c.quarters if self.target and q.id == self.target.cycle.parent_quarter_id), None)
         scope = (f"{parent.label + ' 90m' if parent else self.target.cycle.layer} Q{quarter.position}"
                  if quarter else "No active quarter")
-        self.target_label.setText("Working AMDX · " + scope + (" · pinned" if self._pinned else ""))
+        self.target_label.setText((f"Observed AMDX · {self.review_day_label} · " if self.channel == "Observed" else "Working AMDX · ")
+                                  + scope + (" · pinned" if self._pinned and self.channel != "Observed" else ""))
+        self.target_label.setToolTip(self._review_date_detail if self.channel == "Observed" else "")
         enabled = bool(self.repository and self.run and self.target and self.reference and not self._read_error
-                       and self.mode_id in ("tda", "live-watch"))
+                       and (self.channel != "Observed" or not self._review_date_error)
+                       and self.mode_id in ("tda", "live-watch", "post-market"))
+        self.session_selector.setVisible(self.channel == "Observed")
+        self.session_selector.setEnabled(bool(self.review_sessions) and not self._gesture_target)
         roles = available_roles(quarter.position) if quarter else ()
         for role, button in self.phase_buttons.items():
             button.setEnabled(enabled and role in roles)
-            button.setVisible(self.mode_id != "post-market")
             button.setToolTip((f"Q{quarter.position} permits " + "/".join(r.value for r in roles) + " under AMDX/XAMD. "
-                               if quarter else "") + "Revise the working quartet immediately; earlier claims remain in history.")
+                               if quarter else "") + f"Revise the {self.channel.lower()} quartet immediately; earlier claims remain in history.")
+        for subtype, button in self.subtype_buttons.items():
+            button.setEnabled(enabled and Role.X in roles)
+            button.setToolTip(f"Record X({subtype.value}) for the selected quarter immediately.")
         self.more_button.setEnabled(enabled)
-        self.more_button.setVisible(self.mode_id != "post-market")
         for key, action in self.menu_actions.items():
             action.setEnabled(enabled and (not key.startswith("X(") or Role.X in roles))
         self.menu_actions["Not Applicable"].setText("Not Applicable · whole quartet")
