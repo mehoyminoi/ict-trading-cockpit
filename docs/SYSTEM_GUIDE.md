@@ -2040,3 +2040,12 @@ Connection/process and normal MainWindow reopen retain higher history without ad
 The v41 higher adapter still loads Observed context from the run's original saved reference. The concrete proposal in `AMDX_HIGHER_REVIEW_PERIOD_CONTRACT.md` separates that preserved source from an explicit higher orientation within the reviewed futures day. Such navigation would read existing scoped heads without recording interpretation or claiming historical information availability. Additional selection and durable proof storage remain unimplemented. The implemented DST correction distinguishes repeated-hour instants and retains exact serialized-offset replay.
 
 The mature Lab should provide spacious full-stack AMDX analysis with nearby quarter detail and versioned definition/evidence context. Watch presents quiet current-state orientation and efficient entry. These are presentations of a shared foundation; the spacious Lab renderer, broader Study-owned historical selection and final geometry remain planned work. Comparisons remain purposeful lower-priority Study/Review exploration, with no Watch route.
+
+
+### Independent historical/forward AMDX catalog — operator requirement 2026-10-12
+
+Run Review and broad historical study have different ownership. Review belongs to its saved run/date; a catalog collection owns AMDX across historical occurrences without requiring a trading run. Collections explicitly identify instrument, study/forward purpose and optional method/definition reference. MNQ is the initial default; other keys stay independent. Existing unknown run assets are not assigned automatically.
+
+The v42 catalog adapter uses the shared pure quartet revision engine for every currently identified layer. Immutable commands retain source metadata and nullable no-op results; consistent portable archives validate replay. Actual entry time and studied market time are distinct, with declared retrospective/forward basis and optional information availability retained. These declarations do not prove a prediction was contemporaneous or establish historical feed completeness.
+
+Spacious Lab navigation/entry, linkage of run captures, imports and empirical queries are subsequent consumers of this foundation. Watch keeps quiet current orientation and efficient permitted entry. The bounded higher Review selector remains separate; it cannot restrict catalog historical scope. See `AMDX_HISTORICAL_CATALOG_GUIDE.md` for implemented API versus pending UI/analytics.
