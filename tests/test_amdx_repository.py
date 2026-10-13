@@ -321,7 +321,7 @@ def test_actual_v37_schema_migrates_without_rewriting_legacy_rows_or_inventing_h
     before = connection.execute("SELECT * FROM trading_session_run WHERE id = ?", (run.id,)).fetchone()
     connection.close()
     connection = open_application_database(database)
-    assert connection.execute("PRAGMA user_version").fetchone()[0] == CURRENT_SCHEMA_VERSION == 39
+    assert connection.execute("PRAGMA user_version").fetchone()[0] == CURRENT_SCHEMA_VERSION == 40
     assert connection.execute("SELECT * FROM trading_session_run WHERE id = ?", (run.id,)).fetchone() == before
     repo = TradingSessionRunRepository(connection)
     assert repo.get_by_id(run.id).qt_context == run.qt_context
@@ -537,11 +537,11 @@ def test_v38_migration_preserves_claim_bytes_guards_old_reader_and_rolls_back_fa
     assert connection.execute('PRAGMA user_version').fetchone()[0] == 38
     assert not connection.execute("SELECT name FROM sqlite_master WHERE name LIKE 'amdx_working_command%'").fetchall()
     initialize_schema(connection)
-    assert connection.execute('PRAGMA user_version').fetchone()[0] == 39
+    assert connection.execute('PRAGMA user_version').fetchone()[0] == CURRENT_SCHEMA_VERSION
     assert connection.execute('SELECT * FROM amdx_claim ORDER BY sequence').fetchall() == original
     repo = AMDXRepository(connection)
     assert repo.get_history(run.id) == history
-    with pytest.raises(RuntimeError,match='Unsupported database schema version: 39'):
+    with pytest.raises(RuntimeError,match=f'Unsupported database schema version: {CURRENT_SCHEMA_VERSION}'):
         old['initialize_schema'](connection)
     revised = repo.revise_working(**choice(run,revision='3',head=history.claims[-1].id))
     assert revised.claim.inference.candidates == (Profile.XAMD,)

@@ -1,8 +1,8 @@
 # AMDX Review — containing-cycle comparison contract
 
-**Status:** concrete recommendation for operator review, prepared 2026-10-12 after acceptance of working-quartet checks 251–254. Operator clarification on 2026-10-12 confirms that comparison/history belongs in later purposeful Review/Study. Watch shows the current working stack and position, without a visible revision history or comparison of stack changes. The first-versus-latest default remains a proposal; this placement clarification does not select it or authorize observed-entry implementation.
+**Status:** earlier automatic-first comparison proposal, superseded by the accepted routine no-auto-comparison behavior in `AMDX_REVIEW_INTERACTION_CONTRACT_REVIEW.md` on 2026-10-12. Comparison is optional, lower priority and deferred to a concrete Study/Review need. No comparison option or launch route belongs in Watch. Earlier cases below remain historical context for intentionally selected research comparisons.
 
-**Implementation boundary:** `AMDX_REVIEW_FOUNDATION_GUIDE.md` documents the new pure explicit-pair/archive action. It requires a supplied expected basis or explicit None; it adopts no baseline default and has no app database/UI integration. The proposed Review flow below remains independently reviewable.
+**Implementation boundary:** `AMDX_REVIEW_FOUNDATION_GUIDE.md` documents the new pure explicit-pair/archive action. It requires a supplied expected basis or explicit None; it adopts no baseline default. Database integration is now implemented in `AMDX_REVIEW_PERSISTENCE_GUIDE.md` at schema v40; UI integration remains downstream. The earlier proposed flow below remains historical context. `AMDX_REVIEW_INTERACTION_CONTRACT_REVIEW.md` is the current concrete recommendation: routine observed entry has no automatic first/latest pairing, and an explicitly opened comparison is optional. The operator accepted those two behaviors on 2026-10-12. Comparison is lower priority, deferred to purposeful Study/Review exploration, with no Watch entry point. The earlier automatic-first proposal below is superseded historical context.
 
 **Verified initial application baseline:** source `84167e9bec21189a6bca08e2206a191665df0caa`, 587 automated PASS, schema v39, Alpha 0.7. PR #61 and stacked PR #62 are ready for review and unmerged. The existing Market Review AMDX panel is read-only. Immutable claims, separate channels and explicitly based criteria evaluations exist; an evaluation basis is not an implemented Review comparison pair.
 
@@ -39,7 +39,7 @@ Use one Day quartet for the examples. E1/E2 identify immutable expected claims; 
 - Watch presents the current working stack and current temporal position. Earlier expectations, change comparisons and historical lists belong in intentionally accessed contextual Review/Study detail. A latest-versus-first display is a proposed Review view only, not a Watch obligation.
 - Study may inspect alternate pairings with their recorded basis. This contract adds no sensor, phase classifier, P&L attribution, gate, completion rule or published Trade Plan definition.
 
-## 4. Decision for review
+## 4. Earlier default proposal — superseded recommendation
 
 **Recommendation for an intentionally opened Review comparison:** first explicit expected profile is the default baseline; latest working expectation can appear beside it within that comparison. An observed entry records that pairing automatically, and optional alternate comparisons preserve the original.
 

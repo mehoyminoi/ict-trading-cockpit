@@ -1,6 +1,6 @@
 # AMDX transactional persistence v0
 
-**Checkpoint:** initial storage used schema v38; the follow-up `feature/amdx-quartet-revision-v1` uses v39 with versioned working revisions and immutable command receipts. Alpha 0.7 is unchanged. PR #61's initial Watch/TDA entry has six functional operator checks PASS; the four follow-up checks remain pending in `AMDX_QUARTET_REVISION_OPERATOR_GUIDE.md`.
+**Checkpoint:** initial storage used schema v38; quartet revision used v39 with immutable working receipts. The Review persistence follow-up uses v40 with comparison and original-request tables; see `AMDX_REVIEW_PERSISTENCE_GUIDE.md`. Alpha 0.7 is unchanged. Initial entry checks 245–250 and quartet follow-up checks 251–254 are accepted; the backend Review slice does not add an entry screen.
 
 ## Stored records and ownership
 
@@ -13,6 +13,8 @@ The additive v37 → v38 migration creates four tables:
 | `amdx_claim` | Append-only accepted-action claims, owning run, branch/channel/cycle and preceding claim in that same working scope |
 | `amdx_evaluation` | Append-only criteria snapshots, owning run/cycle, explicit recorded time and optional explicitly chosen claim basis |
 | `amdx_working_command` (v39) | Immutable original command, inspected head and result/changed flag; reserves retry identities even for semantic no-ops |
+| `amdx_comparison` (v40) | Immutable explicit expected/observed source references, owning scope and previous comparison |
+| `amdx_review_command` (v40) | Immutable original pairing or atomic observation/pair request, with exact retry result |
 
 Existing `trading_session_run` columns and row contents are preserved. Older expected/observed QT maps are not converted into interval anchors or fabricated histories. Existing saved runs load with empty AMDX records until an explicit action is accepted. Ordinary run snapshot saves cannot truncate or overwrite the separate AMDX tables.
 
@@ -22,6 +24,7 @@ Foreign keys require an existing saved run and protect referenced history from d
 
 The normal run repository exposes `TradingSessionRunRepository(connection).amdx`:
 
+- `review` exposes explicit pairing reads/actions and atomic observed-claim-plus-pair commits; see `AMDX_REVIEW_PERSISTENCE_GUIDE.md`.
 - `get_history(run_id)` reloads the validated immutable action transcript and profile claims in recorded append order.
 - `accept(...)` retains the original accumulation action for v1 replay and analytical scopes. It cannot append accumulation into a scope already advanced by the new working policy; exact retries of older actions still return their original claims.
 - `revise_working(...)` is the normal Expected/working phase, Unknown, applicability and clear action. Valid entry selects the order, keeps compatible anchors and retires incompatible anchors into history. It returns `WorkingRevisionResult(claim, changed)`, where a semantic no-op has `changed=False` and may have no claim when the scope was empty. Cycle registration, optional v2 claim and command receipt commit together.
