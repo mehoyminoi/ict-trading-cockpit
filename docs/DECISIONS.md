@@ -895,3 +895,14 @@ MainWindow exposes AMDX Lab, and the retained standalone 16:9 trial hosts the sa
 ## 2026-10-13 — Native AMDX Lab focused behavior accepted
 
 The explicit operator report marks checks 261–264 PASS, covering immediate 90-minute input, direct X(R), an independent older yearly occurrence and retained restart context/profiles. Earlier draft/pending-trial statements describe historical checkpoints. PR #70 is now ready for review, without a merge. The local result file was saved but not yet committed/pushed when reported; no unseen notes or local-file inspection is inferred. Source `678e9a0`, completed 97-focused/936-complete developer evidence, schema v42 and Alpha 0.7 are unchanged. This accepts the covered functional behaviors, not the final renderer/topology or broader catalog linkage/analytics. No Watch history/comparison route is adopted.
+
+
+## 2026-10-13 — Master AMDX calendar corrects purpose-collection ownership
+
+The operator clarified that the intended “catalog” is a master AMDX stackup calendar maintained over time, with historical Lab backfill and different views/uses across TDA, Watch and Lab. The developer's separate Backtest/ForwardTest collection interpretation was too narrow. Record one canonical maintained calendar per instrument, initially MNQ; purpose/environment is provenance/filtering, not the primary owner. Views/actions share that calendar while runs retain exact captured context/revision basis and working/observed semantic distinctions remain explicit.
+
+`AMDX_MASTER_CALENDAR_CLARIFICATION.md` defines the corrected architecture, what is reusable and what is not yet implemented. The current v42 ledger/editor are reusable, but TDA/Watch still use run-owned data and there is no canonical instrument/master mapping. A disposable actual v42 check confirmed the same owner exposes one historical yearly backfill at multiple reference points and another purpose collection isolates it. No shared consumer integration is claimed.
+
+Supersede collection-destination-at-launch/run-source-only collection as the primary next implementation in `AMDX_RUN_CATALOG_LINK_CONTRACT.md`. Its immutable source/receipt/archive/asset/availability principles remain valid for transition and run reconstruction. Next is canonical master ownership plus shared read/write/channel and run snapshot-reference contract, before migration/consumer binding. Preserve legacy records/conflicts explicitly; no blind latest merge, deletion or asset guessing.
+
+Runtime/source/tests/tools, schema v42 / Alpha 0.7 and all 264 smoke results remain unchanged. Native 261–264 PASS accepts the covered functional behaviors, not separate purpose catalogs or final rendering. Retain 97-focused/936-complete evidence for source `678e9a0`, without a new full run. No merge or operator action is required for this clarification.

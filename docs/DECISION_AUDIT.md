@@ -471,3 +471,14 @@ The explicit operator report marks checks 261–264 PASS, covering immediate 90-
 ## 2026-10-13 — Run linkage must preserve source scope and explicit asset basis
 
 The run-to-catalog inventory found no saved run instrument and confirmed different run judgments can share a temporal cycle ID. Accordingly, automatic copying into the manual catalog working head is not an acceptable inferred implementation of the historical catalog requirement. `AMDX_RUN_CATALOG_LINK_CONTRACT.md` proposes preserved, separately scoped run sources with explicit instrument/binding provenance and automatic coverage once associated. The catalog's MNQ default or latest TDA cannot retroactively identify older runs. This contract remains proposed; no new collector, source picker, migration or launch field is implemented. Existing native acceptance, source `678e9a0`, schema v42 / Alpha 0.7 and all 264 smoke results are unchanged.
+
+
+## 2026-10-13 — Master AMDX calendar corrects purpose-collection ownership
+
+The operator clarified that the intended “catalog” is a master AMDX stackup calendar maintained over time, with historical Lab backfill and different views/uses across TDA, Watch and Lab. The developer's separate Backtest/ForwardTest collection interpretation was too narrow. Record one canonical maintained calendar per instrument, initially MNQ; purpose/environment is provenance/filtering, not the primary owner. Views/actions share that calendar while runs retain exact captured context/revision basis and working/observed semantic distinctions remain explicit.
+
+`AMDX_MASTER_CALENDAR_CLARIFICATION.md` defines the corrected architecture, what is reusable and what is not yet implemented. The current v42 ledger/editor are reusable, but TDA/Watch still use run-owned data and there is no canonical instrument/master mapping. A disposable actual v42 check confirmed the same owner exposes one historical yearly backfill at multiple reference points and another purpose collection isolates it. No shared consumer integration is claimed.
+
+Supersede collection-destination-at-launch/run-source-only collection as the primary next implementation in `AMDX_RUN_CATALOG_LINK_CONTRACT.md`. Its immutable source/receipt/archive/asset/availability principles remain valid for transition and run reconstruction. Next is canonical master ownership plus shared read/write/channel and run snapshot-reference contract, before migration/consumer binding. Preserve legacy records/conflicts explicitly; no blind latest merge, deletion or asset guessing.
+
+Runtime/source/tests/tools, schema v42 / Alpha 0.7 and all 264 smoke results remain unchanged. Native 261–264 PASS accepts the covered functional behaviors, not separate purpose catalogs or final rendering. Retain 97-focused/936-complete evidence for source `678e9a0`, without a new full run. No merge or operator action is required for this clarification.

@@ -2058,3 +2058,10 @@ The first manual catalog surface now exists on MainWindow's AMDX Lab tab. Full-s
 Prepared scope and metadata are pinned through the gesture; selection/tab/source changes or stale/write/read failures require deliberate recovery. Repeated-hour occurrence is explicit and nonexistent spring wall times are unavailable. Higher interpretation remains possible at closed references without inventing intraday quartets. The separate retained 16:9 trial uses this same widget and exact historical presets; see `AMDX_CATALOG_LAB_OPERATOR_GUIDE.md`.
 
 This initial functional renderer awaits operator checks 261–264 and usability review. Final visual treatment, overall application geometry, Study-first startup, automatic run linkage, bounded higher run Review selection, bulk import, statistical queries and rule classifiers remain separate. Watch has no new history/comparison route, and no Trade Plan policy changes.
+
+
+### Master AMDX calendar across cockpit contexts — 2026-10-13
+
+The canonical product model is one maintained AMDX timeline per instrument, initially MNQ. Lab backfills/inspects it, TDA uses it for context, and Watch shows/updates the pertinent current slice. Different presentations and provenance do not create separate default purpose calendars. Runs retain exact captured revisions/context so later master edits do not rewrite historical expectations/observations. Working/observed semantics and optional experimental branches remain explicit within shared ownership.
+
+Current v42 collections/editor provide reusable identity, history/actions and native presentation, but TDA/Watch still use run-owned paths and canonical instrument/master mapping is absent. `AMDX_MASTER_CALENDAR_CLARIFICATION.md` replaces the separate purpose-collection collector-first direction before any new migration. Preserve existing data/conflicts and source basis explicitly; final rendering and channel/write/snapshot binding still require implementation. No new runtime behavior or Watch history/comparison route follows from this documentation correction.

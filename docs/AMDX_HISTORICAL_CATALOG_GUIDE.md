@@ -1,5 +1,7 @@
 # Historical and forward-test AMDX catalog
 
+**Current product correction:** `AMDX_MASTER_CALENDAR_CLARIFICATION.md` supersedes separate purpose collections as the primary user workflow. This guide describes the existing v42 implementation; the ledger/editor are reusable for one shared maintained instrument calendar, but shared TDA/Watch ownership is not yet implemented.
+
 The initial native entry workspace is now implemented in PR #70, source `678e9a0835a442f1de42ec6761bfcd7116fc6bad`, on top of the v42 catalog backend. See [the four-check Lab trial](AMDX_CATALOG_LAB_OPERATOR_GUIDE.md). Final rendering, automatic run linkage and bulk ingestion remain separate.
 
 ## Accepted requirement and ownership
