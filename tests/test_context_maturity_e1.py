@@ -68,7 +68,7 @@ def test_schema_v34_adds_observed_qt_review_columns(tmp_path) -> None:
         ).fetchall()
     }
 
-    assert version == CURRENT_SCHEMA_VERSION == 37
+    assert version == CURRENT_SCHEMA_VERSION
     assert "review_observed_qt_context_json" in columns
     assert "review_qt_context_note" in columns
     connection.close()

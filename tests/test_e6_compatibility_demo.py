@@ -8,6 +8,8 @@ from PySide6.QtCore import QTimer
 from ict_cockpit.analysis.context_policy import evaluate_context_rules
 from ict_cockpit.context_rules import ContextRuleDefinition
 from ict_cockpit.database.context_capture_repository import ContextCaptureRepository
+from ict_cockpit.database.schema import CURRENT_SCHEMA_VERSION
+from ict_cockpit.database.trading_session_run_repository import TradingSessionRunRepository
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -52,6 +54,9 @@ def test_actual_e6_writer_restores_in_e7_normal_window_without_reseeding(tmp_pat
             run = shell.active_trading_run
             assert shell.runtime.session.current_mode_id == ("live-watch" if attempt == 0 else "post-market")
             assert run.id == evidence["run_id"]
+            assert conn.execute("PRAGMA user_version").fetchone()[0] == CURRENT_SCHEMA_VERSION == 38
+            assert TradingSessionRunRepository(conn).amdx.get_history(run.id).claims == ()
+            assert TradingSessionRunRepository(conn).amdx.get_evaluations(run.id) == ()
             assert run.context_rule_snapshot == []
             assert run.market_context_snapshot == evidence["market_context_snapshot"]
             assert shell.market_context_event_provider is None

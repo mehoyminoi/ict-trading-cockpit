@@ -12,6 +12,10 @@ Companion documents:
 - `docs/PROJECT_EVOLUTION.md` — chronological architecture history,
 - `docs/HANDOFF.md` — continuity protocol,
 - `docs/SMOKE_TEST.md` — manual acceptance record.
+- `docs/COCKPIT_FUNCTIONAL_WALKTHROUGH.md` — source-verified whole-tool journeys, current/proposed surfaces and shared QT/AMDX contract review.
+- `docs/AMDX_CYCLE_RULE_CONTRACT.md` — coupled quartet profiles, rule/anchor provenance, interpretive uncertainty and classification-rule requirements.
+- `docs/AMDX_RULE_DEFINITION_FRAMEWORK.md` — versioned classifier definitions, priority/weighting, target scopes, news context and the narrow implementation boundary.
+- `docs/AMDX_WORKING_QUARTET_ACTION_REVIEW.md` — proposed one-entry working-quartet revision, compatible/retired anchors, X subtype and uncertainty cases; detailed policy pending review.
 
 This document describes **current intended product truth**, not the chronological history of every idea considered. Older requirements and transcripts remain historical evidence only.
 
@@ -193,6 +197,8 @@ Focus and Deck are complementary projections of the same underlying process stat
 - **Deck View** answers: “Where am I in the whole analytical picture?”
 
 They must not fork into duplicate workflows.
+
+Operator clarification on 2026-10-11: the Focus/Deck relationship is a useful model for nearby detail and bird's-eye orientation, but the mature presentation should integrate the two closely rather than separate them behind tabs. This is a presentation direction; existing Focus/Deck tabs remain until a reviewed replacement preserves their shared process state and natural navigation.
 
 ### 4.3 Navigation versus certification
 
@@ -633,6 +639,22 @@ Weekly QT uses Monday-Thursday as the four quarters; Friday is distortion/separa
 
 Q1 should be interpreted relative to the prior cycle's Q4 where applicable.
 
+### 11.5 Coupled cycle profiles and plan-defined classification
+
+Operator clarification on 2026-10-11: each applicable four-quarter cycle is interpreted in AMDX or XAMD order. AMDX means Q1=A, Q2=M, Q3=D, Q4=X; XAMD means Q1=X, Q2=A, Q3=M, Q4=D. X may be Continuation X(C) or Reversal X(R). One accepted quarter assignment constrains the full containing profile: Q3=D implies AMDX, while X subtype can remain unresolved. This supersedes treating the four sibling quarter roles as independent fields. See `AMDX_CYCLE_RULE_CONTRACT.md`.
+
+Separate explicit technician anchors, rule-implied quarter/profile context and evidence-based phase classification. An inferred sibling role is not a fabricated manual answer or observed fact. Within-quartet inference does not automatically propagate a parent's phase/profile to child quartets. Preserve uncertainty, competing interpretations, conflicting active anchors, corrections and explicit manual judgment with provenance. Do not force a pattern or X subtype to satisfy a form.
+
+AMDX/XAMD definition and classification rules should be prominent, versioned Trade Plan content with inspectable inputs, reasons, applicability and unknowns. The aim is to make classification follow the plan's declared criteria and evaluate those criteria empirically, rather than leave subjective disagreement hidden in labels. The structural order is specified here; complete objective price-action criteria are not yet specified and must not be invented. A live phase sensor is optional later work, not the foundation of this architecture.
+
+Study/Lab can later evaluate rule revisions against scoped examples and recorded information available at the time. This is empirical rule/profile investigation, not a live quarter-correctness checklist, automatic competency score or new authorization policy. Authoritative adoption of new classification rules requires a published Trade Plan revision; current Alpha 0.7 remains unchanged. The previously proposed first-expectation Review default is not accepted by this clarification and needs to be reconsidered with cycle-profile provenance.
+
+### 11.6 Changeable rule definitions, priority and interpretive event context
+
+Operator direction on 2026-10-11: criteria should be changeable, trackable and actionable Trade Plan definitions so different approaches can be compared. Edit candidate definitions and publish identifiable revisions while protecting prior published rules and run history. Different criteria/priority/explicit weighting methods can produce different role/profile conclusions from the same facts; retain evaluation reasons, competing results and rule/input provenance. Input quarter/session and classified target must be distinct and explicit. Local X-like behavior need not be the final assigned quartet role; unsupported assignments remain conflicts/exceptions rather than forced patterns. Detailed classifier content and weight scales are not invented by the generic framework. See `AMDX_RULE_DEFINITION_FRAMEWORK.md`.
+
+High-impact/red-folder news relationships are a key TDA/Study input for anticipating weeks and sessions alongside price-action evidence. Preserve event timing/classification/coverage, historical information availability, source/rule revisions and unknowns. Empirical correlation remains something to evaluate; it is not assumed predictive strength or an automatic entry-policy effect. Framework construction can proceed with structural/definition/action contracts while actual classifier methods are specified and evaluated.
+
 ---
 
 ## 12. Economic news and calendar context
@@ -758,7 +780,9 @@ Workflow modes/decks/stations should correspond naturally to the chart workspace
 
 ### 15.2 Responsive active workspace
 
-The active operating surface should work as a compact desktop companion to TradingView.
+The Cockpit is the primary working surface in the operator's desktop layout. Plan the mature interface around a **16:9 workspace** occupying the majority of the operator's ultrawide display, or the full display on a conventional screen. Charts, journals and other daily information are arranged around the Cockpit. This operator override on 2026-10-11 supersedes the earlier undefined smaller-footprint / compact-companion requirement.
+
+16:9 is a design target, not an implemented fixed-aspect window restriction or an exact pixel resolution. Layout remains responsive to available space. More room should support nearby orientation and task detail while preserving low interaction and memory burden; it is not a reason to expose every control simultaneously.
 
 Required controls must remain discoverable without excessive scrolling or hidden layout dependencies.
 
@@ -1398,3 +1422,56 @@ The product requirement is therefore:
 > **Preserve the full intraday QT hierarchy in the data model and historical record while minimizing how much of that hierarchy the operator must explicitly touch during live use.**
 
 Do not solve completeness by exposing every session × 90-minute cycle × QT layer as a permanent grid of fields. The operator-facing design should preserve depth while reducing simultaneous exposure and repetitive entry.
+
+### Whole-stack orientation and nearby detail — operator clarification 2026-10-11
+
+The full AMDX stack, including higher-order context, should remain visible in a quiet, easily accessible form throughout TDA / Watch / Market Review and into Study, whether in Lab or another study surface. QT/AMDX is foundational context across the learning and operating process. A bird's-eye view and accessible minutiae belong closely together: inspecting or editing a selected level should preserve the overview and its relationship to the surrounding levels. Progressive disclosure applies to detail; it should not hide the higher-order stack or imply that it is less important than sessions/cycles. Minimize clicking, hunting and digging while keeping the environment clutter-free. Exact layout remains open to hands-on evaluation; shared presentation does not imply that different runs share or overwrite interpretations.
+
+Make all editable levels reachable with minimal motion and navigation burden, within the existing process permissions. Anticipated heavy use of keyboard shortcuts and a macro pad is a design constraint: selection, inspection and editing should use shared application actions that mouse, keyboard and later hardware can invoke. Actual macro-pad integration remains downstream.
+
+Preserve interval/revision history for reconstruction and contextual Review/Study use. A raw day-history list or "was I right this quarter" presentation does not belong on the active QT workspace. The placement and form of deeper historical exploration remain open; no correctness scoring or mandatory quarter-by-quarter grading is introduced. Current suggestions about exact controls, baseline selection and inheritance remain provisional rather than inferred design acceptance.
+
+### First native AMDX trial — operator feedback 2026-10-11
+
+The operator prefers revising the working quartet with one new valid entry rather than finding and clearing an older anchor that contradicts the intended new order. This is a shared-action direction, beyond control styling: ordinary quartet revision should preserve earlier claims as history without requiring manual conflict cleanup. Precise treatment of other compatible anchors, X subtype, uncertainty and explicit alternatives still needs an action-contract refinement before implementation. Existing domain conflict/evaluation traces remain valid; no stored claim is silently rewritten or discarded.
+
+Normal phase-entry controls should offer only roles structurally possible at the selected quarter position across AMDX and XAMD:
+
+| Quarter | Available roles |
+| --- | --- |
+| Q1 | A, X |
+| Q2 | A, M |
+| Q3 | M, D |
+| Q4 | D, X |
+
+Availability must not be restricted to the currently selected order, which would prevent a one-entry order change. X(C), X(R) and X(?) belong only at positions where X is possible. Unknown, Not Applicable and clear remain distinct from phase roles; their exact quartet-revision effects require the shared-action refinement. Invalid normal phase placements are prevented in the future entry path, while existing history and explicit analytical conflicts/exceptions remain inspectable.
+
+The operator likes quiet contextual hover explanations and having the session/day quartet and active session's 90-minute quartet visible together. Retain those relationships in later, more visual presentations within the primary workspace; the current table is not an accepted final renderer.
+
+### Context-specific presentation — operator direction 2026-10-11
+
+Foundational QT/AMDX context can have different rendering/interaction profiles across the Cockpit. Watch should emphasize quiet at-a-glance self-orientation and efficient permitted capture; Study/Lab should allow a more spacious investigative experience tailored to insight gathering. TDA and Market Review can emphasize their own analytical and comparison tasks. These are projections of the shared domain state and application actions, not additional process modes or independent interpretation stores. Whole-stack accessibility, historical truth and low interaction/memory burden carry across profiles; identical widget layout is not required.
+
+Park component layout iteration while reviewing the broader Cockpit functional map, context placement and action/ownership boundaries. Architectural contract work can progress independently of final rendering choices. Before production UI development, review a coherent overall-tool view covering Trade Plan/governance, Process, Study/Lab, Review/Development and Workbench, including existing behavior versus proposed behavior. Exact draft commit timing, permitted Watch interpretation edits versus observation capture, and comparison baseline remain explicit contract decisions rather than consequences of a mockup's controls.
+
+### Proposed Study-first startup — operator direction 2026-10-11
+
+Study should be the default/most anticipated workspace in the mature UX, especially while building a validated successful Trade Plan. The operator expects time spent studying to substantially outweigh live-trade activity during that period; no numeric ratio or enforced quota is specified.
+
+A proposed startup surface should offer Study this Competency / a relevant next study task in the spirit of a dismissible recent-project suggestion. Its purpose is to answer: "After a tiring workday, what is the best use of my limited time and mental energy?" It should minimize planning/navigation burden while remaining easy to dismiss or navigate around. This direction is explicitly subject to change and is not a mandatory study gate or an implemented new startup behavior.
+
+Recommendations should explain their recorded basis, such as saved Development Direction, selected competency focus or an unfinished study; no unsupported mastery score or invented personalized priority is introduced. Details of recommendation ordering, manual preference and handling an already-active run remain open. Startup guidance should not silently create a run, change an environment, overwrite in-progress context, or change Trade Plan/progression rules.
+
+### Parked coverflow-style AMDX navigation idea — 2026-10-11
+
+Subject to evaluation against other methods, explore a coverflow-style focus/detail feature controlled by scrolling/wheel and hotkeys. It should expose an appropriate amount of information while retaining nearby quiet whole-stack orientation. Navigation alone must not accept an interpretation, create history or retarget a pending edit. Reuse shared actions and keep layout/animation/binding choices downstream; this is an exploratory UX idea, not an approved renderer or implementation dependency.
+
+### Accepted automatic interpretation recording — 2026-10-11
+
+A deliberate accepted AMDX phase choice should immediately become recorded interpretation history, without waiting for station completion or requiring a separate Save/Record action. Later changes preserve the earlier interpretation as revisions. Note text remains automatically recoverable during editing. Scope navigation and analytical completion remain separate actions. Option browsing/untouched Unknown defaults do not invent an interpretation. See `QT_ACTION_CONTRACT_REVIEW.md`; the default comparison baseline remains open.
+
+### Accepted in-place Watch AMDX updates — 2026-10-11
+
+Small working-interpretation changes and active 90-minute cycle input should be directly and easily reachable in Watch. An accepted phase change uses the shared automatic revision-preserving command and does not require leaving Watch. The operator expects to keep up with at least the 90-minute cycles as they pass; factual current-marker updates are automatic. Explicit anchors remain technician input; a constrained containing quartet may show marked rule-implied roles, while a new containing cycle receives no arbitrary copy-forward. An active edit remains pinned to its target across a passive clock boundary. No mandatory cycle-completion gate is introduced.
+
+Broader thesis changes should have easy full-stack inspection and full TDA/Return to Analysis access. Inspection alone does not alter the process; the technician decides when broader re-analysis is needed. Do not automatically force re-analysis based solely on phase/level or edit count. These are shared action/permission requirements, not a chosen widget layout or an implemented production edit path.

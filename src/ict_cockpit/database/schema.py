@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 37
+CURRENT_SCHEMA_VERSION = 38
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -119,6 +119,9 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 36:
             _migrate_version_36_to_37(connection)
             version = 37
+        if version == 37:
+            _migrate_version_37_to_38(connection)
+            version = 38
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -788,3 +791,75 @@ def _migrate_version_36_to_37(connection: sqlite3.Connection) -> None:
         BEGIN SELECT RAISE(ABORT, 'Source captures are immutable'); END
     """)
     connection.execute("PRAGMA user_version = 37")
+
+
+def _migrate_version_37_to_38(connection: sqlite3.Connection) -> None:
+    # SQLite DDL alone does not open a Python-managed transaction. Keep every
+    # additive table/trigger and the version bump atomic on existing v37 files.
+    if not connection.in_transaction:
+        connection.execute("BEGIN")
+    connection.execute("""
+        CREATE TABLE amdx_cycle_identity (
+            id TEXT NOT NULL PRIMARY KEY,
+            payload_json TEXT NOT NULL
+        )
+    """)
+    connection.execute("""
+        CREATE TABLE amdx_definition_revision (
+            plan_revision TEXT NOT NULL,
+            rule_id TEXT NOT NULL,
+            rule_revision TEXT NOT NULL,
+            publication TEXT NOT NULL CHECK(publication IN ('Candidate', 'Published')),
+            payload_json TEXT NOT NULL,
+            PRIMARY KEY (plan_revision, rule_id, rule_revision, publication)
+        )
+    """)
+    connection.execute("""
+        CREATE TABLE amdx_claim (
+            sequence INTEGER PRIMARY KEY CHECK(sequence > 0),
+            id TEXT NOT NULL UNIQUE,
+            run_id TEXT NOT NULL REFERENCES trading_session_run(id) ON DELETE RESTRICT,
+            branch_id TEXT NOT NULL,
+            channel TEXT NOT NULL CHECK(channel IN ('Expected', 'Observed')),
+            cycle_id TEXT NOT NULL REFERENCES amdx_cycle_identity(id) ON DELETE RESTRICT,
+            parent_claim_id TEXT,
+            payload_json TEXT NOT NULL,
+            UNIQUE(id, run_id),
+            FOREIGN KEY (parent_claim_id, run_id) REFERENCES amdx_claim(id, run_id) ON DELETE RESTRICT
+        )
+    """)
+    connection.execute("CREATE INDEX idx_amdx_claim_run ON amdx_claim(run_id, sequence)")
+    connection.execute("""
+        CREATE TABLE amdx_evaluation (
+            sequence INTEGER PRIMARY KEY CHECK(sequence > 0),
+            id TEXT NOT NULL UNIQUE,
+            run_id TEXT NOT NULL REFERENCES trading_session_run(id) ON DELETE RESTRICT,
+            cycle_id TEXT NOT NULL REFERENCES amdx_cycle_identity(id) ON DELETE RESTRICT,
+            recorded_at TEXT NOT NULL,
+            basis_claim_id TEXT,
+            payload_json TEXT NOT NULL,
+            FOREIGN KEY (basis_claim_id, run_id) REFERENCES amdx_claim(id, run_id) ON DELETE RESTRICT
+        )
+    """)
+    connection.execute("CREATE INDEX idx_amdx_evaluation_run ON amdx_evaluation(run_id, sequence)")
+    for table in ("amdx_cycle_identity", "amdx_definition_revision", "amdx_claim", "amdx_evaluation"):
+        for operation in ("UPDATE", "DELETE"):
+            connection.execute(f"""
+                CREATE TRIGGER {table}_no_{operation.lower()}
+                BEFORE {operation} ON {table}
+                BEGIN SELECT RAISE(ABORT, 'AMDX history is immutable'); END
+            """)
+        # REPLACE can bypass DELETE triggers when recursive_triggers is off.
+        # Guard conflicting inserts explicitly, including sequence collisions.
+        if table == "amdx_definition_revision":
+            conflict = "plan_revision = NEW.plan_revision AND rule_id = NEW.rule_id AND rule_revision = NEW.rule_revision AND publication = NEW.publication"
+        elif table in ("amdx_claim", "amdx_evaluation"):
+            conflict = "id = NEW.id OR sequence = NEW.sequence"
+        else:
+            conflict = "id = NEW.id"
+        connection.execute(f"""
+            CREATE TRIGGER {table}_no_replace BEFORE INSERT ON {table}
+            WHEN EXISTS (SELECT 1 FROM {table} WHERE {conflict})
+            BEGIN SELECT RAISE(ABORT, 'AMDX history is immutable'); END
+        """)
+    connection.execute("PRAGMA user_version = 38")

@@ -686,3 +686,71 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 **Open:** Friday Asian Range's no-Monday-high-impact-news condition is a validation use case, not an adopted rule. Preceding versus following Monday, normalized market applicability and final policy effects require explicit Trade Plan decisions. The demo labels its current-week Monday and following-week offset explicitly. Forex Factory captures cannot certify event absence. Alpha 0.7 publishes no new rule or threshold.
 
 **Refines:** E5 run-wide positive-event predicates; preserves E6 explicit coverage/uncertainty and immutable source/run ownership. No readiness percentage, account applicability, automatic freshness policy, order execution or source mapping is introduced.
+
+## 2026-10-11 — Coupled AMDX domain foundation and versioned criteria
+
+**Status:** Operator reviewed the cycle contract and authorized proceeding with the narrow foundation. Pure domain/action/archive implementation is developer verified; production persistence/renderers are not integrated.
+
+**Decision:** Model a containing quartet with stable quarter identities, explicit anchors, coupled AMDX/XAMD structural consequences, unresolved X subtype and visible conflicts. Preserve accepted interpretation revisions automatically through a shared action contract, with run/channel/branch/cycle isolation and explicit timestamps. Keep recorded features, local behavior, assigned roles and governing profiles distinct. Definition/evaluation snapshots retain plan/rule revisions, scoped inputs, source/availability and reasons for replay/comparison.
+
+**Rationale:** One quarter assignment constrains its siblings, while subjective disagreements and competing rule methods require traceable alternatives rather than independent fields or opaque scores. The complete rulebook is not needed before the foundation; only executable criteria require operational inputs/targets and resolver semantics.
+
+**Implementation choice:** the first named resolver is Cycle Profile Priority. Smaller integers govern; all equally best-priority assigned-role matches constrain the quartet. Competing unknowns at equal/higher priority leave the result unresolved, ties can conflict, and lower-priority/local-behavior outputs remain in the trace. This is a declared developer framework policy, not an adopted trading method or universal weighting formula.
+
+**Consequences:** versioned JSON history/evaluation save/reload is verified without changing schema v37, Alpha 0.7 or the desktop. Actual application writes, plan publication, higher-order temporal mapping, operational classifiers, Review default, source adapters/sensors and coverflow rendering remain downstream. News interpretation/research is part of the definition direction, but no correlation or provider as-of capability is assumed validated.
+
+**Supersedes:** independent sibling-role assumptions and the separate Record-click target in the earlier intraday prototype. Existing legacy flat QT storage/behavior is preserved until reviewed repository integration; no historical interval claims are invented.
+
+## 2026-10-11 — Transactional run-owned AMDX history
+
+**Status:** Operator authorized proceeding after the pure foundation checkpoint. Implemented in schema v38; developer storage/compatibility verification recorded in `PROJECT_STATE.md`. Production phase-entry UI and operator usability review remain downstream.
+
+**Decision:** Store accepted-action claims and criteria evaluations in separate append-only tables owned by existing saved runs. Registry rows protect stable cycle identities and exact definition revision content. Ordinary mutable run snapshot saves do not own or overwrite these histories. New AMDX data is absent on legacy runs until an explicit action occurs; never synthesize interval history from flat QT values.
+
+**Rationale:** Automatic durable capture must preserve earlier interpretations, survive restart and prevent stale editors or ordinary application saves from losing records. The interpretation and its input/rule basis should be independently reviewable without choosing a default Review comparison.
+
+**Consequences:** shared actions own an immediate SQLite transaction, validate the inspected scope head and append/commit once. Exact retries are idempotent; changed IDs/content, stale heads and inconsistent ownership/bases are rejected. Cycle/definition registration and result insertion roll back together on failure. An unrelated pending caller transaction is rejected rather than committed or rolled back. SQL UPDATE/DELETE/REPLACE guards protect existing rows. Explicit evaluation basis IDs are optional and never select a Review default. Definition snapshot identity includes Candidate/Published status; actual Trade Plan editing/publication remains separate.
+
+**Compatibility:** v37 → v38 is additive and atomic, with old run/capture data preserved and actual accepted-E6 restoration verified through the normal application. Alpha 0.7, existing gates and competency behavior remain unchanged. New Watch/TDA bindings, higher-order mapping, note drafts, Review defaults and final UX remain the next/separate work.
+
+**Refines:** the previous pure JSON archive contract into actual database persistence. No manual Save/Record obligation, automatic cycle-completion gate or inferred legacy history is introduced.
+
+## 2026-10-11 — Minimal shared Watch/TDA AMDX entry
+
+**Status:** Implemented and developer verified. Operator accepted all six functional checks 245–250 on 2026-10-11, pushed in `17b874b2c7fb48f2b35d2e30b9e2a6affe019072`; PR #61 is ready for review. This does not constitute final component/layout, replacement-action or classifier acceptance.
+
+**Decision:** Use one shared Working AMDX panel in the normal runtime, outside the content scroll area. Daily and active-session quartets remain near the input target, with higher legacy/derived QT context quietly visible. Four direct role choices and a secondary subtype/uncertainty/clear menu invoke committed repository actions. Current-quarter input follows time after successful entry; a deliberately inspected target stays pinned. Mouse/menu gestures pin their scope/reference through a clock boundary.
+
+**Rationale:** fulfill the accepted immediate-recording and in-place Watch contracts without a separate Save step, repetitive grid entry or forced return to TDA. Reuse the same data/actions for the analytical path and restore; preserve uncertain/conflicting interpretations and distinguish entered anchors from implied siblings.
+
+**Consequences:** recording reports success only after commit, retains the last committed view on failure, rejects/reloads stale scope without replay and disables recording on unavailable history. Earlier intraday flat inputs become read-only in the application-backed path; higher fields retain their legacy behavior/provenance. The shared panel remains visible in Market Review as working context, with no observed-cycle edit or default comparison adopted.
+
+**Layout/navigation choice:** fixed orientation leaves the rest of the runtime scrollable; in the application-backed path the wheel scrolls content, while mouse Back/Forward and station controls still navigate. Standalone legacy runner wheel behavior remains. This narrow fit choice avoids clipping the role controls or compressing station guidance; final context-specific rendering remains open.
+
+**Review path:** `tools/amdx_entry_demo.py` opens a retained separate normal-window Replay sandbox; the same command restores its committed run/claims/reference. Its explicit demo reference action changes time only. `AMDX_ENTRY_OPERATOR_GUIDE.md` maps six hands-on checks to smoke items 245–250. No synthetic classifier, weighting scale, competency evidence, entry/completion gate, Study-first startup or coverflow implementation is introduced.
+
+**Refines:** the persistence-next UI boundary into an implemented functional surface. Actual price/news criteria, higher-order cycle mapping, note drafts and contextual Review/Study presentation remain separately defined work.
+
+## 2026-10-11 — Cockpit as the primary desktop workspace
+
+**Status:** Accepted operator override; future layout target, not yet implemented geometry.
+
+**Decision:** Plan around a 16:9 Cockpit workspace taking the majority of the operator's ultrawide display, or the full display otherwise. The operator will arrange charts, journals and other daily information around it. The Cockpit is the primary focus of the working layout.
+
+**Rationale:** broader spatial context supports the desired nearby overview/detail relationship and makes the session/day and active 90-minute quartets easier to orient within the full process. Low clutter, low motion and low memory burden still govern what each context promotes.
+
+**Consequences:** future Watch, TDA, Review and Study renderers should use this primary-workspace target rather than optimize for an undefined small companion window. No exact resolution, fixed aspect-ratio enforcement, new minimum window size or screen-layout implementation is adopted in this documentation checkpoint. TradingView remains the charting workstation.
+
+**Supersedes:** `PROJECT_REQUIREMENTS.md` §15.2's compact desktop-companion footprint.
+
+## 2026-10-11 — Native AMDX entry feedback and structural choice limits
+
+**Status:** Operator direction recorded; exact replacement-action semantics pending, current UI unchanged.
+
+**Decision:** Normal phase entry should be limited to structurally valid positions across both quartet orders: Q1 A/X, Q2 A/M, Q3 M/D, Q4 D/X. The operator prefers a new valid entry to revise the working quartet without locating an older conflicting anchor. Preserve earlier interpretations as immutable history; retain explicit analytical alternatives/conflicts separately. The control set must still permit switching order in one deliberate entry.
+
+**Rationale:** searching for an anchor to clear makes the operator reason about the form rather than the quartet's meaning. Impossible phase choices do not belong in ordinary entry. Session/day plus active 90-minute visibility and quiet hover explanations received positive feedback; more visual renderers remain future work.
+
+**Consequences:** refine the shared action before implementing the preferred quartet replacement flow. Other compatible anchors, X subtype, Unknown/Not Applicable/clear and deliberately retained alternatives need explicit semantics. Existing stored claims/evaluation conflicts keep their original meaning; future actions must carry their revision basis. This feedback alone did not supply individual smoke statuses or final layout acceptance. The subsequently pushed checklist records all six functional checks PASS in `17b874b2c7fb48f2b35d2e30b9e2a6affe019072`; the new action/geometry directions remain unimplemented.
+
+**Refines:** the original native panel's unrestricted role buttons and per-quarter anchor-accumulation interaction target; preserves domain uncertainty, parent/child separation and historical truth.

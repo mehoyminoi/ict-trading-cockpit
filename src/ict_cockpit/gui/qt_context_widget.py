@@ -31,6 +31,7 @@ class QTContextWidget(QFrame):
         super().__init__()
         self.setFrameShape(QFrame.Shape.StyledPanel)
         self._loading = False
+        self.intraday_read_only = False
         self.phase_combos: dict[str, QComboBox] = {}
 
         layout = QVBoxLayout(self)
@@ -38,6 +39,7 @@ class QTContextWidget(QFrame):
         layout.setSpacing(4)
 
         heading = QLabel("QT / AMDX Stack")
+        self.heading_label = heading
         heading.setStyleSheet("font-weight: 600;")
         help_label = QLabel(
             "Interpret the active nested quarters. Market-time quarter positions are factual; "
@@ -119,6 +121,9 @@ class QTContextWidget(QFrame):
                         f"AMDX interpretation source: {source}. "
                         "Raw quarter identity is tracked separately."
                     )
+                if self.intraday_read_only and level_id in ("day", "session", "macro_90m"):
+                    combo.setEnabled(False)
+                    combo.setToolTip("Earlier flat entry retained as legacy context. Use the working quartet panel for new intraday anchors.")
         finally:
             self._loading = False
 
@@ -160,3 +165,7 @@ class QTContextWidget(QFrame):
 
     def clear_context(self) -> None:
         self.load_context({})
+
+    def set_intraday_read_only(self, value: bool) -> None:
+        self.intraday_read_only = value
+        self.heading_label.setText("Earlier QT entries · higher-level context" if value else "QT / AMDX Stack")

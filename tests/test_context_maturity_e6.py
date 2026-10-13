@@ -19,7 +19,7 @@ from ict_cockpit.analysis.trading_session_run import RunEnvironment, RunPurpose
 from ict_cockpit.context_rules import ContextRuleDefinition, ContextConditionDefinition, ContextConditionKind, ContextEffect
 from ict_cockpit.context_rules import ContextEventWindow
 from ict_cockpit.database.connection import create_connection
-from ict_cockpit.database.schema import initialize_schema
+from ict_cockpit.database.schema import CURRENT_SCHEMA_VERSION, initialize_schema
 from ict_cockpit.database.context_capture_repository import ContextCaptureRepository
 from ict_cockpit.database.trading_day_repository import TradingDayRepository
 from ict_cockpit.database.trading_day_session_repository import TradingDaySessionRepository
@@ -233,12 +233,15 @@ def test_selection_change_invalidates_an_unsaved_preview(tmp_path):
 
 def test_capture_repository_restart_immutability_and_v36_migration(tmp_path):
     path = tmp_path / "e6.db"
-    conn = create_connection(path); initialize_schema(conn)
-    # Simulate the prior schema: new migration creates only source storage.
-    conn.execute("DROP TABLE context_source_capture")
-    conn.execute("PRAGMA user_version = 36"); conn.commit()
+    conn = create_connection(path)
+    # Build the actual earlier schema; do not relabel a newer schema as v36.
+    from ict_cockpit.database import schema
+    with conn:
+        schema._initialize_version_1(conn)
+        for version in range(1, 36):
+            getattr(schema, f"_migrate_version_{version}_to_{version + 1}")(conn)
     initialize_schema(conn); initialize_schema(conn)
-    assert conn.execute("PRAGMA user_version").fetchone()[0] == 37
+    assert conn.execute("PRAGMA user_version").fetchone()[0] == CURRENT_SCHEMA_VERSION
     repo = ContextCaptureRepository(conn)
     original = capture(); repo.save(original); repo.save(original)
     with pytest.raises(ValueError): repo.save(replace(original, raw_payload="changed"))

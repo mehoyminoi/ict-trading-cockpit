@@ -1107,6 +1107,12 @@ Time-derived QT roles remain factual in both expected and observed views. Review
 The current E1 UI is intentionally a testing-grade interaction surface. The mature QT experience must preserve the deeper intraday hierarchy—four sessions per futures day and four 90-minute cycles per session—without requiring the operator to complete a giant repetitive grid. Future UI work should prefer context focus, visual hierarchy, progressive disclosure, automatic factual derivation, inheritance where honest, and edit-by-exception.
 
 
+## Coupled cycle foundation
+
+The reviewed AMDX contract now has a domain foundation (`analysis/amdx.py`, `analysis/amdx_rules.py`) and transactional run-owned storage (`database/amdx_repository.py`); see `AMDX_FOUNDATION_GUIDE.md` and `AMDX_PERSISTENCE_GUIDE.md`. Schema v38 adds separate append-only tables alongside the legacy expected/observed maps above; those maps are not converted into invented history. A containing quartet has four stable temporal identities. An explicit anchor constrains AMDX or XAMD within that quartet; sibling roles are conditional implications, not independently observed facts. X subtype can remain unresolved. Parent and child quartets retain separate interpretations.
+
+Versioned criteria separate recorded input features, local behavior labels, assigned roles and the governing cycle profile. The first explicit priority policy retains all rule traces while selecting the best-priority assigned-role basis; unknown competing criteria and equal-priority contradictions remain inspectable. Immutable accepted-action claims and evaluation snapshots now survive database restart through shared committed actions. Ordinary run saves cannot truncate the history; stale scope updates are rejected. A minimal shared Working AMDX panel now uses those actions in Watch/TDA and keeps nearby daily/session/higher context visible outside the content scroll area. It follows current-quarter input, pins explicit inspection/gestures, reports commit failures and restores saved working profiles. See `AMDX_ENTRY_OPERATOR_GUIDE.md` for pending hands-on review. Market Review is read-only here; operational classifiers, comparison defaults, Study renderers and final UI remain later work. No inference here grants entry permission or competency evidence.
+
 # 26. QT hierarchy
 
 Current conceptual hierarchy includes:

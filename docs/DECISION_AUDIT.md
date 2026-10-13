@@ -253,3 +253,64 @@ The earlier proposed-only importer wording is superseded by the operator's go-ah
 | Friday Asian Range adoption | A generic validation fixture; preceding/following Monday and policy effects are not settled trading rules. Alpha 0.7 remains unchanged. | DEFERRED pending explicit Trade Plan decisions |
 
 Earlier E7-downstream wording describes the E6 checkpoint. E7 v0 is implemented, operator accepted and merged through PR #60 (`f57794cff6f128830655b458e999fd8f72038280`). All nine checks PASS after controlled persistence and E6→E7 compatibility retests, with the latter recorded in `9454414`. Milestone E remains the major frontier; no roadmap priority is moved.
+
+## 2026-10-11 — AMDX foundation boundary
+
+| Area | Current interpretation | Status |
+|---|---|---|
+| Independent quarter values | Coupled AMDX/XAMD profile within one quartet, separate parent/child context, explicit anchors and unresolved X subtype. Legacy flat storage is preserved until integration. | REFINED / pure domain foundation implemented |
+| Separate Record action | A deliberate accepted choice appends a new immutable claim through the shared domain action. Durable app writes follow transactional repository integration. | SUPERSEDED target / domain action implemented |
+| Criterion priority | Versioned Cycle Profile Priority governs the cycle using best-priority assigned-role matches; contrary/local outputs remain traced. No weights/probabilities are assumed. | IMPLEMENTED framework policy / specific trading definitions OPEN |
+| Persistence | Versioned history/evaluation JSON archive and validated reload are verified. No production run fields/migration exist yet. | IMPLEMENTED contract / database integration NEXT |
+| Renderer and Review baseline | Context-specific screens and comparison default remain open. Coverflow is a later revisable experiment. | DEFERRED / no UI acceptance inferred |
+
+See `AMDX_FOUNDATION_GUIDE.md`. The operator authorized proceeding after reviewing the cycle/definition direction; this does not adopt a synthetic price/news classifier or alter Alpha 0.7.
+
+## 2026-10-11 — AMDX persistence implementation
+
+| Area | Current interpretation | Status |
+|---|---|---|
+| Persistence NEXT in the foundation checkpoint | Schema v38 separate append-only tables and the normal run repository's shared AMDX actions now commit/reload claims and evaluations. | SUPERSEDED / persistence implemented |
+| Existing run snapshot ownership | Ordinary run saves retain old fields and cannot truncate AMDX history; legacy runs have empty new history. | IMPLEMENTED / v37 and actual E6 compatibility verified |
+| Revision content and simultaneous edits | Stable cycle/definition content is protected; exact retries are idempotent and stale scoped heads are rejected. | IMPLEMENTED / writer and rollback tests |
+| Review comparison | Optional explicit evaluation basis is stored; no first/latest default is selected. | OPEN presentation policy |
+| Desktop entry path | Backend is ready for minimal Watch/TDA action binding and restored-record presentation. No new phase-entry surface exists yet. | NEXT / final layout still deferred |
+
+See `AMDX_PERSISTENCE_GUIDE.md`. Earlier v37/no-migration and database-NEXT statements record the foundation checkpoint; this v38 slice supersedes that implementation status while preserving the accepted policy/legacy boundaries.
+
+## 2026-10-11 — AMDX application entry boundary
+
+| Area | Current interpretation | Status |
+|---|---|---|
+| Watch/TDA binding NEXT | Shared fixed Working AMDX panel now commits/restores Expected working-cycle actions in the normal application. | IMPLEMENTED / operator checks 245–250 PASS; PR #61 ready for review |
+| Current versus inspected target | Default follows current after accepted input; inspected targets and open gestures stay pinned. Navigation/time alone never records. | IMPLEMENTED / mouse/menu/keyboard and boundary tests |
+| Legacy intraday flat entry | Retained as read-only earlier context in the application-backed path; higher legacy/derived fields keep provenance/behavior. | REFINED / no invented history or cross-layer inheritance |
+| Compact Focus wheel behavior | With fixed AMDX orientation, application runtime content can scroll and wheel scrolls content; Back/Forward and station controls remain. Standalone legacy runner behavior is preserved. | REFINED developer fit choice / final UX OPEN |
+| Review / Study | Shared working context is read-only in Market Review; no observed-cycle or comparison default is adopted. Spacious Study renderers remain downstream. | OPEN separate contracts |
+
+See `AMDX_ENTRY_OPERATOR_GUIDE.md`. This functional surface is reviewable; backend tests and earlier document review do not imply operator usability acceptance or settled component geometry.
+
+## 2026-10-11 — Native AMDX feedback and primary workspace override
+
+| Earlier interpretation | Latest direction | Status |
+|---|---|---|
+| Undefined small / compact desktop companion | Plan around a primary 16:9 workspace occupying most of an ultrawide, or a full conventional display; charts/journals arranged around the Cockpit. | SUPERSEDED footprint / accepted target, geometry not implemented |
+| Any A/M/D/X button at any quarter | Normal entry permits Q1 A/X, Q2 A/M, Q3 M/D, Q4 D/X across both legal orders. Invalid placements should not be normal choices. | REFINED entry requirement / not implemented |
+| Find/clear an old anchor to change order | Prefer one new valid entry revising the working quartet while retaining the earlier claim as history. Compatible anchors, subtype and uncertainty effects need explicit shared-action semantics. | REFINED interaction direction / action contract pending |
+| Conflicts and alternatives | Preserve analytical conflicts, original transcripts and explicit alternatives; ordinary revision need not expose stale-anchor cleanup. | CURRENT provenance requirement |
+| Session/day plus active 90m visibility and hover | Operator likes these relationships; retain them in more visual future renderers within the larger workspace. | POSITIVE feedback / final rendering open |
+| Locally saved smoke results | Pushed in `17b874b2c7fb48f2b35d2e30b9e2a6affe019072`: all six checks 245–250 PASS; all item identities/comments and prior 244 statuses preserved. PR #61 ready for review. | SYNC COMPLETE / current functional surface accepted; follow-up action/layout open |
+
+See `PROJECT_REQUIREMENTS.md` §15.2 and native-trial subsection, `AMDX_CYCLE_RULE_CONTRACT.md` §4 and the new decision entries. This checkpoint records feedback only; source/tests, schema v38 and Alpha 0.7 remain unchanged.
+
+## 2026-10-11 — Working-quartet revision action review
+
+| Topic | Concrete recommendation | Status |
+|---|---|---|
+| Ordinary phase entry | One valid position/phase selects the new working order; retain compatible anchors and retire incompatible ones in a single immutable claim. | PROPOSED / review cases prepared |
+| X subtype | Retain C/R only at the same compatible X quarter; an order switch moves X and leaves its new subtype unresolved unless explicitly supplied. | PROPOSED / no subtype copy-forward |
+| Unknown and clear | Affect the selected phase anchor; other compatible anchors can still imply the order. Retired anchors never reactivate. Not Applicable is an explicitly separate quartet-applicability judgment in the proposed policy. | PROPOSED / current stored semantics unchanged |
+| Repeat input | Honor the older declared no-op when an already explicit identical choice produces no active-basis change and the head is current. Existing UI currently appends. | EXISTING implementation gap / proposed new command coverage |
+| Historical replay | New action-policy identity and replay basis; original Accept/Clear records keep accumulation semantics. | REQUIRED compatibility boundary / payload and migration implementation pending |
+
+See `AMDX_WORKING_QUARTET_ACTION_REVIEW.md` for ten cases. Readiness to continue authorized this contract refinement, not acceptance of every newly recommended uncertainty/applicability detail. PR #61's six PASS results cover the existing functional surface. No implementation, schema, Trade Plan or smoke-status change is made here.

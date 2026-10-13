@@ -1,6 +1,8 @@
 import json
 import sqlite3
 
+from ict_cockpit.database.amdx_repository import AMDXRepository
+
 from ict_cockpit.analysis.trading_session_run import (
     AuthorizationGateState,
     InterpretationOutcome,
@@ -21,6 +23,7 @@ from ict_cockpit.analysis.trading_session_run import (
 class TradingSessionRunRepository:
     def __init__(self, connection: sqlite3.Connection) -> None:
         self.connection = connection
+        self.amdx = AMDXRepository(connection)
 
     def save(self, session_run: TradingSessionRun) -> None:
         evidence_json = json.dumps(

@@ -1,0 +1,84 @@
+# One-entry working-quartet revision — action review
+
+**Status:** concrete developer recommendation for review, following operator feedback on 2026-10-11. The operator requested easier quartet revision and structurally valid choices; the detailed anchor/subtype/uncertainty policy below is proposed, not yet accepted or implemented.
+
+**Baseline:** PR #61's current functional entry has six operator checks PASS and a 546-pass developer suite. The current command accumulates the latest anchor for each quarter, so contradictory anchors can require manual correction. This document specifies a separate revision action without changing the meaning of existing stored actions. Schema v38 / Alpha 0.7 and current application code remain unchanged.
+
+The intended normal flow is: select the relevant quarter, make one valid phase choice, and see the whole working quartet change immediately. It does not require finding an older anchor, clearing it first, saving separately, or leaving Watch.
+
+## 1. Valid phase choices
+
+The role menu uses the union of the two supplied orders, not the currently selected order:
+
+| Quarter | AMDX role | XAMD role | Normal phase choices |
+| --- | --- | --- | --- |
+| Q1 | A | X | A, X(?) / X(C) / X(R) |
+| Q2 | M | A | A, M |
+| Q3 | D | M | M, D |
+| Q4 | X | D | D, X(?) / X(C) / X(R) |
+
+Every valid position/phase pair selects exactly one order. Invalid normal choices are unavailable in every input adapter and rejected by the shared command, including keyboard/hardware callers. Unknown, Not Applicable and clear are separate actions rather than phase choices. This does not remove the analytical domain's ability to retain conflicting rule evidence, explicit alternatives or old invalid inputs.
+
+## 2. Proposed shared action
+
+Call the logical command **Revise working quartet**. Its policy is:
+
+1. Pin the run, Expected/working scope, containing cycle, selected quarter, inspected head and explicit market reference at gesture start.
+2. Validate the selected phase against both structural orders. Select the one order supported by the new position/phase pair.
+3. Replace the current explicit anchor at the selected quarter. The new choice is explicit technician judgment; sibling roles remain conditional structural implications.
+4. Retain other active technician anchors compatible with the chosen order. Keep a retained X subtype only when it belongs to that same cycle and X quarter.
+5. Retire incompatible role anchors from the new active interpretation. Identify their relationship to the earlier claim; do not delete or mutate them in history. A valid phase choice also retires a prior Not Applicable marker so ordinary input can restore an applicable quartet without hunting for that marker.
+6. Keep explicit Unknown markers at other quarters as non-constraining judgments. A resolved order may still imply a role there; show both the technician's uncertainty and the conditional role rather than presenting an implied phase as observed certainty.
+7. Append and commit one new quartet claim atomically, recording the incoming choice, previous head, retained/retired basis and derived order/subtype. Report success only after commit.
+
+Normal working revision deliberately selects the new working hypothesis. It does not resolve disagreement between independent classifier results or erase a deliberately retained alternative. Those remain separate analytical records/branches. The ordinary command is defined for the manual Expected/working basis used by the current UI. If a legacy/programmatic head contains rule-origin anchors, preserve that mixed basis and reject an unsupported manual rewrite rather than silently retiring rule output; an explicit analytical basis/alternative action belongs to later integration. Stored rule evaluations remain independent.
+
+## 3. X subtype, uncertainty and clear
+
+| Action | Proposed effect |
+| --- | --- |
+| Choose the same order using another quarter | Retain compatible explicit anchors, including a compatible X(C)/X(R) at the same X quarter. Add the new explicit judgment. |
+| Switch AMDX ↔ XAMD | Retire incompatible active phase anchors. X moves to another quarter; its new subtype is unresolved unless the incoming choice explicitly supplies C/R there. |
+| Choose X(?) at the existing X quarter | Explicitly replace C/R with an unresolved subtype. Do not interpret X(?) as Unknown. |
+| Mark the selected quarter Unknown | Replace that quarter's explicit phase anchor with a non-constraining Unknown marker. In an applicable quartet, other retained phase anchors may still determine the order and conditional role; if none remain, both orders are unresolved. Unknown does not itself undo a quartet's Not Applicable judgment. |
+| Clear the selected anchor | Remove that explicit anchor from the new active basis; infer only from the other retained anchors. Never reactivate a retired or previously replaced anchor. |
+| Mark this quartet Not Applicable | Record a separate, explicit quartet-applicability judgment, retire its current active phase/Unknown anchors, and show Not Applicable rather than a forced order. Preserve the earlier claim in history. The future menu should name this quartet-wide meaning clearly. |
+| Clear that Not Applicable marker | Return to an unassigned applicable quartet. The previously retired phase anchors do not reactivate. A new valid phase can also restore applicability directly. |
+| Repeat an already explicit identical role/subtype | No new claim if the resulting active interpretation is unchanged and the inspected head is still current. Selecting a currently implied role for the first time is a new explicit judgment, so it does create a claim. |
+
+Unknown and clearing a phase anchor do not choose another phase or promise to reset the entire quartet when independent compatible anchors remain. A new phase choice is the one-entry order-changing operation. Clearing a quartet's separate Not Applicable judgment is an explicit applicability action; an Unknown entry leaves that judgment intact, even at the quarter from which it was recorded. This separates applicability from role uncertainty in the proposed new action policy; existing records retain their original semantics. Notes/annotations and analytical completion remain independent actions.
+
+The accepted older action contract calls for identical-input no-ops; the current UI/repository always append an accepted choice. The new command should implement the declared semantic no-op and test it explicitly, rather than claiming the existing command already does so.
+
+## 4. Concrete cases to review
+
+Each row applies to one containing quartet; its parent and children are unchanged.
+
+| Existing working basis | New deliberate action | Proposed result |
+| --- | --- | --- |
+| No entry | Q3=D | AMDX: A / M / D / X(?). Only Q3 is entered. |
+| Q1=A → AMDX | Q3=M | XAMD: X(?) / A / M / D. Q1=A is retired from the active basis, preserved in the earlier claim. No cleanup click. |
+| Q3=D → AMDX | Q1=A | AMDX retained; Q1 and Q3 are now explicit. |
+| Q3=D and Q4=X(R) → AMDX | Q2=M | AMDX retained with Q4=X(R). The same X quarter retains its subtype. |
+| Q3=D and Q4=X(R) → AMDX | Q3=M | XAMD with Q1=X(?). Q4's earlier R is not copied to Q1. |
+| Q1=A → AMDX, then Q3=M → XAMD | Clear Q3 | Unresolved order. Retired Q1=A does not return. |
+| Q1=A and Q3=D → AMDX | Q3=Unknown | AMDX remains conditional on Q1=A; Q3's entered judgment is Unknown while D remains structurally implied. |
+| Q3=D only → AMDX | Q3=Unknown | Both orders unresolved; no phase anchor remains. |
+| Current quartet Not Applicable | Q3=D | AMDX selected directly; Not Applicable remains in history only. |
+| Current Q4 explicitly X(R) | Repeat Q4=X(R) | No new revision when the inspected head and active meaning are unchanged. |
+
+## 5. Transaction, history and gesture requirements
+
+The command must perform the scoped-head check, basis selection and insert in one repository-owned transaction. A stale editor never decides which newly changed anchors to retire; reload its inspected target and require a new deliberate choice. A failure leaves the committed interpretation intact and the attempted target visibly available for retry. Exact retries of a command identity return the original result, including after later edits; changed content under the same identity is rejected.
+
+Preserve the accepted clock behavior: the claim uses its gesture's target/reference, an unpinned successful or cancelled gesture resumes the latest current quarter, and explicit inspection/failure pins remain visible. Navigation, hover, passive clock movement and control rendering create no claim. Mode/gate/station state and parent/child interpretations do not change through this action.
+
+Existing Accept/Clear transcripts replay under their original accumulation policy. New claims must explicitly identify the new action-policy version; an old record cannot be reread as if it used the replacement policy. Retain enough original before/after basis to validate the incoming choice and every retained/retired anchor on reload. Archive and database readers need mixed-history support and an explicit forward-compatibility guard. Exact payload/DDL changes belong to implementation and are not decided by this review document.
+
+## 6. Implementation and presentation boundary
+
+The first implementation would add the versioned shared action, durable replay/compatibility support, structurally valid input choices and targeted failure/restart/gesture tests. Ordinary working revision must not be implemented as several visible cleanup commands that can partially commit. Existing analytical conflict support remains available outside this normal revision path.
+
+Future renderers use the accepted primary 16:9 workspace target, with quiet whole-stack orientation, nearby detail, session/day and active 90-minute visibility, and contextual hover explanations. This contract does not choose a final table/coverflow renderer, add a Save button or impose cycle completion. Higher-order temporal mapping, classifier criteria, comparison default and broader Study rendering remain separate.
+
+The action rules and examples above are the review target. PR #61's six functional PASS results apply to the existing command, not these proposed changes. A later implementation needs its own developer checks and focused operator verification.

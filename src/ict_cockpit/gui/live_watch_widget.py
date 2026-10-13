@@ -333,7 +333,7 @@ class LiveWatchWidget(QWidget):
             else "No setup candidates in play"
         )
         self.qt_summary_label.setText(
-            "QT / AMDX · " + qt_context_summary(trading_run.qt_context)
+            "Earlier QT / AMDX · " + qt_context_summary(trading_run.qt_context)
         )
         raw_summary = raw_quarter_stack_summary(trading_run.market_time_context)
         raw_detail = raw_quarter_contextual_summary(trading_run.market_time_context)

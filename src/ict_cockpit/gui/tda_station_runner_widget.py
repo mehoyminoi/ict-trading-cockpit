@@ -49,6 +49,7 @@ class TDAStationRunnerWidget(QWidget):
         self._action_checkboxes: list[QCheckBox] = []
         self._wheel_accumulator = 0
         self._wheel_threshold = 480
+        self.wheel_station_navigation_enabled = True
 
         self.view_tabs = QTabWidget()
         self.focus_page = QWidget()
@@ -258,7 +259,7 @@ class TDAStationRunnerWidget(QWidget):
 
     def _accumulate_wheel_navigation(self, delta: int) -> bool:
         """Accumulate wheel movement and navigate only after a deliberate threshold."""
-        if delta == 0:
+        if delta == 0 or not self.wheel_station_navigation_enabled:
             return False
 
         if self._wheel_accumulator and (

@@ -21,7 +21,7 @@ from ict_cockpit.analysis.trading_session_run import (
     AuthorizationStatus, RunEnvironment, SetupCandidate, TradingSessionRun,
 )
 from ict_cockpit.database.connection import create_connection
-from ict_cockpit.database.schema import initialize_schema
+from ict_cockpit.database.schema import CURRENT_SCHEMA_VERSION, initialize_schema
 from ict_cockpit.database.trading_day_repository import TradingDayRepository
 from ict_cockpit.database.trading_day_session_repository import TradingDaySessionRepository
 from ict_cockpit.database.trading_session_run_repository import TradingSessionRunRepository
@@ -254,7 +254,7 @@ def test_restore_and_shared_surfaces_use_stored_scope_effects_and_candidate_revi
         assert "Playbook scope: fixture-friday" in details
         assert "E7 fixture" in details
     assert restored.__dict__ == before
-    assert conn.execute("PRAGMA user_version").fetchone()[0] == 37
+    assert conn.execute("PRAGMA user_version").fetchone()[0] == CURRENT_SCHEMA_VERSION
     shell.market_time_timer.stop(); shell.close(); card.close(); conn.close()
 
 
