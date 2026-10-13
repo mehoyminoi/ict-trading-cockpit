@@ -296,6 +296,26 @@ class AMDXReviewRepository:
         A repeated explicit meaning reserves both request identities without
         adding a profile or pairing. Exact original retries return their result.
         """
+        with self.amdx._transaction():
+            return self._revise_observed_locked(claim_id=claim_id, comparison_id=comparison_id,
+                run_id=run_id, branch_id=branch_id, cycle=cycle, quarter_id=quarter_id,
+                anchor=anchor, recorded_at=recorded_at, market_reference=market_reference,
+                expected_observed_head_id=expected_observed_head_id,
+                expected_comparison_head_id=expected_comparison_head_id,
+                clear_applicability=clear_applicability)
+
+    def _revise_observed_locked(self, *, claim_id: str, comparison_id: str, run_id: str, branch_id: str,
+                        cycle: Cycle, quarter_id: str, anchor: Anchor | None,
+                        recorded_at: datetime, market_reference: datetime,
+                        expected_observed_head_id: str | None, expected_comparison_head_id: str | None,
+                        clear_applicability: bool = False) -> ObservedRevisionResult:
+        """One accepted observed revision; preserve only a deliberately saved basis.
+
+        A repeated explicit meaning reserves both request identities without
+        adding a profile or pairing. Exact original retries return their result.
+        """
+        if not self.connection.in_transaction:
+            raise RuntimeError("An observed revision requires an owned transaction")
         arguments = dict(claim_id=claim_id, comparison_id=comparison_id, run_id=run_id,
                          branch_id=branch_id, cycle=cycle, quarter_id=quarter_id, anchor=anchor,
                          recorded_at=recorded_at, market_reference=market_reference,
@@ -303,62 +323,62 @@ class AMDXReviewRepository:
                          expected_comparison_head_id=expected_comparison_head_id,
                          clear_applicability=clear_applicability)
         encoded = _json(_observed_request(arguments))
-        with self.amdx._transaction():
-            review = self.get_history(run_id)
-            existing = self._observed_command(claim_id)
-            if existing is not None:
-                if existing["payload_json"] != encoded:
-                    raise ValueError("An observed command identity cannot be overwritten or reused")
-                return self._validate_observed_command(review, existing)
-            for id in (claim_id, comparison_id):
-                self.require_free_identity(id)
-                if any(self.connection.execute(f"SELECT 1 FROM {table} WHERE id=?", (id,)).fetchone()
-                       for table in ("amdx_claim", "amdx_working_command")):
-                    raise ValueError("A stored identity cannot be reused for observed revision")
-            if claim_id == comparison_id:
-                raise ValueError("Observed command and comparison require distinct identities")
-            previous = next((c for c in reversed(review.interpretations.claims) if (
-                c.run_id,c.branch_id,c.channel,c.cycle.id
-            ) == (run_id,branch_id,"Observed",cycle.id)), None)
-            old_pair = review.head(run_id, branch_id, cycle.id)
-            if (previous.id if previous else None) != expected_observed_head_id:
-                raise StaleAMDXUpdate("Observed quartet changed; inspect its latest claim before revising")
-            if (old_pair.id if old_pair else None) != expected_comparison_head_id:
-                raise StaleComparison("Comparison selection changed; inspect it before revising the observation")
-            if old_pair and recorded_at < old_pair.recorded_at:
-                raise ValueError("Observed recording time cannot precede its comparison head")
-            updated = review.interpretations.revise_observed(
-                claim_id=claim_id, run_id=run_id, branch_id=branch_id, channel="Observed", cycle=cycle,
-                quarter_id=quarter_id, anchor=anchor, recorded_at=recorded_at, market_reference=market_reference,
-                clear_applicability=clear_applicability,
+        review = self.get_history(run_id)
+        existing = self._observed_command(claim_id)
+        if existing is not None:
+            if existing["payload_json"] != encoded:
+                raise ValueError("An observed command identity cannot be overwritten or reused")
+            return self._validate_observed_command(review, existing)
+        for id in (claim_id, comparison_id):
+            self.require_free_identity(id)
+            if any(self.connection.execute(f"SELECT 1 FROM {table} WHERE id=?", (id,)).fetchone()
+                   for table in ("amdx_claim", "amdx_working_command")):
+                raise ValueError("A stored identity cannot be reused for observed revision")
+        if claim_id == comparison_id:
+            raise ValueError("Observed command and comparison require distinct identities")
+        previous = next((c for c in reversed(review.interpretations.claims) if (
+            c.run_id,c.branch_id,c.channel,c.cycle.id
+        ) == (run_id,branch_id,"Observed",cycle.id)), None)
+        old_pair = review.head(run_id, branch_id, cycle.id)
+        if (previous.id if previous else None) != expected_observed_head_id:
+            raise StaleAMDXUpdate("Observed quartet changed; inspect its latest claim before revising")
+        if (old_pair.id if old_pair else None) != expected_comparison_head_id:
+            raise StaleComparison("Comparison selection changed; inspect it before revising the observation")
+        if old_pair and recorded_at < old_pair.recorded_at:
+            raise ValueError("Observed recording time cannot precede its comparison head")
+        updated = review.interpretations.revise_observed(
+            claim_id=claim_id, run_id=run_id, branch_id=branch_id, channel="Observed", cycle=cycle,
+            quarter_id=quarter_id, anchor=anchor, recorded_at=recorded_at, market_reference=market_reference,
+            clear_applicability=clear_applicability,
+        )
+        changed = len(updated.claims) != len(review.interpretations.claims)
+        result_claim, result_pair = previous, old_pair
+        self.amdx._store_cycle(cycle)
+        if changed:
+            result_claim = updated.claims[-1]
+            extended = review.with_interpretations(updated).record(
+                comparison_id=comparison_id,
+                expected_claim_id=old_pair.expected_claim_id if old_pair else None,
+                observed_claim_id=result_claim.id, expected_head_id=expected_comparison_head_id,
+                recorded_at=recorded_at, market_reference=market_reference,
             )
-            changed = len(updated.claims) != len(review.interpretations.claims)
-            result_claim, result_pair = previous, old_pair
-            self.amdx._store_cycle(cycle)
-            if changed:
-                result_claim = updated.claims[-1]
-                extended = review.with_interpretations(updated).record(
-                    comparison_id=comparison_id,
-                    expected_claim_id=old_pair.expected_claim_id if old_pair else None,
-                    observed_claim_id=result_claim.id, expected_head_id=expected_comparison_head_id,
-                    recorded_at=recorded_at, market_reference=market_reference,
-                )
-                result_pair = extended.comparisons[-1]
-                self.connection.execute("""
-                    INSERT INTO amdx_claim(id,run_id,branch_id,channel,cycle_id,parent_claim_id,payload_json)
-                    VALUES (?,?,?,?,?,?,?)
-                """, (claim_id,run_id,branch_id,"Observed",cycle.id,expected_observed_head_id,
-                      _json({"version": 3, "claim": claim_payload(result_claim)})))
-                self._insert_pair(result_pair)
+            result_pair = extended.comparisons[-1]
             self.connection.execute("""
-                INSERT INTO amdx_observed_command
-                (id,comparison_id,run_id,cycle_id,parent_claim_id,parent_comparison_id,
-                 result_claim_id,result_comparison_id,changed,basis_count,comparison_count,payload_json)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
-            """, (claim_id,comparison_id,run_id,cycle.id,expected_observed_head_id,expected_comparison_head_id,
-                  result_claim.id if result_claim else None, result_pair.id if result_pair else None,
-                  int(changed),len(review.interpretations.claims),len(review.comparisons),encoded))
-            return ObservedRevisionResult(result_claim, result_pair, changed)
+                INSERT INTO amdx_claim(id,run_id,branch_id,channel,cycle_id,parent_claim_id,payload_json)
+                VALUES (?,?,?,?,?,?,?)
+            """, (claim_id,run_id,branch_id,"Observed",cycle.id,expected_observed_head_id,
+                  _json({"version": 3, "claim": claim_payload(result_claim)})))
+            self._insert_pair(result_pair)
+        self.connection.execute("""
+            INSERT INTO amdx_observed_command
+            (id,comparison_id,run_id,cycle_id,parent_claim_id,parent_comparison_id,
+             result_claim_id,result_comparison_id,changed,basis_count,comparison_count,payload_json)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+        """, (claim_id,comparison_id,run_id,cycle.id,expected_observed_head_id,expected_comparison_head_id,
+              result_claim.id if result_claim else None, result_pair.id if result_pair else None,
+              int(changed),len(review.interpretations.claims),len(review.comparisons),encoded))
+        return ObservedRevisionResult(result_claim, result_pair, changed)
+
 
     def record_comparison(self, *, run_id: str, comparison_id: str,
                           expected_claim_id: str | None, observed_claim_id: str,
