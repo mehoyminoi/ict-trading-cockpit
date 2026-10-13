@@ -56,6 +56,7 @@ class AMDXSharedContextWidget(AMDXContextWidget):
         previous = self.run.id if self.run else None
         if previous != (run.id if run else None):
             self._shared_needs_reload = False
+        retained_failure = self.status_label.text()
         if self._gesture_target and (mode_id != self._gesture_mode or previous != (run.id if run else None)):
             self._gesture_cancelled = True
         self._loading = True
@@ -85,6 +86,7 @@ class AMDXSharedContextWidget(AMDXContextWidget):
                         self.launch_capture = self.repository.run_calendar.get_result(self.binding["launch_operation_id"]).capture
             if self._shared_needs_reload:
                 self._read_error = True
+                self.status_label.setText(retained_failure or "Shared context unavailable · use Reload AMDX")
         except (ValueError, TypeError, KeyError, sqlite3.Error, RuntimeError) as error:
             self._shared_needs_reload = self._read_error = True
             self.history = InterpretationHistory()
