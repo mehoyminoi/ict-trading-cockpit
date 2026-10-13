@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 42
+CURRENT_SCHEMA_VERSION = 43
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -134,6 +134,9 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 41:
             _migrate_version_41_to_42(connection)
             version = 42
+        if version == 42:
+            _migrate_version_42_to_43(connection)
+            version = 43
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -1031,3 +1034,31 @@ def _migrate_version_41_to_42(connection: sqlite3.Connection) -> None:
             BEGIN SELECT RAISE(ABORT, 'AMDX catalog history is immutable'); END
         """)
     connection.execute("PRAGMA user_version = 42")
+
+
+def _migrate_version_42_to_43(connection: sqlite3.Connection) -> None:
+    if not connection.in_transaction:
+        connection.execute("BEGIN")
+    connection.execute("CREATE UNIQUE INDEX idx_amdx_catalog_owner_instrument ON amdx_catalog(id,instrument)")
+    connection.execute("""
+        CREATE TABLE amdx_master_binding (
+            id TEXT NOT NULL PRIMARY KEY,
+            instrument TEXT NOT NULL UNIQUE,
+            catalog_id TEXT NOT NULL UNIQUE,
+            payload_json TEXT NOT NULL,
+            FOREIGN KEY (catalog_id,instrument) REFERENCES amdx_catalog(id,instrument) ON DELETE RESTRICT
+        )
+    """)
+    for operation in ("UPDATE", "DELETE"):
+        connection.execute(f"""
+            CREATE TRIGGER amdx_master_binding_no_{operation.lower()}
+            BEFORE {operation} ON amdx_master_binding
+            BEGIN SELECT RAISE(ABORT, 'AMDX master ownership is immutable'); END
+        """)
+    connection.execute("""
+        CREATE TRIGGER amdx_master_binding_no_replace BEFORE INSERT ON amdx_master_binding
+        WHEN EXISTS (SELECT 1 FROM amdx_master_binding
+                     WHERE id=NEW.id OR instrument=NEW.instrument OR catalog_id=NEW.catalog_id)
+        BEGIN SELECT RAISE(ABORT, 'AMDX master ownership is immutable'); END
+    """)
+    connection.execute("PRAGMA user_version = 43")
