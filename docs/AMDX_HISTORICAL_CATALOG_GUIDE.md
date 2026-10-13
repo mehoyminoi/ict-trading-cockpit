@@ -72,3 +72,8 @@ Source `d9ccb4422cf9f2f517e38869acb8f57e143e344f`, PR #69 stacked on #68. Focuse
 ## Final verification
 
 The complete **904-test collection passed across all 75 isolated module processes in 441.57s**, with collection-matched JUnit counts, clean exits and no failures/errors/skips or pytest warnings. The 382-pass focused group includes all 60 new cases. Separate-process and connection restore, both channels/all seven layers, 1900/pre-2011 dates, instrument/collection separation, revision/subtype/applicability/clear, original nullable retries, capture/archive provenance, SQL rollback, competing writers, immutability and actual parent-v41 migration are covered. All regression work finished. Python 3.10 grammar passes; runtime is Python 3.12.14 / PySide6 6.8.3 / pytest 9.1.1, offscreen. Published source remains `d9ccb4422cf9f2f517e38869acb8f57e143e344f`. No new operator smoke trial or merge.
+
+
+## Next linkage contract — 2026-10-13
+
+[Run-to-catalog linkage](AMDX_RUN_CATALOG_LINK_CONTRACT.md) now concretely proposes explicit instrument/catalog binding once, automatic source coverage and separate run/manual interpretation ownership. Current runs have no saved instrument field; legacy identity cannot be inferred from a collection default or unrelated TDA. This proposal is not an implemented importer/collector or migration. Manual native catalog entry remains accepted and unchanged.

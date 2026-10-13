@@ -466,3 +466,8 @@ Per-database recovered view/provenance preferences are mutable navigation/drafts
 ## 2026-10-13 — Native AMDX Lab focused behavior accepted
 
 The explicit operator report marks checks 261–264 PASS, covering immediate 90-minute input, direct X(R), an independent older yearly occurrence and retained restart context/profiles. Earlier draft/pending-trial statements describe historical checkpoints. PR #70 is now ready for review, without a merge. The local result file was saved but not yet committed/pushed when reported; no unseen notes or local-file inspection is inferred. Source `678e9a0`, completed 97-focused/936-complete developer evidence, schema v42 and Alpha 0.7 are unchanged. This accepts the covered functional behaviors, not the final renderer/topology or broader catalog linkage/analytics. No Watch history/comparison route is adopted.
+
+
+## 2026-10-13 — Run linkage must preserve source scope and explicit asset basis
+
+The run-to-catalog inventory found no saved run instrument and confirmed different run judgments can share a temporal cycle ID. Accordingly, automatic copying into the manual catalog working head is not an acceptable inferred implementation of the historical catalog requirement. `AMDX_RUN_CATALOG_LINK_CONTRACT.md` proposes preserved, separately scoped run sources with explicit instrument/binding provenance and automatic coverage once associated. The catalog's MNQ default or latest TDA cannot retroactively identify older runs. This contract remains proposed; no new collector, source picker, migration or launch field is implemented. Existing native acceptance, source `678e9a0`, schema v42 / Alpha 0.7 and all 264 smoke results are unchanged.
