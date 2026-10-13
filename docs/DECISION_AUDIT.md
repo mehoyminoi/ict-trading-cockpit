@@ -314,3 +314,36 @@ See `PROJECT_REQUIREMENTS.md` §15.2 and native-trial subsection, `AMDX_CYCLE_RU
 | Historical replay | New action-policy identity and replay basis; original Accept/Clear records keep accumulation semantics. | REQUIRED compatibility boundary / payload and migration implementation pending |
 
 See `AMDX_WORKING_QUARTET_ACTION_REVIEW.md` for ten cases. Readiness to continue authorized this contract refinement, not acceptance of every newly recommended uncertainty/applicability detail. PR #61's six PASS results cover the existing functional surface. No implementation, schema, Trade Plan or smoke-status change is made here.
+
+## 2026-10-11 — Working-quartet follow-up implementation
+
+| Earlier status | Current implementation | Status |
+|---|---|---|
+| Ten-case action proposal | Operator authorized the next implementation. `revise-working-v1` retains compatible anchors and explicitly retires contradictions in one new claim. | IMPLEMENTED / four follow-up checks pending |
+| Unrestricted roles | UI choices and shared action enforce the valid union of AMDX/XAMD roles at each position. | IMPLEMENTED / no classifier adoption |
+| X / Unknown / applicability | Same-quarter compatible subtype retention, no subtype copying on order switch, conditional Unknown display and separate quartet applicability. | IMPLEMENTED / operator checks 253–254 pending |
+| Repeated input gap | Identical explicit meaning is a no-op; immutable receipts reserve command identity without adding a profile revision. | RESOLVED implementation gap / targeted developer checks |
+| Existing history | Original v1 actions replay as accumulation; new v2 actions retain their own policy and retirement basis. | IMPLEMENTED / mixed replay and preserved bytes verified |
+| v38 storage | v39 adds receipts and forward-version guard; migration preserves existing claims and rollback is atomic. | REFINED / old v38 reader explicitly rejects v39 |
+| Earlier six PASS | Checks 245–250 remain PASS for PR #61. New 251–254 are NOT TESTED on the follow-up branch. | PRESERVED acceptance / no inferred follow-up PASS |
+
+See `AMDX_QUARTET_REVISION_OPERATOR_GUIDE.md`. This is the semantic/input follow-up to the reviewed initial surface, not final 16:9 rendering or an adopted price/news method. PR #61 remains ready for review and unmerged; the new branch is based on that accepted source for a separate reviewable slice.
+
+## 2026-10-12 — Quartet acceptance and mature subtype access
+
+| Earlier status | Current direction | Status |
+| --- | --- | --- |
+| Four follow-up checks pending | Operator reports the smoke complete and smoother; 251–254 recorded PASS from that report. | ACCEPTED functional flow / no per-check logs supplied |
+| X(C)/X(R) behind a secondary menu | Each subtype directly available in one click from the active entry target; reuse shared actions for keyboard/macro-pad. | ACCEPTED mature interaction requirement / renderer not implemented |
+| First expectation comparison default | Concrete cycle-profile pairing cases prepared; default and broader observed-input contract still require review. | OPEN / not accepted by the smoke completion |
+
+This entry supersedes earlier pending-check wording for the follow-up. The original 250 checklist records, source, schema v39 and Alpha 0.7 are preserved. PR #62 is ready for review and remains stacked on unmerged PR #61.
+
+## 2026-10-12 — Scope of AMDX history/comparison
+
+| Potential interpretation | Operator clarification | Status |
+| --- | --- | --- |
+| First/latest comparison near the active stack in Watch | Watch needs current working stack and current position with minimal clutter; no visible change history or stack-change comparison. | EXCLUDED from normal Watch presentation |
+| Retain revisions | Continue automatic immutable retention for purposeful later Review/Study. | PRESERVED storage/provenance requirement |
+| Later event/change insights | Investigate associations with recorded price-action events or noticed features when samples/context support them. | FUTURE research direction / no aggregation implemented |
+| First-versus-latest default | Clarification selects where history belongs, not the specific Review pairing default. | OPEN / not inferred acceptance |

@@ -57,7 +57,7 @@ Ordinary input must exclude structurally impossible placements. Across both supp
 
 This is recorded entry-direction feedback, not an implemented replacement command or approval to discard all other current anchors. Before coding, make explicit how a new quartet claim retires incompatible supporting anchors, treats compatible anchors/X subtype, handles uncertainty/clear and identifies any deliberately retained alternative. Preserve stale-head checks, immutable history, original target/reference and separate parent/child scopes. Analytical rule conflicts and explicit exceptions remain traceable. Existing persisted transcripts keep their original accumulation semantics; a new action must identify its own basis rather than reinterpret old records.
 
-`AMDX_WORKING_QUARTET_ACTION_REVIEW.md` now makes those choices concrete as a developer recommendation with ten worked cases. It proposes retaining compatible anchors, retiring incompatible ones, keeping X subtype only at the same compatible X quarter, and never reactivating retired anchors after clear. Its detailed policy remains a review proposal; this contract and the current stored-action semantics are not silently changed.
+`AMDX_WORKING_QUARTET_ACTION_REVIEW.md` makes those choices concrete with ten worked cases. The operator authorized the follow-up implementation: `revise-working-v1` now retains compatible anchors, retires incompatible ones, keeps subtype only at the same compatible X quarter and never reactivates retired anchors after clear. Original stored Accept/Clear actions keep their accumulation meaning on replay. Four follow-up operator checks are pending; this does not accept a final renderer or publish classification criteria.
 
 ## 5. Trade Plan rules should carry the interpretive burden
 

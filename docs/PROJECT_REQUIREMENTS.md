@@ -15,7 +15,8 @@ Companion documents:
 - `docs/COCKPIT_FUNCTIONAL_WALKTHROUGH.md` — source-verified whole-tool journeys, current/proposed surfaces and shared QT/AMDX contract review.
 - `docs/AMDX_CYCLE_RULE_CONTRACT.md` — coupled quartet profiles, rule/anchor provenance, interpretive uncertainty and classification-rule requirements.
 - `docs/AMDX_RULE_DEFINITION_FRAMEWORK.md` — versioned classifier definitions, priority/weighting, target scopes, news context and the narrow implementation boundary.
-- `docs/AMDX_WORKING_QUARTET_ACTION_REVIEW.md` — proposed one-entry working-quartet revision, compatible/retired anchors, X subtype and uncertainty cases; detailed policy pending review.
+- `docs/AMDX_WORKING_QUARTET_ACTION_REVIEW.md` — reviewed one-entry working-quartet revision, compatible/retired anchors, X subtype and uncertainty cases; follow-up implementation authorized.
+- `docs/AMDX_QUARTET_REVISION_OPERATOR_GUIDE.md` — the implemented follow-up action and four focused operator checks; original six entry results remain separate.
 
 This document describes **current intended product truth**, not the chronological history of every idea considered. Older requirements and transcripts remain historical evidence only.
 
@@ -1429,7 +1430,9 @@ The full AMDX stack, including higher-order context, should remain visible in a 
 
 Make all editable levels reachable with minimal motion and navigation burden, within the existing process permissions. Anticipated heavy use of keyboard shortcuts and a macro pad is a design constraint: selection, inspection and editing should use shared application actions that mouse, keyboard and later hardware can invoke. Actual macro-pad integration remains downstream.
 
-Preserve interval/revision history for reconstruction and contextual Review/Study use. A raw day-history list or "was I right this quarter" presentation does not belong on the active QT workspace. The placement and form of deeper historical exploration remain open; no correctness scoring or mandatory quarter-by-quarter grading is introduced. Current suggestions about exact controls, baseline selection and inheritance remain provisional rather than inferred design acceptance.
+Operator clarification on 2026-10-12: especially in Watch, show the current working AMDX stack and the technician’s current position within it, with quiet whole-stack orientation and efficient entry. Do not display prior stack versions, before/after changes or expectation-comparison panels as part of the normal Watch surface. Revision history is retained automatically for later purposeful Review/Study exploration, without a daily history-checking obligation.
+
+Preserve interval/revision history for reconstruction and contextual Review/Study use. A raw day-history list or "was I right this quarter" presentation does not belong on the active QT workspace. Later Review/Study aggregation may investigate whether interpretation changes tend to follow identified price-action events or things the technician noticed. Preserve revision, event/observation and rule/plan provenance for such research where explicitly captured; the aggregation, feature definitions and statistics remain future work. No event detection or numerical likelihood is inferred. The placement and form of deeper historical exploration remain open; no correctness scoring or mandatory quarter-by-quarter grading is introduced. Current suggestions about exact controls, baseline selection and inheritance remain provisional rather than inferred design acceptance.
 
 ### First native AMDX trial — operator feedback 2026-10-11
 
@@ -1444,7 +1447,7 @@ Normal phase-entry controls should offer only roles structurally possible at the
 | Q3 | M, D |
 | Q4 | D, X |
 
-Availability must not be restricted to the currently selected order, which would prevent a one-entry order change. X(C), X(R) and X(?) belong only at positions where X is possible. Unknown, Not Applicable and clear remain distinct from phase roles; their exact quartet-revision effects require the shared-action refinement. Invalid normal phase placements are prevented in the future entry path, while existing history and explicit analytical conflicts/exceptions remain inspectable.
+Availability must not be restricted to the currently selected order, which would prevent a one-entry order change. X(C), X(R) and X(?) belong only at positions where X is possible. Operator clarification on 2026-10-12: in the mature UI, X(C) and X(R) must each be directly available in one click from the active entry target, without first opening an X-subtype menu. The same shared commands must be accessible to keyboard/macro-pad bindings. This is an accepted interaction requirement; the current menu is an interim renderer. A direct subtype choice records one normal working revision without a separate Save or confirmation step. Target selection and structurally invalid positions retain their existing boundaries. Unknown, Not Applicable and clear remain distinct from phase roles, with effects defined by the implemented and operator-accepted `revise-working-v1` policy. Invalid normal phase placements are prevented by the UI and shared action, while existing history and explicit analytical conflicts/exceptions remain inspectable.
 
 The operator likes quiet contextual hover explanations and having the session/day quartet and active session's 90-minute quartet visible together. Retain those relationships in later, more visual presentations within the primary workspace; the current table is not an accepted final renderer.
 

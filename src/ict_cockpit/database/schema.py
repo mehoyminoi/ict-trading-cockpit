@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 38
+CURRENT_SCHEMA_VERSION = 39
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -122,6 +122,9 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 37:
             _migrate_version_37_to_38(connection)
             version = 38
+        if version == 38:
+            _migrate_version_38_to_39(connection)
+            version = 39
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -863,3 +866,35 @@ def _migrate_version_37_to_38(connection: sqlite3.Connection) -> None:
             BEGIN SELECT RAISE(ABORT, 'AMDX history is immutable'); END
         """)
     connection.execute("PRAGMA user_version = 38")
+
+
+def _migrate_version_38_to_39(connection: sqlite3.Connection) -> None:
+    # New replay policy requires a forward guard even though claim rows retain
+    # the existing table shape. Receipts reserve identities for semantic no-ops.
+    if not connection.in_transaction:
+        connection.execute("BEGIN")
+    connection.execute("""
+        CREATE TABLE amdx_working_command (
+            id TEXT NOT NULL PRIMARY KEY,
+            run_id TEXT NOT NULL REFERENCES trading_session_run(id) ON DELETE RESTRICT,
+            cycle_id TEXT NOT NULL REFERENCES amdx_cycle_identity(id) ON DELETE RESTRICT,
+            parent_claim_id TEXT,
+            result_claim_id TEXT,
+            changed INTEGER NOT NULL CHECK(changed IN (0, 1)),
+            payload_json TEXT NOT NULL,
+            FOREIGN KEY (parent_claim_id, run_id) REFERENCES amdx_claim(id, run_id) ON DELETE RESTRICT,
+            FOREIGN KEY (result_claim_id, run_id) REFERENCES amdx_claim(id, run_id) ON DELETE RESTRICT
+        )
+    """)
+    for operation in ("UPDATE", "DELETE"):
+        connection.execute(f"""
+            CREATE TRIGGER amdx_working_command_no_{operation.lower()}
+            BEFORE {operation} ON amdx_working_command
+            BEGIN SELECT RAISE(ABORT, 'AMDX history is immutable'); END
+        """)
+    connection.execute("""
+        CREATE TRIGGER amdx_working_command_no_replace BEFORE INSERT ON amdx_working_command
+        WHEN EXISTS (SELECT 1 FROM amdx_working_command WHERE id = NEW.id)
+        BEGIN SELECT RAISE(ABORT, 'AMDX history is immutable'); END
+    """)
+    connection.execute("PRAGMA user_version = 39")

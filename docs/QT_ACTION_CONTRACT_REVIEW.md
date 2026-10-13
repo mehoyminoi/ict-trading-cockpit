@@ -1,7 +1,7 @@
 # Shared QT / AMDX behavior-contract review
 
-**Status:** Contracts 1 (automatic interpretation recording) and 2 (in-place Watch updates) accepted by the operator on 2026-10-11. The initial domain/storage/Watch-TDA entry is now implemented, with six functional operator checks PASS in PR #61. Contract 3 (comparison baseline) and note drafts remain open/unimplemented. `AMDX_CYCLE_RULE_CONTRACT.md` defines the quartet unit; `AMDX_WORKING_QUARTET_ACTION_REVIEW.md` proposes the next one-entry revision policy following native feedback.
-**Scope:** Actions and recorded meaning shared by different renderers. The following cases preserve the earlier accepted/proposed distinctions. Schema v38 is implemented on the feature branch; merged main remains v37. Alpha 0.7 is unchanged. Final rendering uses the accepted primary 16:9 direction and remains open.
+**Status:** Contracts 1 (automatic interpretation recording) and 2 (in-place Watch updates) accepted on 2026-10-11. PR #61's initial entry has six functional operator checks PASS. The operator subsequently authorized the reviewed one-entry policy, now implemented on `feature/amdx-quartet-revision-v1`; its four new checks 251–254 are accepted from the completed operator smoke report on 2026-10-12. Contract 3 (comparison baseline) and note drafts remain open/unimplemented.
+**Scope:** shared actions and recorded meaning. The new branch uses schema v39; PR #61 uses v38 and merged main remains v37. Alpha 0.7 is unchanged. Final rendering uses the accepted primary 16:9 direction and remains open.
 
 ## 1. Automatic capture without a completion obligation
 
@@ -46,7 +46,7 @@ The operator expects active input as at least the 90-minute cycles pass. Current
 
 Broader thesis change should have an easy route to full-stack inspection or full TDA re-analysis. Full-stack inspection alone need not leave Watch or certify anything. Return to Analysis remains a deliberate shared transition when broader re-analysis is wanted, preserving the run and relevant target. The technician determines the significance of the change; do not impose a fixed number of edits or QT-level rule that automatically forces re-analysis.
 
-The initial shared Watch/TDA entry now implements this boundary on the v38 feature branch. Its per-quarter anchor accumulation remains current behavior; the new one-entry quartet revision is proposed in `AMDX_WORKING_QUARTET_ACTION_REVIEW.md`.
+The initial v38 entry implemented this boundary through per-quarter accumulation. The v39 follow-up now implements the one-entry working-quartet revision in `AMDX_WORKING_QUARTET_ACTION_REVIEW.md`, with original accumulation history preserved and all four new operator checks accepted.
 
 Study is an environment/purpose, not a bypass of process semantics. A spacious Study renderer uses the same scoped commands and appropriate analysis/review permissions for its own run.
 
@@ -67,7 +67,9 @@ None of these actions silently clears authorization gates, changes the Trade Pla
 
 ## 3. Identified comparison rather than hindsight substitution
 
-### Recommended default
+### Proposed default for later Review only
+
+Operator clarification on 2026-10-12: Watch needs the current working stack and current position, with limited visual clutter. Retain changes automatically for later Review/Study; do not expose first/latest comparisons or change history in normal Watch. The proposal below describes intentionally accessed Review, not another active-day obligation. Later aggregation may investigate recorded changes in relation to identified price-action events or noticed features; no statistical result or classifier is implemented. The baseline default remains open.
 
 The first-explicit-expectation default is still a proposal. Reframe it around identified containing-cycle profile claims and their rule/anchor basis; the operator's structural clarification does not accept this default. The earlier interval-only illustration below is superseded as a complete domain model by `AMDX_CYCLE_RULE_CONTRACT.md`. Use the first explicit expected revision for the target as a candidate Review baseline. Show its identity and market timing. A deliberately selected alternate baseline must be identified and persisted with the observation. Creating or editing an expectation later cannot rewrite an existing observation's comparison pair.
 
@@ -93,6 +95,6 @@ Study-first startup is proposed and subject to change: a dismissible Study this 
 
 ## 5. Review and implementation boundary
 
-Contracts 1 and 2 are accepted and the initial quartet foundation/entry is implemented. The next action review refines how a new working choice replaces its active basis; the comparison baseline remains independently open. Agreement that the walkthrough is coherent is recorded separately from agreement to these behavior choices. Exact renderer layout and startup preference remain independently revisable.
+Contracts 1 and 2 are accepted and the initial quartet foundation/entry is implemented. One-entry working-quartet revision is now implemented and operator accepted; the comparison baseline remains independently open. `AMDX_REVIEW_COMPARISON_CONTRACT_REVIEW.md` supplies concrete cycle-profile cases for that next decision. Agreement that the walkthrough is coherent is recorded separately from agreement to these behavior choices. Exact renderer layout and startup preference remain independently revisable.
 
-Stable daily/session identities, versioned run persistence and the initial shared entry are implemented and functionally accepted in PR #61. Next review the proposed one-entry working-quartet action, including retention/retirement, X subtype and uncertainty, before implementing its versioned command. Preserve legacy values and original transcript semantics. Review comparison policy remains independent; no new manual smoke checklist is introduced by this contract document.
+Stable daily/session identities, storage and initial entry are functionally accepted in PR #61. The reviewed one-entry command is now implemented on the v39 follow-up branch, preserving original transcripts; the four focused checks in `AMDX_QUARTET_REVISION_OPERATOR_GUIDE.md` are now accepted. Next is the concrete containing-cycle comparison review in `AMDX_REVIEW_COMPARISON_CONTRACT_REVIEW.md`; its default remains proposed. Review comparison policy and final renderers remain independent. This contract document adds no separate manual checklist beyond those operator-guide checks.

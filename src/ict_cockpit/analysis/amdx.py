@@ -14,7 +14,9 @@ from ict_cockpit.analysis.market_time import (
 
 
 STRUCTURAL_REVISION = "amdx-xamd-v1"
-PAYLOAD_VERSION = 1
+PAYLOAD_VERSION = 2
+LEGACY_POLICY = "accumulate-v1"
+WORKING_POLICY = "revise-working-v1"
 
 
 class Role(str, Enum):
@@ -40,6 +42,13 @@ ORDERS = {
     Profile.AMDX: (Role.A, Role.M, Role.D, Role.X),
     Profile.XAMD: (Role.X, Role.A, Role.M, Role.D),
 }
+
+
+def available_roles(position: int) -> tuple[Role, ...]:
+    if type(position) is not int or position not in range(1, 5):
+        raise ValueError("Quarter position must be 1 through 4")
+    return tuple(r for r in (Role.A, Role.M, Role.D, Role.X)
+                 if any(order[position - 1] is r for order in ORDERS.values()))
 
 
 def aware(value: datetime) -> datetime:
@@ -225,6 +234,19 @@ class Claim:
     action_quarter_id: str
     action: str
     structural_revision: str = STRUCTURAL_REVISION
+    action_policy: str = LEGACY_POLICY
+    basis_claim_id: str | None = None
+    retired_anchor_ids: tuple[str, ...] = ()
+    applicability: tuple[Anchor, ...] = ()
+    action_anchor: Anchor | None = None
+
+
+def claim_payload(claim: Claim) -> dict:
+    value = payload(claim)
+    if claim.action_policy == LEGACY_POLICY:
+        for key in ("action_policy", "basis_claim_id", "retired_anchor_ids", "applicability", "action_anchor"):
+            value.pop(key)
+    return value
 
 
 @dataclass(frozen=True)
@@ -236,14 +258,9 @@ class InterpretationHistory:
         if len({c.id for c in self.claims}) != len(self.claims):
             raise ValueError("Claim identities must be unique")
 
-    def accept(self, *, claim_id: str, run_id: str, branch_id: str, channel: str,
+    def _validate_action(self, *, claim_id: str, run_id: str, branch_id: str, channel: str,
                cycle: Cycle, quarter_id: str, anchor: Anchor | None,
-               recorded_at: datetime, market_reference: datetime) -> "InterpretationHistory":
-        """Append one accepted choice/clear with its entire resulting profile.
-
-        None clears the current anchor without resurrecting an older revision.
-        Branches, runs, channels and cycles are isolated. No default Review pair.
-        """
+               recorded_at: datetime, market_reference: datetime) -> Claim | None:
         for value in (claim_id, run_id, branch_id):
             require_id(value)
         aware(recorded_at)
@@ -263,8 +280,18 @@ class InterpretationHistory:
             raise ValueError("Stable cycle identity cannot be reused with different bounds")
         if previous and recorded_at < previous.recorded_at:
             raise ValueError("Recorded action time cannot move backward within a working scope")
-        if anchor is not None and any(a.id == anchor.id for c in self.claims for a in c.anchors):
+        if anchor is not None and any(a.id == anchor.id for c in self.claims for a in c.anchors + c.applicability):
             raise ValueError("A new accepted choice needs a new anchor revision identity")
+        return previous
+
+    def accept(self, **kwargs) -> "InterpretationHistory":
+        """Original accumulation policy; retained for historical replay/analytical use."""
+        previous = self._validate_action(**kwargs)
+        if previous and previous.action_policy != LEGACY_POLICY:
+            raise ValueError("Legacy accumulation cannot follow a working revision; use revise_working")
+        claim_id, run_id, branch_id, channel = (kwargs[k] for k in ("claim_id", "run_id", "branch_id", "channel"))
+        cycle, quarter_id, anchor = (kwargs[k] for k in ("cycle", "quarter_id", "anchor"))
+        recorded_at, market_reference = (kwargs[k] for k in ("recorded_at", "market_reference"))
         active = tuple(a for a in (previous.anchors if previous else ()) if a.quarter_id != quarter_id)
         if anchor is not None:
             active += (anchor,)
@@ -273,12 +300,59 @@ class InterpretationHistory:
                       quarter_id, "Accept" if anchor else "Clear")
         return InterpretationHistory(self.claims + (claim,))
 
+    def revise_working(self, *, clear_applicability: bool = False, **kwargs) -> "InterpretationHistory":
+        previous = self._validate_action(**kwargs)
+        if kwargs["branch_id"] != "working" or kwargs["channel"] != "Expected":
+            raise ValueError("Working revisions require the manual Expected/working scope")
+        if type(clear_applicability) is not bool:
+            raise ValueError("clear_applicability must be a boolean")
+        cycle, quarter_id, anchor = (kwargs[k] for k in ("cycle", "quarter_id", "anchor"))
+        if clear_applicability and anchor is not None:
+            raise ValueError("Clearing applicability cannot also assign a phase")
+        before = previous.anchors + previous.applicability if previous else ()
+        if any(a.origin != "Technician" for a in before):
+            raise ValueError("Working revision cannot rewrite a mixed rule/technician basis")
+        applicability = tuple(a for a in before if a.role is Role.NOT_APPLICABLE)
+        active = tuple(a for a in before if a.role is not Role.NOT_APPLICABLE)
+        if clear_applicability:
+            applicability = ()
+        elif anchor is not None and anchor.role is Role.NOT_APPLICABLE:
+            active, applicability = (), (anchor,)
+        else:
+            active = tuple(a for a in active if a.quarter_id != quarter_id)
+            if anchor is not None:
+                if anchor.role is not Role.UNKNOWN:
+                    position = next(q.position for q in cycle.quarters if q.id == quarter_id)
+                    if anchor.role not in available_roles(position):
+                        raise ValueError("Phase is not structurally valid at this quarter position")
+                    order = next(order for order in ORDERS.values() if order[position - 1] is anchor.role)
+                    positions = {q.id: q.position - 1 for q in cycle.quarters}
+                    active = tuple(a for a in active if a.role is Role.UNKNOWN or a.role is order[positions[a.quarter_id]])
+                    applicability = ()
+                active += (anchor,)
+        # Identity/time are metadata, not a reason to repeat an unchanged judgment.
+        def meaning(anchors):
+            return sorted((a.quarter_id, a.role.value, a.subtype.value if a.subtype else "",
+                           a.source_ref, a.origin, a.rule_revision, a.note) for a in anchors)
+        if meaning(before) == meaning(active + applicability):
+            return self
+        inference = infer_profile(cycle, active + applicability)
+        retained = {a.id for a in active + applicability}
+        claim = Claim(kwargs["claim_id"], kwargs["run_id"], kwargs["branch_id"], kwargs["channel"],
+                      cycle, active, inference, kwargs["recorded_at"], kwargs["market_reference"],
+                      quarter_id, "ClearApplicability" if clear_applicability else "ReviseWorking" if anchor else "ClearWorking",
+                      action_policy=WORKING_POLICY, basis_claim_id=previous.id if previous else None,
+                      retired_anchor_ids=tuple(a.id for a in before if a.id not in retained),
+                      applicability=applicability, action_anchor=anchor)
+        return InterpretationHistory(self.claims + (claim,))
+
     def to_payload(self) -> dict:
-        return {"version": PAYLOAD_VERSION, "claims": [payload(c) for c in self.claims]}
+        version = PAYLOAD_VERSION if any(c.action_policy != LEGACY_POLICY for c in self.claims) else 1
+        return {"version": version, "claims": [claim_payload(c) for c in self.claims]}
 
     @classmethod
     def from_payload(cls, value: dict) -> "InterpretationHistory":
-        if value.get("version") != PAYLOAD_VERSION:
+        if value.get("version") not in (1, PAYLOAD_VERSION):
             raise ValueError("Unsupported AMDX history payload version")
         claims = []
         for item in value["claims"]:
@@ -286,23 +360,34 @@ class InterpretationHistory:
                 raise ValueError("Unsupported structural revision; historical claims cannot be reinterpreted")
             cycle = cycle_from_payload(item["cycle"])
             anchors = tuple(Anchor(**a) for a in item["anchors"])
-            inference = infer_profile(cycle, anchors)
+            policy = item.get("action_policy", LEGACY_POLICY)
+            if policy not in (LEGACY_POLICY, WORKING_POLICY) or (policy != LEGACY_POLICY and value["version"] == 1):
+                raise ValueError("Unsupported action policy/history version")
+            applicability = tuple(Anchor(**a) for a in item.get("applicability", ()))
+            inference = infer_profile(cycle, anchors + applicability)
             if payload(inference) != item["inference"]:
                 raise ValueError("Stored inference disagrees with its retained structural basis")
             claim = Claim(item["id"], item["run_id"], item["branch_id"], item["channel"],
                           cycle, anchors, inference, timestamp(item["recorded_at"]),
                           timestamp(item["market_reference"]), item["action_quarter_id"],
-                          item["action"], item["structural_revision"])
+                          item["action"], item["structural_revision"], policy,
+                          item.get("basis_claim_id"), tuple(item.get("retired_anchor_ids", ())),
+                          applicability, Anchor(**item["action_anchor"]) if item.get("action_anchor") else None)
             # Validate the action transcript rather than accepting inconsistent active snapshots.
-            action_anchor = next((a for a in anchors if a.quarter_id == claim.action_quarter_id), None)
-            if claim.action not in ("Accept", "Clear") or (claim.action == "Accept") != (action_anchor is not None):
+            action_anchor = (next((a for a in anchors if a.quarter_id == claim.action_quarter_id), None)
+                             if policy == LEGACY_POLICY else claim.action_anchor)
+            allowed = ("Accept", "Clear") if policy == LEGACY_POLICY else ("ReviseWorking", "ClearWorking", "ClearApplicability")
+            if claim.action not in allowed or (claim.action in ("Accept", "ReviseWorking")) != (action_anchor is not None):
                 raise ValueError("Invalid stored action")
-            replay = cls(tuple(claims)).accept(
+            arguments = dict(
                 claim_id=claim.id, run_id=claim.run_id, branch_id=claim.branch_id,
                 channel=claim.channel, cycle=cycle, quarter_id=claim.action_quarter_id,
                 anchor=action_anchor, recorded_at=claim.recorded_at, market_reference=claim.market_reference,
-            ).claims[-1]
-            if replay != claim:
+            )
+            history = cls(tuple(claims))
+            updated = (history.accept(**arguments) if policy == LEGACY_POLICY else
+                       history.revise_working(**arguments, clear_applicability=claim.action == "ClearApplicability"))
+            if len(updated.claims) != len(claims) + 1 or updated.claims[-1] != claim or set(claim_payload(claim)) != set(item):
                 raise ValueError("Stored profile snapshot disagrees with action history")
             claims.append(claim)
         return cls(tuple(claims))

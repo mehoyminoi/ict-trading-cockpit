@@ -187,6 +187,7 @@ def test_cancelled_menu_preserves_inspection_or_resumes_current_without_recordin
 def test_menu_choice_across_boundary_records_original_basis_then_resumes_current(cockpit):
     window, shell, connection = cockpit
     pane = widget(shell)
+    refresh(shell, reference(10, 30))  # Q4 permits X; Q3 deliberately does not.
     original = pane.target
     pane.menu.popup(pane.more_button.mapToGlobal(pane.more_button.rect().bottomLeft()))
     refresh(shell, reference(12, 1))
@@ -196,7 +197,7 @@ def test_menu_choice_across_boundary_records_original_basis_then_resumes_current
     saved = history(window, shell).claims[-1]
     assert saved.cycle == original.cycle
     assert saved.action_quarter_id == original.quarter_id
-    assert saved.market_reference == reference()
+    assert saved.market_reference == reference(10, 30)
     assert saved.anchors[0].subtype is XSubtype.REVERSAL
     assert pane.reference == reference(12, 1)
     assert pane.target.cycle != original.cycle
@@ -275,16 +276,19 @@ def test_x_subtype_clear_and_unknown_are_explicit_distinct_actions(cockpit):
     assert len(history(window, shell).claims) == 4
 
 
-def test_conflict_is_visible_without_erasing_input_or_blocking_watch(cockpit):
+def test_new_entry_changes_order_without_old_anchor_cleanup_or_erasing_history(cockpit):
     window, shell, connection = cockpit
     pane = widget(shell)
     pane.select_quarter(0, 0)
     pane.phase_buttons[Role.A].click()
     pane.select_quarter(0, 1)
     pane.phase_buttons[Role.A].click()
-    assert pane.table.item(0, 4).text() == "Conflict"
-    assert all("A" in pane.table.item(0, i).text() for i in (0, 1))
-    assert len(history(window, shell).claims[-1].anchors) == 2
+    assert pane.table.item(0, 4).text() == "XAMD"
+    claims = history(window, shell).claims
+    assert len(claims[-1].anchors) == 1
+    assert claims[-1].retired_anchor_ids == (claims[0].anchors[0].id,)
+    assert claims[0].inference.candidates == (Profile.AMDX,)
+    assert "implied" in pane.table.item(0, 0).text()
     assert shell.runtime.apply_transition("finish-tda", override_incomplete=True)
 
 
@@ -438,3 +442,121 @@ def test_entry_demo_refuses_to_replace_unrelated_files(tmp_path):
     with pytest.raises(ValueError, match="empty"):
         demo.open_demo(tmp_path)
     assert (tmp_path / "demo.db").read_bytes() == b"operator data"
+
+
+@pytest.mark.parametrize("position,valid", [(1,{Role.A,Role.X}),(2,{Role.A,Role.M}),(3,{Role.M,Role.D}),(4,{Role.D,Role.X})])
+def test_phase_buttons_and_x_menu_follow_selected_quarter_structure(cockpit, position, valid):
+    window, shell, connection = cockpit
+    pane = widget(shell)
+    pane.select_quarter(0, position - 1)
+    assert {role for role, button in pane.phase_buttons.items() if button.isEnabled()} == valid
+    assert pane.menu_actions['X(R) · Reversal'].isEnabled() == (Role.X in valid)
+    assert pane.menu_actions['X(C) · Continuation'].isEnabled() == (Role.X in valid)
+    invalid = next(role for role in (Role.A,Role.M,Role.D,Role.X) if role not in valid)
+    pane.phase_buttons[invalid].click()
+    assert history(window, shell).claims == ()
+    pane.choose(invalid)  # all adapters are checked at the shared action, too
+    assert history(window, shell).claims == ()
+    assert 'Not recorded' in pane.status_label.text()
+
+
+def test_legacy_conflict_remains_inspectable_and_new_entry_revises_in_one_action(cockpit):
+    window, shell, connection = cockpit
+    pane = widget(shell)
+    day = intraday_cycles(reference())[0]
+    common = dict(run_id=shell.active_trading_run.id,branch_id='working',channel='Expected',cycle=day,
+                  recorded_at=reference(),market_reference=reference())
+    first = pane.repository.accept(**common,claim_id='legacy-1',quarter_id=day.quarters[0].id,
+                                   anchor=Anchor('legacy-a1',day.quarters[0].id,Role.A,'fixture-legacy'),expected_head_id=None)
+    conflict = pane.repository.accept(**common,claim_id='legacy-2',quarter_id=day.quarters[1].id,
+                                      anchor=Anchor('legacy-a2',day.quarters[1].id,Role.A,'fixture-legacy'),expected_head_id=first.id)
+    refresh(shell, reference())
+    assert pane.table.item(0,4).text() == 'Conflict'
+    pane.select_quarter(0,2)
+    pane.phase_buttons[Role.M].click()
+    claims = history(window, shell).claims
+    assert claims[-1].basis_claim_id == conflict.id
+    assert claims[-1].retired_anchor_ids == ('legacy-a1',)
+    assert pane.table.item(0,4).text() == 'XAMD'
+    assert claims[1].inference.state == 'Conflict'
+    assert len(claims) == 3
+
+
+def test_identical_explicit_choice_is_noop_but_implied_choice_becomes_explicit(cockpit):
+    window, shell, connection = cockpit
+    pane = widget(shell)
+    pane.select_quarter(0,2)
+    pane.phase_buttons[Role.D].click()
+    first = history(window, shell).claims[-1]
+    pane.phase_buttons[Role.D].click()
+    assert history(window, shell).claims == (first,)
+    assert 'Already current' in pane.status_label.text()
+    pane.select_quarter(0,0)
+    pane.phase_buttons[Role.A].click()
+    assert len(history(window, shell).claims) == 2
+    assert len(history(window, shell).claims[-1].anchors) == 2
+
+
+def test_unknown_shows_conditional_role_and_applicability_can_be_restored_without_hunting(cockpit):
+    window, shell, connection = cockpit
+    pane = widget(shell)
+    pane.select_quarter(0,0)
+    pane.phase_buttons[Role.A].click()
+    pane.select_quarter(0,2)
+    pane.phase_buttons[Role.D].click()
+    pane.menu_actions['Unknown'].trigger()
+    assert 'Unknown / D' in pane.table.item(0,2).text()
+    assert 'entered / implied' in pane.table.item(0,2).text()
+    assert 'Conditional structural role: D' in pane.table.item(0,2).toolTip()
+    pane.menu_actions['Not Applicable'].trigger()
+    assert pane.table.item(0,4).text() == 'Not Applicable'
+    pane.menu_actions['Unknown'].trigger()
+    assert pane.table.item(0,4).text() == 'Not Applicable'
+    assert pane.menu_actions['Clear this anchor'].text() == 'Clear Not Applicable'
+    pane.menu_actions['Clear this anchor'].trigger()
+    assert pane.table.item(0,4).text() == 'Unresolved'
+    pane.menu_actions['Not Applicable'].trigger()
+    pane.select_quarter(0,1)
+    pane.phase_buttons[Role.A].click()
+    assert pane.table.item(0,4).text() == 'XAMD'
+    assert not history(window, shell).claims[-1].applicability
+
+
+def test_read_failure_after_success_retains_just_committed_meaning(cockpit, monkeypatch):
+    window, shell, connection = cockpit
+    pane = widget(shell)
+    original = pane.repository.get_history
+    calls = 0
+    def fail_after_write(*args):
+        nonlocal calls
+        calls += 1
+        if calls > 1:
+            raise sqlite3.OperationalError('fixture post-commit read failure')
+        return original(*args)
+    monkeypatch.setattr(pane.repository,'get_history',fail_after_write)
+    pane.phase_buttons[Role.M].click()
+    assert 'History unavailable' in pane.status_label.text()
+    assert pane.table.item(1,4).text() == 'XAMD'
+    assert not pane.phase_buttons[Role.M].isEnabled()
+    monkeypatch.setattr(pane.repository,'get_history',original)
+    assert len(history(window, shell).claims) == 1
+
+
+def test_queued_old_menu_close_cannot_cancel_new_gesture_across_boundary(cockpit):
+    window, shell, connection = cockpit
+    pane = widget(shell)
+    original = pane.target
+    point = pane.more_button.mapToGlobal(pane.more_button.rect().bottomLeft())
+    pane.menu.popup(point)
+    pane.menu.close()
+    pane.menu.popup(point)  # new gesture before the old deferred close callback
+    refresh(shell, reference(12,1))
+    QApplication.processEvents()
+    assert pane.target == original
+    action = pane.menu_actions['Unknown']
+    QTest.mouseClick(pane.menu,Qt.MouseButton.LeftButton,pos=pane.menu.actionGeometry(action).center())
+    QApplication.processEvents()
+    saved = history(window, shell).claims[-1]
+    assert saved.action_quarter_id == original.quarter_id
+    assert saved.market_reference == reference()
+    assert pane.target.cycle != original.cycle

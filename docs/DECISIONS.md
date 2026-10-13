@@ -754,3 +754,35 @@ E6 means real provider integration. E7 means model-specific context predicates. 
 **Consequences:** refine the shared action before implementing the preferred quartet replacement flow. Other compatible anchors, X subtype, Unknown/Not Applicable/clear and deliberately retained alternatives need explicit semantics. Existing stored claims/evaluation conflicts keep their original meaning; future actions must carry their revision basis. This feedback alone did not supply individual smoke statuses or final layout acceptance. The subsequently pushed checklist records all six functional checks PASS in `17b874b2c7fb48f2b35d2e30b9e2a6affe019072`; the new action/geometry directions remain unimplemented.
 
 **Refines:** the original native panel's unrestricted role buttons and per-quarter anchor-accumulation interaction target; preserves domain uncertainty, parent/child separation and historical truth.
+
+## 2026-10-11 — Versioned one-entry working-quartet revision
+
+**Status:** operator authorized implementation after the ten-case action review. Implemented on `feature/amdx-quartet-revision-v1`; four follow-up operator checks 251–254 are accepted from the completed smoke report on 2026-10-12. PR #61's initial six PASS results remain separate.
+
+**Decision:** normal Expected/working input uses `revise-working-v1`. One structurally valid entry selects AMDX/XAMD, retains compatible technician anchors and retires incompatible ones from the active basis into immutable prior history. The selected quarter's old anchor is replaced. X subtype remains only at the same compatible X quarter; switching order does not copy it to the new X position. Unknown and clearing are selected-phase operations. Not Applicable is a separate whole-quartet judgment that retires phase anchors; a valid phase restores applicability directly. Clearing never revives retired anchors.
+
+**Rationale:** ordinary interpretation revision should take one meaningful entry, without manual conflict cleanup or a separate Save step. The operator can change the working hypothesis while retaining earlier judgments and independent classifier disagreement for later analysis.
+
+**Consequences:** normal controls and the shared action enforce Q1 A/X, Q2 A/M, Q3 M/D, Q4 D/X. Unknown is displayed alongside a conditional implied role when another anchor still supports the order. Identical already-explicit semantic input creates no extra interpretation claim; first explicit selection of an implied phase remains a judgment. Original accumulation actions retain their v1 replay meaning, with v2 claims carrying action policy, incoming choice, prior basis, retired IDs and separate applicability. Analytical conflicts and evaluation snapshots remain independent. Unsupported mixed rule/technician working bases are rejected rather than silently overwritten.
+
+**Storage:** schema v39 adds immutable command receipts and a forward-version guard. Receipts reserve identities for changed actions and no-ops, so exact retries return their original result after later edits. Cycle registration, optional claim and receipt commit atomically. Existing claim bytes remain unchanged through v38 migration; failed migration rolls back. Older v38 apps reject v39; use an original unmigrated copy for old-code comparisons.
+
+**Supersedes:** the original accumulation action as the normal Watch/TDA entry command and unrestricted phase choices. Preserves generic accumulation for original histories/analytical scopes, fixed structural rules, parent/child independence, failure/stale/gesture behavior and Alpha 0.7. Final primary 16:9 rendering, higher-order mapping, note drafts, classifiers and Review default remain separate.
+
+## 2026-10-12 — Working-quartet acceptance and direct X subtype entry
+
+**Status:** operator completed the four-check follow-up smoke and reported a smoother flow. Checks 251–254 are PASS by that completion report; no individual logs or new local runtime details were supplied. PR #62 is ready for review, stacked on unmerged PR #61. Source is unchanged from the 587-pass developer checkpoint.
+
+**Decision:** in the mature renderer, X(C) and X(R) are each one-click choices from the active entry target, without opening a subtype menu first or adding a confirmation/Save step. Shared actions also support future direct keyboard/macro-pad bindings. Structural validity, target/gesture identity, persistence and failure handling remain intact.
+
+**Rationale:** subtype selection is frequent working interpretation input; the extra menu action adds motion and process burden. The current menu remains interim. Exact control arrangement and bindings remain open alongside the primary 16:9 renderer.
+
+**Next contract:** identified observed-profile/expected-profile comparison, prepared in `AMDX_REVIEW_COMPARISON_CONTRACT_REVIEW.md`. A first-expectation default remains proposed, rather than inferred from smoke acceptance.
+
+## 2026-10-12 — Watch orientation now; change research later
+
+**Decision:** normal Watch shows the current working AMDX stack and the technician’s position within it. Prior stack versions and before/after or expectation comparison panels do not need visible space there. Whole-stack accessibility, current uncertainty, quiet hover context and efficient direct entry remain. Immutable revisions continue to be retained automatically.
+
+**Rationale:** the working meaning now supports the operation at hand. Visible change tracking adds clutter and mental work during the day. Later purposeful Review/Study may investigate associations between interpretation changes, identified price-action events and features the technician noticed.
+
+**Consequences:** historical comparison is a context-specific later tool, not a daily viewing/capture obligation. No extra explanation or confirmation step is introduced. Event association, sample definitions and aggregation remain unimplemented; no causal conclusion or likelihood is invented. This clarifies presentation ownership, not acceptance of a first-versus-latest comparison default.

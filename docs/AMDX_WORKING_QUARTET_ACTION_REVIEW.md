@@ -1,8 +1,8 @@
 # One-entry working-quartet revision — action review
 
-**Status:** concrete developer recommendation for review, following operator feedback on 2026-10-11. The operator requested easier quartet revision and structurally valid choices; the detailed anchor/subtype/uncertainty policy below is proposed, not yet accepted or implemented.
+**Status:** operator authorized implementation after this review on 2026-10-11. Implemented on `feature/amdx-quartet-revision-v1`; developer validation and new operator checks are in `AMDX_QUARTET_REVISION_OPERATOR_GUIDE.md`. The initial PR #61 remains a separate functionally accepted slice. Follow-up checks 251–254 are accepted from the operator’s completed smoke report on 2026-10-12. The final renderer remains open; mature X(C)/X(R) entry must be directly available in one click.
 
-**Baseline:** PR #61's current functional entry has six operator checks PASS and a 546-pass developer suite. The current command accumulates the latest anchor for each quarter, so contradictory anchors can require manual correction. This document specifies a separate revision action without changing the meaning of existing stored actions. Schema v38 / Alpha 0.7 and current application code remain unchanged.
+**Baseline:** PR #61's initial entry has six operator checks PASS and a 546-pass developer suite. Its command accumulates the latest anchor for each quarter. The follow-up now implements a separate revision action while preserving those stored-action semantics. Schema v39 adds protected command receipts and a forward-version guard; Alpha 0.7 remains unchanged. The sections below retain the reviewed recommendation and cases; they are implemented by the new policy.
 
 The intended normal flow is: select the relevant quarter, make one valid phase choice, and see the whole working quartet change immediately. It does not require finding an older anchor, clearing it first, saving separately, or leaving Watch.
 
@@ -48,7 +48,7 @@ Normal working revision deliberately selects the new working hypothesis. It does
 
 Unknown and clearing a phase anchor do not choose another phase or promise to reset the entire quartet when independent compatible anchors remain. A new phase choice is the one-entry order-changing operation. Clearing a quartet's separate Not Applicable judgment is an explicit applicability action; an Unknown entry leaves that judgment intact, even at the quarter from which it was recorded. This separates applicability from role uncertainty in the proposed new action policy; existing records retain their original semantics. Notes/annotations and analytical completion remain independent actions.
 
-The accepted older action contract calls for identical-input no-ops; the current UI/repository always append an accepted choice. The new command should implement the declared semantic no-op and test it explicitly, rather than claiming the existing command already does so.
+The original accumulation action still appends accepted choices. The new command implements the older declared semantic no-op. Identical-input no-op commands receive an immutable idempotency receipt but no extra claim; explicitly selecting an implied phase for the first time remains a new judgment.
 
 ## 4. Concrete cases to review
 
@@ -81,4 +81,4 @@ The first implementation would add the versioned shared action, durable replay/c
 
 Future renderers use the accepted primary 16:9 workspace target, with quiet whole-stack orientation, nearby detail, session/day and active 90-minute visibility, and contextual hover explanations. This contract does not choose a final table/coverflow renderer, add a Save button or impose cycle completion. Higher-order temporal mapping, classifier criteria, comparison default and broader Study rendering remain separate.
 
-The action rules and examples above are the review target. PR #61's six functional PASS results apply to the existing command, not these proposed changes. A later implementation needs its own developer checks and focused operator verification.
+Implementation uses the `revise-working-v1` action policy with v2 claims/archives, retained predecessor/action/retirement/applicability basis and mixed v1/v2 replay. v1 exports and old stored bytes remain intact. The new receipt table reserves command identities, including no-ops, and its transaction includes any cycle/claim writes. A v38 application explicitly rejects a migrated v39 database. PR #61's six functional PASS results cover the original entry; checks 251–254 cover this follow-up and are accepted from the completed operator smoke report on 2026-10-12.
