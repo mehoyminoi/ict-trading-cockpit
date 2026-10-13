@@ -291,3 +291,21 @@ The retained synthetic `tools/amdx_review_date_demo.py` and `AMDX_REVIEW_DATE_OP
 Check **260 PASS** from the guided trial reports. Operator guided report, 2026-10-12 (America/Denver): upper Trading Day advanced to October 10 while Observed AMDX remained October 9; NYAM 90m Q3=M was entered and the profile was XAMD. After window-X close and same-directory reopen, the date remained October 9; selecting NYAM restored XAMD and Q3 entered without another phase choice. After Conclude Trading Run, Start Another Trading Run created no second run and displayed: "Run not started - selected reference belongs to Trading Day 2026-10-13. Complete the current Trading Day, then choose Start New Trading Day". The October 13 request is the live reference after restart, not a change to the saved Review date. The heading-tooltip inspection was not separately reported; no operator hover acceptance is inferred.
 
 This supersedes earlier pending-trial wording. Source/tests/tools remain unchanged from `e12a2d4` (published correction checkpoint `eeab093`); completed focused 77 / whole-suite 744 across 70 isolated modules remains the application verification evidence. This documentation-only result needs no new application test run. Preserve all first 259 smoke records. PRs #61–66 remain ready and unmerged; next is dependency-order integration reassessment, not another renderer or comparison slice. This checkpoint neither authorizes nor performs merge/retarget. The concluded sandbox is intentionally finished; use a fresh empty directory for any future trial.
+
+
+## 2026-10-12 — Merged AMDX stack and next architecture frontier
+
+The operator explicitly authorized merge and continuation. All six PRs were freshly checked against the rehearsed heads, merged with merge commits in #61 → #62 → #63 → #64 → #65 → #66 order, and retargeted to main only after the preceding parent actually merged. Each merge's two parents and exact tree were verified against GitHub. All PRs are closed/merged into main; original feature branches are retained. Earlier unmerged/pending integration statements are historical.
+
+| PR | Merge commit | Reviewed head |
+| --- | --- | --- |
+| #61 | `c29506eceb36e9c55416ab0a081f3cfaa840499d` | `4346c88` |
+| #62 | `26de0d06ea245c7192cbb48ec853e28cee8ea3f5` | `eb822bc` |
+| #63 | `7fb664ed20c72ef5c75a6acff293df9f8dcb9d10` | `d940138` |
+| #64 | `b2d1741b751881d0799e0edb053c9308412945b3` | `1bf3933` |
+| #65 | `fdfb2424bd94580bb4bf44ad33e2c18ad02b2949` | `d058215` |
+| #66 | `d092ac7516f585b03c74276d3936201c9aab9117` | `c851e9a` |
+
+Final merge tree exactly equals `c851e9a`; source/tests/tools byte-match tested correction `e12a2d4c4d4767f32dd13c3ea795ffab18531f78`. Retain focused 77 PASS and complete 744 PASS across 70 isolated module processes; these are completed prior runs, not new merge-checkpoint executions. Smoke identities/statuses/comments, v41 and Alpha 0.7 are unchanged. Check 260 operator reports and its unreported-tooltip limitation remain authoritative.
+
+Milestone E remains current. `AMDX_HIGHER_STACK_CONTRACT_REVIEW.md` inventories existing raw higher positions versus legacy flat interpretation, proposes shared cycle/projection ownership and makes boundary examples explicit before persistence or renderer changes. This is the next architecture proposal, not a new accepted trading rule or implementation. Final 16:9 presentation, comparison exploration, classifiers and Study-first startup remain downstream. No new smoke trial is required for this documentation checkpoint.

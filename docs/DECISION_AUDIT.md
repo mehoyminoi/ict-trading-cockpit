@@ -408,3 +408,21 @@ The accepted one-entry observed behavior is now bound in `feature/amdx-observed-
 ## 2026-10-12 — Saved container date refined to run-start provenance
 
 The initial #66 binding used the containing Trading Day label exclusively. Stack review found that a later run with a different preserved reference could thereby get the older date's observation scope. The correction resolves valid run-start snapshot provenance first, explains old grouping discrepancies, retains an explicit legacy Day fallback only when original reference is absent, and blocks malformed/unavailable date capture. New different-date launch is rejected before reset rather than relabeling old data. The original finding and correction evidence are in `AMDX_STACK_REVIEW.md`; developer verification is complete (77 focused / 744 across the complete module-isolated suite) and operator check 260 is PASS from the guided 2026-10-12 date/rollover/restart/launch-guard reports; heading hover was not separately reported. Accepted 245–259 results remain valid for their covered cases. No change to comparison priority, schema v41, Alpha 0.7 or recorded claim policies is inferred.
+
+
+## 2026-10-12 — Reviewed AMDX stack merged; higher-stack contract proposed
+
+The operator explicitly authorized merge and continuation. All six PRs were freshly checked against the rehearsed heads, merged with merge commits in #61 → #62 → #63 → #64 → #65 → #66 order, and retargeted to main only after the preceding parent actually merged. Each merge's two parents and exact tree were verified against GitHub. All PRs are closed/merged into main; original feature branches are retained. Earlier unmerged/pending integration statements are historical.
+
+| PR | Merge commit | Reviewed head |
+| --- | --- | --- |
+| #61 | `c29506eceb36e9c55416ab0a081f3cfaa840499d` | `4346c88` |
+| #62 | `26de0d06ea245c7192cbb48ec853e28cee8ea3f5` | `eb822bc` |
+| #63 | `7fb664ed20c72ef5c75a6acff293df9f8dcb9d10` | `d940138` |
+| #64 | `b2d1741b751881d0799e0edb053c9308412945b3` | `1bf3933` |
+| #65 | `fdfb2424bd94580bb4bf44ad33e2c18ad02b2949` | `d058215` |
+| #66 | `d092ac7516f585b03c74276d3936201c9aab9117` | `c851e9a` |
+
+Final merge tree exactly equals `c851e9a`; source/tests/tools byte-match tested correction `e12a2d4c4d4767f32dd13c3ea795ffab18531f78`. Retain focused 77 PASS and complete 744 PASS across 70 isolated module processes; these are completed prior runs, not new merge-checkpoint executions. Smoke identities/statuses/comments, v41 and Alpha 0.7 are unchanged. Check 260 operator reports and its unreported-tooltip limitation remain authoritative.
+
+Milestone E remains current. `AMDX_HIGHER_STACK_CONTRACT_REVIEW.md` inventories existing raw higher positions versus legacy flat interpretation, proposes shared cycle/projection ownership and makes boundary examples explicit before persistence or renderer changes. This is the next architecture proposal, not a new accepted trading rule or implementation. Final 16:9 presentation, comparison exploration, classifiers and Study-first startup remain downstream. No new smoke trial is required for this documentation checkpoint.
