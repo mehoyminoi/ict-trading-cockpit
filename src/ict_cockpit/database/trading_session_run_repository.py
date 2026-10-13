@@ -20,12 +20,55 @@ from ict_cockpit.analysis.trading_session_run import (
 )
 
 
+RUN_COLUMNS = (
+    'id',
+    'trading_day_id',
+    'session_name',
+    'process_session_id',
+    'tda_station_session_id',
+    'status',
+    'outcome',
+    'started_at',
+    'concluded_at',
+    'updated_at',
+    'current_thesis_state',
+    'evidence_json',
+    'review_process_adherence',
+    'review_takeaway',
+    'review_film_night',
+    'entry_condition_states_json',
+    'watch_point_states_json',
+    'run_environment',
+    'trade_plan_revision',
+    'review_interpretation_outcome',
+    'selected_playbook_id',
+    'selected_playbook_revision',
+    'playbook_snapshot_json',
+    'setup_candidates_json',
+    'authorization_policy_snapshot_json',
+    'authorization_gate_states_json',
+    'market_time_context_json',
+    'market_context_snapshot_json',
+    'qt_context_json',
+    'review_observed_qt_context_json',
+    'review_qt_context_note',
+    'study_context_json',
+    'run_purpose',
+    'context_rule_snapshot_json',
+)
+
+
 class TradingSessionRunRepository:
     def __init__(self, connection: sqlite3.Connection) -> None:
         self.connection = connection
         self.amdx = AMDXRepository(connection)
 
     def save(self, session_run: TradingSessionRun) -> None:
+        values = self._values_for_run(session_run)
+        with self.connection:
+            self._write_values(values)
+
+    def _values_for_run(self, session_run: TradingSessionRun) -> tuple:
         evidence_json = json.dumps(
             [
                 {
@@ -81,9 +124,47 @@ class TradingSessionRunRepository:
             ),
             sort_keys=True,
         )
-        with self.connection:
-            self.connection.execute(
-                """
+        return (
+                    session_run.id,
+                    session_run.trading_day_id,
+                    session_run.session_name,
+                    session_run.process_session_id,
+                    session_run.tda_station_session_id,
+                    session_run.status.value,
+                    session_run.outcome,
+                    session_run.started_at,
+                    session_run.concluded_at,
+                    session_run.updated_at,
+                    session_run.current_thesis_state.value,
+                    evidence_json,
+                    session_run.review_process_adherence.value,
+                    session_run.review_takeaway,
+                    int(session_run.review_film_night),
+                    entry_condition_states_json,
+                    watch_point_states_json,
+                    session_run.environment.value,
+                    session_run.trade_plan_revision,
+                    session_run.review_interpretation_outcome.value,
+                    session_run.selected_playbook_id,
+                    session_run.selected_playbook_revision,
+                    playbook_snapshot_json,
+                    setup_candidates_json,
+                    authorization_policy_snapshot_json,
+                    authorization_gate_states_json,
+                    market_time_context_json,
+                    market_context_snapshot_json,
+                    qt_context_json,
+                    review_observed_qt_context_json,
+                    session_run.review_qt_context_note,
+                    study_context_json,
+                    session_run.purpose.value,
+                    json.dumps(session_run.context_rule_snapshot, sort_keys=True),
+                )
+
+    def _write_values(self, values):
+        if len(values) != len(RUN_COLUMNS):
+            raise ValueError("Unsupported run storage fields")
+        self.connection.execute("""
                 INSERT INTO trading_session_run (
                     id, trading_day_id, session_name, process_session_id,
                     tda_station_session_id, status, outcome, started_at,
@@ -132,44 +213,13 @@ class TradingSessionRunRepository:
                     study_context_json = excluded.study_context_json,
                     run_purpose = excluded.run_purpose,
                     context_rule_snapshot_json = excluded.context_rule_snapshot_json
-                """,
-                (
-                    session_run.id,
-                    session_run.trading_day_id,
-                    session_run.session_name,
-                    session_run.process_session_id,
-                    session_run.tda_station_session_id,
-                    session_run.status.value,
-                    session_run.outcome,
-                    session_run.started_at,
-                    session_run.concluded_at,
-                    session_run.updated_at,
-                    session_run.current_thesis_state.value,
-                    evidence_json,
-                    session_run.review_process_adherence.value,
-                    session_run.review_takeaway,
-                    int(session_run.review_film_night),
-                    entry_condition_states_json,
-                    watch_point_states_json,
-                    session_run.environment.value,
-                    session_run.trade_plan_revision,
-                    session_run.review_interpretation_outcome.value,
-                    session_run.selected_playbook_id,
-                    session_run.selected_playbook_revision,
-                    playbook_snapshot_json,
-                    setup_candidates_json,
-                    authorization_policy_snapshot_json,
-                    authorization_gate_states_json,
-                    market_time_context_json,
-                    market_context_snapshot_json,
-                    qt_context_json,
-                    review_observed_qt_context_json,
-                    session_run.review_qt_context_note,
-                    study_context_json,
-                    session_run.purpose.value,
-                    json.dumps(session_run.context_rule_snapshot, sort_keys=True),
-                ),
-            )
+                """, values)
+
+    def _save_values_locked(self, values):
+        if not self.connection.in_transaction:
+            raise RuntimeError("Run launch requires an owned transaction")
+        self._write_values(values)
+
 
     def get_by_id(self, session_run_id: str) -> TradingSessionRun | None:
         row = self.connection.execute(self._select_sql("WHERE id = ?"), (session_run_id,)).fetchone()

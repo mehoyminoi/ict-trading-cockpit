@@ -213,6 +213,15 @@ class AMDXCatalogRepository:
 
     def revise(self, target, *, command_id, recorded_at, role=None, anchor_id=None,
                source_ref="", subtype=None, note="", capture=CaptureBasis(), clear_applicability=False):
+        request = self._revision_request(target, command_id=command_id, recorded_at=recorded_at,
+            role=role, anchor_id=anchor_id, source_ref=source_ref, subtype=subtype, note=note,
+            capture=capture, clear_applicability=clear_applicability)
+        with self.amdx._transaction():
+            return self._revise_locked(target, request)
+
+    @staticmethod
+    def _revision_request(target, *, command_id, recorded_at, role=None, anchor_id=None,
+               source_ref="", subtype=None, note="", capture=CaptureBasis(), clear_applicability=False):
         require_id(command_id)
         recorded_at = canonical_timestamp(recorded_at)
         capture.validate_recording(recorded_at)
@@ -224,23 +233,28 @@ class AMDXCatalogRepository:
             anchor = Anchor(anchor_id, target.quarter_id, Role(role), source_ref, subtype, note=note)
         request = dict(id=command_id, target=payload(target), anchor=payload(anchor),
             recorded_at=recorded_at.isoformat(), capture=payload(capture), clear_applicability=clear_applicability)
-        with self.amdx._transaction():
-            catalog = self.get(target.catalog_id)
-            commands = self._commands(catalog)
-            history, results = _replay(catalog, commands)
-            existing = self.connection.execute("SELECT catalog_id,payload_json FROM amdx_catalog_command WHERE id=?", (command_id,)).fetchone()
-            self._validate_target(target, catalog, canonical=existing is None)
-            if existing is not None:
-                old = json.loads(existing[1])
-                if existing[0] != catalog.id or _json(old["request"]) != _json(request):
-                    raise ValueError("Catalog command identity cannot be overwritten or reused")
-                return results[command_id]
-            _, result = _apply(history, request, catalog)
-            self.amdx._store_cycle(target.cycle)
-            command = dict(version=1, policy=CATALOG_POLICY, request=request, result=_result_payload(result))
-            self.connection.execute("INSERT INTO amdx_catalog_command(id,catalog_id,cycle_id,channel,payload_json) VALUES (?,?,?,?,?)",
-                (command_id, catalog.id, target.cycle.id, target.channel, _json(command)))
-            return result
+        return request
+
+    def _revise_locked(self, target, request):
+        if not self.connection.in_transaction:
+            raise RuntimeError("Catalog revision requires an owned transaction")
+        command_id = request["id"]
+        catalog = self.get(target.catalog_id)
+        commands = self._commands(catalog)
+        history, results = _replay(catalog, commands)
+        existing = self.connection.execute("SELECT catalog_id,payload_json FROM amdx_catalog_command WHERE id=?", (command_id,)).fetchone()
+        self._validate_target(target, catalog, canonical=existing is None)
+        if existing is not None:
+            old = json.loads(existing[1])
+            if existing[0] != catalog.id or _json(old["request"]) != _json(request):
+                raise ValueError("Catalog command identity cannot be overwritten or reused")
+            return results[command_id]
+        _, result = _apply(history, request, catalog)
+        self.amdx._store_cycle(target.cycle)
+        command = dict(version=1, policy=CATALOG_POLICY, request=request, result=_result_payload(result))
+        self.connection.execute("INSERT INTO amdx_catalog_command(id,catalog_id,cycle_id,channel,payload_json) VALUES (?,?,?,?,?)",
+            (command_id, catalog.id, target.cycle.id, target.channel, _json(command)))
+        return result
 
     def export_archive(self, catalog_id):
         with self.amdx.review._snapshot():

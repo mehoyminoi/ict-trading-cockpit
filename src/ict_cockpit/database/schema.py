@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 43
+CURRENT_SCHEMA_VERSION = 44
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -137,6 +137,9 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 42:
             _migrate_version_42_to_43(connection)
             version = 43
+        if version == 43:
+            _migrate_version_43_to_44(connection)
+            version = 44
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -1062,3 +1065,63 @@ def _migrate_version_42_to_43(connection: sqlite3.Connection) -> None:
         BEGIN SELECT RAISE(ABORT, 'AMDX master ownership is immutable'); END
     """)
     connection.execute("PRAGMA user_version = 43")
+
+
+def _migrate_version_43_to_44(connection: sqlite3.Connection) -> None:
+    if not connection.in_transaction:
+        connection.execute("BEGIN")
+    connection.execute("CREATE UNIQUE INDEX idx_amdx_master_bound_scope ON amdx_master_binding(id,instrument,catalog_id)")
+    connection.execute("""
+        CREATE TABLE amdx_run_binding (
+            run_id TEXT NOT NULL PRIMARY KEY REFERENCES trading_session_run(id) ON DELETE RESTRICT,
+            instrument TEXT NOT NULL,
+            master_binding_id TEXT NOT NULL,
+            catalog_id TEXT NOT NULL,
+            launch_operation_id TEXT NOT NULL UNIQUE REFERENCES amdx_run_calendar_command(id)
+                DEFERRABLE INITIALLY DEFERRED,
+            payload_json TEXT NOT NULL,
+            FOREIGN KEY (master_binding_id,instrument,catalog_id)
+                REFERENCES amdx_master_binding(id,instrument,catalog_id) ON DELETE RESTRICT
+        )
+    """)
+    connection.execute("""
+        CREATE TABLE amdx_run_capture (
+            sequence INTEGER PRIMARY KEY,
+            id TEXT NOT NULL UNIQUE,
+            run_id TEXT NOT NULL REFERENCES amdx_run_binding(run_id) ON DELETE RESTRICT,
+            operation_id TEXT NOT NULL UNIQUE REFERENCES amdx_run_calendar_command(id)
+                DEFERRABLE INITIALLY DEFERRED,
+            payload_json TEXT NOT NULL,
+            UNIQUE(id,run_id)
+        )
+    """)
+    connection.execute("""
+        CREATE TABLE amdx_run_calendar_command (
+            id TEXT NOT NULL PRIMARY KEY,
+            run_id TEXT NOT NULL REFERENCES amdx_run_binding(run_id) ON DELETE RESTRICT,
+            operation TEXT NOT NULL CHECK(operation IN ('Launch','Capture','WorkingEdit')),
+            capture_id TEXT NOT NULL UNIQUE,
+            parent_capture_id TEXT,
+            catalog_command_id TEXT UNIQUE REFERENCES amdx_catalog_command(id) ON DELETE RESTRICT,
+            payload_json TEXT NOT NULL,
+            FOREIGN KEY (capture_id,run_id) REFERENCES amdx_run_capture(id,run_id) ON DELETE RESTRICT,
+            FOREIGN KEY (parent_capture_id,run_id) REFERENCES amdx_run_capture(id,run_id) ON DELETE RESTRICT
+        )
+    """)
+    connection.execute("CREATE INDEX idx_amdx_run_capture_scope ON amdx_run_capture(run_id,sequence)")
+    for table in ("amdx_run_binding", "amdx_run_capture", "amdx_run_calendar_command"):
+        for operation in ("UPDATE", "DELETE"):
+            connection.execute(f"""
+                CREATE TRIGGER {table}_no_{operation.lower()} BEFORE {operation} ON {table}
+                BEGIN SELECT RAISE(ABORT, 'AMDX run captures are immutable'); END
+            """)
+        conflict = ("run_id=NEW.run_id OR launch_operation_id=NEW.launch_operation_id"
+                    if table == "amdx_run_binding" else
+                    "id=NEW.id OR sequence=NEW.sequence OR operation_id=NEW.operation_id"
+                    if table == "amdx_run_capture" else "id=NEW.id OR capture_id=NEW.capture_id")
+        connection.execute(f"""
+            CREATE TRIGGER {table}_no_replace BEFORE INSERT ON {table}
+            WHEN EXISTS (SELECT 1 FROM {table} WHERE {conflict})
+            BEGIN SELECT RAISE(ABORT, 'AMDX run captures are immutable'); END
+        """)
+    connection.execute("PRAGMA user_version = 44")
