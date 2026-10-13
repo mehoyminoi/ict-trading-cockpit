@@ -1,6 +1,6 @@
 # Shared AMDX calendar and captured run context
 
-**Status: implementation contract following the operator's shared-calendar clarification and authorization to proceed, 2026-10-13. Canonical first-binding/read-target foundation is now implemented in schema v43; run captures and native consumer binding remain unimplemented.** Product ownership follows `AMDX_MASTER_CALENDAR_CLARIFICATION.md`; the detailed transaction and capture design below is the developer's implementation specification, not a claim of additional operator acceptance.
+**Status: implementation contract following the operator's shared-calendar clarification and authorization to proceed, 2026-10-13. Canonical first-binding/read-target foundation is implemented in v43; immutable run capture/owned working-write primitives are now implemented in v44. Native consumer integration remains pending.** Product ownership follows `AMDX_MASTER_CALENDAR_CLARIFICATION.md`; the detailed transaction and capture design below is the developer's implementation specification, not a claim of additional operator acceptance.
 
 One maintained calendar per instrument supplies Lab, TDA and Watch. Areas and Backtest/ForwardTest/Live purposes are views and provenance, not default calendar owners. Run captures preserve the basis actually used without making a separate everyday calendar for each run. MNQ is the initial instrument; NNQ remains a distinct identity.
 
@@ -94,3 +94,8 @@ The initial contract checkpoint changed documentation only: runtime source remai
 ## Foundation implementation checkpoint
 
 `AMDX_MASTER_CALENDAR_GUIDE.md` records the implemented first canonical binding, purpose-independent versioned owner metadata, deliberate existing-ledger adoption, shared read/target facade and portable binding/ledger archive. Schema v43 preserves existing v42 data and assigns nothing automatically. This supersedes the documentation-only state for those foundation pieces, not for run captures/native integration or first-binding supersession. The detailed run/channel/write contract above remains the next integration boundary. Existing native smoke records are unchanged.
+
+
+## Run capture storage implementation checkpoint
+
+`AMDX_RUN_CALENDAR_CAPTURE_GUIDE.md` records v44 immutable launch/run binding, full stack/absence packets and owned launch/context/working-edit receipts with original retries, stale vector/parent guards and standalone reconstruction. This supersedes the absent-storage finding for those primitives. Native automatic use, actual decision/evidence consumption, new Observed Review coupling/proof and legacy run assignment/import remain additional integration; no cross-area native sharing is inferred.
