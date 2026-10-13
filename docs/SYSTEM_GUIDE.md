@@ -2049,3 +2049,12 @@ Run Review and broad historical study have different ownership. Review belongs t
 The v42 catalog adapter uses the shared pure quartet revision engine for every currently identified layer. Immutable commands retain source metadata and nullable no-op results; consistent portable archives validate replay. Actual entry time and studied market time are distinct, with declared retrospective/forward basis and optional information availability retained. These declarations do not prove a prediction was contemporaneous or establish historical feed completeness.
 
 Spacious Lab navigation/entry, linkage of run captures, imports and empirical queries are subsequent consumers of this foundation. Watch keeps quiet current orientation and efficient permitted entry. The bounded higher Review selector remains separate; it cannot restrict catalog historical scope. See `AMDX_HISTORICAL_CATALOG_GUIDE.md` for implemented API versus pending UI/analytics.
+
+
+### Initial native AMDX Lab workspace — 2026-10-13
+
+The first manual catalog surface now exists on MainWindow's AMDX Lab tab. Full-stack orientation and the selected quarter's editor coexist, with historical New York time/session navigation, direct legal phase/subtype input and nearby definition/capture context. It uses the independent v42 catalog rather than a fabricated trading run. Navigation/draft preferences recover per database; immutable capture meaning and optional historical availability/evidence/definition basis remain in catalog commands/archives. Navigation alone records no interpretation.
+
+Prepared scope and metadata are pinned through the gesture; selection/tab/source changes or stale/write/read failures require deliberate recovery. Repeated-hour occurrence is explicit and nonexistent spring wall times are unavailable. Higher interpretation remains possible at closed references without inventing intraday quartets. The separate retained 16:9 trial uses this same widget and exact historical presets; see `AMDX_CATALOG_LAB_OPERATOR_GUIDE.md`.
+
+This initial functional renderer awaits operator checks 261–264 and usability review. Final visual treatment, overall application geometry, Study-first startup, automatic run linkage, bounded higher run Review selection, bulk import, statistical queries and rule classifiers remain separate. Watch has no new history/comparison route, and no Trade Plan policy changes.

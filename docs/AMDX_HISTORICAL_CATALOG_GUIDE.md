@@ -1,5 +1,7 @@
 # Historical and forward-test AMDX catalog
 
+The initial native entry workspace is now implemented in PR #70, source `678e9a0835a442f1de42ec6761bfcd7116fc6bad`, on top of the v42 catalog backend. See [the four-check Lab trial](AMDX_CATALOG_LAB_OPERATOR_GUIDE.md). Final rendering, automatic run linkage and bulk ingestion remain separate.
+
 ## Accepted requirement and ownership
 
 Operator clarification on 2026-10-12 (America/Denver): comprehensive historical and forward-test AMDX data across all layers, as far back as needed, is foundational and should arrive early. Historical entry must not depend on a recent trading run or today's clock. MNQ is the present instrument; another instrument, including the user-mentioned NNQ, may be needed later. Multiple-instrument UI is not required now, but storage distinguishes instruments from the outset.
@@ -46,7 +48,7 @@ Every accepted command, including unchanged meaning and an initially empty clear
 
 Backfilling an old Expected profile does not make it a contemporaneous prediction. Declared ForwardEntry also does not prove absence of look-ahead. Supplied information availability cannot follow entry time; it remains a declared basis rather than a reconstructed historical feed snapshot. Future statistics must distinguish these sources/unknowns instead of pooling them as validated forward predictions. Series purpose Backtest/ForwardTest is organizational context, not an empirical success label.
 
-The first backend supports manual API entry and portable archive validation. Bulk CSV/import, automatic ingestion/linkage of run captures, evidence/price/news fetching, empirical aggregation, competing rule evaluations and historical as-of reconstruction remain subsequent work. Catalog ownership is present now; these tools and the native entry workspace are not claimed implemented.
+The first backend supports manual API entry and portable archive validation. Bulk CSV/import, automatic ingestion/linkage of run captures, evidence/price/news fetching, empirical aggregation, competing rule evaluations and historical as-of reconstruction remain subsequent work. Catalog ownership is present now; these tools remain unimplemented. The native AMDX Lab workspace now supplies manual historical/forward catalog entry and recovered navigation/provenance drafts.
 
 ## Transactions, migration and archives
 
@@ -62,7 +64,7 @@ Actual v41 migration tests preserve every original application table, changed cl
 
 Catalog ownership precedes native higher-stack binding. The bounded run Review selector remains a separate integration: another higher orientation inside that run's reviewed futures day. The catalog deliberately has broader scope and must not inherit that day boundary.
 
-The spacious Lab should expose the full catalog-backed stack with nearby details for deep investigation; Watch retains quiet current orientation and efficient entry. This checkpoint supplies storage/API/archive foundation. Native catalog navigation/entry and automatic run-capture linkage are needed before routine accumulation from the cockpit. Performance/indexing for large imports and high-volume analytical queries should be measured against realistic data when those workflows are introduced; this slice makes no bulk-throughput claim. No operator smoke trial is requested here.
+The spacious Lab should expose the full catalog-backed stack with nearby details for deep investigation; Watch retains quiet current orientation and efficient entry. The initial native workspace now supports manual catalog accumulation from the cockpit. Automatic run-capture linkage remains unimplemented; native entry is covered by its separate operator trial. Performance/indexing for large imports and high-volume analytical queries should be measured against realistic data when those workflows are introduced; this slice makes no bulk-throughput claim. The backend checkpoint itself requested no smoke trial; native checks 261–264 are now requested through the separate Lab guide.
 
 Source `d9ccb4422cf9f2f517e38869acb8f57e143e344f`, PR #69 stacked on #68. Focused **382 PASS in 21.22s**, including **60 new cases**. Complete-suite evidence is recorded in project state/handoff when verified. Schema v42 applies only to this unmerged catalog branch; main remains v41 / Alpha 0.7. All 260 smoke records are unchanged.
 
