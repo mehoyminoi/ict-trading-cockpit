@@ -48,6 +48,8 @@ class AMDXRepository:
         self.catalog = AMDXCatalogRepository(self)
         from ict_cockpit.database.amdx_master_repository import AMDXMasterRepository
         self.master = AMDXMasterRepository(self)
+        from ict_cockpit.database.amdx_run_calendar_repository import AMDXRunCalendarRepository
+        self.run_calendar = AMDXRunCalendarRepository(self)
 
     @contextmanager
     def _transaction(self):
