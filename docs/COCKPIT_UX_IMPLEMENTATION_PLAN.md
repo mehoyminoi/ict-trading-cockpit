@@ -8,6 +8,8 @@
 
 **Focused interaction review — 2026-10-13:** [TDA layout parity](TDA_LAYOUT_PARITY_INTERACTION_SPEC.md) is the first corrected journey specification. Its [standalone prototype](prototypes/tda-layout-parity-v0.html) successfully validated four-pane TradingView-to-Cockpit correspondence, mapped Deck → Focus → unchanged Deck return, shared station work, quiet inactive panes and peripheral orientation cues. The [operator review](TDA_LAYOUT_PARITY_OPERATOR_REVIEW.md) accepts that direction and allows however many revision-defined mapped TDA Decks the analysis requires. Final styling, TDA content, control bindings and native implementation remain open.
 
+**Next focused journey — ready for review, 2026-10-13:** [Quiet Watch and support return](WATCH_QUIET_SUPPORT_INTERACTION_SPEC.md) now has a [disposable standalone prototype](prototypes/watch-quiet-support-v0.html). It tests a consolidated current-state AMDX area, direct legal active-90-minute revision, contextual Study Find capture, full-stack inspection and exact return to the same Watch anchor. History/comparison, automatic classification and real persistence remain absent. This is a proposal awaiting operator review, not accepted layout or native implementation.
+
 **Verified baseline:** main `6aa8d4ec990d8d371440271278bbb7368f186a64`, schema v46, Trade Plan Alpha 0.7. AMDX PRs #67–75 are merged. The integrated code tree retains 1,136 PASS across 89 isolated modules and operator PASS for checks 261–280. This planning checkpoint changes documentation only; it introduces no schema, plan, runtime or smoke-result change.
 
 ## 1. What this screen is for

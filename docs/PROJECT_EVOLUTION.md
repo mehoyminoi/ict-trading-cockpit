@@ -548,3 +548,8 @@ The operator clarifies that the four-pane TDA Deck is more than an overview: it 
 ## 2026-10-13 — TDA parity focused trial succeeds
 
 The operator reports a meaningful improvement in feel and flow. The accepted direction now includes however many revision-defined four-pane TDA Deck/TradingView layout pairs the full analysis requires, mapped Deck/Focus state, quiet inactive panes, and subtle border/state cues that support rapid reacquisition after looking to the chart monitor. Existing scroll and mouse-button behavior remains valuable; direct `1`–`4` selection is promising; later macro-pad/CAD-mouse bindings should target the same actions. `TDA_LAYOUT_PARITY_OPERATOR_REVIEW.md` records the accepted relationship and remaining control/styling choices. No native UI change is inferred.
+
+
+## 2026-10-13 — Quiet Watch/support-return journey becomes reviewable
+
+`WATCH_QUIET_SUPPORT_INTERACTION_SPEC.md` and a disposable standalone HTML isolate the second corrected journey. The proposal consolidates current AMDX context, direct legal active-90-minute entry, contextual Study Find capture and read-only full-stack inspection around an unchanged Watch return anchor. It intentionally omits history/comparison, automatic classification and real persistence. Automated browser checks cover direct X(R), capture/save/return, inspection/return, unfinished-draft recovery and reload; 1600×900 Watch, capture and inspection states were visually checked. This is a review artifact, not operator acceptance or native implementation.
