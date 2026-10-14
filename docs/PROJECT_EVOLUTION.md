@@ -553,3 +553,11 @@ The operator reports a meaningful improvement in feel and flow. The accepted dir
 ## 2026-10-13 — Quiet Watch/support-return journey becomes reviewable
 
 `WATCH_QUIET_SUPPORT_INTERACTION_SPEC.md` and a disposable standalone HTML isolate the second corrected journey. The proposal consolidates current AMDX context, direct legal active-90-minute entry, contextual Study Find capture and read-only full-stack inspection around an unchanged Watch return anchor. It intentionally omits history/comparison, automatic classification and real persistence. Automated browser checks cover direct X(R), capture/save/return, inspection/return, unfinished-draft recovery and reload; 1600×900 Watch, capture and inspection states were visually checked. This is a review artifact, not operator acceptance or native implementation.
+
+## 2026-10-14 — Quiet Watch review and nested Lab direction
+
+The operator strongly endorses contextual Study Find access/return, including main-body dismissal, and reports improved quietness and rapid reacquisition after looking to TradingView. Direct active-cycle entry and current-state-only Watch scope remain intact. The trial also exposes three correctable defects: saved Study Find text reappears as a draft, Full Stack return moves away from its entry command and the green quiet cue demands attention. The standalone fixture corrects those behaviors without changing production code.
+
+The Watch/full-stack AMDX layout is not accepted. A flat list does not convey temporal containment, and enlarging it does not create analytical space. The operator's Trilium screenshot validates a disclosure-tree path from year through quarter, month, week and day while also demonstrating deep indentation and vertical-scan costs. `LAB_AMDX_CALENDAR_TREE_INTERACTION_SPEC.md` therefore proposes a bounded current-path feature tree synchronized with a calendar/detail workspace and semantic zoom. The tree navigates; the workspace supports inspection, entry and analysis.
+
+The review also records a constrained contextual support rail, early synthetic broker/process-safety projection and explicit ultrawide/dedicated-monitor composition trials. Broker information supports adherence rather than P&L stimulation; the rail is not an unrestricted dashboard builder. No native renderer, broker integration, schema, plan or smoke record changes.

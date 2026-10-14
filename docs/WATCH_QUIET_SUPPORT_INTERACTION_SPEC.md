@@ -1,6 +1,6 @@
 # Quiet Watch and support-return interaction specification
 
-**Status:** Proposed focused journey for operator review. This disposable standalone prototype is not final styling or native implementation.
+**Status:** Operator reviewed with partial success. Study Find access/return and peripheral reacquisition are strong directions; the flat AMDX/full-stack rendering is not accepted. See the [operator review](WATCH_QUIET_SUPPORT_OPERATOR_REVIEW.md). This disposable standalone prototype remains neither final styling nor native implementation.
 
 Read with [UX Context Reconciliation](UX_CONTEXT_RECONCILIATION.md), [UX Friction Research](UX_FRICTION_RESEARCH.md), [UX Design Touchstones](UX_DESIGN_TOUCHSTONES.md) and the accepted [TDA layout-parity review](TDA_LAYOUT_PARITY_OPERATOR_REVIEW.md).
 
@@ -12,15 +12,15 @@ This review is about selective attention, direct permitted entry, support-tool a
 
 ## Prototype fixture
 
-The prototype uses a synthetic active MNQ run at **10:42 ET / NYAM**. It shows:
+The corrected prototype uses a synthetic active MNQ run at **10:42 ET / NYAM**. It shows:
 
-- a quiet attention state;
+- a visually recessive quiet state;
 - one current thesis and one next relevant action;
 - two carried TDA conclusions and a compact authorization statement;
 - one consolidated AMDX area containing quiet higher context, the session quartet and the active 90-minute quartet;
 - a Q4 active 90-minute target so `D`, `X(C)`, `X(R)` and `X(?)` can be tested as direct legal choices;
 - a contextual Study Find support surface;
-- a larger AMDX inspection surface with an explicit return to Watch.
+- a larger AMDX inspection surface with a stable ribbon return command in the same location as entry.
 
 All data is disposable browser-local fixture state. The prototype does not use the operator database.
 
@@ -108,7 +108,7 @@ Purposefully absent from Watch:
 | Full-stack support inspection | Existing AMDX catalog/full-stack route and run scope | Explicit return anchor and quieter Watch handoff |
 | Return to Analysis | Existing `live-return-analysis` transition | Keep separate from inspection/navigation |
 
-The architecture supports the journey without a new database owner or duplicate AMDX catalog. Exact composition and any contextual Study-draft adapter remain open until review.
+The architecture supports the journey without a new database owner or duplicate AMDX catalog. Exact composition and any contextual Study-draft adapter remain open. The next AMDX investigation is specified in [Lab AMDX calendar and feature-tree interaction](LAB_AMDX_CALENDAR_TREE_INTERACTION_SPEC.md).
 
 ## Goal-based operator review
 

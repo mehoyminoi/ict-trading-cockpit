@@ -35,9 +35,9 @@
     .card{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow);overflow:hidden}
     .card-head{padding:12px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line-soft);background:#161e28}
     .card-head strong{font-size:14px}.card-head span{color:var(--muted);font-size:12px}.card-head .tag{margin-left:auto;padding:3px 7px;border:1px solid var(--line);border-radius:999px;color:var(--quiet)}
-    .attention{padding:14px 16px;border-color:#36584c;background:linear-gradient(100deg,#13231f 0,#131a23 62%)}
-    .attention-row{display:flex;align-items:center;gap:12px}.pulse{width:12px;height:12px;border-radius:50%;background:var(--complete);box-shadow:0 0 0 5px rgba(120,199,163,.10)}
-    .attention h1{margin:0;font-size:19px}.attention p{margin:4px 0 0;color:var(--muted)}.attention .time{margin-left:auto;text-align:right;color:var(--muted)}.attention .time b{display:block;color:var(--text);font-size:16px}
+    .attention{padding:12px 16px;border-color:var(--line-soft);background:#111821;box-shadow:none}
+    .attention-row{display:flex;align-items:center;gap:12px}.pulse{width:8px;height:8px;border-radius:50%;background:#718093}
+    .attention h1{margin:0;font-size:15px;font-weight:600;color:#c6d0db}.attention p{margin:3px 0 0;color:var(--quiet)}.attention .time{margin-left:auto;text-align:right;color:var(--quiet)}.attention .time b{display:block;color:#c3ced9;font-size:14px}
     .now-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:12px}
     .now-card{padding:14px 15px;min-height:128px}.eyebrow{color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:.13em}.now-card h2{margin:5px 0 7px;font-size:17px}.now-card p{margin:0;color:var(--muted)}
     .next-action{border-color:#4a6074;background:#151f29}.next-action .action-line{margin-top:10px;padding:9px 10px;border-left:3px solid var(--accent);background:var(--accent-soft);color:#d5ebfa}
@@ -182,18 +182,20 @@
     function renderView(){
       $('watchView').classList.toggle('hidden',state.view!=='watch');$('inspectView').classList.toggle('hidden',state.view!=='inspect');
       $('locationText').textContent=state.view==='watch'?'Watch · active 90m Q4':'Full stack inspection · return anchored to Watch';
+      $('inspectBtn').innerHTML=state.view==='watch'?'Inspect full stack <span class="key">F</span>':'Return to Watch <span class="key">W</span>';
+      $('inspectBtn').setAttribute('aria-pressed',String(state.view==='inspect'));
       if(state.view==='inspect')renderInspect();
     }
     function openCapture(){state.captureOpen=true;renderSupportState();$('backdrop').classList.add('show');$('capturePane').classList.add('open');setTimeout(()=>$('studyObservation').focus(),190);}
-    function closeCapture(){saveDraftFromInputs();state.captureOpen=false;$('backdrop').classList.remove('show');$('capturePane').classList.remove('open');renderSupportState();}
+    function closeCapture({preserve=true}={}){if(preserve)saveDraftFromInputs();state.captureOpen=false;$('backdrop').classList.remove('show');$('capturePane').classList.remove('open');renderSupportState();}
     function saveDraftFromInputs(){state.draft={observation:$('studyObservation').value,pattern:$('studyPattern').value,lesson:$('studyLesson').value};persist();}
-    function saveCapture(){saveDraftFromInputs();if(!state.draft.observation.trim()){showToast('Add the observation before saving');$('studyObservation').focus();return;}state.captures+=1;state.draft={observation:'',pattern:'',lesson:''};persist();closeCapture();showToast('Study Find staged · returned to Watch');}
+    function saveCapture(){saveDraftFromInputs();if(!state.draft.observation.trim()){showToast('Add the observation before saving');$('studyObservation').focus();return;}state.captures+=1;state.draft={observation:'',pattern:'',lesson:''};persist();closeCapture({preserve:false});showToast('Study Find staged · returned to Watch');}
     function openInspect(){closeCapture();state.view='inspect';persist();renderView();}
     function returnWatch(){state.view='watch';persist();renderView();showToast('Returned to the same Watch position');}
     function reset(){if(!confirm('Reset only this standalone prototype state?'))return;localStorage.removeItem(STORAGE_KEY);state={...blank,draft:{...blank.draft}};render();showToast('Prototype reset');}
     function render(){renderStack();renderSupportState();renderView();}
     ['studyObservation','studyPattern','studyLesson'].forEach(id=>$(id).addEventListener('input',saveDraftFromInputs));
-    $('captureBtn').addEventListener('click',openCapture);$('inspectBtn').addEventListener('click',openInspect);$('returnWatchBtn').addEventListener('click',returnWatch);
+    $('captureBtn').addEventListener('click',openCapture);$('inspectBtn').addEventListener('click',()=>state.view==='inspect'?returnWatch():openInspect());$('returnWatchBtn').addEventListener('click',returnWatch);
     $('closeCaptureBtn').addEventListener('click',closeCapture);$('closeCaptureFooterBtn').addEventListener('click',closeCapture);$('backdrop').addEventListener('click',closeCapture);$('saveCaptureBtn').addEventListener('click',saveCapture);
     $('analysisBtn').addEventListener('click',()=>alert('Return to Analysis is a deliberate process transition for thesis-level reassessment. It remains separate from support inspection and is not exercised by this focused prototype.'));
     $('helpBtn').addEventListener('click',()=>alert('Focused trial\n\n1. Orient to thesis, next action and active 90m cycle.\n2. Record X(R) directly.\n3. Capture a Study Find and return.\n4. Inspect the full stack and return.\n5. Test an unfinished capture draft and reload.\n\nKeys: C capture · F full stack · W/Escape return. Navigation never completes Watch.'));
