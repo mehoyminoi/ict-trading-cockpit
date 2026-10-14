@@ -4,6 +4,8 @@
 
 **Review hold — operator feedback, 2026-10-13:** The synthetic walkthrough is not accepted as a mature layout. The operator reports density, homogeneous sections, scattered AMDX context and loss of guided Focus versus accessible Deck. Read [the recovered-context comparison](UX_CONTEXT_RECONCILIATION.md) before another renderer or native UX slice. The original proposal below remains available as the comparison point; adjacency, calendar presentation, support-tool access and usability exits require reconciliation. No UI changes are authorized by this feedback record.
 
+**Research discussion — 2026-10-13:** [UX friction research](UX_FRICTION_RESEARCH.md) adds professional methods, proposed UX-F01–F12 quality criteria and a future news/calendar/quarter-stack presentation direction. Discuss these with the reconciled task journeys before choosing controls or proceeding with a native slice. The original layout and UX1–UX4 sequence remain proposals; no renderer revision is implemented by this checkpoint.
+
 **Verified baseline:** main `6aa8d4ec990d8d371440271278bbb7368f186a64`, schema v46, Trade Plan Alpha 0.7. AMDX PRs #67–75 are merged. The integrated code tree retains 1,136 PASS across 89 isolated modules and operator PASS for checks 261–280. This planning checkpoint changes documentation only; it introduces no schema, plan, runtime or smoke-result change.
 
 ## 1. What this screen is for

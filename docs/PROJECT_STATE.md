@@ -1,6 +1,6 @@
 # ICT Trading Cockpit — Current Project State
 
-Current checkpoint: AMDX PRs **#67–75 are merged into main**, after the explicit ordered merge approval. Main is schema **v46 / Alpha 0.7**, with the integrated maintained historical/operational calendar and bounded higher Review. The final merge `8b7f8ae0e8e6da76bed266f771fce75d4bfaaefb` exactly matches reviewed checkpoint `15e64af8d51f946696e9927b5ce731857bdc8602`. All 20 operator checks 261–280 are PASS; complete validation is **1,136 PASS / 89 isolated modules / 450.24s**. See `AMDX_MAIN_SYNC_GUIDE.md` for user sync and database backup before regular-app launch. The active frontier is historical-context reconciliation and operator review of the proposed UX/Study plan. Read `UX_CONTEXT_RECONCILIATION.md`; renderer work is paused and native production UI work has not begun.
+Current checkpoint: AMDX PRs **#67–75 are merged into main**, after the explicit ordered merge approval. Main is schema **v46 / Alpha 0.7**, with the integrated maintained historical/operational calendar and bounded higher Review. The final merge `8b7f8ae0e8e6da76bed266f771fce75d4bfaaefb` exactly matches reviewed checkpoint `15e64af8d51f946696e9927b5ce731857bdc8602`. All 20 operator checks 261–280 are PASS; complete validation is **1,136 PASS / 89 isolated modules / 450.24s**. See `AMDX_MAIN_SYNC_GUIDE.md` for user sync and database backup before regular-app launch. The active frontier is operator discussion of UX friction research and the reconciled UX/Study proposal. Read `UX_CONTEXT_RECONCILIATION.md` and `UX_FRICTION_RESEARCH.md`; renderer work is paused and native production UI work has not begun.
 
 **Last handoff update:** 2026-10-13
 
@@ -284,7 +284,9 @@ Validation after the Custom fixture correction: full suites **453 passed in 180.
 
 ## Current task
 
-Review `UX_CONTEXT_RECONCILIATION.md` against the whole-cockpit UX/Study plan. The operator has not accepted the synthetic layout and requested historical comparison before further changes. The concrete next native slice proposed is UX1: a dismissible Study doorway, recorded-basis suggestion/empty state, safe navigation and reuse of existing targeted-study staging. Active-run startup handling and suggestion ordering remain proposals, not accepted policy. Native UI implementation, schema changes and new smoke records are outside this planning checkpoint.
+Discuss `UX_FRICTION_RESEARCH.md` and its proposed UX-F01–F12 quality criteria alongside `UX_CONTEXT_RECONCILIATION.md`. Professional-method research is documented; no goal-based operator trial has yet been performed. Prioritise guided TDA/Deck return, quiet Watch/support return and Lab calendar investigation before choosing controls or updating the renderer. The future news/calendar/quarter-stack wish is recorded with coverage, as-of and empirical-claim boundaries.
+
+The operator has not accepted the synthetic layout. UX1–UX4, active-run startup handling and suggestion ordering remain proposals. Native UI implementation, schema changes, another walkthrough revision and new smoke records are outside this research checkpoint.
 
 The merged main baseline is `6aa8d4e`, schema v46 / Alpha 0.7. All 280 smoke records remain unchanged. Preserve user notes/stashes and use `AMDX_MAIN_SYNC_GUIDE.md` when moving the operator checkout to main. Older completed storage/native checkpoints below are historical; do not resume their unmerged-stack tasks.
 
@@ -570,3 +572,8 @@ The operator supplied the prequel/continuation transcripts and reviewed the HTML
 `UX_CONTEXT_RECONCILIATION.md` compares these records with the original f72f05b proposal, handles the repeated 148-pass handoff and cumulative digest, distinguishes old requirements from newer detail, and preserves later v46/provenance/16:9/governance decisions. The architecture remains usable; the proposal's adjacency, quietness, calendar and section-identity assumptions need correction. Three journeys—guided TDA/Deck return, quiet Watch capture/context return, and Lab calendar investigation—are proposed for the next specification review.
 
 Renderer/native UI work is paused pending that review. This checkpoint changes documentation only; production source/tests/tools, both inline walkthroughs, downloadable HTML, schema v46, Alpha 0.7 and all 280 smoke records are unchanged. No new operator test, complete application-suite claim or layout acceptance is introduced. Raw transcripts are unmodified and not copied into Git.
+
+
+## 2026-10-13 — Professional UX friction research checkpoint
+
+`UX_FRICTION_RESEARCH.md` synthesises authored/official UX guidance, explicitly distinguishes source principles from Cockpit proposals, and defines twelve candidate quality criteria plus a small goal-based evaluation protocol. It records the future news/calendar/quarter-stack presentation wish without new provider acquisition or classification. Requirements and planning/handoff frontiers point to discussion before further UI work. Source, schema, Alpha 0.7, standalone HTML and all 280 smoke records remain unchanged; no new usability trial or replacement-layout acceptance is claimed.
