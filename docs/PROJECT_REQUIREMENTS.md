@@ -203,6 +203,8 @@ They must not fork into duplicate workflows.
 
 Operator clarification on 2026-10-11: the Focus/Deck relationship is a useful model for nearby detail and bird's-eye orientation, but the mature presentation should integrate the two closely rather than separate them behind tabs. This is a presentation direction; existing Focus/Deck tabs remain until a reviewed replacement preserves their shared process state and natural navigation.
 
+Operator clarification on 2026-10-13: Deck is not merely an organizational overview. It implements workspace/layout parity with the external TradingView TDA deck. For a four-pane chart layout, the corresponding cockpit stations should occupy the same top-left, top-right, bottom-left and bottom-right positions, carry explicit chart roles, and support the same reading/traversal order across both monitors. Selecting a cockpit pane opens that mapped station in Focus; returning preserves the map and selection. Only the active pane needs full detail, while inactive panes can show quiet state and retained conclusions. Mapping is revisioned deck/station configuration and must not change through ordinary navigation or reflow. See `WORKSPACE_PARITY.md` and `UX_DESIGN_TOUCHSTONES.md`.
+
 ### 4.3 Navigation versus certification
 
 Navigation does not imply completion.

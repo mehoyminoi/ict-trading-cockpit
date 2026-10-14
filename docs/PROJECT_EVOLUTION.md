@@ -536,3 +536,7 @@ The HTML walkthrough made the proposal reviewable, and the operator identified d
 ## 2026-10-13 — UX friction methods and future news/calendar presentation
 
 At the operator's request, UI work remains paused for distinct professional-method research. `UX_FRICTION_RESEARCH.md` connects task analysis, progressive/staged disclosure, command organisation, perceptual grouping, stable navigation and understandable cues with inspection, cognitive walkthroughs and goal-based operator trials. Twelve quality criteria are proposed for discussion, with actual usability evidence separate from functional pass counts. The calendar news/quarter/AMDX cue wish is retained as future presentation, preserving historical knowledge and empirical-versus-temporal distinctions. No new renderer, feed, schema, plan policy or operator acceptance is introduced.
+
+## 2026-10-13 — Layout parity and design touchstones preserved
+
+The operator clarifies that the four-pane TDA Deck is more than an overview: it maps positionally to the four-pane TradingView layout so both monitors can be read like facing pages while capturing criteria and points of interest. `WORKSPACE_PARITY.md` now makes that mapping, shared Focus/Deck state and revision ownership explicit. `UX_DESIGN_TOUCHSTONES.md` retains the compact phrases and motifs that carry product meaning and supplies cross-examination questions for future proposals. This documentation checkpoint changes no renderer or production behavior.

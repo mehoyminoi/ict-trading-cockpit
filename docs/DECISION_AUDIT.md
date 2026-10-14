@@ -130,7 +130,7 @@ This document is a reconciliation ledger, not a feature backlog. For current req
 | Area | Latest decision | Status |
 |---|---|---|
 | TradingView role | Remains primary visual charting workstation. | CURRENT |
-| Workspace parity | Conceptual chart/deck/process synchronization matters even without electronic control. | CURRENT |
+| Workspace parity | Conceptual chart/deck/process synchronization matters even without electronic control. Four-pane TDA layouts preserve positional chart-to-station mapping so both monitors can be read in the same spatial order; mapping belongs to revisioned deck/station definitions. | CURRENT / substrate implemented; mature renderer OPEN |
 | Deep TradingView embedding/replacement | Large future project; not current. | DEFERRED |
 | Pine/webhook bridge | Potential narrow future integration once the process has a clear need for the data. | DEFERRED |
 | Macro pad / SpaceMouse controller | Promising because mouse interaction became muscle memory; design hardware only after action vocabulary stabilizes. | DEFERRED |

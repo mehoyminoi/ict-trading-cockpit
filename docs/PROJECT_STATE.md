@@ -284,7 +284,7 @@ Validation after the Custom fixture correction: full suites **453 passed in 180.
 
 ## Current task
 
-Discuss `UX_FRICTION_RESEARCH.md` and its proposed UX-F01–F12 quality criteria alongside `UX_CONTEXT_RECONCILIATION.md`. Professional-method research is documented; no goal-based operator trial has yet been performed. Prioritise guided TDA/Deck return, quiet Watch/support return and Lab calendar investigation before choosing controls or updating the renderer. The future news/calendar/quarter-stack wish is recorded with coverage, as-of and empirical-claim boundaries.
+Discuss `UX_FRICTION_RESEARCH.md` and its proposed UX-F01–F12 quality criteria alongside `UX_CONTEXT_RECONCILIATION.md` and `UX_DESIGN_TOUCHSTONES.md`. TDA layout parity is explicit: a four-pane cockpit Deck maps positionally to the four-pane TradingView deck so both monitors can be read in the same spatial order; mapped Deck → Focus → unchanged Deck return uses shared state. Professional-method research is documented; no goal-based operator trial has yet been performed. Prioritise guided TDA/layout-parity work, quiet Watch/support return and Lab calendar investigation before choosing controls or updating the renderer. The future news/calendar/quarter-stack wish is recorded with coverage, as-of and empirical-claim boundaries.
 
 The operator has not accepted the synthetic layout. UX1–UX4, active-run startup handling and suggestion ordering remain proposals. Native UI implementation, schema changes, another walkthrough revision and new smoke records are outside this research checkpoint.
 

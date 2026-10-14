@@ -4,7 +4,7 @@ Use this file to make chat, branch, and developer handoffs deterministic and to 
 
 Current frontier: AMDX PRs #67–75 are merged into main with their exact reviewed trees, schema v46 / Alpha 0.7. Final code merge `8b7f8ae0e8e6da76bed266f771fce75d4bfaaefb`; 1,136 PASS across 89 isolated modules and all 20 operator checks 261–280 PASS. The functional maintained AMDX foundation is integrated and accepted. Next is the comprehensive whole-cockpit UX/Study implementation plan, with usable criteria authoring/evaluation and controlled legacy/history imports kept explicit. `AMDX_MAIN_SYNC_GUIDE.md` provides user sync and a consistent SQLite backup before regular-app launch; local notes/stashes remain untouched. Read the latest `PROJECT_STATE.md` for the exact main handoff. Earlier unmerged/draft statements below are historical checkpoints.
 
-Current planning deliverables: `COCKPIT_UX_IMPLEMENTATION_PLAN.md` and `UX_CONTEXT_RECONCILIATION.md`. The operator has reviewed the synthetic walkthrough and requested recovered-history comparison before more UI changes; its density, section identity, context placement and Focus/Deck expression are not accepted. It separates implemented substrate, accepted requirements and proposed startup/layout/slice choices. This is a docs-only proposal; no native UI, schema, plan or smoke results changed. The active next step is discussion of `UX_FRICTION_RESEARCH.md`: professional strategies, proposed UX-F01–F12 criteria, goal-based evaluation and the future news/calendar/quarter-stack wish. UI implementation remains paused; UX1–UX4 are proposals.
+Current planning deliverables: `COCKPIT_UX_IMPLEMENTATION_PLAN.md`, `UX_CONTEXT_RECONCILIATION.md`, `UX_FRICTION_RESEARCH.md` and `UX_DESIGN_TOUCHSTONES.md`. The operator has reviewed the synthetic walkthrough and requested recovered-history comparison before more UI changes; its density, section identity, context placement and Focus/Deck expression are not accepted. TDA Deck must preserve four-pane positional parity with the TradingView deck so both monitors can be read in the same order; `WORKSPACE_PARITY.md` records the contract. This is a docs-only proposal; no native UI, schema, plan or smoke results changed. UI implementation remains paused; UX1–UX4 are proposals.
 
 ## Canonical handoff package
 
@@ -18,6 +18,8 @@ A new development chat should read these documents in this order:
 6. **`docs/PROJECT_EVOLUTION.md`** — chronological architecture history explaining how the current model emerged.
 7. **Relevant code/tests** — Git is authoritative for what is actually implemented.
 8. **Historical source material** — consult only when clarification is still needed after the canonical package.
+
+For UX work, also read **`UX_DESIGN_TOUCHSTONES.md`** and **`WORKSPACE_PARITY.md`** before proposing a layout. They preserve the compact design motifs and the four-pane TradingView-to-TDA positional mapping that broad architecture summaries can otherwise flatten.
 
 Do **not** infer current priority from the recency, detail, or enthusiasm of an older feature discussion. First check whether that idea was later implemented, refined, deferred, or superseded.
 
