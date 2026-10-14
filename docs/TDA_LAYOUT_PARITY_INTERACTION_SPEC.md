@@ -1,6 +1,6 @@
 # TDA layout parity interaction specification
 
-**Status:** Focused UX proposal for operator review, 2026-10-13. This specifies one representative journey and accompanies a disposable standalone prototype. It does not replace the native TDA runner or accept final styling.
+**Status:** Focused relationship/flow accepted by operator review on 2026-10-13. The disposable standalone prototype remains an interaction study rather than final styling or native implementation. See [the operator review](TDA_LAYOUT_PARITY_OPERATOR_REVIEW.md).
 
 Read with [Workspace Parity](WORKSPACE_PARITY.md), [UX Design Touchstones](UX_DESIGN_TOUCHSTONES.md) and [UX Friction Research](UX_FRICTION_RESEARCH.md).
 
@@ -22,6 +22,8 @@ The prototype represents one four-pane higher-timeframe TDA deck:
 | Bottom right / 4 | Daily context and draw | Daily Context |
 
 The chart side is schematic. It demonstrates identity, spatial order and attention correspondence without embedding, controlling or reproducing TradingView.
+
+The mature TDA may contain however many revision-defined Decks are required to gather the full analysis. Each standard Deck can pair with its own four-pane TradingView layout while reusing this positional and Focus-return contract. The prototype's single Deck is a bounded interaction sample, not a product limit.
 
 ## Proposed interaction
 
@@ -58,6 +60,8 @@ The prototype supplies visible controls plus provisional keys:
 - `Ctrl+Enter` marks the current station complete and advances.
 
 These keys test action vocabulary for later keyboard/macro-pad use. They are not accepted final bindings.
+
+Operator review found the `1`–`4` mapping promising and retained the earlier executable runner's scrolling and mouse-button behavior as valuable. Mature input design should test them together as routes to the same actions. A macro pad or CAD-mouse equivalent remains a later binding surface after the command vocabulary stabilizes.
 
 ### Persistence for review
 
@@ -121,3 +125,5 @@ Record whether the operator hunted for the chart/station relationship, lost spat
 ## Acceptance boundary
 
 This proposal is useful if it makes layout parity tangible and gives us evidence about Deck/Focus movement. Operator review may accept the relationship while rejecting the exact split, styling, labels or controls. Native implementation begins only after the interaction contract is reviewed against the real multi-monitor workflow.
+
+The 2026-10-13 trial succeeded on that boundary. Positional mapping, Deck/Focus flow, shared work, quiet inactive panes and at-a-glance orientation are accepted directions. Exact controls, styling and native implementation remain open.

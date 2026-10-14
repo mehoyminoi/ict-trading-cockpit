@@ -284,11 +284,11 @@ Validation after the Custom fixture correction: full suites **453 passed in 180.
 
 ## Current task
 
-Review `TDA_LAYOUT_PARITY_INTERACTION_SPEC.md` and `prototypes/tda-layout-parity-v0.html` as the first focused UX journey. The proposal makes four-pane TradingView-to-Cockpit positional mapping tangible and exercises mapped Deck → Focus → unchanged Deck return over shared state. Its representative TDA wording, styling, split-screen chart schematic, buttons and provisional keys remain review material. Record the operator's relationship/flow findings separately from control and styling notes before authorizing native implementation.
+The first focused UX journey is successfully reviewed; see `TDA_LAYOUT_PARITY_OPERATOR_REVIEW.md`. The operator accepts four-pane TradingView-to-Cockpit positional mapping, mapped Deck → Focus → unchanged Deck return, shared work, quiet inactive panes and peripheral border/state cues as strong directions. TDA may contain as many revision-defined mapped Decks as required. Preserve useful wheel/mouse-button navigation while testing `1`–`4`, keyboard and later macro-pad/CAD-mouse routes to the same actions. Exact controls, colors, content, deck switching and native composition remain open.
 
-`UX_FRICTION_RESEARCH.md`, `UX_CONTEXT_RECONCILIATION.md`, `UX_DESIGN_TOUCHSTONES.md` and `WORKSPACE_PARITY.md` govern this review. Quiet Watch/support return and Lab calendar investigation remain the next journey priorities. The future news/calendar/quarter-stack wish is recorded with coverage, as-of and empirical-claim boundaries.
+`UX_FRICTION_RESEARCH.md`, `UX_CONTEXT_RECONCILIATION.md`, `UX_DESIGN_TOUCHSTONES.md` and `WORKSPACE_PARITY.md` govern subsequent UX work. Quiet Watch/support return and Lab calendar investigation remain the next journey priorities. The future news/calendar/quarter-stack wish is recorded with coverage, as-of and empirical-claim boundaries.
 
-The operator has not accepted the earlier whole-cockpit synthetic layout or the new focused prototype. UX1–UX4, active-run startup handling and suggestion ordering remain proposals. Native UI implementation, schema changes and new smoke records are outside this review checkpoint.
+The operator has not accepted the earlier whole-cockpit synthetic layout or the focused prototype's exact visual design. The parity interaction direction is accepted. UX1–UX4, active-run startup handling and suggestion ordering remain proposals. Native UI implementation, schema changes and new smoke records are outside this review checkpoint.
 
 The merged main baseline is `6aa8d4e`, schema v46 / Alpha 0.7. All 280 smoke records remain unchanged. Preserve user notes/stashes and use `AMDX_MAIN_SYNC_GUIDE.md` when moving the operator checkout to main. Older completed storage/native checkpoints below are historical; do not resume their unmerged-stack tasks.
 

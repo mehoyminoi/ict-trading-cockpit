@@ -27,7 +27,7 @@ This document is a reconciliation ledger, not a feature backlog. For current req
 | Review/Development | Parallel improvement area, not the final sequential phase after Post-Market. | CURRENT |
 | Process Blueprint | Process -> Mode -> Deck -> Station. A station is an analytical operation, not just a field. | CURRENT / IMPLEMENTED |
 | Station semantics | Action -> Observe -> Carry Forward. Manual chart work is legitimate until automation replaces the implementation. | CURRENT |
-| Focus / Deck | Two projections of the same station/session state; Focus for work, Deck for orientation. | CURRENT / IMPLEMENTED |
+| Focus / Deck | Two projections of the same station/session state; Focus for work, Deck for orientation. Four-pane positional parity, direct mapped Focus return, quiet inactive panes and peripheral selection/state cues are operator-validated directions. TDA may contain as many revision-defined mapped Decks as required. | CURRENT / substrate implemented; focused UX direction accepted |
 | Station completion | Explicit certification is separate from entered work and navigation. Navigation must not silently complete a station. | CURRENT / IMPLEMENTED |
 | Persistence | Remember where the operator was, what was done, and what remains without forcing reconstruction after restart. | CURRENT / IMPLEMENTED |
 | Return to Analysis | Deliberate, not restrictive; reason is useful evidence, not a penalty. | CURRENT / IMPLEMENTED |

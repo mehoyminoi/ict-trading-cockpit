@@ -205,6 +205,8 @@ Operator clarification on 2026-10-11: the Focus/Deck relationship is a useful mo
 
 Operator clarification on 2026-10-13: Deck is not merely an organizational overview. It implements workspace/layout parity with the external TradingView TDA deck. For a four-pane chart layout, the corresponding cockpit stations should occupy the same top-left, top-right, bottom-left and bottom-right positions, carry explicit chart roles, and support the same reading/traversal order across both monitors. Selecting a cockpit pane opens that mapped station in Focus; returning preserves the map and selection. Only the active pane needs full detail, while inactive panes can show quiet state and retained conclusions. Mapping is revisioned deck/station configuration and must not change through ordinary navigation or reflow. See `WORKSPACE_PARITY.md` and `UX_DESIGN_TOUCHSTONES.md`.
 
+Focused operator trial on 2026-10-13 accepts this relationship and flow as a strong direction. TDA may use however many revision-defined Decks are required; each standard Deck can pair with a four-pane TradingView layout and reuse positional mapping. Preserve existing useful wheel and mouse-button navigation while testing direct `1`–`4` position selection, keyboard shortcuts and later macro-pad/CAD-mouse bindings over the same actions. Selected-pane borders, complete/current/pending cues and restrained state colors are functional reacquisition aids when the technician looks to TradingView and back. Preserve non-color state meaning; exact palette, border treatment, bindings and deck switching remain open. See `TDA_LAYOUT_PARITY_OPERATOR_REVIEW.md`.
+
 ### 4.3 Navigation versus certification
 
 Navigation does not imply completion.

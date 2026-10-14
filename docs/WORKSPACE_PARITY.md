@@ -57,6 +57,8 @@ The current default definitions express the chart counterpart mainly through des
 
 A TradingView layout may contain more charts than are useful at one time. The user may therefore organize the process into chart "decks" or tabs.
 
+The full TDA may contain however many revision-defined Decks are required. Each Deck can identify its paired TradingView layout and apply the same position-to-position mapping within that screen. The current two alpha TDA Decks and the focused prototype's single Deck are examples, not product limits.
+
 When one TDA phase or deck is complete, the next TradingView tab/deck should correspond naturally to the next cockpit phase or mode. For example:
 
 ```text

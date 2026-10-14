@@ -544,3 +544,7 @@ The operator clarifies that the four-pane TDA Deck is more than an overview: it 
 ## 2026-10-13 — Focused TDA layout-parity review artifact
 
 `TDA_LAYOUT_PARITY_INTERACTION_SPEC.md` turns the accepted parity principle into a reviewable journey. Its standalone HTML pairs a schematic four-pane TradingView monitor with the position-matched Cockpit Deck, then demonstrates mapped station Focus, Action/Observe/Carry Forward, shared state, return without completion, explicit completion and disposable reload persistence. Automated browser assertions cover the principal interaction, and Deck/Focus were inspected at 1600×900. This remains a disposable proposal rather than native UI or operator acceptance.
+
+## 2026-10-13 — TDA parity focused trial succeeds
+
+The operator reports a meaningful improvement in feel and flow. The accepted direction now includes however many revision-defined four-pane TDA Deck/TradingView layout pairs the full analysis requires, mapped Deck/Focus state, quiet inactive panes, and subtle border/state cues that support rapid reacquisition after looking to the chart monitor. Existing scroll and mouse-button behavior remains valuable; direct `1`–`4` selection is promising; later macro-pad/CAD-mouse bindings should target the same actions. `TDA_LAYOUT_PARITY_OPERATOR_REVIEW.md` records the accepted relationship and remaining control/styling choices. No native UI change is inferred.
