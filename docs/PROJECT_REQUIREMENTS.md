@@ -1508,3 +1508,16 @@ PR #72/source `c822d04` implements schema-v44 immutable run/master binding, capt
 ### Higher Review scope alongside broad historical Lab — current clarification
 
 Review may inspect distinct higher contexts on either calendar side of its original reviewed futures day, defaulting to the original run reference. Selection updates factual higher orientation without retargeting the intraday editor or recording a judgment. Deliberate phase input retains the original launch and selected scope together in its immutable assessment basis. The bounded run window does not restrict all-layer historical Lab backfill. Current maintained Observed and original captured Expected remain distinct; no Watch comparison/history control or automatic Expected baseline is implied. `AMDX_HIGHER_REVIEW_GUIDE.md` records the current implementation boundary; final full-cockpit rendering and the Study/criteria/import milestones remain subsequent work.
+
+
+## 2026-10-13 — UX review feedback and recovered context
+
+The operator's review of the whole-cockpit walkthrough identifies density, homogeneous major sections, dispersed related AMDX information and an over-combined Focus/Deck presentation. Guided work and readily accessible bird's-eye orientation remain distinct responsibilities; close integration does not require all expanded detail and overview panels to stay visible simultaneously. The existing synthetic layout is not accepted as the mature renderer.
+
+Retain the calendar-like QT hub direction, now specified more concretely: in Lab, an actual month calendar with appropriate week/day/session-cycle indications, period selection exposing editable lower context, and access to the supported 16-year-to-smallest-cycle stack. A calendar shortcut/access path from other cockpit contexts is desired. Shared calendar ownership, explicit studied/operational references and immutable run captures still govern those views.
+
+For future quarter/session colorization, record Q1/Asia yellow, Q2/London red, Q3/NYAM green and Q4/NYPM blue. This is a temporal identity convention, not an AMDX-phase or completion-state palette; exact colors and accessibility/theme treatments are not implemented here.
+
+Familiar CAD/SolidWorks, Office and tuning-software navigation, ribbons/toolbars/tabs/icons, and one-action support tools are exploratory preferences to try. Study Find, extra context and subroutines should be easy to invoke and leave, while required current-step decisions remain discoverable. Major sections should be identifiable at a glance. The operator explicitly keeps these layout suggestions provisional.
+
+Before further UI changes, compare the recovered prequel/continuation with the current plan. `UX_CONTEXT_RECONCILIATION.md` records the overlap, surviving contracts, proposal gaps and three journeys to refine. This feedback neither accepts a replacement layout nor reopens completed storage work.

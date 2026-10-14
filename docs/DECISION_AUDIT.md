@@ -502,3 +502,16 @@ PR #72/source `c822d04` implements schema-v44 immutable run/master binding, capt
 ## 2026-10-13 — Higher Review proposal becomes bounded native input
 
 `AMDX_HIGHER_REVIEW_PERIOD_CONTRACT.md` now has an implemented current-status banner. Its original-launch-only guard, unimplemented selector notes and proposed additive proof table describe historical checkpoints. The authorized whole-day/default/explicit-orientation semantics are implemented on the maintained Observed ledger; proof is embedded in immutable assessment envelope v2, protected by existing SQL immutability and the same owned transaction. Schema v46 is a format barrier with no retroactive proof or record rewrites. This refines engineering storage, not the product's allowed Review scope. Old v1 receipts retain exact semantics and retry behavior; original Expected captures are unchanged. No Watch history/comparison route or broad historical Lab restriction follows from this bounded run editor. Operator checks 275–280 are pending; main remains v41/unmerged. See `AMDX_HIGHER_REVIEW_GUIDE.md`.
+
+
+## 2026-10-13 — UX proposal reviewed against recovered transcripts
+
+| Prior interpretation / proposal | Current clarification | Status |
+| --- | --- | --- |
+| Close Focus/Deck integration means permanent adjacent expanded panels | Guided Focus and accessible Deck retain distinct responsibilities; historical Deck → selected Focus navigation and chart/action meaning must survive | Proposal interpretation requires correction; replacement access mechanism OPEN |
+| Full-stack table satisfies the calendar UI direction | Actual month-calendar navigation with period selection and editable lower context remains a mature Lab requirement; shared timeline ownership is already implemented | Calendar renderer required downstream; no new storage layer |
+| Repeated panel/chrome style demonstrates quiet shared UX | Operator reports density, homogeneous destinations and dispersed context; shared state does not imply identical composition | Current prototype layout NOT ACCEPTED |
+| Study Find shown as a standing form | Quiet contextual action/shortcut access is historically supported; ribbon/task-bar treatment is an exploratory current preference | Capture accessibility CURRENT; exact control OPEN |
+| Quarter color meanings unspecified | Operator supplies Q1/Asia yellow, Q2/London red, Q3/NYAM green, Q4/NYPM blue | Retained future temporal convention; no RGB/styling implementation |
+
+Read `UX_CONTEXT_RECONCILIATION.md` for source fingerprints, repeated 148-pass handoff/cumulative digest and evidence locators. Older branches, independent flat AMDX entry, smaller footprint and temporary pre-governance states are historical. Current v46/master-calendar/captured-context and published plan-policy boundaries remain authoritative. Renderer work is paused for this comparison; source/tests/tools, both walkthroughs/export and all smoke results are unchanged.

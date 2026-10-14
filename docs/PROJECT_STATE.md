@@ -1,6 +1,6 @@
 # ICT Trading Cockpit — Current Project State
 
-Current checkpoint: AMDX PRs **#67–75 are merged into main**, after the explicit ordered merge approval. Main is schema **v46 / Alpha 0.7**, with the integrated maintained historical/operational calendar and bounded higher Review. The final merge `8b7f8ae0e8e6da76bed266f771fce75d4bfaaefb` exactly matches reviewed checkpoint `15e64af8d51f946696e9927b5ce731857bdc8602`. All 20 operator checks 261–280 are PASS; complete validation is **1,136 PASS / 89 isolated modules / 450.24s**. See `AMDX_MAIN_SYNC_GUIDE.md` for user sync and database backup before regular-app launch. The active frontier is review of the proposed whole-cockpit UX/Study implementation plan in `COCKPIT_UX_IMPLEMENTATION_PLAN.md`; native production UI work has not begun.
+Current checkpoint: AMDX PRs **#67–75 are merged into main**, after the explicit ordered merge approval. Main is schema **v46 / Alpha 0.7**, with the integrated maintained historical/operational calendar and bounded higher Review. The final merge `8b7f8ae0e8e6da76bed266f771fce75d4bfaaefb` exactly matches reviewed checkpoint `15e64af8d51f946696e9927b5ce731857bdc8602`. All 20 operator checks 261–280 are PASS; complete validation is **1,136 PASS / 89 isolated modules / 450.24s**. See `AMDX_MAIN_SYNC_GUIDE.md` for user sync and database backup before regular-app launch. The active frontier is historical-context reconciliation and operator review of the proposed UX/Study plan. Read `UX_CONTEXT_RECONCILIATION.md`; renderer work is paused and native production UI work has not begun.
 
 **Last handoff update:** 2026-10-13
 
@@ -284,7 +284,7 @@ Validation after the Custom fixture correction: full suites **453 passed in 180.
 
 ## Current task
 
-Review the proposed whole-cockpit UX/Study implementation plan and synthetic interactive walkthrough. The concrete next native slice proposed is UX1: a dismissible Study doorway, recorded-basis suggestion/empty state, safe navigation and reuse of existing targeted-study staging. Active-run startup handling and suggestion ordering remain proposals, not accepted policy. Native UI implementation, schema changes and new smoke records are outside this planning checkpoint.
+Review `UX_CONTEXT_RECONCILIATION.md` against the whole-cockpit UX/Study plan. The operator has not accepted the synthetic layout and requested historical comparison before further changes. The concrete next native slice proposed is UX1: a dismissible Study doorway, recorded-basis suggestion/empty state, safe navigation and reuse of existing targeted-study staging. Active-run startup handling and suggestion ordering remain proposals, not accepted policy. Native UI implementation, schema changes and new smoke records are outside this planning checkpoint.
 
 The merged main baseline is `6aa8d4e`, schema v46 / Alpha 0.7. All 280 smoke records remain unchanged. Preserve user notes/stashes and use `AMDX_MAIN_SYNC_GUIDE.md` when moving the operator checkout to main. Older completed storage/native checkpoints below are historical; do not resume their unmerged-stack tasks.
 
@@ -561,3 +561,12 @@ The main handoff is documentation only. Existing unbound runs keep their legacy 
 `COCKPIT_UX_IMPLEMENTATION_PLAN.md` is proposed on `feature/cockpit-ux-study-plan-v0`, based on merged main `6aa8d4e`. It maps the current whole-tool capabilities, accepted 16:9/quiet Watch/shared-calendar/nearby overview-detail invariants and proposed Study doorway plus UX1–UX4 native slices. Startup active-run handling, recommendation ranking and final topology are open choices. No native production UI, schema or Trade Plan behavior is changed; operator review of the proposal is pending.
 
 Planning verification: four existing smoke-document tests PASS, all 280 smoke records byte-identical, current source hooks/local Markdown links/diff formatting checked. Synthetic walkthrough: 28 local browser interaction assertions PASS, no JavaScript errors, no horizontal overflow at 1440/1024/320px; light, exact dark palette and narrow layouts inspected in QtWebEngine 6.8.3. This does not establish conversation-host reliability, native behavior or operator layout acceptance. No complete application suite was repeated for this docs-only checkpoint.
+
+
+## 2026-10-13 — Recovered UX context and current review hold
+
+The operator supplied the prequel/continuation transcripts and reviewed the HTML walkthrough. Current feedback reports density, homogeneous sections, scattered related AMDX context and loss of guided Focus versus accessible bird's-eye Deck. It strengthens the calendar-hub requirement and records familiar CAD/Office/tuning controls plus contextual ribbon/task-bar access as exploratory preferences. Future temporal colors are Q1/Asia yellow, Q2/London red, Q3/NYAM green and Q4/NYPM blue; no palette/rendering implementation is adopted.
+
+`UX_CONTEXT_RECONCILIATION.md` compares these records with the original f72f05b proposal, handles the repeated 148-pass handoff and cumulative digest, distinguishes old requirements from newer detail, and preserves later v46/provenance/16:9/governance decisions. The architecture remains usable; the proposal's adjacency, quietness, calendar and section-identity assumptions need correction. Three journeys—guided TDA/Deck return, quiet Watch capture/context return, and Lab calendar investigation—are proposed for the next specification review.
+
+Renderer/native UI work is paused pending that review. This checkpoint changes documentation only; production source/tests/tools, both inline walkthroughs, downloadable HTML, schema v46, Alpha 0.7 and all 280 smoke records are unchanged. No new operator test, complete application-suite claim or layout acceptance is introduced. Raw transcripts are unmodified and not copied into Git.
