@@ -607,3 +607,11 @@ The active design frontier now moves outward: compose a Study-first Lab that can
 The proposal reflects the supplied trading-plan material without copying it into one large form: plan-owned definitions, preparation, chart evidence, backtest/replay/forward samples, measurement, review and deliberate revision remain distinct operations. Study Find inherits the active question and context, preserves a draft on close and returns to Evidence after save. The AMDX calendar uses the same maintained foundation and does not become a separate catalog or consume every Lab screen.
 
 Focused mock-DOM interaction assertions cover startup/resume, lens continuity, draft close/reopen, save-and-return, evidence count, AMDX routing, contextual support, pinning, keyboard lens access and reload recovery. HTML and inline JavaScript parse cleanly. The fixture remains browser-local and synthetic; no application source, schema, Trade Plan, smoke record, database or screenshot storage changes. Operator review is required before selecting a first native composition slice.
+
+## 2026-10-14 — Broader Study-first Lab direction advances
+
+The operator broadly likes the composition and identifies the front-and-center **Study this competency** prompt as a useful on-ramp into Study. First inspection produces no immediate friction and no concrete change request. The Study map, central workspace, contextual support rail and coordinated lenses therefore advance as a directional checkpoint without another standalone polish pass.
+
+This is deliberately not final Lab approval. The interface will require acclimation, and meaningful judgment is reserved for a fuller end-to-end test Study session, Replay and return through adjacent Cockpit operations. Exact controls, content density, styling, native behavior and integration remain open; iteration is expected as the suite matures.
+
+The design frontier moves to the deferred complete Watch composition: current orientation, direct AMDX entry, watch points, plan/gate/process safety, an early non-stimulating broker projection and monitor-orientation profiles. Once Study/Lab and Watch relationships can be evaluated together, choose the smallest native composition slice and later return to Lab through real integrated use.
