@@ -1,8 +1,8 @@
 # Lab AMDX calendar and feature-tree operator review
 
 **Reviewed:** 2026-10-14 (America/Denver)  
-**Artifact reviewed:** `prototypes/lab-amdx-calendar-tree-v0.html`, first and second iterations; the same file now contains the unreviewed third iteration
-**Disposition:** Successful direction with continuing multiscale refinement. The three-pane relationship and Quiet/Nested/Deep configuration are retained; exact hierarchy encoding and temporal zoom remain open.
+**Artifact reviewed:** `prototypes/lab-amdx-calendar-tree-v0.html`, first through third iterations; the same file now contains the unreviewed fourth iteration
+**Disposition:** Successful direction with continuing multiscale refinement. The three-pane relationship and calendar Quiet/Nested/Deep configuration are retained; cross-layer visual hierarchy, final AMDX Lab form and temporal zoom remain open.
 
 ## Directional successes
 
@@ -92,4 +92,19 @@ The **AMDX Calendar** selector suggests a useful Fusion 360–like workbench mod
 Temporal zoom feels better when it is independent from context depth, but it still does not feel settled. Do not infer acceptance of the current Zoom In/Out controls, labels, direction, selection-following behavior or gesture. More experimentation is expected because full-stack AMDX movement is both complicated and foundational.
 
 The third iteration may test these corrections while retaining the accepted three-pane relationship, Follow Current behavior, truthful missing state and broader-Lab scope guardrail.
+
+## Third-iteration operator review
+
+The revised calendar's Quiet/Nested/Deep distinctions are materially better and should inform equivalent density decisions elsewhere. This is a directional success, not final acceptance of the AMDX Lab workspace.
+
+Color without an operational job remains in the tree, higher-level groups, generic quartet cards and detail profile. Apply the same correction used in the month:
+
+- quarter position should be legible through text, order, spacing, grouping and selection;
+- path, current reference, unavailable data, news, entered/implied state and required action may retain distinct state cues;
+- stable domain color may remain only where it demonstrably reduces lookup, rather than wherever Q1–Q4 appears;
+- adding context depth should add semantic information, not merely saturation.
+
+The fourth iteration therefore neutralizes generic Q1–Q4 color across the tree and other layers. It retains only a restrained identity edge on the four explicitly named Trading Day session cards as a focused test of the established Asia/London/NYAM/NYPM palette. That exception is also provisional.
+
+The remainder of AMDX Lab still does not feel final. Do not translate “good start” into acceptance of the complete workspace, zoom behavior, control arrangement, density, visual language or native composition.
 

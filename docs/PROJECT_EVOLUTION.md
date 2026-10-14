@@ -583,3 +583,11 @@ The second Lab review accepts Quiet/Nested/Deep as a useful configuration and en
 True opens now sit at their period location in the year/month/week/day projections. Lab may inspect or edit the fact, while TDA owns the reminder when an unmarked open becomes temporally relevant. A later display policy may permit restrained cue/color visibility without changing shared ownership.
 
 The combined **Lab · AMDX Calendar** control preserves a promising CAD-workbench analogy for movement among Cockpit phases and analytical lenses, but it does not settle the taxonomy. Temporal zoom also remains open: separating it from context depth helps, but the current controls and selection behavior are not accepted. The third standalone iteration tests these narrower questions only; production behavior remains unchanged.
+
+## 2026-10-14 — Calendar depth accepted as a direction, full Lab remains open
+
+The third review finds the calendar's Quiet/Nested/Deep distinction materially better and asks that the same semantic-density discipline reach the tree and other layers. The full AMDX Lab portion remains a good start rather than a final form.
+
+The fourth trial removes generic quarter color from tree marks, higher-level groups, quartet cards, compact stacks and the detail profile. Text/order/grouping carry Q1–Q4; selection, current reference, unavailable data, news and entered/implied states retain their own cues. Only the four named Trading Day session cards retain a restrained palette edge as a provisional test of stable domain identity. Increasing context depth adds information, not saturation.
+
+This records partial acceptance precisely: the calendar depth model advances, while the overall workspace, remaining color policy, temporal zoom, controls and native composition stay open. No production source, schema, persistence or smoke records change.

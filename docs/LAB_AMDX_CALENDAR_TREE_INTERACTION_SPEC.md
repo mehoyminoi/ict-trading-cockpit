@@ -1,6 +1,6 @@
 # Lab AMDX calendar and feature-tree interaction specification
 
-**Status:** First and second iterations reviewed successfully as directions; a third hierarchy-focused iteration is ready for operator review in the same [disposable standalone prototype](prototypes/lab-amdx-calendar-tree-v0.html). See the [operator review](LAB_AMDX_CALENDAR_TREE_OPERATOR_REVIEW.md). No renderer, native implementation or AMDX interpretation is accepted by this document.
+**Status:** The first three iterations are reviewed as useful directions; a fourth cross-layer color-policy iteration is ready for operator review in the same [disposable standalone prototype](prototypes/lab-amdx-calendar-tree-v0.html). See the [operator review](LAB_AMDX_CALENDAR_TREE_OPERATOR_REVIEW.md). The full AMDX Lab form, renderer, native implementation and AMDX interpretation remain unaccepted.
 
 Read with the [Quiet Watch operator review](WATCH_QUIET_SUPPORT_OPERATOR_REVIEW.md), [workspace parity](WORKSPACE_PARITY.md), [UX design touchstones](UX_DESIGN_TOUCHSTONES.md) and [Cockpit UX implementation plan](COCKPIT_UX_IMPLEMENTATION_PLAN.md).
 
@@ -61,7 +61,9 @@ Zooming in follows the selected quarter. Zooming out restores the parent and the
 - Month rows use a neutral physical week rail. Quiet shows grouping only; Nested adds the week and daily AMDX values; Deep adds interval and compact session context. Colored day-row headings are not used merely to say Q1–Q4.
 - True opens appear at the relevant period position. Lab inspects/edits the fact; TDA owns the temporally relevant reminder. Recorded, unmarked and unavailable remain distinguishable. The prototype stages this visually only and does not establish true-open persistence.
 
-Temporal color cues remain consistent when they add useful identity: Asia/Q1 yellow, London/Q2 red, NYAM/Q3 green and NYPM/Q4 blue. They are not sprayed across every Q1–Q4 grouping. Text, order, spacing and shape carry hierarchy first; color alone never carries meaning.
+Temporal color cues remain consistent when they add useful identity: Asia/Q1 yellow, London/Q2 red, NYAM/Q3 green and NYPM/Q4 blue. They are not sprayed across every Q1–Q4 grouping. Text, order, spacing and shape carry hierarchy first; color alone never carries meaning. The fourth trial retains that palette only as a restrained edge on the four named session cards; even this use remains reviewable.
+
+The same policy applies outside the calendar. Tree path and selection, generic period groups, quartet cards, compact stacks and the detail profile do not receive Q1–Q4 color merely because they contain four positions. State cues remain available for selection/current, unavailable data, news, entered/implied values and action. Context depth changes information density, not color intensity.
 
 Display policy may eventually expose restrained show/hide and color/no-color preferences. Configuration must not fragment the shared data model or turn the default into a dashboard-builder exercise.
 
@@ -111,9 +113,11 @@ Use the prototype at a normal 16:9 size. These are orientation goals rather than
 7. Select 2025 and confirm unavailable data is not guessed. Then use **Follow current** and confirm historical navigation did not redirect or edit the current reference.
 8. Open the **Lab · AMDX Calendar** workbench/lens control. Judge whether the CAD-workbench analogy is intuitive while the shell still communicates that Lab is a broader Study workspace.
 
+9. Scan the tree, higher-level groups, generic quartet cards and detail profile. Confirm the quarter structure remains legible after decorative Q1–Q4 color is removed. Then enter a Trading Day and judge whether the restrained session-identity edges earn their attention cost.
+
 Do not try to accept the Zoom In/Out interaction merely because hierarchy rendering improved. Record where its direction, target or selection-following behavior still feels wrong; temporal zoom remains a separate open design problem.
 
-Record whether the tree supplied orientation without taking over the screen, whether the month/week/day/session projections reduced reading effort, whether the detail rail felt adjacent rather than detached, and whether returning from another monitor would require reacquisition or reconstruction. Comments on exact tree width, calendar density, labels, controls and styling remain provisional.
+Record whether the tree supplied orientation without taking over the screen, whether the month/week/day/session projections reduced reading effort, whether the detail rail felt adjacent rather than detached, and whether returning from another monitor would require reacquisition or reconstruction. The calendar depth model may be accepted independently from the overall AMDX Lab form. Comments on exact tree width, calendar density, labels, controls, styling and remaining color remain provisional.
 
 ## Follow-on relationship to Watch
 
