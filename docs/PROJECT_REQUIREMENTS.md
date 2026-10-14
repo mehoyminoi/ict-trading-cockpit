@@ -1534,3 +1534,15 @@ The operator requests a distinct review of established professional UX methods b
 Use task analysis, structured inspection, cognitive walkthroughs and small goal-based operator trials to refine the guided TDA/Deck return, quiet Watch/support return and Lab calendar investigation journeys. Usability records should supplement rather than rewrite functional smoke instructions. Evaluate correct scope/outcome, hunting/backtracking, context recovery, time and operator effort; no arbitrary global click quota, readiness score or automatic telemetry is introduced.
 
 Retain the requested future news presentation: scheduled releases should appear on the maintained calendar, with useful news/quarter/AMDX-stack context cues. Exact markers, filters and composition remain open. Reuse event/provider provenance and historical as-of/coverage semantics; unavailable coverage is not no-news. Temporal alignment, plan-defined expectation and measured association must remain distinguishable. Quarter colours retain temporal identity, with separate labelled news cues. This wish does not authorise feed acquisition, a new classifier, automatic trading restrictions or another calendar owner.
+
+# Accepted cross-suite UX guardrails (2026-10-14)
+
+The mature Cockpit must apply the accepted [Cross-suite UX Interaction Standards](UX_INTERACTION_STANDARDS.md): earned/change-based salience, interruption recovery, shared command grammar, constraint-based error prevention, redundant encoding, truthful provenance, and realistic journey evaluation.
+
+- Major workspaces must feel distinct enough to support task-mode recognition while retaining a cohesive suite-wide design language.
+- When an operator or developer proposal conflicts with an accepted safety, accessibility, semantic-clarity or low-friction principle, the conflict, likely adverse effect and alternatives must be documented and discussed before adoption. A suggestion does not silently override the principle.
+- Watch must provide a direct, chart-adjacent contextual reference to active Trade Plan definitions, criteria and process for manual discernment. The surface follows the chart-facing edge, preserves the Watch anchor and remains support rather than a permanent dashboard pane.
+- Session identity colors remain permissible only with redundant non-color encoding and must not silently collide with operational state colors.
+- A future light theme should share the same semantic token model and information hierarchy as the dark theme; this does not create a second workflow or immediate native implementation requirement.
+
+Full criteria authoring, definition comparison and empirical evaluation remain spacious Lab / Trade Plan concerns. Watch projects concise current guidance and provenance only.

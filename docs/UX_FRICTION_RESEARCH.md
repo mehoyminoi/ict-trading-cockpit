@@ -1,6 +1,6 @@
 # UX friction research and proposed review criteria
 
-Research checkpoint: 2026-10-13, operator-local date. Requested pause before further UI work. This is a source-backed discussion and proposed quality annex, not acceptance of a new renderer. Read alongside [the context reconciliation](UX_CONTEXT_RECONCILIATION.md), [requirements](PROJECT_REQUIREMENTS.md) and [implementation proposal](COCKPIT_UX_IMPLEMENTATION_PLAN.md).
+Research checkpoint: 2026-10-13, operator-local date. Requested pause before further UI work. This is a source-backed discussion and proposed quality annex, not acceptance of a new renderer. Its cross-suite conclusions were accepted on 2026-10-14 in the [UX Interaction Standards](UX_INTERACTION_STANDARDS.md). Read alongside [the context reconciliation](UX_CONTEXT_RECONCILIATION.md), [requirements](PROJECT_REQUIREMENTS.md) and [implementation proposal](COCKPIT_UX_IMPLEMENTATION_PLAN.md).
 
 ## 1. What we are trying to reduce
 

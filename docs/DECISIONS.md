@@ -928,3 +928,17 @@ PR #72/source `c822d04` implements schema-v44 immutable run/master binding, capt
 Continuation authorized implementation of the whole-reviewed-day contract. Default to the immutable original launch reference; offer a distinct higher orientation only when occurrence/position/state differs. The selected higher context is retrospective navigation within the run's original New York futures day, not an as-of observation or evidence-availability claim. It changes five higher contexts together and leaves sessions/90-minute input independently selected. Same-year quarter changes share the same yearly interpretation; separate occurrences keep independent heads.
 
 A deliberate legal phase choice commits maintained Observed plus an immutable run assessment and its exact bounded scope proof together. Store proof in the existing immutable receipt's version-2 envelope; the proposed extra metadata table is unnecessary. Schema v46 prevents older format readers from opening the database, while preserving all v45 rows and original v1 receipts without invented proof. Current-policy validation precedes new writes; retained archives/exact retries reconstruct original facts without today's higher resolver. The native Review editor restores valid per-run navigation separately from Lab state and cancels changed gestures. Developer implementation choices do not establish operator/final-renderer acceptance. See `AMDX_HIGHER_REVIEW_GUIDE.md`; checks 275–280 remain pending.
+
+## 2026-10-14 — Adopt cross-suite UX guardrails and chart-adjacent plan reference
+
+**Status:** Accepted.
+
+**Decision:** Apply the standards in `UX_INTERACTION_STANDARDS.md` across Cockpit workspaces. Salience is change- and task-driven; constraints prevent known invalid actions; meaning is redundantly encoded; workspaces have distinct task identities within one coherent interaction language. Watch gains a contextual Trade Plan definition/criteria/process reference at the chart-facing edge rather than another permanent panel.
+
+Any operator or developer proposal that appears to weaken accepted safety, accessibility, semantic clarity or low-friction behavior must be flagged with its concrete risk and alternatives before adoption. This review requirement is not an automatic veto, but prevents implicit supersession.
+
+**Rationale:** Manual chart interpretation benefits from immediate access to the governing rule at the point of discernment. The Cockpit should answer “What changed since my last glance?” and reduce dependence on memory rather than act as a static form. Cross-suite standards preserve both distinct operating modes and a coherent platform.
+
+**Consequences / deferred:** The standalone Watch prototype may test a fixture reference, but no prototype language becomes published Trade Plan policy. Native implementation, full criteria authoring/evaluation, light-theme delivery and final workspace identities remain later reviewed work.
+
+**Supersedes:** Refines earlier visual-color preferences: stable session colors remain useful identity cues, but accessibility and unambiguous operational semantics take precedence.

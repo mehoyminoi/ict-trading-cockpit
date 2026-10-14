@@ -515,3 +515,12 @@ PR #72/source `c822d04` implements schema-v44 immutable run/master binding, capt
 | Quarter color meanings unspecified | Operator supplies Q1/Asia yellow, Q2/London red, Q3/NYAM green, Q4/NYPM blue | Retained future temporal convention; no RGB/styling implementation |
 
 Read `UX_CONTEXT_RECONCILIATION.md` for source fingerprints, repeated 148-pass handoff/cumulative digest and evidence locators. Older branches, independent flat AMDX entry, smaller footprint and temporary pre-governance states are historical. Current v46/master-calendar/captured-context and published plan-policy boundaries remain authoritative. Renderer work is paused for this comparison; source/tests/tools, both walkthroughs/export and all smoke results are unchanged.
+
+## 2026-10-14 UX guardrail refinement
+
+| Earlier direction | Current resolution | Status |
+| --- | --- | --- |
+| Operator visual/layout preferences should strongly shape the Cockpit. | They remain first-class inputs, but neither operator nor developer suggestions silently override safety, accessibility, semantic clarity or accepted low-friction standards. A documented conflict review precedes adoption. | Refined, not rejected. |
+| Asia/Q1 yellow, London/Q2 red, NYAM/Q3 green and NYPM/Q4 blue should appear across relevant AMDX views. | Retain the palette where session identity is useful and pair it with labels/structure. Do not let it become color-only meaning or collide ambiguously with operational safe/warning/error/selection states. | Refined. |
+| Support detail should be hidden but easily reachable. | Manual Trade Plan definitions/criteria/process are contextual support at the chart-facing edge in Watch, not a permanent dashboard pane. Full authoring and evaluation stay in Lab / Trade Plan work. | Clarified. |
+| Major sections should feel compartmentalized. | Distinct task composition and hierarchy create mode identity; shared chrome, commands, status semantics and provenance retain suite cohesion. Different accent color alone is insufficient. | Clarified. |

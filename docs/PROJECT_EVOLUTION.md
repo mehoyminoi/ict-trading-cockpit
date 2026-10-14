@@ -4,6 +4,12 @@
 
 This is not the canonical requirements document. Current product truth belongs in `PROJECT_REQUIREMENTS.md`; exact implementation state belongs in `PROJECT_STATE.md`; durable accepted decisions belong in `DECISIONS.md`; conflicts/supersession belong in `DECISION_AUDIT.md`.
 
+## 2026-10-14 — UX investigation becomes cross-suite interaction governance
+
+Focused TDA, Lab and Watch trials produced a durable layer above individual layouts. The project accepted change-based earned salience, interruption recovery, constraint-based error prevention, redundant encoding and distinct workspace modes inside one cohesive interaction language. “What changed since my last glance?” became a cross-suite reacquisition test.
+
+Operator and developer suggestions remain important inputs but no longer silently supersede established safety, accessibility, semantic-clarity or low-friction principles; conflicts require an explicit risk/tradeoff review. Watch also gains a bounded chart-adjacent reference to versioned Trade Plan definitions, criteria and process for manual discernment. The reference is support, not another dashboard or a new policy owner. Full rule authoring/evaluation stays with Lab / Trade Plan work. Native implementation remains the next phase after this focused prototype review.
+
 ## Reading rule
 
 Later accepted decisions supersede earlier exploratory discussion unless a later decision explicitly preserves the earlier behavior.

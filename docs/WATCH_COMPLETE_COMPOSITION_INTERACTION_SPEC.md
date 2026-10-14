@@ -1,6 +1,6 @@
 # Complete Watch composition interaction specification
 
-**Status:** First complete Watch composition ready for operator review in the [standalone prototype](prototypes/watch-complete-composition-v0.html). This is a synthetic composition trial, not native implementation, broker integration, a published order workflow or final visual approval.
+**Status:** Complete Watch composition directionally accepted; a bounded chart-adjacent Trade Plan reference is ready for operator review in the [standalone prototype](prototypes/watch-complete-composition-v0.html). Read the [operator review](WATCH_COMPLETE_COMPOSITION_OPERATOR_REVIEW.md). This is a synthetic composition trial, not native implementation, broker integration, a published order workflow or final visual approval.
 
 Read with the [earlier Quiet Watch specification](WATCH_QUIET_SUPPORT_INTERACTION_SPEC.md), [operator review](WATCH_QUIET_SUPPORT_OPERATOR_REVIEW.md), [broader Study-first Lab review](LAB_STUDY_WORKBENCH_OPERATOR_REVIEW.md), [UX design touchstones](UX_DESIGN_TOUCHSTONES.md) and [workspace parity](WORKSPACE_PARITY.md).
 
@@ -20,6 +20,12 @@ The prototype uses four coordinated regions:
 4. **Process-safety strip.** Connection, environment/account, authorization, risk envelope, position and staged/submitted state remain adjacent and always visible. They are not optional support widgets.
 
 Study Find remains a contextual drawer. The main layout does not rearrange around support activity, and saving returns to the same Watch anchor.
+
+## Chart-adjacent Trade Plan reference
+
+The chart-facing edge now offers a concise definition/criteria/process reference for manual AMDX discernment. It follows the physical chart relationship: left-side popout when TradingView is left, bottom sheet when TradingView is below. It opens with one click or `P`, closes to the same Watch anchor and does not add a permanent dashboard pane.
+
+Prototype wording is explicitly a fixture, not an Alpha 0.7 published rule. The mature surface must resolve its content and provenance from the active versioned Trade Plan. Full definition authoring, comparison and empirical evaluation remain Lab / Trade Plan work. This interaction follows the accepted [cross-suite UX standards](UX_INTERACTION_STANDARDS.md).
 
 ## Quiet versus safety salience
 
@@ -85,7 +91,8 @@ Judge the composition at a normal 16:9 size before changing profiles.
 5. Capture a Study Find, close/reopen its draft, then save. Confirm the same Watch anchor, thesis, AMDX position and safety scenario remain.
 6. Open the AMDX lens preview and return using the command in the same ribbon position. Confirm this feels like nearby context rather than a process transition.
 7. Switch between **Ultrawide · TV left** and **Dedicated · TV below**. Look toward the imagined chart location and back; judge whether the moved orientation edge is useful or merely duplicative.
-8. Reload and confirm profile, scenario, AMDX choice and unfinished Study Find draft are recoverable.
+8. Open **Plan reference** from the chart-facing edge or press `P`. Confirm its definition, process, criteria and provenance are easy to consult while moving between the imagined chart and Cockpit; close it and retain the same Watch state.
+9. Reload and confirm profile, scenario, AMDX choice and unfinished Study Find draft are recoverable.
 
 Record where attention goes first, what still requires deliberate reading, whether any quiet fact competes with the next action, whether the safety strip is sufficient, and which monitor profile should be the standard default.
 
@@ -93,4 +100,4 @@ Record where attention goes first, what still requires deliberate reading, wheth
 
 This trial may accept the complete Watch relationship and one or both orientation profiles while rejecting exact geometry, typography, labels, sample content or scenario controls.
 
-After review, choose the smallest native composition slice spanning already implemented ownership. A likely first boundary is read-only shell/orientation plus Study-first routing and current Watch projection, retaining all existing tabs as fallback. Direct broker commands, execution simulation and broad shell replacement remain later milestones.
+After the bounded chart-edge reference review, choose the smallest native composition slice spanning already implemented ownership. A likely first boundary is read-only shell/orientation plus Study-first routing and current Watch projection, retaining all existing tabs as fallback. Direct broker commands, execution simulation and broad shell replacement remain later milestones.
