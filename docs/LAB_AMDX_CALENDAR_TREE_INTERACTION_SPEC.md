@@ -1,6 +1,6 @@
 # Lab AMDX calendar and feature-tree interaction specification
 
-**Status:** Proposed focused investigation. No renderer, native implementation or AMDX interpretation is accepted by this document.
+**Status:** Focused investigation ready for operator review. Use the [disposable standalone prototype](prototypes/lab-amdx-calendar-tree-v0.html). No renderer, native implementation or AMDX interpretation is accepted by this document.
 
 Read with the [Quiet Watch operator review](WATCH_QUIET_SUPPORT_OPERATOR_REVIEW.md), [workspace parity](WORKSPACE_PARITY.md), [UX design touchstones](UX_DESIGN_TOUCHSTONES.md) and [Cockpit UX implementation plan](COCKPIT_UX_IMPLEMENTATION_PLAN.md).
 
@@ -86,6 +86,20 @@ The operator's current Trilium hierarchy validates disclosure-based containment 
 Use a synthetic MNQ calendar containing at least two years, a cross-month week, all four sessions, four 90-minute cycles, Expected and Observed entries, one unresolved `X`, one unavailable reference and a small set of explicitly incomplete news snapshots. The fixture must be disposable and must not open or migrate the operator database.
 
 The focused review may accept the tree/workspace relationship while rejecting exact sizing, icons, palette, labels, gestures or calendar density. It cannot establish final criteria, news policy, broker behavior, native performance, historical import throughput or production readiness.
+
+## Goal-based operator review
+
+Use the prototype at a normal 16:9 size. These are orientation goals rather than a script that must be memorized.
+
+1. Start at the October month view. Identify the selected year/quarter/month path, the selected week and the current 90-minute reference without expanding every branch.
+2. Move from October into the selected week, Tuesday, NYAM and the 10:30–12:00 cycle using the tree, the center workspace or **Zoom in**. Confirm all three regions describe the same selection.
+3. Use **Zoom out**, **Previous** and **Next** once. Judge whether the hierarchy changes shape meaningfully rather than merely becoming a larger or smaller list.
+4. Switch between Expected and Observed. On a quarter-bearing target, make one legal direct role entry and confirm the compatible quartet changes immediately without another Save.
+5. Select 2025. Confirm the unavailable source is explicit and that the interface does not borrow or guess a role.
+6. Pin any historical level, then choose **Follow current**. Confirm the selection returns to NYAM 10:30–12:00 without implying that the clock edited the historical target.
+7. Reload the file. Confirm the selected location, semantic channel and any prototype revision remain understandable.
+
+Record whether the tree supplied orientation without taking over the screen, whether the month/week/day/session projections reduced reading effort, whether the detail rail felt adjacent rather than detached, and whether returning from another monitor would require reacquisition or reconstruction. Comments on exact tree width, calendar density, labels, controls and styling remain provisional.
 
 ## Follow-on relationship to Watch
 
