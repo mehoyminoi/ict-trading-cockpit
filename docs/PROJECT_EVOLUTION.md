@@ -540,3 +540,7 @@ At the operator's request, UI work remains paused for distinct professional-meth
 ## 2026-10-13 — Layout parity and design touchstones preserved
 
 The operator clarifies that the four-pane TDA Deck is more than an overview: it maps positionally to the four-pane TradingView layout so both monitors can be read like facing pages while capturing criteria and points of interest. `WORKSPACE_PARITY.md` now makes that mapping, shared Focus/Deck state and revision ownership explicit. `UX_DESIGN_TOUCHSTONES.md` retains the compact phrases and motifs that carry product meaning and supplies cross-examination questions for future proposals. This documentation checkpoint changes no renderer or production behavior.
+
+## 2026-10-13 — Focused TDA layout-parity review artifact
+
+`TDA_LAYOUT_PARITY_INTERACTION_SPEC.md` turns the accepted parity principle into a reviewable journey. Its standalone HTML pairs a schematic four-pane TradingView monitor with the position-matched Cockpit Deck, then demonstrates mapped station Focus, Action/Observe/Carry Forward, shared state, return without completion, explicit completion and disposable reload persistence. Automated browser assertions cover the principal interaction, and Deck/Focus were inspected at 1600×900. This remains a disposable proposal rather than native UI or operator acceptance.

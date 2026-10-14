@@ -6,6 +6,8 @@
 
 **Research discussion — 2026-10-13:** [UX friction research](UX_FRICTION_RESEARCH.md) adds professional methods, proposed UX-F01–F12 quality criteria and a future news/calendar/quarter-stack presentation direction. Discuss these with the reconciled task journeys before choosing controls or proceeding with a native slice. The original layout and UX1–UX4 sequence remain proposals; no renderer revision is implemented by this checkpoint.
 
+**Focused interaction review — 2026-10-13:** [TDA layout parity](TDA_LAYOUT_PARITY_INTERACTION_SPEC.md) is the first corrected journey specification. Its [standalone prototype](prototypes/tda-layout-parity-v0.html) tests four-pane TradingView-to-Cockpit correspondence, mapped Deck → Focus → unchanged Deck return, shared station work and quiet inactive panes. It is narrower than the rejected whole-cockpit walkthrough and does not accept final styling, TDA content, controls or native implementation.
+
 **Verified baseline:** main `6aa8d4ec990d8d371440271278bbb7368f186a64`, schema v46, Trade Plan Alpha 0.7. AMDX PRs #67–75 are merged. The integrated code tree retains 1,136 PASS across 89 isolated modules and operator PASS for checks 261–280. This planning checkpoint changes documentation only; it introduces no schema, plan, runtime or smoke-result change.
 
 ## 1. What this screen is for

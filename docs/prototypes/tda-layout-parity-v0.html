@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ICT Cockpit · TDA Layout Parity v0</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0c1016;
+      --surface: #131a23;
+      --surface-2: #18212d;
+      --surface-3: #202b38;
+      --line: #344254;
+      --line-soft: #253140;
+      --text: #e7edf5;
+      --muted: #9caabc;
+      --quiet: #738195;
+      --accent: #72b5e8;
+      --accent-soft: #17364d;
+      --complete: #78c7a3;
+      --progress: #e7c372;
+      --danger: #de827d;
+      --shadow: 0 18px 50px rgba(0,0,0,.26);
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); font: 14px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    button, textarea, input { font: inherit; }
+    button { color: inherit; }
+    body { min-width: 960px; }
+    .app { min-height: 100vh; display: grid; grid-template-rows: auto auto 1fr; }
+    .topbar { min-height: 58px; padding: 9px 18px; display: flex; align-items: center; gap: 18px; border-bottom: 1px solid var(--line-soft); background: #0f151d; }
+    .brand { min-width: 245px; }
+    .brand strong { display: block; font-size: 15px; letter-spacing: .02em; }
+    .brand span { color: var(--muted); font-size: 12px; }
+    .mode { padding: 7px 10px; border-radius: 7px; background: var(--accent-soft); color: #bfe2fb; font-weight: 650; }
+    .top-context { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+    .top-context b { color: var(--text); font-weight: 600; }
+    .top-actions { margin-left: auto; display: flex; gap: 8px; }
+    .btn { border: 1px solid var(--line); background: var(--surface-2); padding: 8px 12px; border-radius: 8px; cursor: pointer; }
+    .btn:hover { border-color: #60738b; background: var(--surface-3); }
+    .btn.primary { background: #1e5277; border-color: #367daf; }
+    .btn.primary:hover { background: #27668f; }
+    .btn.ghost { background: transparent; }
+    .btn.danger { color: #f0aaa6; }
+    .key { display: inline-block; min-width: 21px; padding: 1px 5px; margin-left: 5px; text-align: center; border: 1px solid #536174; border-bottom-width: 2px; border-radius: 5px; color: #c8d2df; font-size: 11px; }
+    .ribbon { padding: 8px 18px; display: flex; gap: 8px; align-items: center; border-bottom: 1px solid var(--line-soft); background: #111821; }
+    .ribbon-label { margin-right: 5px; color: var(--quiet); font-size: 11px; text-transform: uppercase; letter-spacing: .12em; }
+    .ribbon .btn[aria-pressed="true"] { background: var(--accent-soft); border-color: #417aa2; color: #d5efff; }
+    .spacer { flex: 1; }
+    .status-line { color: var(--muted); font-size: 12px; }
+    main { min-height: 0; padding: 16px 18px 20px; }
+    .view { height: 100%; }
+    .hidden { display: none !important; }
+    .deck-layout { height: 100%; min-height: 620px; display: grid; grid-template-columns: minmax(390px, .88fr) minmax(500px, 1.12fr); gap: 16px; }
+    .monitor { min-height: 0; display: grid; grid-template-rows: auto 1fr; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); overflow: hidden; }
+    .monitor-header { padding: 11px 13px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--line-soft); background: #161e28; }
+    .monitor-header strong { font-size: 14px; }
+    .monitor-header span { color: var(--muted); font-size: 12px; }
+    .monitor-header .tag { margin-left: auto; padding: 3px 7px; border: 1px solid var(--line); border-radius: 999px; color: var(--quiet); }
+    .pane-grid { min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 8px; padding: 8px; background: #0e141b; }
+    .chart-pane, .station-pane { position: relative; min-height: 240px; overflow: hidden; border: 1px solid var(--line-soft); border-radius: 9px; background: var(--surface-2); transition: border-color .15s, box-shadow .15s, background .15s; }
+    .chart-pane.mapped, .station-pane.selected { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent), 0 0 0 1px rgba(114,181,232,.18); }
+    .chart-pane { padding: 11px; }
+    .chart-head, .station-head { display: flex; gap: 8px; align-items: flex-start; }
+    .slot { flex: 0 0 auto; width: 25px; height: 25px; display: grid; place-items: center; border-radius: 6px; background: #2a3747; color: #dce7f2; font-weight: 700; font-size: 12px; }
+    .chart-pane.mapped .slot, .station-pane.selected .slot { background: #276b98; }
+    .chart-name, .station-name { font-weight: 650; }
+    .position { color: var(--muted); font-size: 11px; }
+    .chart-meta { margin-top: 10px; color: var(--muted); font-size: 12px; }
+    .chart-art { position: absolute; inset: 72px 10px 12px; opacity: .74; }
+    .chart-art svg { width: 100%; height: 100%; }
+    .grid-line { stroke: #344252; stroke-width: 1; opacity: .55; }
+    .price-line { fill: none; stroke: #83bfe8; stroke-width: 2.5; vector-effect: non-scaling-stroke; }
+    .level { stroke: #cba968; stroke-width: 1.2; stroke-dasharray: 5 5; vector-effect: non-scaling-stroke; opacity: .8; }
+    .station-pane { width: 100%; padding: 12px; text-align: left; color: inherit; cursor: pointer; }
+    .station-pane:hover { border-color: #60738b; background: #1b2633; }
+    .station-title { min-width: 0; flex: 1; }
+    .state { flex: 0 0 auto; padding: 3px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--quiet); font-size: 11px; }
+    .state.in_progress { color: var(--progress); border-color: #75643a; background: #292519; }
+    .state.complete { color: var(--complete); border-color: #376c59; background: #172820; }
+    .station-question { margin: 14px 0 8px; color: #cfd8e3; }
+    .station-role { color: var(--muted); font-size: 12px; }
+    .conclusion { position: absolute; left: 12px; right: 12px; bottom: 12px; padding-top: 9px; border-top: 1px solid var(--line-soft); color: var(--muted); font-size: 12px; }
+    .conclusion b { color: #dbe5ef; font-weight: 600; }
+    .empty { color: #667589; font-style: italic; }
+    .focus-layout { height: 100%; min-height: 620px; display: grid; grid-template-columns: minmax(285px, .36fr) minmax(570px, .64fr); gap: 16px; }
+    .focus-map { display: grid; grid-template-rows: auto auto 1fr; gap: 12px; min-height: 0; }
+    .focus-card, .focus-work { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
+    .focus-card { padding: 14px; }
+    .focus-card h2, .focus-work h1 { margin: 0; }
+    .focus-card h2 { font-size: 15px; }
+    .focus-card p { margin: 7px 0 0; color: var(--muted); }
+    .mini-map { min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 7px; }
+    .mini { min-height: 100px; padding: 9px; border: 1px solid var(--line-soft); border-radius: 8px; background: var(--surface-2); color: var(--muted); cursor: pointer; text-align: left; }
+    .mini:hover { border-color: #60738b; }
+    .mini.selected { border-color: var(--accent); background: var(--accent-soft); color: #d9ecfa; }
+    .mini strong { display: block; color: inherit; }
+    .focus-work { min-height: 0; display: grid; grid-template-rows: auto 1fr auto; overflow: hidden; }
+    .focus-header { padding: 17px 19px 14px; border-bottom: 1px solid var(--line-soft); background: #161e28; }
+    .eyebrow { color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: .13em; }
+    .focus-work h1 { margin-top: 4px; font-size: 22px; }
+    .focus-sub { margin-top: 5px; color: var(--muted); }
+    .focus-body { min-height: 0; overflow: auto; padding: 18px 19px; }
+    .section { margin-bottom: 20px; }
+    .section h3 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
+    .action-list { display: grid; gap: 7px; }
+    .action { display: flex; gap: 9px; align-items: flex-start; padding: 9px 10px; border: 1px solid var(--line-soft); border-radius: 8px; background: var(--surface-2); }
+    .action input { margin-top: 3px; accent-color: #4f9dd1; }
+    textarea { width: 100%; min-height: 105px; resize: vertical; padding: 10px 11px; border: 1px solid var(--line); border-radius: 8px; outline: none; background: #0f151d; color: var(--text); }
+    textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(114,181,232,.13); }
+    .focus-footer { padding: 12px 19px; display: flex; gap: 9px; align-items: center; border-top: 1px solid var(--line-soft); background: #111821; }
+    .focus-footer .btn.primary { margin-left: auto; }
+    .autosave { color: var(--quiet); font-size: 11px; }
+    .mapping-note { padding: 10px 11px; border-left: 3px solid var(--accent); background: var(--accent-soft); color: #cfe8fa; }
+    .toast { position: fixed; right: 22px; bottom: 20px; padding: 10px 13px; border: 1px solid #51718a; border-radius: 8px; background: #172534; box-shadow: var(--shadow); opacity: 0; transform: translateY(8px); pointer-events: none; transition: .18s; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    @media (max-width: 1150px) {
+      body { min-width: 820px; }
+      .deck-layout { grid-template-columns: .8fr 1.2fr; }
+      .chart-pane, .station-pane { min-height: 220px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><strong>ICT Trading Cockpit</strong><span>TDA layout parity · interaction study v0</span></div>
+      <div class="mode">PROCESS · TDA</div>
+      <div class="top-context">Deck <b>1 · Higher-Timeframe Context</b></div>
+      <div class="top-actions">
+        <button class="btn ghost" id="helpBtn">Keys</button>
+        <button class="btn ghost danger" id="resetBtn">Reset prototype</button>
+      </div>
+    </header>
+    <nav class="ribbon" aria-label="TDA view controls">
+      <span class="ribbon-label">View</span>
+      <button class="btn" id="deckBtn" aria-pressed="true">Mapped Deck <span class="key">D</span></button>
+      <button class="btn" id="focusBtn" aria-pressed="false">Selected Focus</button>
+      <span class="ribbon-label" style="margin-left:12px">Mapped station</span>
+      <button class="btn slotBtn" data-slot="0">1</button>
+      <button class="btn slotBtn" data-slot="1">2</button>
+      <button class="btn slotBtn" data-slot="2">3</button>
+      <button class="btn slotBtn" data-slot="3">4</button>
+      <span class="spacer"></span>
+      <span class="status-line" id="progressText"></span>
+    </nav>
+    <main>
+      <section class="view" id="deckView">
+        <div class="deck-layout">
+          <article class="monitor">
+            <header class="monitor-header"><strong>TRADINGVIEW · schematic</strong><span>TDA / Higher-Timeframe Context</span><span class="tag">external visual surface</span></header>
+            <div class="pane-grid" id="chartGrid"></div>
+          </article>
+          <article class="monitor">
+            <header class="monitor-header"><strong>COCKPIT · mapped Deck</strong><span>same positions · same reading order</span><span class="tag">process + retained meaning</span></header>
+            <div class="pane-grid" id="stationGrid"></div>
+          </article>
+        </div>
+      </section>
+      <section class="view hidden" id="focusView">
+        <div class="focus-layout">
+          <aside class="focus-map">
+            <div class="focus-card"><h2>Mapped chart target</h2><p id="focusMapSummary"></p></div>
+            <div class="mapping-note">Focus expands one operation. The four-pane map stays available here as a quiet spatial index.</div>
+            <div class="mini-map" id="miniMap"></div>
+          </aside>
+          <article class="focus-work">
+            <header class="focus-header">
+              <div class="eyebrow" id="focusEyebrow"></div>
+              <h1 id="focusTitle"></h1>
+              <div class="focus-sub" id="focusSub"></div>
+            </header>
+            <div class="focus-body">
+              <section class="section"><h3>Question</h3><div id="focusQuestion"></div></section>
+              <section class="section"><h3>Action · perform on mapped chart</h3><div class="action-list" id="actionList"></div></section>
+              <section class="section"><h3>Observe · what do you see?</h3><textarea id="observation" placeholder="Record the factual observation from the mapped TradingView pane."></textarea></section>
+              <section class="section"><h3>Carry forward · what must survive?</h3><textarea id="carry" placeholder="Keep the conclusion that later stations and Watch need."></textarea></section>
+            </div>
+            <footer class="focus-footer">
+              <button class="btn" id="previousBtn">← Previous <span class="key">[</span></button>
+              <button class="btn" id="returnBtn">Return to mapped Deck <span class="key">D</span></button>
+              <span class="autosave">Disposable prototype · autosaved locally</span>
+              <button class="btn primary" id="completeBtn">Mark complete &amp; next <span class="key">Ctrl↵</span></button>
+            </footer>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script>
+    (() => {
+      const STORAGE_KEY = 'ict-tda-layout-parity-v0';
+      const definitions = [
+        {slot:1, position:'Top left', station:'Range Position', chart:'IPDA 20 / 40 / 60 P-D', question:'Where is price within the relevant dealing ranges?', role:'Dedicated premium / discount chart pane', actions:['Confirm instrument and historical/live reference','Mark the relevant 20 / 40 / 60 day ranges','Identify the current premium / discount location']},
+        {slot:2, position:'Top right', station:'Monthly Liquidity', chart:'Monthly H / L / wick CE', question:'Which nearby monthly points of interest matter now?', role:'Monthly liquidity and wick consequent-encroachment pane', actions:['Mark the nearest monthly high and low','Mark relevant monthly wick CE levels','Identify the nearest meaningful monthly draw']},
+        {slot:3, position:'Bottom left', station:'Weekly Context', chart:'Weekly context / draw', question:'What is the weekly directional context and draw?', role:'Weekly context pane with only required arrays', actions:['Mark the active weekly range','Identify unmitigated weekly liquidity','Record the weekly draw and invalidation context']},
+        {slot:4, position:'Bottom right', station:'Daily Context', chart:'Daily context / draw', question:'What is the daily context and primary draw?', role:'Daily context pane paired to the final station in this deck', actions:['Mark the current daily range and open','Identify relevant daily liquidity','Record the daily draw carried into synthesis']}
+      ];
+      const blank = () => definitions.map(d => ({actions:d.actions.map(() => false), observation:'', carry:'', complete:false}));
+      let state = {selected:0, view:'deck', stations:blank()};
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+        if (saved && Array.isArray(saved.stations) && saved.stations.length === 4) state = {...state, ...saved};
+      } catch (_) {}
+      const $ = id => document.getElementById(id);
+      const chartGrid=$('chartGrid'), stationGrid=$('stationGrid'), miniMap=$('miniMap');
+      function stationState(i) {
+        const s=state.stations[i];
+        if (s.complete) return 'complete';
+        if (s.observation.trim() || s.carry.trim() || s.actions.some(Boolean)) return 'in_progress';
+        return 'pending';
+      }
+      function stateLabel(v) { return v==='complete'?'✓ Complete':v==='in_progress'?'◐ In progress':'○ Pending'; }
+      function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+      function escapeHtml(v) { return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+      function chartSvg(i) {
+        const shapes=[
+          'M0 74 C18 70,28 42,44 48 S72 88,91 55 S120 24,145 33 S174 76,200 41',
+          'M0 63 C20 72,33 54,49 60 S82 23,104 36 S131 72,151 58 S180 31,200 39',
+          'M0 77 C18 61,33 70,50 51 S83 31,105 48 S130 69,151 42 S180 29,200 20',
+          'M0 47 C18 34,36 62,55 54 S83 79,104 50 S135 25,157 37 S182 62,200 46'
+        ];
+        return `<svg viewBox="0 0 200 100" preserveAspectRatio="none" aria-hidden="true"><path class="grid-line" d="M0 25H200M0 50H200M0 75H200M50 0V100M100 0V100M150 0V100"/><path class="level" d="M0 ${i%2?30:36}H200M0 ${i%2?72:68}H200"/><path class="price-line" d="${shapes[i]}"/></svg>`;
+      }
+      function renderDeck() {
+        chartGrid.innerHTML=definitions.map((d,i)=>`<div class="chart-pane ${i===state.selected?'mapped':''}" data-slot="${i}"><div class="chart-head"><span class="slot">${d.slot}</span><div><div class="chart-name">${escapeHtml(d.chart)}</div><div class="position">${d.position}</div></div></div><div class="chart-meta">Mapped to Cockpit · ${escapeHtml(d.station)}</div><div class="chart-art">${chartSvg(i)}</div></div>`).join('');
+        stationGrid.innerHTML=definitions.map((d,i)=>{const st=stationState(i), carry=state.stations[i].carry.trim();return `<button class="station-pane ${i===state.selected?'selected':''}" data-slot="${i}"><div class="station-head"><span class="slot">${d.slot}</span><div class="station-title"><div class="station-name">${escapeHtml(d.station)}</div><div class="position">${d.position} · ${escapeHtml(d.chart)}</div></div><span class="state ${st}">${stateLabel(st)}</span></div><div class="station-question">${escapeHtml(d.question)}</div><div class="station-role">${escapeHtml(d.role)}</div><div class="conclusion">Carry forward · ${carry?`<b>${escapeHtml(carry)}</b>`:'<span class="empty">Nothing recorded</span>'}</div></button>`}).join('');
+        stationGrid.querySelectorAll('.station-pane').forEach(el=>el.addEventListener('click',()=>openFocus(Number(el.dataset.slot))));
+        chartGrid.querySelectorAll('.chart-pane').forEach(el=>el.addEventListener('click',()=>selectOnly(Number(el.dataset.slot))));
+      }
+      function renderMiniMap() {
+        miniMap.innerHTML=definitions.map((d,i)=>`<button class="mini ${i===state.selected?'selected':''}" data-slot="${i}"><strong>${d.slot} · ${escapeHtml(d.station)}</strong>${d.position}<br>${stateLabel(stationState(i))}</button>`).join('');
+        miniMap.querySelectorAll('.mini').forEach(el=>el.addEventListener('click',()=>openFocus(Number(el.dataset.slot))));
+      }
+      function renderFocus() {
+        const i=state.selected,d=definitions[i],s=state.stations[i];
+        $('focusMapSummary').textContent=`${d.slot} · ${d.position} ↔ ${d.chart}`;
+        $('focusEyebrow').textContent=`Mapped pane ${d.slot} · ${d.position} · ${stateLabel(stationState(i))}`;
+        $('focusTitle').textContent=d.station;
+        $('focusSub').textContent=`TradingView role · ${d.role}`;
+        $('focusQuestion').textContent=d.question;
+        $('actionList').innerHTML=d.actions.map((a,n)=>`<label class="action"><input type="checkbox" data-action="${n}" ${s.actions[n]?'checked':''}><span>${escapeHtml(a)}</span></label>`).join('');
+        $('actionList').querySelectorAll('input').forEach(el=>el.addEventListener('change',e=>{s.actions[Number(e.target.dataset.action)]=e.target.checked;persistAndRender();}));
+        $('observation').value=s.observation;
+        $('carry').value=s.carry;
+        renderMiniMap();
+      }
+      function renderChrome() {
+        $('deckView').classList.toggle('hidden',state.view!=='deck');
+        $('focusView').classList.toggle('hidden',state.view!=='focus');
+        $('deckBtn').setAttribute('aria-pressed',String(state.view==='deck'));
+        $('focusBtn').setAttribute('aria-pressed',String(state.view==='focus'));
+        document.querySelectorAll('.slotBtn').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===state.selected)));
+        const completed=state.stations.filter(s=>s.complete).length;
+        $('progressText').textContent=`${completed}/4 complete · selected ${state.selected+1} ${definitions[state.selected].position}`;
+      }
+      function render() { renderChrome(); renderDeck(); renderFocus(); }
+      function persistAndRender() { save(); render(); }
+      function selectOnly(i) { state.selected=i; persistAndRender(); showToast(`Mapped pair ${i+1} selected`); }
+      function openFocus(i) { state.selected=i; state.view='focus'; persistAndRender(); }
+      function returnDeck() { state.view='deck'; persistAndRender(); }
+      function move(delta) { state.selected=(state.selected+delta+definitions.length)%definitions.length; if(state.view==='focus') persistAndRender(); else selectOnly(state.selected); }
+      function completeAndNext() { state.stations[state.selected].complete=true; if(state.selected<3) state.selected+=1; state.view='focus'; persistAndRender(); showToast('Station completion recorded in prototype'); }
+      let toastTimer;
+      function showToast(message) { const t=$('toast');t.textContent=message;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1800); }
+      $('observation').addEventListener('input',e=>{state.stations[state.selected].observation=e.target.value;save();renderDeck();renderMiniMap();renderChrome();});
+      $('carry').addEventListener('input',e=>{state.stations[state.selected].carry=e.target.value;save();renderDeck();renderMiniMap();renderChrome();});
+      $('deckBtn').addEventListener('click',returnDeck);
+      $('focusBtn').addEventListener('click',()=>openFocus(state.selected));
+      document.querySelectorAll('.slotBtn').forEach(el=>el.addEventListener('click',()=>openFocus(Number(el.dataset.slot))));
+      $('returnBtn').addEventListener('click',returnDeck);
+      $('previousBtn').addEventListener('click',()=>move(-1));
+      $('completeBtn').addEventListener('click',completeAndNext);
+      $('helpBtn').addEventListener('click',()=>alert('Prototype keys\n\nD  Return to mapped Deck\n1–4  Open mapped station in Focus\n[ / ]  Previous / next station\nCtrl+Enter  Mark complete & next\n\nNavigation never completes a station.'));
+      $('resetBtn').addEventListener('click',()=>{if(confirm('Reset only this standalone prototype state?')){localStorage.removeItem(STORAGE_KEY);state={selected:0,view:'deck',stations:blank()};render();showToast('Prototype reset');}});
+      window.addEventListener('keydown',e=>{
+        if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();completeAndNext();return;}
+        if(e.target.matches('textarea,input')) return;
+        if(e.key.toLowerCase()==='d'){e.preventDefault();returnDeck();}
+        else if(/^[1-4]$/.test(e.key)){e.preventDefault();openFocus(Number(e.key)-1);}
+        else if(e.key==='['){e.preventDefault();move(-1);}
+        else if(e.key===']'){e.preventDefault();move(1);}
+      });
+      render();
+    })();
+  </script>
+</body>
+</html>
