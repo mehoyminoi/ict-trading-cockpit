@@ -1,6 +1,6 @@
 # Lab AMDX calendar and feature-tree interaction specification
 
-**Status:** The first three iterations are reviewed as useful directions; a fourth cross-layer color-policy iteration is ready for operator review in the same [disposable standalone prototype](prototypes/lab-amdx-calendar-tree-v0.html). See the [operator review](LAB_AMDX_CALENDAR_TREE_OPERATOR_REVIEW.md). The full AMDX Lab form, renderer, native implementation and AMDX interpretation remain unaccepted.
+**Status:** Directional checkpoint accepted after four iterations; isolated polishing is concluded. The [standalone prototype](prototypes/lab-amdx-calendar-tree-v0.html) is retained as reference, and the [operator review](LAB_AMDX_CALENDAR_TREE_OPERATOR_REVIEW.md) records the precise acceptance boundary. The full AMDX Lab product, renderer, native implementation and AMDX interpretation remain unaccepted until evaluated in integrated use.
 
 Read with the [Quiet Watch operator review](WATCH_QUIET_SUPPORT_OPERATOR_REVIEW.md), [workspace parity](WORKSPACE_PARITY.md), [UX design touchstones](UX_DESIGN_TOUCHSTONES.md) and [Cockpit UX implementation plan](COCKPIT_UX_IMPLEMENTATION_PLAN.md).
 
@@ -122,4 +122,18 @@ Record whether the tree supplied orientation without taking over the screen, whe
 ## Follow-on relationship to Watch
 
 Only after the Lab spatial model is understood should Watch receive its compact derivative: a quiet current path, current session and active 90-minute detail, with one action into the fuller tree/workspace. Watch must not reproduce the complete Lab tree, history or comparison controls.
+
+## Checkpoint handoff
+
+The initial spatial model is now understood well enough to stop iterating in isolation. Carry these decisions into broader Lab composition:
+
+- tree/workspace/support-rail as a coordinated relationship, not a fixed final geometry;
+- calendar Quiet/Nested/Deep as the accepted density direction;
+- neutral hierarchy with restrained named-session color shared with chart indicators;
+- AMDX Calendar as one Lab lens inside a Study-first workbench;
+- true-open facts in context, with temporally relevant reminders owned by TDA;
+- truthful unavailable history and one shared maintained calendar;
+- unresolved temporal zoom to be revisited only in a realistic integrated workflow.
+
+The next trial should compose AMDX with competency/question guidance, chart evidence and Study Finds, criteria/definition work, historical/forward samples and routes to TDA, Watch and Review. It should not attempt another AMDX-only polish pass.
 

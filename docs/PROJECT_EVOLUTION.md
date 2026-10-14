@@ -591,3 +591,11 @@ The third review finds the calendar's Quiet/Nested/Deep distinction materially b
 The fourth trial removes generic quarter color from tree marks, higher-level groups, quartet cards, compact stacks and the detail profile. Text/order/grouping carry Q1–Q4; selection, current reference, unavailable data, news and entered/implied states retain their own cues. Only the four named Trading Day session cards retain a restrained palette edge as a provisional test of stable domain identity. Increasing context depth adds information, not saturation.
 
 This records partial acceptance precisely: the calendar depth model advances, while the overall workspace, remaining color policy, temporal zoom, controls and native composition stay open. No production source, schema, persistence or smoke records change.
+
+## 2026-10-14 — Isolated AMDX Lab direction checkpointed
+
+The operator confirms that the initial direction questions are satisfied and agrees to stop polishing the standalone AMDX Lab fixture. Quiet/Nested/Deep calendar density, neutral hierarchy and restrained session color carry forward. The session palette earns its place because it matches established Asia/London/NYAM/NYPM chart indicators and can aid cross-monitor recognition.
+
+This is a directional checkpoint rather than full/final approval. Real historical editing, temporal movement, definitions/evidence/news/Study Find use, broader Lab composition, TDA/Watch/Review integration, native input and monitor layouts still determine the mature result. The unresolved zoom interaction is deferred until an integrated workflow makes the problem concrete.
+
+The active design frontier now moves outward: compose a Study-first Lab that can coordinate competency/question guidance, chart evidence and Study Finds, criteria/definition research, historical and forward samples, and transitions to the other Cockpit workbenches. AMDX Calendar remains foundational but is one lens, not the identity of Lab.

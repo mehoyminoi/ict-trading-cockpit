@@ -1,8 +1,8 @@
 # Lab AMDX calendar and feature-tree operator review
 
 **Reviewed:** 2026-10-14 (America/Denver)  
-**Artifact reviewed:** `prototypes/lab-amdx-calendar-tree-v0.html`, first through third iterations; the same file now contains the unreviewed fourth iteration
-**Disposition:** Successful direction with continuing multiscale refinement. The three-pane relationship and calendar Quiet/Nested/Deep configuration are retained; cross-layer visual hierarchy, final AMDX Lab form and temporal zoom remain open.
+**Artifact reviewed:** `prototypes/lab-amdx-calendar-tree-v0.html`, first through fourth iterations
+**Disposition:** Directional checkpoint accepted and isolated polishing concluded. The initial AMDX Lab direction is satisfied; final AMDX Lab approval remains an integrated-product milestone.
 
 ## Directional successes
 
@@ -107,4 +107,12 @@ Color without an operational job remains in the tree, higher-level groups, gener
 The fourth iteration therefore neutralizes generic Q1–Q4 color across the tree and other layers. It retains only a restrained identity edge on the four explicitly named Trading Day session cards as a focused test of the established Asia/London/NYAM/NYPM palette. That exception is also provisional.
 
 The remainder of AMDX Lab still does not feel final. Do not translate “good start” into acceptance of the complete workspace, zoom behavior, control arrangement, density, visual language or native composition.
+
+## Fourth-iteration checkpoint acceptance
+
+The operator confirms that the initial direction questions are satisfied. The calendar's Quiet/Nested/Deep distinction, neutral hierarchy, three-pane relationship, familiar calendar navigation, higher-timeframe context and truthful missing-state behavior are sufficient to carry forward. Retaining restrained color for the four named daily sessions is accepted because the same stable Asia/London/NYAM/NYPM palette already appears in the operator's chart indicators and therefore supports cross-monitor recognition.
+
+This is approval to stop polishing the isolated AMDX Lab prototype and continue with other areas. It is not full and final approval of AMDX Lab. The complete form remains subject to historical backfill/editing, real data, temporal movement, definitions/evidence/news/Study Find workflows, broader Lab composition, TDA/Watch/Review integration, native input and monitor-layout use.
+
+The standalone prototype is now a retained design checkpoint. Reopen it only when a broader integrated composition exposes a concrete question that cannot be evaluated in context.
 
