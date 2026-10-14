@@ -1,8 +1,8 @@
 # Lab AMDX calendar and feature-tree operator review
 
 **Reviewed:** 2026-10-14 (America/Denver)  
-**Artifact reviewed:** `prototypes/lab-amdx-calendar-tree-v0.html`, first iteration; the same file now contains the unreviewed second iteration  
-**Disposition:** Successful direction with a required multiscale refinement. The three-pane relationship is retained; the first higher-level canvases are not accepted as sufficient.
+**Artifact reviewed:** `prototypes/lab-amdx-calendar-tree-v0.html`, first and second iterations; the same file now contains the unreviewed third iteration
+**Disposition:** Successful direction with continuing multiscale refinement. The three-pane relationship and Quiet/Nested/Deep configuration are retained; exact hierarchy encoding and temporal zoom remain open.
 
 ## Directional successes
 
@@ -64,4 +64,32 @@ The lens should therefore be named in the shell. Future lenses can share the tre
 This review accepts the three-pane relationship, Follow Current, truthful missing-state behavior and real month-calendar direction. It does not accept final density, calendar controls, tree width, higher-level rendering, true-open workflow, descendant encoding, styling or native implementation.
 
 The next trial may test the refinements above without creating production persistence, a true-open repository, a market-data feed, new news acquisition or a final Lab navigation system.
+
+## Second-iteration operator review
+
+The Quiet/Nested/Deep distinction is a good configuration even though the content at each depth still needs refinement. Month/year controls and the higher-timeframe breadcrumb/context spine are useful. The following corrections govern the third iteration.
+
+### Meaning before color
+
+The colored Q1–Q4 borders across every day in a monthly row add ordinal color without adding enough analytical meaning. They are removed from the month projection. Month weeks should instead be divided spatially with a light neutral rail at the left:
+
+- **Quiet:** physical week grouping only; no weekly or daily AMDX labels;
+- **Nested:** neutral week heading with its actual quartet value plus compact daily quartet values;
+- **Deep:** the same semantic values plus interval and session detail.
+
+This correction narrows the earlier request for yellow/red/green/blue quarter color. Those colors remain available where they encode a session identity or other useful distinction, but are not a requirement on every Q1–Q4 occurrence. Text, order, grouping and shape should carry the hierarchy before color is introduced.
+
+### True-open placement and reminder ownership
+
+True year/month/week/day opens should appear at the period's actual calendar position rather than as a prominent generic banner. Lab may inspect and edit the fact. When Cockpit knows a true open needs attention at the current time, the process reminder belongs in TDA. Mature display policy may allow individual cues, colors and reminders to be hidden or shown without creating separate data ownership.
+
+### Workbench/lens navigation hypothesis
+
+The **AMDX Calendar** selector suggests a useful Fusion 360–like workbench model: TDA, Watch, Lab and Review can retain a coherent shell while exposing tools appropriate to the current operation, and Lab can contain analytical lenses such as AMDX Calendar. This is a promising navigation motif to preserve lightly, not a final taxonomy or control decision.
+
+### Remaining open interaction
+
+Temporal zoom feels better when it is independent from context depth, but it still does not feel settled. Do not infer acceptance of the current Zoom In/Out controls, labels, direction, selection-following behavior or gesture. More experimentation is expected because full-stack AMDX movement is both complicated and foundational.
+
+The third iteration may test these corrections while retaining the accepted three-pane relationship, Follow Current behavior, truthful missing state and broader-Lab scope guardrail.
 

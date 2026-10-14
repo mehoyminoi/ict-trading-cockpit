@@ -1,6 +1,6 @@
 # Lab AMDX calendar and feature-tree interaction specification
 
-**Status:** First iteration reviewed successfully as a direction; second multiscale iteration ready for operator review in the same [disposable standalone prototype](prototypes/lab-amdx-calendar-tree-v0.html). See the [operator review](LAB_AMDX_CALENDAR_TREE_OPERATOR_REVIEW.md). No renderer, native implementation or AMDX interpretation is accepted by this document.
+**Status:** First and second iterations reviewed successfully as directions; a third hierarchy-focused iteration is ready for operator review in the same [disposable standalone prototype](prototypes/lab-amdx-calendar-tree-v0.html). See the [operator review](LAB_AMDX_CALENDAR_TREE_OPERATOR_REVIEW.md). No renderer, native implementation or AMDX interpretation is accepted by this document.
 
 Read with the [Quiet Watch operator review](WATCH_QUIET_SUPPORT_OPERATOR_REVIEW.md), [workspace parity](WORKSPACE_PARITY.md), [UX design touchstones](UX_DESIGN_TOUCHSTONES.md) and [Cockpit UX implementation plan](COCKPIT_UX_IMPLEMENTATION_PLAN.md).
 
@@ -58,10 +58,16 @@ Zooming in follows the selected quarter. Zooming out restores the parent and the
 - Current Watch, TDA and Review remain projections of the same instrument-owned master calendar; Lab does not create a separate purpose-owned catalog.
 - Initially configured MNQ does not imply that unknown historical records belong to MNQ. Future NNQ remains a deliberate asset/binding concern.
 - Familiar previous/next month plus month/year selection supplement tree navigation. They do not move the live clock.
-- Month rows identify the four week quarters and any distortion rows.
-- A due true open is visible as a process reminder; recorded and unavailable states remain distinguishable. The prototype stages this visually only and does not establish true-open persistence.
+- Month rows use a neutral physical week rail. Quiet shows grouping only; Nested adds the week and daily AMDX values; Deep adds interval and compact session context. Colored day-row headings are not used merely to say Q1–Q4.
+- True opens appear at the relevant period position. Lab inspects/edits the fact; TDA owns the temporally relevant reminder. Recorded, unmarked and unavailable remain distinguishable. The prototype stages this visually only and does not establish true-open persistence.
 
-Temporal color cues remain consistent when used: Asia/Q1 yellow, London/Q2 red, NYAM/Q3 green and NYPM/Q4 blue. Text, order and shape still carry meaning; color alone does not.
+Temporal color cues remain consistent when they add useful identity: Asia/Q1 yellow, London/Q2 red, NYAM/Q3 green and NYPM/Q4 blue. They are not sprayed across every Q1–Q4 grouping. Text, order, spacing and shape carry hierarchy first; color alone never carries meaning.
+
+Display policy may eventually expose restrained show/hide and color/no-color preferences. Configuration must not fragment the shared data model or turn the default into a dashboard-builder exercise.
+
+## Workbench and lens hypothesis
+
+The shell should continue testing a familiar workbench transition analogous to CAD software: TDA, Watch, Lab and Review retain shared orientation while presenting operation-specific tools. Inside Lab, AMDX Calendar is one analytical lens. The prototype's combined selector is a hypothesis only; global phases and local lenses may ultimately require separate but related controls.
 
 ## Entry and analytical detail
 
@@ -96,14 +102,16 @@ The focused review may accept the tree/workspace relationship while rejecting ex
 
 Use the prototype at a normal 16:9 size. These are orientation goals rather than a script that must be memorized.
 
-1. Keep October selected and compare Quiet, Nested and Deep context. Decide whether session structure inside the days adds useful orientation or merely density.
+1. Keep October selected and compare Quiet, Nested and Deep context. Confirm Quiet retains physical week grouping without AMDX labels, Nested adds neutral week/daily values, and Deep adds interval/session detail.
 2. Confirm the ancestor context spine keeps the month located within its quarter/year/quadrennial/16-year path while context depth changes.
 3. Navigate September, October and November with familiar controls, and inspect the year. Confirm calendar movement does not move the live clock.
-4. Identify week Q1–Q4 and distortion treatment in the month grid. Mark the due True Month Open, then reload and confirm its visual state is retained in the fixture.
+4. Identify week Q1–Q4 and distortion treatment from the neutral left rail without relying on colored day headings. Find true opens at their calendar positions; mark the due True Month Open from the detail rail, then reload and confirm its fixture state.
 5. Zoom out through Year, Quadrennial and 16-year. Judge whether each workspace now exposes meaningful child structure rather than one generic row.
 6. Move into Tuesday, NYAM and the 10:30–12:00 cycle. Switch Expected/Observed and make one legal direct role entry; confirm the quartet changes immediately without another Save.
 7. Select 2025 and confirm unavailable data is not guessed. Then use **Follow current** and confirm historical navigation did not redirect or edit the current reference.
-8. Open the **AMDX Calendar** lens control. Confirm the shell still communicates that Lab is a broader Study workspace.
+8. Open the **Lab · AMDX Calendar** workbench/lens control. Judge whether the CAD-workbench analogy is intuitive while the shell still communicates that Lab is a broader Study workspace.
+
+Do not try to accept the Zoom In/Out interaction merely because hierarchy rendering improved. Record where its direction, target or selection-following behavior still feels wrong; temporal zoom remains a separate open design problem.
 
 Record whether the tree supplied orientation without taking over the screen, whether the month/week/day/session projections reduced reading effort, whether the detail rail felt adjacent rather than detached, and whether returning from another monitor would require reacquisition or reconstruction. Comments on exact tree width, calendar density, labels, controls and styling remain provisional.
 

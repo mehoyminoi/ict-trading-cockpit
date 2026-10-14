@@ -575,3 +575,11 @@ The operator reports that the tree, center workspace and right rail feel good to
 The updated prototype separates temporal zoom from Quiet/Nested/Deep context depth. A month can retain its ancestor chain while optionally revealing compact session quartets and selected lower-cycle cues inside days. Standard month/year navigation, week Q1–Q4/distortion markers, true-open due/recorded/unavailable states and richer Year/Quadrennial/16-year child canvases are added. True opens are presented as adjacent market facts, not AMDX judgments; fixture marking adds no production repository. The shell names AMDX Calendar as the active Lab lens and explicitly retains broader Study, evidence, criteria and sample work outside this focused lens.
 
 This remains a disposable interaction study. No source, schema, plan, news feed, true-open persistence, market-data integration or smoke records change. Operator review of density and hierarchy remains required before deriving Watch.
+
+## 2026-10-14 — Lab hierarchy favors semantic grouping over decorative color
+
+The second Lab review accepts Quiet/Nested/Deep as a useful configuration and endorses the calendar controls and higher-timeframe context spine. It also identifies that Q1–Q4 color across every day in a month row only repeats ordinal position and creates attention cost without enough analytical information. The corrected trial uses a neutral left week rail: Quiet preserves physical grouping only, Nested adds actual week/daily AMDX values, and Deep adds the interval and compact session roles.
+
+True opens now sit at their period location in the year/month/week/day projections. Lab may inspect or edit the fact, while TDA owns the reminder when an unmarked open becomes temporally relevant. A later display policy may permit restrained cue/color visibility without changing shared ownership.
+
+The combined **Lab · AMDX Calendar** control preserves a promising CAD-workbench analogy for movement among Cockpit phases and analytical lenses, but it does not settle the taxonomy. Temporal zoom also remains open: separating it from context depth helps, but the current controls and selection behavior are not accepted. The third standalone iteration tests these narrower questions only; production behavior remains unchanged.
