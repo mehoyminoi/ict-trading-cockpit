@@ -3,14 +3,19 @@ import sqlite3
 from uuid import uuid4
 
 from PySide6.QtCore import QTimer, Qt, Signal
+from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
+    QApplication,
     QFrame,
     QHBoxLayout,
     QLabel,
+    QLineEdit,
     QListWidget,
+    QPlainTextEdit,
     QPushButton,
     QScrollArea,
     QSizePolicy,
+    QTextEdit,
     QVBoxLayout,
     QWidget,
 )
@@ -37,6 +42,7 @@ from ict_cockpit.analysis.trading_session_run import (
     default_purpose_for_environment,
 )
 from ict_cockpit.gui.trading_day_runtime_widget import TradingDayRuntimeWidget
+from ict_cockpit.gui.amdx_decision_dock import AMDXDecisionDock
 from ict_cockpit.process_blueprint import ProcessBlueprint
 from ict_cockpit.trade_plan import AuthorizationGateDefinition, LiveWatchPolicyDefinition, PlaybookDefinition
 
@@ -58,6 +64,7 @@ class TradingDayShellWidget(QWidget):
         run_environment: RunEnvironment = RunEnvironment.LIVE,
         trade_plan_revision: str = "",
         market_context_event_provider: MarketContextEventProvider | None = None,
+        workspace_settings=None,
     ) -> None:
         super().__init__()
         self.blueprint = blueprint
@@ -131,6 +138,27 @@ class TradingDayShellWidget(QWidget):
         self.runtime.amdx_context_widget.setParent(self)
         runtime_layout.addWidget(self.runtime)
 
+        self.plan_reference_button = QPushButton("Plan reference")
+        self.plan_reference_button.setToolTip(
+            "Open the active Trade Plan reference and legal AMDX choices (P)"
+        )
+        self.plan_reference_button.clicked.connect(self._toggle_plan_reference)
+        self.plan_reference_frame = QFrame()
+        reference_layout = QHBoxLayout(self.plan_reference_frame)
+        reference_layout.setContentsMargins(0, 0, 0, 0)
+        reference_layout.addWidget(self.plan_reference_button)
+        reference_layout.addStretch()
+        self.amdx_decision_dock = AMDXDecisionDock(
+            self.runtime.amdx_context_widget,
+            trade_plan_revision=self.trade_plan_revision,
+            settings=workspace_settings,
+        )
+        self.plan_reference_shortcut = QShortcut(QKeySequence("P"), self)
+        self.plan_reference_shortcut.setContext(Qt.ShortcutContext.WidgetWithChildrenShortcut)
+        self.plan_reference_shortcut.activated.connect(self._toggle_plan_reference)
+        self._plan_reference_available = False
+        QApplication.instance().focusChanged.connect(self._sync_plan_reference_shortcut_focus)
+
         self.runtime.session_changed.connect(self._process_session_changed)
         self.runtime.models_in_play_changed.connect(self._sync_models_in_play)
         self.runtime.qt_context_changed.connect(self._set_qt_context)
@@ -186,6 +214,7 @@ class TradingDayShellWidget(QWidget):
         layout.addWidget(self.summary_label)
         layout.addWidget(self.resume_context_label)
         layout.addWidget(self.market_time_label)
+        layout.addWidget(self.plan_reference_frame)
         layout.addWidget(self.runtime.amdx_context_widget)
         layout.addWidget(self.run_history_label)
         layout.addWidget(self.run_history)
@@ -198,6 +227,25 @@ class TradingDayShellWidget(QWidget):
         self.market_time_timer.timeout.connect(self._refresh_market_time_display)
         self.market_time_timer.start()
         self._update_view()
+
+    def _toggle_plan_reference(self) -> None:
+        if self.sender() is self.plan_reference_shortcut and isinstance(
+            QApplication.focusWidget(), (QLineEdit, QPlainTextEdit, QTextEdit)
+        ):
+            return
+        if not self.plan_reference_frame.isVisible() or not self.plan_reference_button.isEnabled():
+            return
+        if self.amdx_decision_dock.isVisible():
+            self.amdx_decision_dock.dismiss()
+        else:
+            self.amdx_decision_dock.open_for(self.plan_reference_button)
+
+    def _sync_plan_reference_shortcut_focus(self, _old=None, current=None) -> None:
+        current = current if current is not None else QApplication.focusWidget()
+        editing_text = isinstance(current, (QLineEdit, QPlainTextEdit, QTextEdit))
+        self.plan_reference_shortcut.setEnabled(
+            self._plan_reference_available and not editing_text
+        )
 
     @property
     def feedback_record_id(self) -> str:
@@ -694,6 +742,18 @@ class TradingDayShellWidget(QWidget):
         self._refresh_market_time_display()
 
         active = self.active_trading_run is not None
+        reference_available = bool(
+            active
+            and self.runtime.current_mode.id == "live-watch"
+            and self.runtime.amdx_context_widget.repository is not None
+            and self.runtime.amdx_context_widget.binding is not None
+        )
+        self.plan_reference_frame.setVisible(reference_available)
+        self.plan_reference_button.setEnabled(reference_available)
+        self._plan_reference_available = reference_available
+        self._sync_plan_reference_shortcut_focus()
+        if not reference_available and self.amdx_decision_dock.isVisible():
+            self.amdx_decision_dock.dismiss()
         self.runtime.amdx_context_widget.setVisible(active and self.runtime.amdx_context_widget.repository is not None)
         self.runtime_scroll.setVisible(active)
         self.runtime.transition_frame.setVisible(active)

@@ -30,12 +30,30 @@ class EditTarget:
     comparison_head_id: str | None = None
 
 
+@dataclass(frozen=True)
+class AMDXDecisionProjection:
+    """Read-only active-target projection for contextual command surfaces."""
+
+    token: tuple
+    available: bool
+    unavailable_reason: str
+    target_label: str
+    quarter_position: int | None
+    legal_roles: tuple[Role, ...]
+    legal_x_subtypes: tuple[XSubtype, ...]
+    current_role: Role | None
+    current_subtype: XSubtype | None
+    current_origin: str
+    profile: str
+
+
 def role_text(role, subtype=None):
     return f"X({subtype.value if subtype else '?'})" if role is Role.X else role.value
 
 
 class AMDXContextWidget(QFrame):
     recorded = Signal(object)
+    decision_projection_changed = Signal(object)
 
     def __init__(self):
         super().__init__()
@@ -60,6 +78,7 @@ class AMDXContextWidget(QFrame):
         self._gesture_clear_applicability = None
         self._gesture_generation = 0
         self._table_rendering = False
+        self._last_decision_projection = None
 
         self.target_label = QLabel("AMDX · No active quarter")
         self.target_label.setWordWrap(True)
@@ -349,7 +368,7 @@ class AMDXContextWidget(QFrame):
                     or futures_trading_day_for(target.cycle.quarters[0].start).isoformat() != self.review_day_label))
                 or self.mode_id not in ("tda", "live-watch", "post-market")):
             self._reload_context()
-            return
+            return False
         anchor = Anchor(str(uuid4()), target.quarter_id, role,
                         "Technician / observed AMDX" if self.channel == "Observed" else "Technician / working AMDX", subtype) if role else None
         try:
@@ -380,7 +399,7 @@ class AMDXContextWidget(QFrame):
                 self._reload_context()
                 self.target = self._edit_target(target.cycle, target.quarter_id)
             self._render()
-            return
+            return False
         claim = result.claim
         if result.changed and all(c.id != claim.id for c in self.history.claims):
             self.history = InterpretationHistory(self.history.claims + (claim,))
@@ -392,6 +411,105 @@ class AMDXContextWidget(QFrame):
         self._reload_context()
         if result.changed:
             self.recorded.emit(claim)
+        return True
+
+    def decision_projection(self) -> AMDXDecisionProjection:
+        target = self.target
+        quarter = next(
+            (item for item in target.cycle.quarters if item.id == target.quarter_id),
+            None,
+        ) if target else None
+        head = self._head(target.cycle) if target else None
+        inference = head.inference if head else (
+            infer_profile(target.cycle, ()) if target else None
+        )
+        explicit = next(
+            (item for item in (head.anchors if head else ()) if item.quarter_id == target.quarter_id),
+            None,
+        ) if target else None
+        derived = next(
+            (item for item in inference.roles if item.quarter_id == target.quarter_id),
+            None,
+        ) if target and inference else None
+        current = explicit or derived
+        legal_roles = available_roles(quarter.position) if quarter else ()
+        profile = "Unavailable"
+        if inference is not None:
+            profile = (
+                "/".join(item.value for item in inference.candidates)
+                if inference.state == "Resolved"
+                else inference.state
+            )
+        available = bool(
+            self.repository
+            and self.run
+            and target
+            and quarter
+            and self.reference
+            and not self._read_error
+            and getattr(self, "_surface_active", True)
+            and (self.channel != "Observed" or not self._review_date_error)
+            and self.mode_id in ("tda", "live-watch", "post-market")
+        )
+        if available:
+            reason = ""
+        elif self._read_error:
+            reason = self.status_label.text() or "AMDX context is unavailable"
+        elif self.mode_id not in ("tda", "live-watch", "post-market"):
+            reason = "No active operating mode"
+        elif not target or not quarter:
+            reason = "No active AMDX quarter"
+        else:
+            reason = "AMDX recording is unavailable"
+        decision_reference = getattr(self, "_shared_target_reference", None) or self.reference
+        reference = decision_reference.isoformat() if decision_reference else ""
+        token = (
+            target.run_id if target else "",
+            target.channel if target else "",
+            target.cycle.id if target else "",
+            target.quarter_id if target else "",
+            target.expected_head_id if target else None,
+            reference,
+            self.mode_id,
+            available,
+        )
+        return AMDXDecisionProjection(
+            token=token,
+            available=available,
+            unavailable_reason=reason,
+            target_label=self.target_label.text(),
+            quarter_position=quarter.position if quarter else None,
+            legal_roles=tuple(legal_roles),
+            legal_x_subtypes=tuple(XSubtype) if Role.X in legal_roles else (),
+            current_role=current.role if current else None,
+            current_subtype=current.subtype if current else None,
+            current_origin=("entered" if explicit else derived.origin.lower() if derived else "unresolved"),
+            profile=profile,
+        )
+
+    def choose_decision(self, token, role, subtype=None) -> bool:
+        """Invoke the existing command only for the exact displayed projection."""
+
+        projection = self.decision_projection()
+        if token != projection.token:
+            self.status_label.setText("Not recorded · AMDX target changed; review the current target and choose again")
+            self._render()
+            return False
+        if not projection.available or role not in projection.legal_roles:
+            self.status_label.setText("Not recorded · that role is unavailable for the current AMDX target")
+            self._render()
+            return False
+        if subtype is not None and (role is not Role.X or subtype not in projection.legal_x_subtypes):
+            self.status_label.setText("Not recorded · that X subtype is unavailable for the current AMDX target")
+            self._render()
+            return False
+        return bool(self.choose(role, subtype))
+
+    def _publish_decision_projection(self):
+        projection = self.decision_projection()
+        if projection != self._last_decision_projection:
+            self._last_decision_projection = projection
+            self.decision_projection_changed.emit(projection)
 
     def _render_table(self):
         self.table.setRowCount(len(self.cycles))
@@ -469,3 +587,4 @@ class AMDXContextWidget(QFrame):
         if not self.status_label.text():
             self.status_label.setText("Select a quarter to inspect; choose a phase to record. X subtype may remain unresolved."
                                       if self.repository else "AMDX recording requires the application database.")
+        self._publish_decision_projection()

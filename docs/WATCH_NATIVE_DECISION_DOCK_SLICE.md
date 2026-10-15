@@ -1,6 +1,6 @@
 # Native Watch decision-dock vertical slice
 
-**Status:** Implementation boundary selected, 2026-10-15. Production work is not yet implemented or authorized by this document.
+**Status:** Implemented, developer verified and operator accepted on `feature/watch-native-decision-dock-v0`, 2026-10-15. Checks 281–285 PASS; no merge or final Watch-layout acceptance is implied.
 
 **Purpose:** Convert the accepted chart-edge AMDX reference-and-decision interaction into the smallest useful native proof without rewriting the Watch shell, duplicating calendar ownership or presenting fixture rules as published Trade Plan policy.
 
@@ -31,7 +31,7 @@ The present application already has the difficult domain behavior:
 - `TradingDayShellWidget` owns the active Trading Day/run and captures the displayed AMDX basis transactionally;
 - `LiveWatchWidget` owns the existing Watch process facts and actions.
 
-The native slice therefore needs a thin projection and composition seam, not a second AMDX editor. This exercises shared command/state, constrained choices, truthful failure, interruption recovery and chart-edge placement before a larger shell composition makes debugging harder.
+The implemented native slice is a thin projection and composition seam, not a second AMDX editor. It exercises shared command/state, constrained choices, truthful failure, interruption recovery and chart-edge placement before a larger shell composition makes debugging harder.
 
 ## Included behavior
 
@@ -113,6 +113,12 @@ Automated native tests should prove:
 10. the current complete regression and smoke identities are preserved.
 
 The first operator guide should use a fresh disposable directory, exact control names and visible results. The review question is whether the same two-action loop feels equally immediate in native Watch—not whether the entire Watch composition is final.
+
+## Implementation checkpoint
+
+The existing `AMDXContextWidget` now publishes an immutable decision projection and retains its established command path as the only write route. `AMDXDecisionDock` renders that projection, shows truthful Alpha 0.7 reference unavailability, limits actions to the prepared quarter, and delegates choices back to the shared owner. `TradingDayShellWidget` supplies the Watch-only launcher, dismissal and focus return. Workspace settings retain only the constrained `tv-left` / `tv-below` display profile.
+
+Automated coverage includes projection synchronization, legal-role constraints, direct X subtype selection, stale/failure handling, profile persistence, focus return and the rule that the single-key shortcut cannot steal text entry. The retained synthetic demo and exact operator procedure are documented in [the operator guide](WATCH_NATIVE_DECISION_DOCK_OPERATOR_GUIDE.md). The explicit operator report marks all five separate checks 281–285 PASS.
 
 ## Following milestones
 
