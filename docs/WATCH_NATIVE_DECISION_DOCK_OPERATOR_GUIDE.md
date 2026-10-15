@@ -2,7 +2,7 @@
 
 This focused trial verifies that the accepted reference-and-decision interaction now uses the real native Watch, maintained MNQ calendar and existing AMDX command. It does not ask for final Watch-layout approval.
 
-**Status:** Developer verification complete; operator checks 281–285 are not yet tested.
+**Status:** Developer verification complete; operator checks 281–285 PASS from the explicit 2026-10-15 report. This accepts the bounded native interaction, not final Watch styling or layout.
 
 ## Get the trial
 

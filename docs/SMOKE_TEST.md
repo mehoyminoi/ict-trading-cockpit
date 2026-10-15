@@ -1117,21 +1117,23 @@ Operator report, 2026-10-13 (America/Denver): “275-280 passed”. This records
 
 ## Native Watch decision dock — focused trial
 
-Use `WATCH_NATIVE_DECISION_DOCK_OPERATOR_GUIDE.md` and `python tools/watch_decision_dock_demo.py --data-dir /tmp/ict-watch-decision-dock-v0`. This retained synthetic MNQ Replay fixture verifies one native contextual-completion loop over the existing maintained AMDX command. Schema v46 / Alpha 0.7; all earlier 280 identities/results/comments remain exact. Checks 281–285 are NOT TESTED pending operator results.
+Use `WATCH_NATIVE_DECISION_DOCK_OPERATOR_GUIDE.md` and `python tools/watch_decision_dock_demo.py --data-dir /tmp/ict-watch-decision-dock-v0`. This retained synthetic MNQ Replay fixture verifies one native contextual-completion loop over the existing maintained AMDX command. Schema v46 / Alpha 0.7; all earlier 280 identities/results/comments remain exact. Checks 281–285 are PASS from the explicit 2026-10-15 operator report.
 
-- [NOT TESTED] The chart-edge reference opens in native Watch with exact active target, Alpha 0.7 provenance and truthful unavailable-definition state.
+Operator report, 2026-10-15 (America/Denver): “281-285 pass”. This records the reported functional result without inferring final Watch styling/layout approval.
+
+- [PASS] The chart-edge reference opens in native Watch with exact active target, Alpha 0.7 provenance and truthful unavailable-definition state.
   - Where: guide checkpoint 281, Plan reference button or P outside text entry.
   - Expected: same active 90-minute target/profile as Working AMDX; no fixture rule presented as published policy.
-- [NOT TESTED] Active 90-minute Q3 exposes only legal M/D choices and one D selection updates the shared maintained quartet before dismissing.
+- [PASS] Active 90-minute Q3 exposes only legal M/D choices and one D selection updates the shared maintained quartet before dismissing.
   - Where: guide checkpoint 282, decision dock at fixed 09:15 reference.
   - Expected: main row Q3 D entered / AMDX, focus returned, no A/X, duplicate command or Save.
-- [NOT TESTED] Selected 90-minute Q4 exposes direct X(?) / X(C) / X(R), and one X(R) decision synchronizes the main projection.
+- [PASS] Selected 90-minute Q4 exposes direct X(?) / X(C) / X(R), and one X(R) decision synchronizes the main projection.
   - Where: guide checkpoint 283, main Q4 target then decision dock X(R).
   - Expected: Q4 X(R) plus retained Q3 D / AMDX, immediate dismissal and no subtype menu or second Save.
-- [NOT TESTED] Escape, outside-click and text-entry paths restore context without recording or stealing lowercase p from Watch observations.
+- [PASS] Escape, outside-click and text-entry paths restore context without recording or stealing lowercase p from Watch observations.
   - Where: guide checkpoint 284, popup dismissal and observation field.
   - Expected: no AMDX side effects; Plan reference remains the anchor; P shortcut works only outside text editing.
-- [NOT TESTED] The two constrained chart relationships move the same dock and the chosen profile survives same-directory restart.
+- [PASS] The two constrained chart relationships move the same dock and the chosen profile survives same-directory restart.
   - Where: guide checkpoint 285, Workspace profile menu, reopen same directory.
   - Expected: bottom/left placement changes only presentation; AMDX target/data remain; no unrestricted docking.
 
