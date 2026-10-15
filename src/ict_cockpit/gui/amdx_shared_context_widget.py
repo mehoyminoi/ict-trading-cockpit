@@ -185,7 +185,7 @@ class AMDXSharedContextWidget(AMDXContextWidget):
 
     def choose(self, role, subtype=None, *, clear_applicability=False):
         if self.binding and (not self._surface_active or self._gesture_cancelled):
-            return
+            return False
         if self.binding and self.channel == "Observed":
             return self._choose_observed(role, subtype, clear_applicability=clear_applicability)
         if not self.binding:
@@ -196,7 +196,7 @@ class AMDXSharedContextWidget(AMDXContextWidget):
         self._gesture_clear_applicability = None
         if (self._gesture_cancelled or not self._surface_active or self._read_error or not target
                 or target.run_id != self.run.id or self.mode_id not in ("tda", "live-watch")):
-            return
+            return False
         committed = False
         try:
             prepared, master_target = scope or self._scope(target, self._shared_target_reference or self.reference)
@@ -211,13 +211,15 @@ class AMDXSharedContextWidget(AMDXContextWidget):
             self._reload_context()
             if self._read_error:
                 self.status_label.setText("Entry recorded; refreshed context unavailable. Use Reload AMDX.")
-                return
+                return False
             self.status_label.setText("Recorded in maintained calendar" if result.calendar_result.changed else "Already current · run context captured")
             self.recorded.emit(result.calendar_result.claim)
+            return True
         except (ValueError, TypeError, KeyError, sqlite3.Error, RuntimeError) as error:
             self._shared_needs_reload = self._read_error = True
             self.status_label.setText(("Entry recorded; refresh unavailable" if committed else "Not recorded") + f" · {error} · use Reload AMDX")
             self._render()
+            return False
 
     def _choose_observed(self, role, subtype, *, clear_applicability):
         target = self._gesture_target or self.target
@@ -227,7 +229,7 @@ class AMDXSharedContextWidget(AMDXContextWidget):
         if (self._read_error or not target or not prepared or self.mode_id != "post-market"
                 or target.run_id != self.run.id or target.channel != "Observed"
                 or target.cycle != prepared.target.target.cycle or target.quarter_id != prepared.target.target.quarter_id):
-            return
+            return False
         committed = False
         try:
             result = self.repository.run_observed.revise(prepared, operation_id=str(uuid4()),
@@ -238,16 +240,18 @@ class AMDXSharedContextWidget(AMDXContextWidget):
             self._reload_context()
             if self._read_error:
                 self.status_label.setText("Assessment recorded; refresh unavailable · use Reload AMDX")
-                return
+                return False
             self.status_label.setText("Recorded in maintained Observed calendar · run assessment captured"
                 if result.changed else "Already current · run assessment captured")
             row = next(r for r in result.projection.cycles if r.context.cycle.id == target.cycle.id)
             self.recorded.emit(row.claim)
+            return True
         except (ValueError, TypeError, KeyError, sqlite3.Error, RuntimeError) as error:
             self._shared_needs_reload = self._read_error = True
             self.status_label.setText(("Assessment recorded; refresh unavailable" if committed else "Not recorded")
                 + f" · {error} · use Reload AMDX")
             self._render()
+            return False
 
     def _open_review_stack(self):
         if self.binding and self.channel == "Observed" and self._surface_active and not self._read_error:

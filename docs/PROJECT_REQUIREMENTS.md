@@ -4,7 +4,7 @@
 **Reconciled:** 2026-10-08  
 **Role:** Canonical current product requirements and milestone roadmap.
 
-**Implementation-status clarification (2026-10-15):** Milestones A–C and the shared AMDX foundation/native consumers are implemented and merged on main, schema v46 / Alpha 0.7. Earlier descriptions of the “current frontier” and the reconciliation queue below are historical rationale, not an instruction to rebuild completed work. Focused prototypes have directionally accepted TDA parity, Study-first Lab and complete Watch relationships. Standalone polishing is closed. The selected first native UX proof is the [Watch decision-dock slice](WATCH_NATIVE_DECISION_DOCK_SLICE.md), followed by contextual Study Find, broader quiet-Watch composition and the Study-first doorway. Accepted 16:9, quiet Watch, shared calendar and nearby overview/detail requirements remain authoritative.
+**Implementation-status clarification (2026-10-15):** Milestones A–C and the shared AMDX foundation/native consumers are implemented and merged on main, schema v46 / Alpha 0.7. Earlier descriptions of the “current frontier” and the reconciliation queue below are historical rationale, not an instruction to rebuild completed work. Focused prototypes have directionally accepted TDA parity, Study-first Lab and complete Watch relationships. Standalone polishing is closed. The first bounded native UX proof, the [Watch decision-dock slice](WATCH_NATIVE_DECISION_DOCK_SLICE.md), is implemented and developer verified; operator checks 281–285 remain pending. Contextual Study Find, broader quiet-Watch composition and the Study-first doorway follow acceptance. Accepted 16:9, quiet Watch, shared calendar and nearby overview/detail requirements remain authoritative.
 
 Companion documents:
 

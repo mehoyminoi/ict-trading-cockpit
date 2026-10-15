@@ -967,6 +967,6 @@ The first implementation remains a thin projection over the current shared AMDX 
 
 **Rationale:** The bounded operator trial made a normally effortful 90-minute update feel immediate without weakening AMDX ownership, uncertainty or legal-choice constraints. Proving that relationship natively is a smaller and more informative risk than simultaneously replacing the shell, adding Study routing and reorganizing every Watch projection.
 
-**Consequences / deferred:** Standalone Watch polishing stops. Contextual Study Find, the broader quiet-Watch composition and the Study-first doorway follow after the shared-command proof. Real AMDX definition authoring/evaluation remains a separate versioned Trade Plan milestone. The pattern is not a blanket two-click rule or permission to add unrestricted popouts.
+**Consequences / deferred:** Standalone Watch polishing stops. The bounded native shared-command proof is implemented on `feature/watch-native-decision-dock-v0`; operator checks 281–285 remain pending and final integrated Watch acceptance is not inferred. Contextual Study Find, the broader quiet-Watch composition and the Study-first doorway follow after acceptance. Real AMDX definition authoring/evaluation remains a separate versioned Trade Plan milestone. The pattern is not a blanket two-click rule or permission to add unrestricted popouts.
 
 **Supersedes:** Refines the earlier proposed first UX1 boundary. The Study doorway remains accepted, but native implementation begins with the smaller Watch decision-dock proof.

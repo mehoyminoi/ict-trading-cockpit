@@ -1,5 +1,7 @@
 import sqlite3
-from PySide6.QtCore import QTimer
+from pathlib import Path
+
+from PySide6.QtCore import QSettings, QTimer
 from PySide6.QtGui import QAction, QKeySequence
 from PySide6.QtWidgets import (
     QApplication,
@@ -139,6 +141,19 @@ class MainWindow(QMainWindow):
         )
         self.summary_template_repository.ensure_defaults()
 
+        database_path = next(
+            (row[2] for row in study_find_repository.connection.execute("PRAGMA database_list") if row[1] == "main"),
+            "",
+        )
+        self.workspace_settings = (
+            QSettings(
+                str(Path(database_path).with_name(Path(database_path).name + ".workspace.ini")),
+                QSettings.Format.IniFormat,
+            )
+            if database_path
+            else None
+        )
+
         self.setWindowTitle(window_title())
         # Give the cockpit enough initial working room on a desktop without
         # forcing maximized mode. The runtime remains scrollable on smaller displays.
@@ -148,6 +163,7 @@ class MainWindow(QMainWindow):
         self.context_capture_repository = ContextCaptureRepository(study_find_repository.connection)
         self.trade_plan_widget = TradePlanWidget(
             self.trade_plan,
+            workspace_settings=self.workspace_settings,
             context_capture_repository=self.context_capture_repository,
             competency_assessment_repository=(
                 self.competency_assessment_repository
