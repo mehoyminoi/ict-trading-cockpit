@@ -21,6 +21,18 @@ Read with [UX Friction Research](UX_FRICTION_RESEARCH.md), [UX Design Touchstone
 9. **Theme-ready semantics.** Dark and future light themes should map the same semantic tokens and preserve hierarchy, contrast and redundant meaning. Theme is presentation, not a second information model.
 10. **Evaluate journeys, not decoration.** Review reacquisition, hunting, interpretation, movement, recovery and error prevention in realistic tasks. Click count, density and visual preference are evidence, not standalone verdicts.
 
+## Contextual completion loop
+
+The accepted Watch reference-and-decision dock supplies a reusable interaction pattern for low-friction work:
+
+1. reveal support at the point of discernment;
+2. carry the exact current target and only legal actions into that support;
+3. invoke the existing authoritative command once;
+4. reflect the result through every synchronized projection;
+5. dismiss temporary support and restore the previous work anchor.
+
+This is the preferred pattern when reference and action naturally belong to one brief task. It is not a blanket two-click target and does not justify hiding essential state, multiplying commands or adding popouts everywhere. Apply it only when it reduces hunting, process memory or cross-screen travel without concealing consequential choices.
+
 ## Color namespaces
 
 The stable session identity palette—Asia/Q1 yellow, London/Q2 red, NYAM/Q3 green and NYPM/Q4 blue—may support recognition where session identity is useful. Operational states such as safe, warning, blocked, selected and complete are a separate semantic namespace. If the same hue could imply both, labels plus another non-color cue must disambiguate it, or the operational state takes precedence.

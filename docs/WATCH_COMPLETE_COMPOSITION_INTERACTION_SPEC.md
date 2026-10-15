@@ -1,6 +1,6 @@
 # Complete Watch composition interaction specification
 
-**Status:** Complete Watch composition directionally accepted. The chart-adjacent Trade Plan reference is positively reviewed; its bounded shared-action decision dock is ready for operator review in the [standalone prototype](prototypes/watch-complete-composition-v0.html). Read the [operator review](WATCH_COMPLETE_COMPOSITION_OPERATOR_REVIEW.md). This is a synthetic composition trial, not native implementation, broker integration, a published order workflow or final visual approval.
+**Status:** Complete Watch composition directionally accepted. The chart-adjacent shared-action decision dock passed bounded operator review and is now a reference for the [first native vertical slice](WATCH_NATIVE_DECISION_DOCK_SLICE.md). Read the [operator review](WATCH_COMPLETE_COMPOSITION_OPERATOR_REVIEW.md). This remains a synthetic composition trial, not native implementation, broker integration, a published order workflow or final visual approval.
 
 Read with the [earlier Quiet Watch specification](WATCH_QUIET_SUPPORT_INTERACTION_SPEC.md), [operator review](WATCH_QUIET_SUPPORT_OPERATOR_REVIEW.md), [broader Study-first Lab review](LAB_STUDY_WORKBENCH_OPERATOR_REVIEW.md), [UX design touchstones](UX_DESIGN_TOUCHSTONES.md) and [workspace parity](WORKSPACE_PARITY.md).
 
@@ -105,4 +105,4 @@ This trial may accept the complete Watch relationship and one or both orientatio
 
 Monitor profile buttons remain fixture controls for comparison. In the mature suite, monitor relationship and chart-facing edge belong to a remembered global Workspace & Displays profile, adjusted rarely and previewed explicitly. Unrestricted panel docking is not implied.
 
-After the bounded shared-action dock review, choose the smallest native composition slice spanning already implemented ownership. A likely first boundary is read-only shell/orientation plus Study-first routing and current Watch projection, retaining all existing tabs as fallback. Direct broker commands, execution simulation and broad shell replacement remain later milestones.
+The bounded shared-action dock review is complete. The selected first native boundary is the chart-edge decision dock over the existing Watch and shared AMDX owners. It proves one contextual completion loop before Study Find integration, broader quiet-Watch composition or Study-first routing. Direct broker commands, execution simulation and broad shell replacement remain later milestones.

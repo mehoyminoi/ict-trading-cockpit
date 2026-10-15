@@ -956,3 +956,17 @@ Monitor relationship and chart-facing edge will mature into an infrequently chan
 **Rationale:** Requiring the technician to close the governing rule, cross the screen and relocate the corresponding input would break the otherwise natural chart → criterion → decision sequence. The shared-action dock makes 90-minute upkeep feel like one coherent operation while preserving the spatial overview in the main AMDX surface.
 
 **Consequences / deferred:** Prototype interaction is ready for review. Native command wiring, settings persistence, theme configuration, shortcut assignment and macro-pad bindings remain later work.
+
+## 2026-10-15 — Use the decision dock as a contextual-completion pattern
+
+**Status:** Accepted.
+
+**Decision:** The reviewed Watch decision dock is the first native UX boundary and a reusable cross-suite interaction pattern: reveal support at the point of discernment, carry the exact target and legal actions, invoke the existing authoritative command, synchronize all projections, dismiss temporary support and restore the work anchor.
+
+The first implementation remains a thin projection over the current shared AMDX action inside the existing native Watch shell. It does not rewrite Watch, own repository writes or invent published criteria. Because Alpha 0.7 has no plan-owned AMDX manual-reference definition, the native reference must show truthful unavailability until a versioned plan supplies it.
+
+**Rationale:** The bounded operator trial made a normally effortful 90-minute update feel immediate without weakening AMDX ownership, uncertainty or legal-choice constraints. Proving that relationship natively is a smaller and more informative risk than simultaneously replacing the shell, adding Study routing and reorganizing every Watch projection.
+
+**Consequences / deferred:** Standalone Watch polishing stops. Contextual Study Find, the broader quiet-Watch composition and the Study-first doorway follow after the shared-command proof. Real AMDX definition authoring/evaluation remains a separate versioned Trade Plan milestone. The pattern is not a blanket two-click rule or permission to add unrestricted popouts.
+
+**Supersedes:** Refines the earlier proposed first UX1 boundary. The Study doorway remains accepted, but native implementation begins with the smaller Watch decision-dock proof.

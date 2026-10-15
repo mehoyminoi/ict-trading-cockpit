@@ -526,3 +526,11 @@ Read `UX_CONTEXT_RECONCILIATION.md` for source fingerprints, repeated 148-pass h
 | Major sections should feel compartmentalized. | Distinct task composition and hierarchy create mode identity; shared chrome, commands, status semantics and provenance retain suite cohesion. Different accent color alone is insufficient. | Clarified. |
 | “No duplicated workflows” could prohibit repeating active AMDX controls in the chart-edge reference. | The temporary decision dock may project the same shared action at the exact discernment step. Target, legal choices, labels, state and revision semantics must remain identical; no second owner or Save exists. | Explicit exception for a synchronized projection, not a workflow duplication. |
 | Prototype monitor-profile controls appear in the daily ribbon. | Mature monitor relationship and chart-facing edge belong to a remembered global Workspace & Displays setting. Prototype buttons remain comparison fixtures only. | Refined. |
+
+## 2026-10-15 Native-slice sequencing refinement
+
+| Earlier direction | Current resolution | Status |
+| --- | --- | --- |
+| UX1 Study doorway was the proposed first native slice. | The Study doorway remains accepted, but the first native proof is the smaller Watch decision dock over already-implemented shared AMDX ownership. This proves projection/command synchronization and support return before broader composition/routing work. | Sequence refined; Study doorway deferred one bounded slice. |
+| Prototype reference wording could stand in until criteria authoring matures. | Alpha 0.7 publishes no AMDX manual-reference definition. Native Watch must show truthful unavailability and may not promote fixture copy, catalog notes or historical evaluation definitions into policy. | Clarified; no invented rule. |
+| Low-friction interaction means minimizing clicks. | The accepted target is a contextual completion loop: correct support, exact legal target, one authoritative command, synchronized result and anchor restoration. Low click count alone is insufficient. | Refined. |
