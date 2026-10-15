@@ -970,3 +970,13 @@ The first implementation remains a thin projection over the current shared AMDX 
 **Consequences / deferred:** Standalone Watch polishing stops. The bounded native shared-command proof is implemented on `feature/watch-native-decision-dock-v0`, and operator checks 281–285 PASS. Final integrated Watch styling/layout acceptance is not inferred. Contextual Study Find is the next recommended native use of the pattern; the broader quiet-Watch composition and the Study-first doorway follow. Real AMDX definition authoring/evaluation remains a separate versioned Trade Plan milestone. The pattern is not a blanket two-click rule or permission to add unrestricted popouts.
 
 **Supersedes:** Refines the earlier proposed first UX1 boundary. The Study doorway remains accepted, but native implementation begins with the smaller Watch decision-dock proof.
+
+## 2026-10-15 — Project contextual Study Find over the existing draft owner
+
+**Status:** Implemented and developer verified; operator checks 286–290 pending.
+
+**Decision:** The Watch contextual Study Find surface is a synchronized projection of the existing `StudyFindWidget`, not a second draft/form/repository owner. Empty drafts may inherit the supported date/instrument/session fields. Non-empty drafts are preserved exactly. Existing managed clipboard images and final save remain the authoritative paths.
+
+Exact active-run identity, market time and AMDX target/profile are visible context only in this slice because the current Study Find schema does not persist those associations. The interface must say so rather than imply durable linkage. Adding that association requires a later explicit data/ownership decision.
+
+**Consequences / deferred:** Dismissal flushes the existing draft and returns focus; final save dismisses only after the existing repository path completes. No process transition, AMDX command, evidence or competency credit results from capture. Arbitrary pinning/docking, full Study authoring, final Watch composition and durable context association remain later work.

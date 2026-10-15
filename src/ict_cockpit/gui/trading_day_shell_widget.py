@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 import sqlite3
 from uuid import uuid4
 
@@ -43,6 +43,7 @@ from ict_cockpit.analysis.trading_session_run import (
 )
 from ict_cockpit.gui.trading_day_runtime_widget import TradingDayRuntimeWidget
 from ict_cockpit.gui.amdx_decision_dock import AMDXDecisionDock
+from ict_cockpit.gui.contextual_study_find_dock import StudyFindCaptureBasis
 from ict_cockpit.process_blueprint import ProcessBlueprint
 from ict_cockpit.trade_plan import AuthorizationGateDefinition, LiveWatchPolicyDefinition, PlaybookDefinition
 
@@ -52,6 +53,8 @@ class TradingDayShellWidget(QWidget):
 
     trading_day_changed = Signal(object)
     session_run_changed = Signal(object)
+    contextual_study_find_requested = Signal(object)
+    contextual_study_find_dismiss_requested = Signal()
 
     def __init__(
         self,
@@ -147,6 +150,12 @@ class TradingDayShellWidget(QWidget):
         reference_layout = QHBoxLayout(self.plan_reference_frame)
         reference_layout.setContentsMargins(0, 0, 0, 0)
         reference_layout.addWidget(self.plan_reference_button)
+        self.study_find_button = QPushButton("Capture Study Find")
+        self.study_find_button.setToolTip(
+            "Open contextual Study Find capture (Ctrl+Shift+F)"
+        )
+        self.study_find_button.clicked.connect(self._toggle_contextual_study_find)
+        reference_layout.addWidget(self.study_find_button)
         reference_layout.addStretch()
         self.amdx_decision_dock = AMDXDecisionDock(
             self.runtime.amdx_context_widget,
@@ -158,6 +167,10 @@ class TradingDayShellWidget(QWidget):
         self.plan_reference_shortcut.activated.connect(self._toggle_plan_reference)
         self._plan_reference_available = False
         QApplication.instance().focusChanged.connect(self._sync_plan_reference_shortcut_focus)
+        self.study_find_shortcut = QShortcut(QKeySequence("Ctrl+Shift+F"), self)
+        self.study_find_shortcut.setContext(Qt.ShortcutContext.WidgetWithChildrenShortcut)
+        self.study_find_shortcut.activated.connect(self._toggle_contextual_study_find)
+        self._contextual_study_find_available = False
 
         self.runtime.session_changed.connect(self._process_session_changed)
         self.runtime.models_in_play_changed.connect(self._sync_models_in_play)
@@ -245,6 +258,35 @@ class TradingDayShellWidget(QWidget):
         editing_text = isinstance(current, (QLineEdit, QPlainTextEdit, QTextEdit))
         self.plan_reference_shortcut.setEnabled(
             self._plan_reference_available and not editing_text
+        )
+
+    def _toggle_contextual_study_find(self) -> None:
+        if not self._contextual_study_find_available:
+            return
+        self.contextual_study_find_requested.emit(
+            self._study_find_capture_basis()
+        )
+
+    def _study_find_capture_basis(self) -> StudyFindCaptureBasis:
+        context = self._current_market_time_context()
+        raw_date = str(context.get("futures_trading_day", ""))
+        try:
+            observation_date = date.fromisoformat(raw_date)
+        except ValueError:
+            observation_date = current_new_york_time().date()
+        captured = str(context.get("captured_at", ""))
+        market_time = captured[11:16] if len(captured) >= 16 else captured
+        projection = self.runtime.amdx_context_widget.decision_projection()
+        run = self.active_trading_run
+        return StudyFindCaptureBasis(
+            run_id=run.id if run is not None else "",
+            run_label=run.run_label if run is not None else "No active run",
+            observation_date=observation_date,
+            instrument=self.instrument,
+            session=str(context.get("session", "Closed")),
+            market_time=market_time or "Unknown time",
+            amdx_target=projection.target_label,
+            amdx_profile=projection.profile,
         )
 
     @property
@@ -748,12 +790,24 @@ class TradingDayShellWidget(QWidget):
             and self.runtime.amdx_context_widget.repository is not None
             and self.runtime.amdx_context_widget.binding is not None
         )
-        self.plan_reference_frame.setVisible(reference_available)
+        contextual_study_find_available = bool(
+            active and self.runtime.current_mode.id == "live-watch"
+        )
+        self.plan_reference_frame.setVisible(
+            reference_available or contextual_study_find_available
+        )
+        self.plan_reference_button.setVisible(reference_available)
         self.plan_reference_button.setEnabled(reference_available)
+        self.study_find_button.setVisible(contextual_study_find_available)
+        self.study_find_button.setEnabled(contextual_study_find_available)
         self._plan_reference_available = reference_available
+        self._contextual_study_find_available = contextual_study_find_available
+        self.study_find_shortcut.setEnabled(contextual_study_find_available)
         self._sync_plan_reference_shortcut_focus()
         if not reference_available and self.amdx_decision_dock.isVisible():
             self.amdx_decision_dock.dismiss()
+        if not contextual_study_find_available:
+            self.contextual_study_find_dismiss_requested.emit()
         self.runtime.amdx_context_widget.setVisible(active and self.runtime.amdx_context_widget.repository is not None)
         self.runtime_scroll.setVisible(active)
         self.runtime.transition_frame.setVisible(active)
