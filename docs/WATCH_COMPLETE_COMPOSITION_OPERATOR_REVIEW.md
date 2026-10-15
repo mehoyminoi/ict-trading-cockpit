@@ -4,7 +4,7 @@
 
 **Artifact:** [Complete Watch composition v0](prototypes/watch-complete-composition-v0.html)
 
-**Status:** Directionally accepted checkpoint with one bounded follow-up; not final visual approval or native acceptance.
+**Status:** Directionally accepted checkpoint. The chart-adjacent reference is positively reviewed and its bounded reference-and-decision refinement is ready for review; this is not final visual approval or native acceptance.
 
 ## Accepted direction
 
@@ -13,7 +13,7 @@
 - Restrained Setup Criteria cues help the eye move between critical locations; minimal styling improves salience.
 - P&L remains absent and broker information remains process support rather than a casino-like dashboard.
 
-## Bounded follow-up
+## Chart-adjacent reference result and bounded refinement
 
 Manual AMDX and price-action discernment needs a low-friction reference to the applicable definition, criteria and process from the active Trade Plan. Because this work is tightly correlated with chart reading, its entry point and opened surface should follow the chart-facing edge:
 
@@ -26,10 +26,22 @@ Manual AMDX and price-action discernment needs a low-friction reference to the a
 
 This is a support popout, not another permanently visible panel.
 
+The operator is happy with the first popout and accepts the monitor-specific placement. The remaining friction is that the primary active-quarter AMDX controls sit behind and across the screen from the open reference. The accepted refinement turns the popout into a temporary **reference-and-decision dock**:
+
+- show the exact active target and only its legal roles;
+- invoke the same shared immediate AMDX action as the main AMDX panel;
+- dismiss after the selection and return to the Watch anchor;
+- retain unresolved `X(?)` rather than force certainty;
+- add no second Save, state owner, history or popout-specific semantics.
+
+This deliberately duplicates a control projection only for the single point-of-discernment operation. It does not duplicate the workflow.
+
+The two monitor arrangements also reveal a future global-setting requirement. Monitor relationship and chart-facing edge should be retained as an infrequently changed Workspace & Displays profile rather than ordinary daily task state. Constrained named profiles are preferred over unrestricted docking.
+
 ## Cross-suite implications accepted in the same review
 
 The discussion accepts the [Cross-suite UX Interaction Standards](UX_INTERACTION_STANDARDS.md): earned salience, change-oriented reacquisition, constraint-based error prevention, redundant encoding, distinct workspace identity within one coherent design language, future theme readiness and explicit review before any operator or developer suggestion overrides established UX guardrails.
 
 ## Acceptance boundary
 
-This review accepts the direction and information hierarchy, not final geometry, typography, exact fixture language, broker integration or production behavior. The updated standalone prototype may test the chart-edge reference. After that checkpoint, proceed to the smallest native composition slice instead of continuing open-ended prototype polish.
+This review accepts the direction and information hierarchy, not final geometry, typography, exact fixture language, broker integration or production behavior. The updated standalone prototype now tests the shared-action decision dock. After that bounded checkpoint, proceed to the smallest native composition slice instead of continuing open-ended prototype polish.

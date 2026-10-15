@@ -48,10 +48,15 @@ Watch should offer a contextual reference for manual discernment, especially AMD
 - open from the chart-facing edge and remain physically closest to TradingView in the active monitor profile;
 - support a direct mouse and keyboard route, then return focus to the same Watch anchor;
 - remain a support surface rather than a permanent dashboard panel;
+- culminate in the active quarter's legal one-action choices when opened for AMDX discernment, then dismiss after the choice;
 - preserve ambiguity and allow a Study Find when the rule or evidence is unresolved;
 - show provenance and never present prototype examples as published rules.
 
-The Watch projection is a concise aid. Full definition authoring, comparison and empirical evaluation remain Lab / Trade Plan work.
+The decision controls are a second **projection** of the existing shared AMDX action, not a second workflow. They must use the same target, legal-choice constraints, labels, immediate revision semantics and state as the main AMDX surface. They may not introduce a separate Save, history or popout-only domain behavior. Full definition authoring, comparison and empirical evaluation remain Lab / Trade Plan work.
+
+## Workspace and display settings
+
+Monitor relationship is a suite-wide, infrequently changed preference. A future **Workspace & Displays** settings area should retain a constrained named profile such as TradingView-left/Cockpit-right or Cockpit-above/TradingView-below, preview the resulting chart-facing edge, and reuse that relationship across relevant workspaces. Theme and shortcut/macro-pad bindings belong in the same broader settings system when implemented. Do not turn this into unrestricted panel docking or a separate data model.
 
 ## Cross-suite identity target
 

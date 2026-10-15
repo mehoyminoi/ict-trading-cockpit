@@ -942,3 +942,17 @@ Any operator or developer proposal that appears to weaken accepted safety, acces
 **Consequences / deferred:** The standalone Watch prototype may test a fixture reference, but no prototype language becomes published Trade Plan policy. Native implementation, full criteria authoring/evaluation, light-theme delivery and final workspace identities remain later reviewed work.
 
 **Supersedes:** Refines earlier visual-color preferences: stable session colors remain useful identity cues, but accessibility and unambiguous operational semantics take precedence.
+
+## 2026-10-14 — Make the chart-edge reference a shared-action decision dock
+
+**Status:** Accepted.
+
+**Decision:** The positively reviewed chart-adjacent Trade Plan reference ends with the exact active AMDX target and its legal one-action role choices. A choice invokes the same shared immediate revision command as the main AMDX projection, dismisses the temporary reference and returns to Watch. It adds no Save, independent state, history or different semantics.
+
+The apparent duplicate control is deliberately limited to this one point-of-discernment step. It is acceptable because it is one action with two synchronized projections, not two workflows. If those projections cannot remain structurally identical, the contextual controls must not ship.
+
+Monitor relationship and chart-facing edge will mature into an infrequently changed global Workspace & Displays setting with constrained named profiles and preview. This does not authorize unrestricted docking.
+
+**Rationale:** Requiring the technician to close the governing rule, cross the screen and relocate the corresponding input would break the otherwise natural chart → criterion → decision sequence. The shared-action dock makes 90-minute upkeep feel like one coherent operation while preserving the spatial overview in the main AMDX surface.
+
+**Consequences / deferred:** Prototype interaction is ready for review. Native command wiring, settings persistence, theme configuration, shortcut assignment and macro-pad bindings remain later work.
