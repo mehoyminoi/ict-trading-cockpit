@@ -4,6 +4,8 @@
 **Reconciled:** 2026-10-08  
 **Role:** Canonical current product requirements and milestone roadmap.
 
+**Implementation-status clarification (2026-10-15):** Milestones A–C and the shared AMDX foundation/native consumers are implemented and merged on main, schema v46 / Alpha 0.7. Earlier descriptions of the “current frontier” and the reconciliation queue below are historical rationale, not an instruction to rebuild completed work. Focused prototypes have directionally accepted TDA parity, Study-first Lab and complete Watch relationships. Standalone polishing is closed. The selected first native UX proof is the [Watch decision-dock slice](WATCH_NATIVE_DECISION_DOCK_SLICE.md), followed by contextual Study Find, broader quiet-Watch composition and the Study-first doorway. Accepted 16:9, quiet Watch, shared calendar and nearby overview/detail requirements remain authoritative.
+
 Companion documents:
 
 - `docs/PROJECT_STATE.md` — exact current implementation checkpoint,
@@ -200,6 +202,10 @@ Focus and Deck are complementary projections of the same underlying process stat
 They must not fork into duplicate workflows.
 
 Operator clarification on 2026-10-11: the Focus/Deck relationship is a useful model for nearby detail and bird's-eye orientation, but the mature presentation should integrate the two closely rather than separate them behind tabs. This is a presentation direction; existing Focus/Deck tabs remain until a reviewed replacement preserves their shared process state and natural navigation.
+
+Operator clarification on 2026-10-13: Deck is not merely an organizational overview. It implements workspace/layout parity with the external TradingView TDA deck. For a four-pane chart layout, the corresponding cockpit stations should occupy the same top-left, top-right, bottom-left and bottom-right positions, carry explicit chart roles, and support the same reading/traversal order across both monitors. Selecting a cockpit pane opens that mapped station in Focus; returning preserves the map and selection. Only the active pane needs full detail, while inactive panes can show quiet state and retained conclusions. Mapping is revisioned deck/station configuration and must not change through ordinary navigation or reflow. See `WORKSPACE_PARITY.md` and `UX_DESIGN_TOUCHSTONES.md`.
+
+Focused operator trial on 2026-10-13 accepts this relationship and flow as a strong direction. TDA may use however many revision-defined Decks are required; each standard Deck can pair with a four-pane TradingView layout and reuse positional mapping. Preserve existing useful wheel and mouse-button navigation while testing direct `1`–`4` position selection, keyboard shortcuts and later macro-pad/CAD-mouse bindings over the same actions. Selected-pane borders, complete/current/pending cues and restrained state colors are functional reacquisition aids when the technician looks to TradingView and back. Preserve non-color state meaning; exact palette, border treatment, bindings and deck switching remain open. See `TDA_LAYOUT_PARITY_OPERATOR_REVIEW.md`.
 
 ### 4.3 Navigation versus certification
 
@@ -1134,9 +1140,9 @@ Cross-device Live safety requires one authoritative central service/database sta
 
 ---
 
-## 22. Near-term sequence after reconciliation
+## 22. Original reconciliation sequence — completed historical queue
 
-Subject to final operator confirmation:
+This queue records the 2026-10-08 sequence; its A–C work is now complete. Use `PROJECT_STATE.md` and `COCKPIT_UX_IMPLEMENTATION_PLAN.md` for current work.
 
 1. Merge this reconciliation/handoff documentation checkpoint.
 2. Start **Milestone A — Competency evidence loop** with a small design/inventory slice.
@@ -1506,3 +1512,39 @@ PR #72/source `c822d04` implements schema-v44 immutable run/master binding, capt
 ### Higher Review scope alongside broad historical Lab — current clarification
 
 Review may inspect distinct higher contexts on either calendar side of its original reviewed futures day, defaulting to the original run reference. Selection updates factual higher orientation without retargeting the intraday editor or recording a judgment. Deliberate phase input retains the original launch and selected scope together in its immutable assessment basis. The bounded run window does not restrict all-layer historical Lab backfill. Current maintained Observed and original captured Expected remain distinct; no Watch comparison/history control or automatic Expected baseline is implied. `AMDX_HIGHER_REVIEW_GUIDE.md` records the current implementation boundary; final full-cockpit rendering and the Study/criteria/import milestones remain subsequent work.
+
+
+## 2026-10-13 — UX review feedback and recovered context
+
+The operator's review of the whole-cockpit walkthrough identifies density, homogeneous major sections, dispersed related AMDX information and an over-combined Focus/Deck presentation. Guided work and readily accessible bird's-eye orientation remain distinct responsibilities; close integration does not require all expanded detail and overview panels to stay visible simultaneously. The existing synthetic layout is not accepted as the mature renderer.
+
+Retain the calendar-like QT hub direction, now specified more concretely: in Lab, an actual month calendar with appropriate week/day/session-cycle indications, period selection exposing editable lower context, and access to the supported 16-year-to-smallest-cycle stack. A calendar shortcut/access path from other cockpit contexts is desired. Shared calendar ownership, explicit studied/operational references and immutable run captures still govern those views.
+
+For future quarter/session colorization, record Q1/Asia yellow, Q2/London red, Q3/NYAM green and Q4/NYPM blue. This is a temporal identity convention, not an AMDX-phase or completion-state palette; exact colors and accessibility/theme treatments are not implemented here.
+
+Familiar CAD/SolidWorks, Office and tuning-software navigation, ribbons/toolbars/tabs/icons, and one-action support tools are exploratory preferences to try. Study Find, extra context and subroutines should be easy to invoke and leave, while required current-step decisions remain discoverable. Major sections should be identifiable at a glance. The operator explicitly keeps these layout suggestions provisional.
+
+Before further UI changes, compare the recovered prequel/continuation with the current plan. `UX_CONTEXT_RECONCILIATION.md` records the overlap, surviving contracts, proposal gaps and three journeys to refine. This feedback neither accepts a replacement layout nor reopens completed storage work.
+
+
+## 2026-10-13 — UX friction research and future news/calendar cues
+
+The operator requests a distinct review of established professional UX methods before further UI development. `UX_FRICTION_RESEARCH.md` records primary sources, their limits, and proposed UX-F01–F12 quality criteria: task-oriented attention, coherent context, direct frequent entry, discoverable support tools, stable navigation, keyboard access, recoverability and complete-task evaluation. These form a candidate requirements annex for discussion, not accepted final controls or measured usability improvement. Ribbons/toolbars remain trial options. Existing behavioral contracts and the recovered-context review hold remain authoritative.
+
+Use task analysis, structured inspection, cognitive walkthroughs and small goal-based operator trials to refine the guided TDA/Deck return, quiet Watch/support return and Lab calendar investigation journeys. Usability records should supplement rather than rewrite functional smoke instructions. Evaluate correct scope/outcome, hunting/backtracking, context recovery, time and operator effort; no arbitrary global click quota, readiness score or automatic telemetry is introduced.
+
+Retain the requested future news presentation: scheduled releases should appear on the maintained calendar, with useful news/quarter/AMDX-stack context cues. Exact markers, filters and composition remain open. Reuse event/provider provenance and historical as-of/coverage semantics; unavailable coverage is not no-news. Temporal alignment, plan-defined expectation and measured association must remain distinguishable. Quarter colours retain temporal identity, with separate labelled news cues. This wish does not authorise feed acquisition, a new classifier, automatic trading restrictions or another calendar owner.
+
+# Accepted cross-suite UX guardrails (2026-10-14)
+
+The mature Cockpit must apply the accepted [Cross-suite UX Interaction Standards](UX_INTERACTION_STANDARDS.md): earned/change-based salience, interruption recovery, shared command grammar, constraint-based error prevention, redundant encoding, truthful provenance, and realistic journey evaluation.
+
+- Major workspaces must feel distinct enough to support task-mode recognition while retaining a cohesive suite-wide design language.
+- When an operator or developer proposal conflicts with an accepted safety, accessibility, semantic-clarity or low-friction principle, the conflict, likely adverse effect and alternatives must be documented and discussed before adoption. A suggestion does not silently override the principle.
+- Watch must provide a direct, chart-adjacent contextual reference to active Trade Plan definitions, criteria and process for manual discernment. The surface follows the chart-facing edge, preserves the Watch anchor and remains support rather than a permanent dashboard pane.
+- When that reference supports active AMDX discernment, it must expose the exact active target and its legal immediate role choices at the end of the operation. These controls are another projection of the shared AMDX action—not a second workflow—and dismiss after the choice. They add no Save, state owner or divergent behavior.
+- Session identity colors remain permissible only with redundant non-color encoding and must not silently collide with operational state colors.
+- A future light theme should share the same semantic token model and information hierarchy as the dark theme; this does not create a second workflow or immediate native implementation requirement.
+- A robust suite-wide Settings area must eventually own infrequently changed Workspace & Displays profiles, including the chart/Cockpit relationship and chart-facing edge. Named constrained arrangements should be remembered and previewable; this requirement does not authorize arbitrary dockable-window composition. Theme and shortcut/macro-pad configuration may join that global system later.
+
+Full criteria authoring, definition comparison and empirical evaluation remain spacious Lab / Trade Plan concerns. Watch projects concise current guidance and provenance only.

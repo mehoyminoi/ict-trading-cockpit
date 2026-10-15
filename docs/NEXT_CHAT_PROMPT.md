@@ -48,7 +48,7 @@ If the repository documents themselves contain an unresolved contradiction, repo
 
 ## Step 3 — Verify the checkpoint before coding
 
-Latest frontier: AMDX PRs #67–75 are merged into `main`, schema v46 / Alpha 0.7. Final code merge `8b7f8ae0e8e6da76bed266f771fce75d4bfaaefb` has the exact reviewed consolidation tree from `15e64af8d51f946696e9927b5ce731857bdc8602`. Complete validation: 1,136 PASS / 89 isolated modules / 450.24s; all 20 operator checks 261–280 PASS. Read the latest `PROJECT_STATE.md` and `AMDX_CONSOLIDATION_REVIEW.md`. User sync/database backup is documented in `AMDX_MAIN_SYNC_GUIDE.md`; preserve local smoke notes and earlier stashes. The next active product milestone is the comprehensive whole-cockpit UX/Study implementation plan, keeping final rendering, criteria authoring/evaluation and controlled legacy/history import scope explicit. Do not resume the historical unmerged-stack/merge-approval task or infer new feature approval beyond the current milestone.
+Latest frontier: AMDX PRs #67–75 are merged into `main`, schema v46 / Alpha 0.7. Final code merge `8b7f8ae0e8e6da76bed266f771fce75d4bfaaefb` has the exact reviewed consolidation tree from `15e64af8d51f946696e9927b5ce731857bdc8602`. Complete validation: 1,136 PASS / 89 isolated modules / 450.24s; all 20 operator checks 261–280 PASS. Read the latest `PROJECT_STATE.md` and `AMDX_CONSOLIDATION_REVIEW.md`. User sync/database backup is documented in `AMDX_MAIN_SYNC_GUIDE.md`; preserve local smoke notes and earlier stashes. Native UI work has not begun. First read `UX_CONTEXT_RECONCILIATION.md`, `UX_FRICTION_RESEARCH.md`, `UX_DESIGN_TOUCHSTONES.md`, `UX_INTERACTION_STANDARDS.md` and `WORKSPACE_PARITY.md`. TDA parity, Study-first Lab and complete Watch are directionally accepted checkpoints; final integrated/native judgment remains open. The Watch reference-and-decision dock passed its bounded operator review and is now the accepted contextual-completion exemplar: exact target, legal choices, one existing command, synchronized state, dismissal and focus return. Stop standalone Watch polishing. The selected next milestone is `WATCH_NATIVE_DECISION_DOCK_SLICE.md`, a thin native projection over the current shared AMDX command and current Watch shell. Alpha 0.7 contains no published AMDX manual-reference definition; show truthful unavailability until a versioned plan supplies it. Study Find integration, broader quiet-Watch recomposition and Study-first routing follow this proof. Monitor relationship belongs to future global Workspace & Displays settings. P&L, order submission and real broker policy remain absent.
 
 Report back to me with:
 
@@ -88,7 +88,7 @@ Milestone C — Evidence Maturity and progression governance is complete:
 -> **C4 Regression / downgrade semantics**
 -> **C5 Operator-loop integration and guardrails**
 
-The next major roadmap frontier is **Milestone E — Context maturity: QT/AMDX, news, and distortions**. Milestone D remains parallel and should be activated only by friction observed through actual operator use.
+Historical roadmap statement: **Milestone E — Context maturity: QT/AMDX, news, and distortions** was the next frontier at this earlier checkpoint. Its shared AMDX foundation is now merged; use the current UX/Study planning frontier above. Milestone D remains parallel and should be activated only by friction observed through actual operator use.
 
 Evidence Maturity is boundary-aware from v0 and is keyed conceptually by:
 

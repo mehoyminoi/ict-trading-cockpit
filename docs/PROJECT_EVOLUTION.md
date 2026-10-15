@@ -4,6 +4,12 @@
 
 This is not the canonical requirements document. Current product truth belongs in `PROJECT_REQUIREMENTS.md`; exact implementation state belongs in `PROJECT_STATE.md`; durable accepted decisions belong in `DECISIONS.md`; conflicts/supersession belong in `DECISION_AUDIT.md`.
 
+## 2026-10-14 — UX investigation becomes cross-suite interaction governance
+
+Focused TDA, Lab and Watch trials produced a durable layer above individual layouts. The project accepted change-based earned salience, interruption recovery, constraint-based error prevention, redundant encoding and distinct workspace modes inside one cohesive interaction language. “What changed since my last glance?” became a cross-suite reacquisition test.
+
+Operator and developer suggestions remain important inputs but no longer silently supersede established safety, accessibility, semantic-clarity or low-friction principles; conflicts require an explicit risk/tradeoff review. Watch also gains a bounded chart-adjacent reference to versioned Trade Plan definitions, criteria and process for manual discernment. The reference is support, not another dashboard or a new policy owner. Full rule authoring/evaluation stays with Lab / Trade Plan work. Native implementation remains the next phase after this focused prototype review.
+
 ## Reading rule
 
 Later accepted decisions supersede earlier exploratory discussion unless a later decision explicitly preserves the earlier behavior.
@@ -517,3 +523,109 @@ Operator acceptance of bounded higher Review completes checks 261–280 across t
 ## 2026-10-13 — Consolidated AMDX foundation becomes main
 
 After explicit approval of the reviewed nine-PR merge sequence, #67–75 were merged into main in order with merge commits and exact-tree verification. The final code merge `8b7f8ae` is identical to reviewed checkpoint `15e64af`; 1,136-test validation and operator checks 261–280 remain applicable. Main advances from v41 to v46 without a Trade Plan revision change. The maintained historical/operational calendar, immutable run provenance and bounded Observed Review are now the stable foundation for the next whole-cockpit UX/Study implementation plan. Regular-app database backup/sync is documented separately; no user database was opened by the agent and no final renderer/criteria/import work is implied by the merge.
+
+
+## 2026-10-13 — Whole-cockpit UX/Study implementation plan
+
+After AMDX PRs #67–75 merged, the next authorized work is a comprehensive UX/Study plan rather than more speculative storage. `COCKPIT_UX_IMPLEMENTATION_PLAN.md` maps current capabilities to a primary 16:9 shell, Study doorway, nearby overview/detail, quiet Watch and spacious AMDX Lab. It proposes UX1 safe Study routing, UX2 integrated Study task, UX3 operational renderers and UX4 criteria authoring. Startup active-run handling, ranking, navigation and layout remain explicit proposals. A synthetic interactive walkthrough supports meaningful whole-tool review without changing native behavior or recorded acceptance.
+
+The storyboard's old smaller companion-window target and current-state sections describing unfinished PR #72 integration are reconciled to the accepted override and merged v46 baseline. Historical checkpoint entries remain preserved. Production source/tests/tools, Alpha 0.7, schema and all 280 smoke records are unchanged; no new full-suite result or operator layout acceptance is inferred.
+
+
+## 2026-10-13 — Operator UX feedback and recovered-context comparison
+
+The HTML walkthrough made the proposal reviewable, and the operator identified dense/homogeneous presentation, inadequate quietness, scattered AMDX context and over-combined Focus/Deck work. The requested historical comparison found supporting requirements in the prequel and continuation: guided action/observation/carry-forward work, spatial Deck → selected Focus access, quiet capture commands, calendar-like QT hub, selective Review and different Lab/Rehearsal/operational emphasis. The repeated 148-pass handoff and cumulative feedback digest are handled as overlap rather than independent new approvals.
+
+`UX_CONTEXT_RECONCILIATION.md` records that comparison and the newer month-calendar/quarter-color and familiar ribbon/task-bar trial preferences. Later shared calendar ownership, exact historical captures, legal quartet revision, primary 16:9 footprint and evidence/eligibility separation remain intact. UI work is paused while the corrected meaning and journey priorities are reviewed. Documentation only; no source/schema/plan/smoke changes or accepted replacement layout.
+
+
+## 2026-10-13 — UX friction methods and future news/calendar presentation
+
+At the operator's request, UI work remains paused for distinct professional-method research. `UX_FRICTION_RESEARCH.md` connects task analysis, progressive/staged disclosure, command organisation, perceptual grouping, stable navigation and understandable cues with inspection, cognitive walkthroughs and goal-based operator trials. Twelve quality criteria are proposed for discussion, with actual usability evidence separate from functional pass counts. The calendar news/quarter/AMDX cue wish is retained as future presentation, preserving historical knowledge and empirical-versus-temporal distinctions. No new renderer, feed, schema, plan policy or operator acceptance is introduced.
+
+## 2026-10-13 — Layout parity and design touchstones preserved
+
+The operator clarifies that the four-pane TDA Deck is more than an overview: it maps positionally to the four-pane TradingView layout so both monitors can be read like facing pages while capturing criteria and points of interest. `WORKSPACE_PARITY.md` now makes that mapping, shared Focus/Deck state and revision ownership explicit. `UX_DESIGN_TOUCHSTONES.md` retains the compact phrases and motifs that carry product meaning and supplies cross-examination questions for future proposals. This documentation checkpoint changes no renderer or production behavior.
+
+## 2026-10-13 — Focused TDA layout-parity review artifact
+
+`TDA_LAYOUT_PARITY_INTERACTION_SPEC.md` turns the accepted parity principle into a reviewable journey. Its standalone HTML pairs a schematic four-pane TradingView monitor with the position-matched Cockpit Deck, then demonstrates mapped station Focus, Action/Observe/Carry Forward, shared state, return without completion, explicit completion and disposable reload persistence. Automated browser assertions cover the principal interaction, and Deck/Focus were inspected at 1600×900. This remains a disposable proposal rather than native UI or operator acceptance.
+
+## 2026-10-13 — TDA parity focused trial succeeds
+
+The operator reports a meaningful improvement in feel and flow. The accepted direction now includes however many revision-defined four-pane TDA Deck/TradingView layout pairs the full analysis requires, mapped Deck/Focus state, quiet inactive panes, and subtle border/state cues that support rapid reacquisition after looking to the chart monitor. Existing scroll and mouse-button behavior remains valuable; direct `1`–`4` selection is promising; later macro-pad/CAD-mouse bindings should target the same actions. `TDA_LAYOUT_PARITY_OPERATOR_REVIEW.md` records the accepted relationship and remaining control/styling choices. No native UI change is inferred.
+
+
+## 2026-10-13 — Quiet Watch/support-return journey becomes reviewable
+
+`WATCH_QUIET_SUPPORT_INTERACTION_SPEC.md` and a disposable standalone HTML isolate the second corrected journey. The proposal consolidates current AMDX context, direct legal active-90-minute entry, contextual Study Find capture and read-only full-stack inspection around an unchanged Watch return anchor. It intentionally omits history/comparison, automatic classification and real persistence. Automated browser checks cover direct X(R), capture/save/return, inspection/return, unfinished-draft recovery and reload; 1600×900 Watch, capture and inspection states were visually checked. This is a review artifact, not operator acceptance or native implementation.
+
+## 2026-10-14 — Quiet Watch review and nested Lab direction
+
+The operator strongly endorses contextual Study Find access/return, including main-body dismissal, and reports improved quietness and rapid reacquisition after looking to TradingView. Direct active-cycle entry and current-state-only Watch scope remain intact. The trial also exposes three correctable defects: saved Study Find text reappears as a draft, Full Stack return moves away from its entry command and the green quiet cue demands attention. The standalone fixture corrects those behaviors without changing production code.
+
+The Watch/full-stack AMDX layout is not accepted. A flat list does not convey temporal containment, and enlarging it does not create analytical space. The operator's Trilium screenshot validates a disclosure-tree path from year through quarter, month, week and day while also demonstrating deep indentation and vertical-scan costs. `LAB_AMDX_CALENDAR_TREE_INTERACTION_SPEC.md` therefore proposes a bounded current-path feature tree synchronized with a calendar/detail workspace and semantic zoom. The tree navigates; the workspace supports inspection, entry and analysis.
+
+The review also records a constrained contextual support rail, early synthetic broker/process-safety projection and explicit ultrawide/dedicated-monitor composition trials. Broker information supports adherence rather than P&L stimulation; the rail is not an unrestricted dashboard builder. No native renderer, broker integration, schema, plan or smoke record changes.
+
+## 2026-10-14 — Lab calendar/feature-tree journey becomes reviewable
+
+`prototypes/lab-amdx-calendar-tree-v0.html` makes the Trilium-informed direction tangible without copying a permanently expanded tree. A bounded current path and nearby siblings remain on the left; breadcrumb, selection and detail stay synchronized; the center changes shape across year/quarter overview, real October month grid, week strip, session quartet and 90-minute quartet. Expected/Observed switching, direct legal role entry, profile implication, explicit unavailable history, incomplete-news cues and Follow Current are disposable local fixture behavior.
+
+Focused interaction assertions cover month geometry, semantic zoom through week/day/session/cycle, immediate X(R) revision, channel independence, zoom-out parent restoration, truthful unavailable selection, Follow Current and reload continuity. JavaScript parsing, local links, smoke-document checks and diff formatting pass. The prototype does not open the operator database or change source, schema, Trade Plan or smoke records. Operator review remains required before deriving the compact Watch renderer or attempting native composition.
+
+## 2026-10-14 — Lab review requires independent context depth
+
+The operator reports that the tree, center workspace and right rail feel good together; Follow Current and missing-entry handling are useful; and the real October calendar with visible news is a strong step. The review is recorded in `LAB_AMDX_CALENDAR_TREE_OPERATOR_REVIEW.md`. Higher views remain too generic and do not expose enough of what lies inside the selected period.
+
+The updated prototype separates temporal zoom from Quiet/Nested/Deep context depth. A month can retain its ancestor chain while optionally revealing compact session quartets and selected lower-cycle cues inside days. Standard month/year navigation, week Q1–Q4/distortion markers, true-open due/recorded/unavailable states and richer Year/Quadrennial/16-year child canvases are added. True opens are presented as adjacent market facts, not AMDX judgments; fixture marking adds no production repository. The shell names AMDX Calendar as the active Lab lens and explicitly retains broader Study, evidence, criteria and sample work outside this focused lens.
+
+This remains a disposable interaction study. No source, schema, plan, news feed, true-open persistence, market-data integration or smoke records change. Operator review of density and hierarchy remains required before deriving Watch.
+
+## 2026-10-14 — Lab hierarchy favors semantic grouping over decorative color
+
+The second Lab review accepts Quiet/Nested/Deep as a useful configuration and endorses the calendar controls and higher-timeframe context spine. It also identifies that Q1–Q4 color across every day in a month row only repeats ordinal position and creates attention cost without enough analytical information. The corrected trial uses a neutral left week rail: Quiet preserves physical grouping only, Nested adds actual week/daily AMDX values, and Deep adds the interval and compact session roles.
+
+True opens now sit at their period location in the year/month/week/day projections. Lab may inspect or edit the fact, while TDA owns the reminder when an unmarked open becomes temporally relevant. A later display policy may permit restrained cue/color visibility without changing shared ownership.
+
+The combined **Lab · AMDX Calendar** control preserves a promising CAD-workbench analogy for movement among Cockpit phases and analytical lenses, but it does not settle the taxonomy. Temporal zoom also remains open: separating it from context depth helps, but the current controls and selection behavior are not accepted. The third standalone iteration tests these narrower questions only; production behavior remains unchanged.
+
+## 2026-10-14 — Calendar depth accepted as a direction, full Lab remains open
+
+The third review finds the calendar's Quiet/Nested/Deep distinction materially better and asks that the same semantic-density discipline reach the tree and other layers. The full AMDX Lab portion remains a good start rather than a final form.
+
+The fourth trial removes generic quarter color from tree marks, higher-level groups, quartet cards, compact stacks and the detail profile. Text/order/grouping carry Q1–Q4; selection, current reference, unavailable data, news and entered/implied states retain their own cues. Only the four named Trading Day session cards retain a restrained palette edge as a provisional test of stable domain identity. Increasing context depth adds information, not saturation.
+
+This records partial acceptance precisely: the calendar depth model advances, while the overall workspace, remaining color policy, temporal zoom, controls and native composition stay open. No production source, schema, persistence or smoke records change.
+
+## 2026-10-14 — Isolated AMDX Lab direction checkpointed
+
+The operator confirms that the initial direction questions are satisfied and agrees to stop polishing the standalone AMDX Lab fixture. Quiet/Nested/Deep calendar density, neutral hierarchy and restrained session color carry forward. The session palette earns its place because it matches established Asia/London/NYAM/NYPM chart indicators and can aid cross-monitor recognition.
+
+This is a directional checkpoint rather than full/final approval. Real historical editing, temporal movement, definitions/evidence/news/Study Find use, broader Lab composition, TDA/Watch/Review integration, native input and monitor layouts still determine the mature result. The unresolved zoom interaction is deferred until an integrated workflow makes the problem concrete.
+
+The active design frontier now moves outward: compose a Study-first Lab that can coordinate competency/question guidance, chart evidence and Study Finds, criteria/definition research, historical and forward samples, and transitions to the other Cockpit workbenches. AMDX Calendar remains foundational but is one lens, not the identity of Lab.
+
+## 2026-10-14 — Broader Study-first Lab composition becomes reviewable
+
+`LAB_STUDY_WORKBENCH_INTERACTION_SPEC.md` and `prototypes/lab-study-workbench-v0.html` move outward from the accepted isolated AMDX direction. The proposed Lab opens with one dismissible, bounded competency question for the tired-technician use case, then keeps that question stable while Study Plan, Evidence, Criteria, Samples and AMDX Calendar provide different analytical lenses. A left Study map orients, the center performs the current operation and the right rail exposes one contextual support tool with an optional pinned companion.
+
+The proposal reflects the supplied trading-plan material without copying it into one large form: plan-owned definitions, preparation, chart evidence, backtest/replay/forward samples, measurement, review and deliberate revision remain distinct operations. Study Find inherits the active question and context, preserves a draft on close and returns to Evidence after save. The AMDX calendar uses the same maintained foundation and does not become a separate catalog or consume every Lab screen.
+
+Focused mock-DOM interaction assertions cover startup/resume, lens continuity, draft close/reopen, save-and-return, evidence count, AMDX routing, contextual support, pinning, keyboard lens access and reload recovery. HTML and inline JavaScript parse cleanly. The fixture remains browser-local and synthetic; no application source, schema, Trade Plan, smoke record, database or screenshot storage changes. Operator review is required before selecting a first native composition slice.
+
+## 2026-10-14 — Broader Study-first Lab direction advances
+
+The operator broadly likes the composition and identifies the front-and-center **Study this competency** prompt as a useful on-ramp into Study. First inspection produces no immediate friction and no concrete change request. The Study map, central workspace, contextual support rail and coordinated lenses therefore advance as a directional checkpoint without another standalone polish pass.
+
+This is deliberately not final Lab approval. The interface will require acclimation, and meaningful judgment is reserved for a fuller end-to-end test Study session, Replay and return through adjacent Cockpit operations. Exact controls, content density, styling, native behavior and integration remain open; iteration is expected as the suite matures.
+
+The design frontier moves to the deferred complete Watch composition: current orientation, direct AMDX entry, watch points, plan/gate/process safety, an early non-stimulating broker projection and monitor-orientation profiles. Once Study/Lab and Watch relationships can be evaluated together, choose the smallest native composition slice and later return to Lab through real integrated use.
+
+## 2026-10-14 — Complete Watch composition becomes reviewable
+
+`WATCH_COMPLETE_COMPOSITION_INTERACTION_SPEC.md` and `prototypes/watch-complete-composition-v0.html` assemble the previously separate Watch questions into one review surface. The operating canvas keeps one thesis, one next action, watch points, setup criteria and compressed TDA carry-forward. AMDX now uses a quiet ancestor path plus spatial session and active-90-minute quartets rather than the rejected flat all-layer list; direct Q4 `D`, `X(C)`, `X(R)` and unresolved `X` input remains immediate.
+
+Broker/process safety is an always-visible strip rather than a hideable support widget. Synthetic Quiet, Candidate blocked, Connection lost and Staged draft states distinguish connection, environment/account, authorization, risk envelope, position/order state and staged-versus-submitted status. P&L, balances, order commands and actual broker integration are intentionally absent. Study Find remains contextual and the AMDX route preserves a Watch return anchor.
+
+Two explicit composition profiles test physical reacquisition: TradingView left / Cockpit right on one ultrawide places the orientation rail on Cockpit's left edge; Cockpit above TradingView places the same cues on its bottom edge. Nineteen focused interaction assertions cover quiet state, direct `X(R)`, safety scenarios, staged/submitted distinction, draft recovery, save/return, AMDX return with the orientation edge retained, profile movement, reload and scope. HTML and JavaScript parse cleanly. Operator review remains required before choosing a native slice.
