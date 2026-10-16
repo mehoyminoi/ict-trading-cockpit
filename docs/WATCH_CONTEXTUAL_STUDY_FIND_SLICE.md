@@ -1,6 +1,6 @@
 # Native contextual Study Find vertical slice
 
-**Status:** Implemented and developer verified on `feature/watch-contextual-study-find-v0`, 2026-10-15. Operator checks 286–290 remain pending; no merge or final Watch-layout acceptance is implied.
+**Status:** Implemented, developer verified and operator accepted through checks 286–290 on `feature/watch-contextual-study-find-v0`, 2026-10-16. No merge or final Watch-layout acceptance is implied.
 
 **Purpose:** Reuse the accepted contextual-completion grammar for Study Find capture inside active Watch without replacing the Watch shell, duplicating Study Find persistence or presenting transient Watch context as a durable association that the current schema does not store.
 
@@ -77,4 +77,4 @@ The operator review asks whether capture feels immediately available and safely 
 
 `TradingDayShellWidget` supplies the Watch-only launcher, exact immutable opening basis and modified shortcut. Empty drafts receive only the supported date/instrument/session defaults. Existing drafts retain their identity and fields. Current run/time/AMDX context is visibly marked display-only because the present schema does not retain that exact association. Leaving Watch or the Trade Plan workspace closes the surface without discarding the draft.
 
-Focused developer verification covers shared draft identity, safe defaults, no-overwrite behavior, dismissal/restart recovery, managed clipboard images, repository save, validation failure, focus return and unchanged run/mode/AMDX state. The retained demo and exact operator procedure are documented in [the operator guide](WATCH_CONTEXTUAL_STUDY_FIND_OPERATOR_GUIDE.md). Checks 286–290 remain separate from developer verification.
+Focused developer verification covers shared draft identity, safe defaults, no-overwrite behavior, dismissal/restart recovery, managed clipboard images, repository save, validation failure, focus return and unchanged run/mode/AMDX state. The retained demo and exact operator procedure are documented in [the operator guide](WATCH_CONTEXTUAL_STUDY_FIND_OPERATOR_GUIDE.md). The explicit 2026-10-16 operator report marks checks 286–290 PASS, accepting this bounded behavior without approving final Watch styling/layout or a future durable run/time/AMDX association.

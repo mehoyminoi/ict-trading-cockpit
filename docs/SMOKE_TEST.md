@@ -1139,23 +1139,25 @@ Operator report, 2026-10-15 (America/Denver): “281-285 pass”. This records t
 
 ## Native Watch contextual Study Find — focused trial
 
-Use `WATCH_CONTEXTUAL_STUDY_FIND_OPERATOR_GUIDE.md` and `python tools/watch_contextual_study_find_demo.py --data-dir /tmp/ict-watch-contextual-study-find-v0`. This retained synthetic MNQ Replay fixture verifies the existing Study Find draft/save/managed-image path through a temporary Watch projection. Schema v46 / Alpha 0.7; all earlier 285 identities/results/comments remain exact. Checks 286–290 are NOT TESTED pending operator results.
+Use `WATCH_CONTEXTUAL_STUDY_FIND_OPERATOR_GUIDE.md` and `python tools/watch_contextual_study_find_demo.py --data-dir /tmp/ict-watch-contextual-study-find-v0`. This retained synthetic MNQ Replay fixture verifies the existing Study Find draft/save/managed-image path through a temporary Watch projection. Schema v46 / Alpha 0.7; all earlier 285 identities/results/comments remain exact. Checks 286–290 are PASS from the explicit 2026-10-16 operator report.
 
-- [NOT TESTED] Contextual capture opens only in active Watch with supported saved fields and explicitly display-only run/time/AMDX basis.
+- [PASS] Contextual capture opens only in active Watch with supported saved fields and explicitly display-only run/time/AMDX basis.
   - Where: guide checkpoint 286, Capture Study Find or Ctrl+Shift+F.
   - Expected: 2026-10-09 / MNQ / NYAM saved fields; exact Watch basis labeled current-context-only; no process movement.
-- [NOT TESTED] Escape/outside dismissal and same-directory restart restore one existing Study Find draft without reconstruction or default substitution.
+- [PASS] Escape/outside dismissal and same-directory restart restore one existing Study Find draft without reconstruction or default substitution.
   - Where: guide checkpoint 287, partial contextual draft, dismiss/reopen/restart.
   - Expected: same draft identity/text; Resumed existing draft; no final Study Find or Watch transition.
-- [NOT TESTED] Clipboard screenshot paste uses the managed Study Find attachment path and survives contextual dismissal/reopen.
+- [PASS] Clipboard screenshot paste uses the managed Study Find attachment path and survives contextual dismissal/reopen.
   - Where: guide checkpoint 288, Paste chart or Ctrl+V with an image clipboard.
   - Expected: one managed attachment retained; empty clipboard changes nothing.
-- [NOT TESTED] Save & return uses the existing repository/image association and restores unchanged Watch context.
+- [PASS] Save & return uses the existing repository/image association and restores unchanged Watch context.
   - Where: guide checkpoint 289, completed contextual capture, full Study Find and Study Review inspection.
   - Expected: one saved item/image; same run/mode/AMDX; no process, evidence or competency side effect.
-- [NOT TESTED] Invalid save remains local and a non-empty custom draft is never overwritten by current Watch defaults.
+- [PASS] Invalid save remains local and a non-empty custom draft is never overwritten by current Watch defaults.
   - Where: guide checkpoint 290, required-field failure, custom full-tab draft, contextual reopen/leave Watch.
   - Expected: actionable validation; same draft/custom fields; leaving Watch closes support and retains draft.
+
+Operator report, 2026-10-16 (America/Denver): “286–290 PASS”. This records the functional result without inferring final Watch styling/layout or future durable context-link acceptance.
 
 ## Reporting results
 

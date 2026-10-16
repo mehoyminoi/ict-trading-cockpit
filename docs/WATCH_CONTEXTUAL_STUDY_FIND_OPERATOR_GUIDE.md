@@ -2,7 +2,7 @@
 
 This focused trial verifies that contextual capture in real native Watch uses the existing Study Find draft, managed screenshot and repository paths, then returns to the same operating anchor. It does not ask for final Watch styling/layout approval or claim that exact run/time/AMDX associations are already persisted.
 
-**Status:** Developer verification complete; operator checks 286–290 are not yet tested.
+**Status:** Developer verification complete; operator checks 286–290 PASS from the explicit 2026-10-16 report. This accepts the bounded capture behavior, not final Watch styling/layout or future durable exact-context linkage.
 
 ## Get the trial
 
