@@ -38,6 +38,7 @@ class StudyFindWidget(QWidget):
 
     study_find_ready = Signal(StudyFind)
     draft_changed = Signal(StudyFindDraft)
+    submission_failed = Signal(str)
 
     def __init__(
         self,
@@ -256,8 +257,43 @@ class StudyFindWidget(QWidget):
             image_path=primary_image_path,
         )
 
-    def submit(self) -> None:
-        self.study_find_ready.emit(self.build_study_find())
+    def submit(self) -> bool:
+        try:
+            study_find = self.build_study_find()
+        except ValueError as error:
+            self.submission_failed.emit(str(error))
+            return False
+        self.study_find_ready.emit(study_find)
+        return True
+
+    def apply_context_defaults(
+        self,
+        *,
+        observation_date=None,
+        instrument: str = "",
+        session: str = "",
+    ) -> bool:
+        """Seed supported context only when the current draft is empty."""
+        if self.build_draft().has_content() or not self.save_button.isEnabled():
+            return False
+        self._loading_draft = True
+        try:
+            if observation_date is not None:
+                self.date_input.setDate(
+                    QDate(
+                        observation_date.year,
+                        observation_date.month,
+                        observation_date.day,
+                    )
+                )
+            if instrument:
+                self.instrument_input.setText(instrument)
+            if session:
+                self.session_input.setText(session)
+        finally:
+            self._loading_draft = False
+        self.emit_draft_changed()
+        return True
 
     def _active_summary_template(self):
         if self.summary_template_repository is None:
