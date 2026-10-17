@@ -980,3 +980,13 @@ The first implementation remains a thin projection over the current shared AMDX 
 Exact active-run identity, market time and AMDX target/profile are visible context only in this slice because the current Study Find schema does not persist those associations. The interface must say so rather than imply durable linkage. Adding that association requires a later explicit data/ownership decision.
 
 **Consequences / deferred:** Dismissal flushes the existing draft and returns focus; final save dismisses only after the existing repository path completes. No process transition, AMDX command, evidence or competency credit results from capture. The explicit operator report “286–290 PASS” accepts the bounded capture/recovery/image/save/validation behavior, not final Watch styling/layout or durable exact-context association. Arbitrary pinning/docking and full Study authoring remain later work; broader quiet-Watch composition is the next frontier.
+
+## 2026-10-16 — Compose native Watch over existing owners before Study routing
+
+**Status:** Developer verified; operator checks 291–295 pending.
+
+**Decision:** The broader native Watch proof is one four-region composition: a profile-aware chart-facing orientation edge, the existing Live Watch operating canvas, a compact projection of the maintained AMDX source/command, and a fixed truthful broker/process-safety strip. The full AMDX editor is hidden in Watch rather than duplicated; TDA/Review retain it. The existing Plan reference and Study Find launchers move onto the orientation edge.
+
+No broker owner exists in Alpha 0.7. The safety projection must therefore show broker/account/risk/position/order facts as unavailable and keep P&L absent. `tv-left` and `tv-below` remain the only named layouts and share the existing remembered workspace setting.
+
+**Consequences / deferred:** This is a composition and reacquisition proof, not broker integration or final styling. It adds no schema, order command, numeric risk policy, AMDX/Study owner or arbitrary docking. After bounded operator review, proceed to Study-first startup routing rather than another isolated popup or renderer pass.

@@ -134,6 +134,7 @@ class TradingDayShellWidget(QWidget):
             embedded_session_run=True,
             live_watch_policy=self.live_watch_policy,
             playbooks=self.playbooks,
+            workspace_settings=workspace_settings,
         )
         self.runtime.layout().removeWidget(self.runtime.transition_frame)
         self.runtime.transition_frame.setParent(self)
@@ -141,26 +142,18 @@ class TradingDayShellWidget(QWidget):
         self.runtime.amdx_context_widget.setParent(self)
         runtime_layout.addWidget(self.runtime)
 
-        self.plan_reference_button = QPushButton("Plan reference")
-        self.plan_reference_button.setToolTip(
-            "Open the active Trade Plan reference and legal AMDX choices (P)"
-        )
+        self.plan_reference_frame = self.runtime.watch_quiet_composition.orientation
+        self.plan_reference_button = self.runtime.watch_quiet_composition.plan_reference_button
         self.plan_reference_button.clicked.connect(self._toggle_plan_reference)
-        self.plan_reference_frame = QFrame()
-        reference_layout = QHBoxLayout(self.plan_reference_frame)
-        reference_layout.setContentsMargins(0, 0, 0, 0)
-        reference_layout.addWidget(self.plan_reference_button)
-        self.study_find_button = QPushButton("Capture Study Find")
-        self.study_find_button.setToolTip(
-            "Open contextual Study Find capture (Ctrl+Shift+F)"
-        )
+        self.study_find_button = self.runtime.watch_quiet_composition.study_find_button
         self.study_find_button.clicked.connect(self._toggle_contextual_study_find)
-        reference_layout.addWidget(self.study_find_button)
-        reference_layout.addStretch()
         self.amdx_decision_dock = AMDXDecisionDock(
             self.runtime.amdx_context_widget,
             trade_plan_revision=self.trade_plan_revision,
             settings=workspace_settings,
+        )
+        self.amdx_decision_dock.display_profile_changed.connect(
+            self.runtime.watch_quiet_composition.set_profile
         )
         self.plan_reference_shortcut = QShortcut(QKeySequence("P"), self)
         self.plan_reference_shortcut.setContext(Qt.ShortcutContext.WidgetWithChildrenShortcut)
@@ -227,7 +220,6 @@ class TradingDayShellWidget(QWidget):
         layout.addWidget(self.summary_label)
         layout.addWidget(self.resume_context_label)
         layout.addWidget(self.market_time_label)
-        layout.addWidget(self.plan_reference_frame)
         layout.addWidget(self.runtime.amdx_context_widget)
         layout.addWidget(self.run_history_label)
         layout.addWidget(self.run_history)
@@ -771,6 +763,26 @@ class TradingDayShellWidget(QWidget):
         )
         runner.wheel_station_navigation_enabled = self.runtime.amdx_context_widget.repository is None
 
+    def _sync_watch_runtime_height(self) -> None:
+        # A resize can arrive while Qt is tearing down the shell. At that point
+        # PySide can still hold this wrapper after its child widgets are gone.
+        try:
+            watch_active = (
+                self.active_trading_run is not None
+                and self.runtime.current_mode.id == "live-watch"
+            )
+            if watch_active:
+                height = max(420, self.runtime_scroll.viewport().height())
+                self.runtime_frame.setMaximumHeight(height)
+            else:
+                self.runtime_frame.setMaximumHeight(16777215)
+        except RuntimeError:
+            return
+
+    def resizeEvent(self, event) -> None:
+        super().resizeEvent(event)
+        self._sync_watch_runtime_height()
+
     def _update_view(self) -> None:
         self._refresh_history()
         day_complete = self.trading_day.status is TradingDayLifecycleStatus.COMPLETE
@@ -808,16 +820,24 @@ class TradingDayShellWidget(QWidget):
             self.amdx_decision_dock.dismiss()
         if not contextual_study_find_available:
             self.contextual_study_find_dismiss_requested.emit()
-        self.runtime.amdx_context_widget.setVisible(active and self.runtime.amdx_context_widget.repository is not None)
+        self.runtime.amdx_context_widget.setVisible(
+            active
+            and self.runtime.current_mode.id != "live-watch"
+            and self.runtime.amdx_context_widget.repository is not None
+        )
         self.runtime_scroll.setVisible(active)
         self.runtime.transition_frame.setVisible(active)
         self.title_label.setVisible(not active)
         self.summary_label.setVisible(not active)
+        watch_active = active and self.runtime.current_mode.id == "live-watch"
+        self.resume_context_label.setVisible(active and not watch_active)
+        self.market_time_label.setVisible(active and not watch_active)
         runner = self.runtime.tda_station_runner_widget
         tda_focus_active = active and self.runtime.current_mode.id == "tda" and runner.view_tabs.currentWidget() is runner.focus_page
         self.tda_nav_frame.setVisible(tda_focus_active)
         self._sync_tda_nav()
         self._sync_runtime_scroll_policy()
+        self._sync_watch_runtime_height()
         self.run_history_label.setVisible(not active)
         self.run_history.setVisible(not active)
         can_start_another = not day_complete and self.active_trading_run is None and (bool(self.trading_runs) or self.calendar_repository is not None)

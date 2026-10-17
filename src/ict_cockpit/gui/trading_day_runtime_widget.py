@@ -23,8 +23,21 @@ from ict_cockpit.gui.qt_context_widget import QTContextWidget
 from ict_cockpit.gui.amdx_shared_context_widget import AMDXSharedContextWidget
 from ict_cockpit.gui.tda_station_runner_widget import TDAStationRunnerWidget
 from ict_cockpit.gui.tda_watch_point_widget import TDAWatchPointWidget
+from ict_cockpit.gui.watch_quiet_composition import WatchQuietCompositionWidget
 from ict_cockpit.process_blueprint import ModeDefinition, ProcessBlueprint
 from ict_cockpit.trade_plan import LiveWatchPolicyDefinition, PlaybookDefinition
+
+
+class CurrentPageStackedWidget(QStackedWidget):
+    """Size the runtime from its active mode instead of its largest hidden page."""
+
+    def sizeHint(self):
+        page = self.currentWidget()
+        return page.sizeHint() if page is not None else super().sizeHint()
+
+    def minimumSizeHint(self):
+        page = self.currentWidget()
+        return page.minimumSizeHint() if page is not None else super().minimumSizeHint()
 
 
 class TradingDayRuntimeWidget(QWidget):
@@ -52,6 +65,7 @@ class TradingDayRuntimeWidget(QWidget):
         embedded_session_run: bool = False,
         live_watch_policy: LiveWatchPolicyDefinition | None = None,
         playbooks: tuple[PlaybookDefinition, ...] = (),
+        workspace_settings=None,
     ) -> None:
         super().__init__()
         self.blueprint = blueprint
@@ -83,7 +97,8 @@ class TradingDayRuntimeWidget(QWidget):
             self.mode_labels[mode.id] = label
             self.mode_rail.addWidget(label, 1)
 
-        self.mode_stack = QStackedWidget()
+        self.mode_stack = CurrentPageStackedWidget()
+        self.mode_stack.currentChanged.connect(lambda _index: self.mode_stack.updateGeometry())
         self.mode_pages: dict[str, QWidget] = {}
 
         self.tda_station_runner_widget = TDAStationRunnerWidget(blueprint)
@@ -100,6 +115,20 @@ class TradingDayRuntimeWidget(QWidget):
         self.tda_station_runner_widget.view_tabs.currentChanged.connect(lambda _index: self._refresh_tda_watch_point_editor())
 
         self.live_watch_widget = LiveWatchWidget(self.live_watch_policy)
+        saved_profile = (
+            workspace_settings.value(
+                "workspace-displays/chart-relationship", "tv-left"
+            )
+            if workspace_settings is not None
+            else "tv-left"
+        )
+        if saved_profile not in ("tv-left", "tv-below"):
+            saved_profile = "tv-left"
+        self.watch_quiet_composition = WatchQuietCompositionWidget(
+            self.live_watch_widget,
+            self.amdx_context_widget,
+            profile=saved_profile,
+        )
         self.live_watch_widget.observation_submitted.connect(self.live_observation_submitted.emit)
         self.live_watch_widget.thesis_state_submitted.connect(self.live_thesis_state_submitted.emit)
         self.live_watch_widget.entry_condition_changed.connect(self.live_entry_condition_changed.emit)
@@ -121,7 +150,7 @@ class TradingDayRuntimeWidget(QWidget):
             if mode.id == "tda":
                 page = self.tda_station_runner_widget
             elif mode.id == "live-watch":
-                page = self.live_watch_widget
+                page = self.watch_quiet_composition
             elif mode.id == "post-market":
                 page = self.post_market_review_widget
             else:
@@ -220,7 +249,12 @@ class TradingDayRuntimeWidget(QWidget):
         )
         # The fixed orientation panel owns its width; runtime content wraps to
         # the remaining viewport and retains natural vertical scrolling.
-        self.mode_stack.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
+        self.mode_stack.setSizePolicy(
+            QSizePolicy.Policy.Ignored,
+            QSizePolicy.Policy.Ignored
+            if self.session.current_mode_id == "live-watch"
+            else QSizePolicy.Policy.Preferred,
+        )
         runner.view_tabs.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
         self.qt_context_widget.setVisible(visible and self.amdx_context_widget.binding is None)
         self.post_market_review_widget.qt_review_frame.setVisible(self.amdx_context_widget.binding is None)
@@ -367,6 +401,7 @@ class TradingDayRuntimeWidget(QWidget):
             self.current_mode.id,
             review_day_label=self.review_day_label,
         )
+        self.watch_quiet_composition.load_context(self.trading_run)
 
     def start_new(self) -> None:
         self.tda_station_runner_widget.start_new()
@@ -443,6 +478,14 @@ class TradingDayRuntimeWidget(QWidget):
         current_mode = self.current_mode
         self.mode_stack.setCurrentWidget(self.mode_pages[current_mode.id])
         self.refresh_market_context()
+        watch_active = current_mode.id == "live-watch"
+        self.market_context_widget.setVisible(not watch_active)
+        for label in self.mode_labels.values():
+            label.setVisible(not watch_active)
+        self.mode_stack.setSizePolicy(
+            QSizePolicy.Policy.Ignored,
+            QSizePolicy.Policy.Ignored if watch_active else QSizePolicy.Policy.Preferred,
+        )
         self._refresh_tda_watch_point_editor()
 
         if current_mode.id == "live-watch" and self.trading_run is not None:

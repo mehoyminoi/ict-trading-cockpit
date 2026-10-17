@@ -1159,6 +1159,28 @@ Use `WATCH_CONTEXTUAL_STUDY_FIND_OPERATOR_GUIDE.md` and `python tools/watch_cont
 
 Operator report, 2026-10-16 (America/Denver): “286–290 PASS”. This records the functional result without inferring final Watch styling/layout or future durable context-link acceptance.
 
+## Native quiet-Watch composition — focused trial
+
+Use `WATCH_QUIET_COMPOSITION_OPERATOR_GUIDE.md` and `python tools/watch_quiet_composition_demo.py --data-dir /tmp/ict-watch-quiet-composition-v0`. This retained synthetic MNQ Replay fixture composes the existing Live Watch, maintained AMDX command, accepted contextual tools and truthful process-safety projection. Schema v46 / Alpha 0.7; all earlier 290 identities/results/comments remain exact. Operator checks 291 and 293–295 PASS; 292 FAIL pending correction retest.
+
+- [PASS] Active Watch presents one simultaneous chart-facing edge, operating canvas, compact AMDX now and always-visible safety strip without duplicating the full AMDX editor.
+  - Where: guide checkpoint 291, default tv-left profile and normal 16:9 view.
+  - Expected: current cues are quickly reacquired; only the operating canvas scrolls; quiet state does not demand attention.
+- [FAIL] AMDX now selects the maintained target and records legal roles/X subtypes through the same immediate command with no second Save or Watch history route.
+  - Where: guide checkpoint 292, 90m Q4, X(R), then Plan reference.
+  - Expected: one command updates both projections and quartet profile; illegal choices remain unavailable.
+- [PASS] Safety keeps unavailable distinct from safe and gives changed authorization facts earned salience without adding P&L or broker actions.
+  - Where: guide checkpoint 293, default state and Trial safety state gate toggle.
+  - Expected: unavailable broker/account/risk/position/orders remain explicit; blocked gate is locally apparent; no invented broker change.
+- [PASS] Plan reference and contextual Study Find retain their accepted owner, recovery/save and focus-return behavior from the chart-facing edge.
+  - Where: guide checkpoint 294, dismiss/reopen/save both support surfaces.
+  - Expected: same Watch/run/AMDX/safety anchor; no process transition or duplicate draft/command owner.
+- [PASS] Named tv-left/tv-below profiles move one orientation edge and survive restart without changing run, process or AMDX state.
+  - Where: guide checkpoint 295, Workspace profile, restart and optional full AMDX lens route.
+  - Expected: placement only changes; no arbitrary docking; Lab inspection does not transition the Trading Run.
+
+Operator report, 2026-10-17 (America/Denver): 291 and 293–295 PASS; 292 FAIL. Choosing 90m Q4 X(R) left both compact Watch and Plan reference Unknown / Unresolved. Developer reproduction after a workspace round trip found a retained cancelled-gesture flag rejecting the new decision. The correction starts a fresh gesture only after exact token/legality validation and retains command errors across compact refreshes. Check 292 remains FAIL until the operator retest; preserve the retained trial directory.
+
 ## Reporting results
 
 Report results as:

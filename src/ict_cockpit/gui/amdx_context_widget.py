@@ -503,7 +503,15 @@ class AMDXContextWidget(QFrame):
             self.status_label.setText("Not recorded · that X subtype is unavailable for the current AMDX target")
             self._render()
             return False
-        return bool(self.choose(role, subtype))
+        # A token-validated decision is a new gesture. In particular, returning
+        # from another workspace must not inherit an earlier gesture's cancel
+        # flag. Start only after validation so stale/inactive decisions stay inert.
+        self._begin_gesture()
+        generation = self._gesture_generation
+        try:
+            return bool(self.choose(role, subtype))
+        finally:
+            self._end_gesture(generation)
 
     def _publish_decision_projection(self):
         projection = self.decision_projection()
