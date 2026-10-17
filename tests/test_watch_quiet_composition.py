@@ -129,6 +129,36 @@ def test_safety_strip_never_substitutes_safe_broker_facts(cockpit):
     assert "attention required" in composition.safety.summary_label.text()
 
 
+def test_stale_compact_decision_keeps_error_through_refresh_without_replay(cockpit):
+    _window, shell, connection = cockpit
+    source = shell.runtime.amdx_context_widget
+    compact = shell.runtime.watch_quiet_composition.amdx_now
+    old_projection = compact.projection
+    source.select_quarter(1, 3)
+    compact.projection = old_projection
+    before = command_count(connection)
+    compact._choose(Role.D)
+    assert "target changed" in compact.status_label.text()
+    compact.refresh_projection(source.decision_projection())
+    assert "target changed" in compact.status_label.text()
+    assert command_count(connection) == before
+    compact._select_quarter(1, 3)
+    compact._choose(Role.X, XSubtype.REVERSAL)
+    assert command_count(connection) == before + 1
+    assert "target changed" not in compact.status_label.text()
+
+
+def test_inactive_decision_cannot_restart_cancelled_gesture(cockpit):
+    _window, shell, connection = cockpit
+    source = shell.runtime.amdx_context_widget
+    projection = source.decision_projection()
+    before = command_count(connection)
+    source.set_active(False)
+    assert not source.choose_decision(projection.token, Role.D)
+    assert source._gesture_cancelled
+    assert command_count(connection) == before
+
+
 def test_named_monitor_profile_moves_one_orientation_rail_and_persists(cockpit):
     _window, shell, connection = cockpit
     composition = shell.runtime.watch_quiet_composition

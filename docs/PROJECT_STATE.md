@@ -1,5 +1,11 @@
 # ICT Trading Cockpit — Current Project State
 
+## 2026-10-17 — Quiet Watch operator finding and Q4 correction
+
+Operator checks 291 and 293–295 PASS; 292 FAIL: 90m Q4 X(R) remained Unknown in compact Watch and Plan reference. The failure reproduces after leaving and returning to the Trade Plan workspace: the shared owner retains `_gesture_cancelled`, and token-based decisions did not begin a new gesture. A fresh gesture now starts only after exact projection-token, availability and role/subtype validation; stale and inactive decisions remain rejected. Compact command errors survive passive refresh instead of being overwritten by the generic current-state text. The retained fixture uses the existing database without reset. Check 292 remains FAIL pending operator retest, and no merge is authorized. See the operator guide for the bounded workspace-return / Q4 entry / restart retest.
+
+Correction verification: 25 focused tests PASS across quiet composition/demo, decision dock, contextual Study Find and smoke documentation; four existing AMDX gesture/cancel/boundary tests PASS. The retained-demo tests additionally passed after adding restart and shared-projection assertions (3 PASS). All four changed Python files pass Python 3.10 grammar; `git diff --check` is clean. The earlier 1,155-test full-suite result belongs to the original composition, not this correction. No fresh full-suite result or operator 292 PASS is claimed.
+
 Current checkpoint: AMDX PRs **#67–75 are merged into main**, after the explicit ordered merge approval. Main is schema **v46 / Alpha 0.7**, with the integrated maintained historical/operational calendar and bounded higher Review. Native Watch decision dock checks 281–285 and contextual Study Find checks 286–290 PASS. `feature/watch-quiet-composition-v0` now composes those accepted interactions with the existing Live Watch, compact maintained-AMDX projection and truthful fixed safety strip; checks 291–295 remain pending. No schema, Trade Plan definition, broker/order behavior or final Watch-layout acceptance is introduced.
 
 **Last handoff update:** 2026-10-16

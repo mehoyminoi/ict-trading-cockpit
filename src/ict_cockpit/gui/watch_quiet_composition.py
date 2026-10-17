@@ -134,6 +134,7 @@ class WatchAMDXNowWidget(QFrame):
     def __init__(self, source) -> None:
         super().__init__()
         self.source = source
+        self._decision_error = ""
         self.projection = source.decision_projection()
         self.setObjectName("watchAMDXNow")
         self.setFrameShape(QFrame.Shape.StyledPanel)
@@ -207,6 +208,7 @@ class WatchAMDXNowWidget(QFrame):
     def _select_quarter(self, row: int, column: int) -> None:
         if column >= 4:
             return
+        self._decision_error = ""
         self.source.select_quarter(row, column)
         self.refresh_projection(self.source.decision_projection())
 
@@ -214,8 +216,10 @@ class WatchAMDXNowWidget(QFrame):
         projection = self.projection
         if projection is None:
             return
-        if not self.source.choose_decision(projection.token, role, subtype):
-            self.status_label.setText(self.source.status_label.text())
+        if self.source.choose_decision(projection.token, role, subtype):
+            self._decision_error = ""
+        else:
+            self._decision_error = self.source.status_label.text() or "Not recorded · review the AMDX target and choose again"
         self.refresh_projection(self.source.decision_projection())
 
     def refresh_projection(self, projection) -> None:
@@ -250,7 +254,7 @@ class WatchAMDXNowWidget(QFrame):
         status = f"Current {current} · quartet {projection.profile} · no Watch history/comparison"
         if not projection.available:
             status = projection.unavailable_reason or "AMDX recording unavailable"
-        self.status_label.setText(status)
+        self.status_label.setText(self._decision_error or status)
         for role, button in self.role_buttons.items():
             legal = role in projection.legal_roles
             button.setVisible(legal)

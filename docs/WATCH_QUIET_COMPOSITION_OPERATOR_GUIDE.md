@@ -2,7 +2,11 @@
 
 This focused trial checks whether the real native Watch surface now reads as one quiet operating composition while preserving the accepted AMDX decision and Study Find paths. It does not ask for final styling approval and does not simulate or connect a broker.
 
-**Status:** Developer verification complete: **1,155 PASS across 95 isolated module processes** with no failures, errors, skips or warning-bearing logs. Operator checks 291–295 are not yet tested.
+**Status:** Original implementation verification: **1,155 PASS across 95 isolated module processes**. Operator report on 2026-10-17: **291 and 293–295 PASS; 292 FAIL**. The Q4 entry correction requires the focused retest below; the earlier complete-suite result is not a fresh validation of that correction.
+
+## Focused 292 retest after updating
+
+Keep the existing trial directory. Open the same demo, visit the Study Find tab, then return to Trade Plan → Run Trading Day. Click the **90m Q4** cell and then **X(R)**. Expect Q4 to read X(R), the quartet to read AMDX, and Plan reference to show the same selected target/value. Close the window and reopen the same directory to confirm the entry survives. No additional Save is needed. Report 292 PASS or the exact visible failure message; the four already-passing checkpoints need not be repeated.
 
 ## Get the trial
 
