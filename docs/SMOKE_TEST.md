@@ -1187,19 +1187,19 @@ Operator retest, 2026-10-17 (America/Denver): “292 passed” after published c
 
 Use `STUDY_FIRST_STARTUP_OPERATOR_GUIDE.md` and the retained separate `tools/study_startup_demo.py`. Checks 296–300 are NOT TESTED.
 
-- [NOT TESTED] Idle startup opens Study with truthful empty-state and ordinary navigation away.
+- [PASS] Idle startup opens Study with truthful empty-state and ordinary navigation away.
   - Where: guide checkpoint 296.
   - Expected: no invented recommendation or active run; direct capture and calendar routes.
-- [NOT TESTED] Study this competency stages the existing launcher without creating a run or governance record.
+- [PASS] Study this competency stages the existing launcher without creating a run or governance record.
   - Where: guide checkpoint 297.
   - Expected: selected competency and Historical Backtest; explicit question/reference and Begin Process Run remain required.
-- [NOT TESTED] Active-run restart restores its runtime and Study offers safe resume without a conflicting launch.
+- [PASS] Active-run restart restores its runtime and Study offers safe resume without a conflicting launch.
   - Where: guide checkpoint 298.
   - Expected: same run, environment and mode; Study staging disabled while active.
-- [NOT TESTED] Study Find draft resumes unchanged through doorway navigation and restart.
+- [PASS] Study Find draft resumes unchanged through doorway navigation and restart.
   - Where: guide checkpoint 299.
   - Expected: same capture text; capture draft is not called an active process run.
-- [NOT TESTED] Recorded Study suggestions disclose current-revision basis and retain manual selection.
+- [PASS] Recorded Study suggestions disclose current-revision basis and retain manual selection.
   - Where: guide checkpoint 300.
   - Expected: recorded note and timestamp, no invented skill ranking or old-revision adoption.
 
