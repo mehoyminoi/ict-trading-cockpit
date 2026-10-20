@@ -1,6 +1,6 @@
 # Whole-cockpit UX and Study implementation plan
 
-**2026-10-17 implementation checkpoint:** quiet-Watch checks 291–295 PASS. The [Study-first startup slice](STUDY_FIRST_STARTUP_SLICE.md) now implements the bounded idle-Study / active-runtime routing policy below. Checks 296–300 await operator review. Recommendation ordering and final Lab topology remain provisional; no complete integrated Study workspace is claimed.
+**2026-10-17 implementation checkpoint:** quiet-Watch checks 291–295 PASS. The [Study-first startup slice](STUDY_FIRST_STARTUP_SLICE.md) now implements the bounded idle-Study / active-runtime routing policy below. Operator checks 296–300 PASS (2026-10-20); the operator’s smoke-test file is saved locally and awaiting push. UX2 — Integrated Study task is the next planned milestone. Recommendation ordering and final Lab topology remain provisional; no complete integrated Study workspace is claimed.
 
 **Status:** Proposed implementation plan for operator review, 2026-10-13. Accepted behavioral requirements are identified below; the workspace arrangement, startup policy and slice sequence are developer recommendations. Reviewing this document or the accompanying interactive walkthrough does not accept final styling, recommendation ranking or a production UI rewrite.
 

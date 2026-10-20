@@ -990,3 +990,8 @@ Exact active-run identity, market time and AMDX target/profile are visible conte
 No broker owner exists in Alpha 0.7. The safety projection must therefore show broker/account/risk/position/order facts as unavailable and keep P&L absent. `tv-left` and `tv-below` remain the only named layouts and share the existing remembered workspace setting.
 
 **Consequences / deferred:** This is a composition and reacquisition proof, not broker integration or final styling. It adds no schema, order command, numeric risk policy, AMDX/Study owner or arbitrary docking. After bounded operator review, proceed to Study-first startup routing rather than another isolated popup or renderer pass.
+
+
+## 2026-10-20 — Explicit investigation/capture provenance (local UX2 implementation)
+
+An investigation's editable workspace question and its recorded capture associations have different lifetimes. Explicit linking records an immutable snapshot of the displayed question, plan/revision, instrument, historical reference, interpretation and actual recording time against the existing capture ID. Later investigation edits cannot retroactively change the capture's context. Navigation alone does not associate an unrelated draft or create competency evidence. Saved Review shows the recorded basis, not whichever investigation is currently open. This implements provenance/continuity requirements; the extra linking control and final layout remain subject to operator review.

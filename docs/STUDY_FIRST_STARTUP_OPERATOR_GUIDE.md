@@ -1,6 +1,6 @@
 # Study-first startup — native trial
 
-This is a bounded native doorway over existing Study, capture and process-launch owners. It is not the finished Lab workspace. Operator checks 296–300 remain NOT TESTED. No schema, plan policy, proficiency, eligibility or broker behavior changes.
+This is a bounded native doorway over existing Study, capture and process-launch owners. It is not the finished Lab workspace. Operator checks 296–300 PASS as reported on 2026-10-20; the operator’s local smoke-test record awaits push. No schema, plan policy, proficiency, eligibility or broker behavior changes.
 
 Close other demo windows. After the branch is published, preserve local smoke notes, fetch and switch to `feature/study-first-startup-v0`, activate your usual `.venv`, then run:
 
@@ -16,7 +16,7 @@ Start the trial. Expect the Study tab, no active run, and a truthful message tha
 
 ## 297 — Stage, then explicitly launch
 
-Select a competency and click **Study this competency**. Expect Trade Plan → Review / Development → Practice & Launch, Historical Backtest selected and the chosen competency checked. Nothing has started. Enter a study question and select a historical market reference in the existing launcher; inspect its eligibility explanation. **Begin Process Run** is the only launch action. If eligibility prevents launch, report its message rather than changing plan policy to get through the trial.
+Select a competency and click **Study this competency**. Expect Trade Plan → Review / Development → Practice & Launch, Historical Backtest selected and the chosen competency checked. Nothing has started. Enter a study question. Set **Replay market time · New York** to a past date/time, for example **2026-10-09 09:15**. This field is also used for Historical Backtest. Expect **Progression eligibility · AVAILABLE**, **Boundary · Foundation / no boundary required**, and the explanation that the foundation study environment is available for focused concept practice and evidence collection. **Begin Process Run** is the only launch action. If eligibility prevents launch, report its message rather than changing plan policy to get through the trial.
 
 ## 298 — Active-run restart and return
 
@@ -28,6 +28,15 @@ Open Study Find, enter a partial pattern and observation, then visit Study. Expe
 
 ## 300 — Recorded suggestion basis
 
-Using the existing Review / Development controls, save a **Study** Development Direction for a competency with a recognizable note. Return to Study. Expect the named competency, recorded note, revision and update time. The most recently updated Study direction from the current revision supplies the suggestion; this is explicitly not a ranking of skill. Your manual selection is retained while visiting other workspaces. Old-revision directions and other direction types are not converted into Study recommendations.
+This checks whether explicitly saved guidance appears on the Study doorway with its recorded basis. Use the same demo; no reset or new run is needed.
+
+1. Open **Trade Plan → Review / Development**. Select one named competency in the top dropdown instead of **All competencies**.
+2. Open **Interpretation** and find **Development Direction**. Select **Study**.
+3. Enter `Test 300 — practice this competency next` in **Optional synthesis note**. Leave the supporting-evidence checkbox unchecked and click **Save Development Direction**.
+4. Return to the main **Study** tab. Expect **Recorded Study direction** with that competency, **Recorded note** with your note, and **Basis** with the current revision/update time and the explanation that this is not a skill ranking.
+5. Manually choose a different competency in the Study dropdown, visit another tab, then return. Your manual choice remains selected; the recorded guidance still describes the saved direction.
+
+An active run can leave **Study this competency** disabled; that is expected. The most recently updated dated Study direction in the current revision supplies the guidance. Old revisions and other direction types are excluded; manufacturing old revisions is not required for this operator walkthrough.
+
 
 Report 296–300 PASS / FAIL / QUESTION / NOT TESTED. This accepts routing/staging/recovery only, not final layout, recommendation ordering or the complete Study workflow.
