@@ -1166,7 +1166,7 @@ Use `WATCH_QUIET_COMPOSITION_OPERATOR_GUIDE.md` and `python tools/watch_quiet_co
 - [PASS] Active Watch presents one simultaneous chart-facing edge, operating canvas, compact AMDX now and always-visible safety strip without duplicating the full AMDX editor.
   - Where: guide checkpoint 291, default tv-left profile and normal 16:9 view.
   - Expected: current cues are quickly reacquired; only the operating canvas scrolls; quiet state does not demand attention.
-- [FAIL] AMDX now selects the maintained target and records legal roles/X subtypes through the same immediate command with no second Save or Watch history route.
+- [PASS] AMDX now selects the maintained target and records legal roles/X subtypes through the same immediate command with no second Save or Watch history route.
   - Where: guide checkpoint 292, 90m Q4, X(R), then Plan reference.
   - Expected: one command updates both projections and quartet profile; illegal choices remain unavailable.
 - [PASS] Safety keeps unavailable distinct from safe and gives changed authorization facts earned salience without adding P&L or broker actions.
@@ -1180,6 +1180,28 @@ Use `WATCH_QUIET_COMPOSITION_OPERATOR_GUIDE.md` and `python tools/watch_quiet_co
   - Expected: placement only changes; no arbitrary docking; Lab inspection does not transition the Trading Run.
 
 Operator report, 2026-10-17 (America/Denver): 291 and 293–295 PASS; 292 FAIL. Choosing 90m Q4 X(R) left both compact Watch and Plan reference Unknown / Unresolved. Developer reproduction after a workspace round trip found a retained cancelled-gesture flag rejecting the new decision. The correction starts a fresh gesture only after exact token/legality validation and retains command errors across compact refreshes. Check 292 remains FAIL until the operator retest; preserve the retained trial directory.
+
+Operator retest, 2026-10-17 (America/Denver): “292 passed” after published correction `6561f2c`. All checks 291–295 now PASS. The initial failure record above is historical; this accepts bounded native composition behavior, not final styling or merge.
+
+## Study-first startup — focused trial
+
+Use `STUDY_FIRST_STARTUP_OPERATOR_GUIDE.md` and the retained separate `tools/study_startup_demo.py`. Checks 296–300 are NOT TESTED.
+
+- [PASS] Idle startup opens Study with truthful empty-state and ordinary navigation away.
+  - Where: guide checkpoint 296.
+  - Expected: no invented recommendation or active run; direct capture and calendar routes.
+- [PASS] Study this competency stages the existing launcher without creating a run or governance record.
+  - Where: guide checkpoint 297.
+  - Expected: selected competency and Historical Backtest; explicit question/reference and Begin Process Run remain required.
+- [PASS] Active-run restart restores its runtime and Study offers safe resume without a conflicting launch.
+  - Where: guide checkpoint 298.
+  - Expected: same run, environment and mode; Study staging disabled while active.
+- [PASS] Study Find draft resumes unchanged through doorway navigation and restart.
+  - Where: guide checkpoint 299.
+  - Expected: same capture text; capture draft is not called an active process run.
+- [PASS] Recorded Study suggestions disclose current-revision basis and retain manual selection.
+  - Where: guide checkpoint 300.
+  - Expected: recorded note and timestamp, no invented skill ranking or old-revision adoption.
 
 ## Reporting results
 

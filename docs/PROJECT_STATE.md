@@ -1,5 +1,15 @@
 # ICT Trading Cockpit — Current Project State
 
+## 2026-10-17 — Study-first startup implemented locally
+
+The operator retest “292 passed” completes quiet-Watch checks 291–295 on published correction `6561f2c`; PR #79 remains draft and unmerged. On `feature/study-first-startup-v0`, idle startup now opens a small Study doorway; an active run still restores directly to its existing runtime. Study remains accessible as a top-level tab without displacing active work. A current-revision, explicitly saved Study direction supplies a disclosed most-recent-update suggestion, with timestamp offsets respected. No matching dated direction produces a truthful empty state. Manual selection survives navigation within the window; no new settings or draft ownership is introduced.
+
+Study this competency delegates to the existing Historical Backtest staging method and opens its Practice & Launch work area. It creates no run or governance writes; question, reference, eligibility and explicit Begin Process Run remain owned by the existing launcher. Active-run staging is blocked at both the button and handler. Capture and calendar routes reuse existing workspaces. The Study tab is appended to preserve existing tab indices; final navigation, persistent task selection and recommendation ranking remain open.
+
+The retained separate demo and operator guide define pending checks 296–300. This is a routing milestone, not the complete integrated Lab workflow. No schema, plan, broker or merge changes. Publication is a separate handoff step.
+
+Verification: 45 focused tests PASS (five Study-doorway/demo, four smoke-document and 36 existing main-window/runtime/launcher/draft/Watch checks). Idle native rendering inspected at 1120×876; Python 3.10 grammar and diff checks pass. No full-suite rerun or operator acceptance is claimed for the new milestone.
+
 ## 2026-10-17 — Quiet Watch operator finding and Q4 correction
 
 Operator checks 291 and 293–295 PASS; 292 FAIL: 90m Q4 X(R) remained Unknown in compact Watch and Plan reference. The failure reproduces after leaving and returning to the Trade Plan workspace: the shared owner retains `_gesture_cancelled`, and token-based decisions did not begin a new gesture. A fresh gesture now starts only after exact projection-token, availability and role/subtype validation; stale and inactive decisions remain rejected. Compact command errors survive passive refresh instead of being overwritten by the generic current-state text. The retained fixture uses the existing database without reset. Check 292 remains FAIL pending operator retest, and no merge is authorized. See the operator guide for the bounded workspace-return / Q4 entry / restart retest.
