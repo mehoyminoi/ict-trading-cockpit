@@ -1,3 +1,5 @@
+Newest frontier (2026-10-21): operator 311–312 PASS. UX4a independent candidate-definition revisions are implemented on `feature/amdx-criteria-revisions-v0`; see `AMDX_CRITERIA_REVISIONS_SLICE.md`. No new UI trial or schema change. Next is a contextual candidate editor using this registry; do not claim the whole UX4 milestone complete or infer automatic publication/adoption. Multi-monitor mode-aware companion requirements are recorded for later refinement. Keep PRs draft/unmerged.
+
 # ICT Trading Cockpit — Next Chat Startup Prompt
 
 Latest: 306–310 PASS in published `bbf44f8`. Shared MainWindow/Study Review restoration is the next bounded slice (`WORKSPACE_RESTORATION_SLICE.md`); 311–312 pending. Preserve plan-driven layout versus workstation geometry distinction. No merge authorized. Criteria study/authoring follows this shared-shell closure.
