@@ -1,5 +1,7 @@
 # ICT Trading Cockpit — Next Chat Startup Prompt
 
+Latest: 306–310 PASS in published `bbf44f8`. Shared MainWindow/Study Review restoration is the next bounded slice (`WORKSPACE_RESTORATION_SLICE.md`); 311–312 pending. Preserve plan-driven layout versus workstation geometry distinction. No merge authorized. Criteria study/authoring follows this shared-shell closure.
+
 Latest frontier: integrated Study checks 301–305 PASS, published as `6b04866`. Native mapped Focus is the next bounded UX3 trial on `feature/tda-mapped-focus-v0`; read its slice and operator guide before older frontier entries. The current first Deck contains five stations; final four-chart content assignment remains open. No merge authorized.
 
 Latest checkpoint (2026-10-17): quiet-Watch checks 291–295 PASS. Study-first routing is implemented locally on `feature/study-first-startup-v0`; read `STUDY_FIRST_STARTUP_SLICE.md`, its operator guide and the newest `PROJECT_STATE.md` entry before older frontier text. Startup was published as `81468de` in draft PR #80, stacked on #79. Operator checks 296–300 PASS (2026-10-20); smoke notes are saved on the operator’s workstation but not yet pushed. Next planned milestone is UX2 — Integrated Study task. Preserve local smoke notes; no merge is authorized.

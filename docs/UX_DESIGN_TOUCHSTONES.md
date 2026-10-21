@@ -57,3 +57,8 @@ The first prototype can use static chart-role placeholders; electronic TradingVi
 ## Operator evidence — adjustable overview/detail space (2026-10-20)
 
 During integrated Study check 304, the operator instinctively found and used the Saved Study Finds splitter and called its availability a welcome surprise. Adjustable pane widths are a positive discoverability result: preserve a recognizable drag handle where overview and detail compete for space. Use bounded splitters rather than an unrestricted dockable dashboard; retain meaningful pane identity and test minimum widths, keyboard routes and restart. This is a useful interaction direction, not approval to add resizers everywhere.
+
+
+## Operator evidence — spatial restoration relative to external charts (2026-10-20)
+
+After passing the 310 correction, the operator emphasized that stable window placement and size reduce daily effort because Cockpit is arranged relative to TradingView and potentially other programs. Treat restoring position, dimensions and useful divider proportions as working-context recovery, with sensible recovery when screens change. Analytical layout comes from the revisioned Trade Plan; these preferences describe the workstation arrangement and should not require routine manual reconstruction. The shared MainWindow restoration slice implements normal-close recovery; it does not control external applications.
