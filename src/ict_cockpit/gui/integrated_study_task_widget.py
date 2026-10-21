@@ -8,6 +8,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEd
 class IntegratedStudyTaskWidget(QWidget):
     capture_requested = Signal()
     review_requested = Signal()
+    criteria_requested = Signal()
 
     def __init__(self, *, plan_id, revision, settings=None):
         super().__init__()
@@ -35,6 +36,9 @@ class IntegratedStudyTaskWidget(QWidget):
         self.review_button = QPushButton("Review saved finds")
         row.addWidget(self.capture_button)
         row.addWidget(self.review_button)
+        self.criteria_button = QPushButton("Study criteria…")
+        row.addWidget(self.criteria_button)
+        self.criteria_button.clicked.connect(self.criteria_requested.emit)
         layout.addLayout(row)
         self.status = QLabel()
         self.status.setWordWrap(True)

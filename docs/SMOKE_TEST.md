@@ -1256,6 +1256,21 @@ Use `WORKSPACE_RESTORATION_OPERATOR_GUIDE.md` with the existing startup demo and
   - Where: guide checkpoint 312.
   - Expected: prior proportions remain when Review is reopened; hidden panes do not overwrite preferences.
 
+## Study criteria browser/editor — focused trial
+
+Use `STUDY_CRITERIA_EDITOR_OPERATOR_GUIDE.md` with a new separate directory. All examples are synthetic.
+
+- [PASS] Criteria inspection preserves calendar selection and AMDX values.
+  - Where: guide checkpoint 313.
+- [PASS] Explicit Q2 input and Q1 output save as a Candidate without adoption or evaluation.
+  - Where: guide checkpoint 314.
+- [PASS] Candidate editing creates a new retained revision, preserving the original priority.
+  - Where: guide checkpoint 315.
+- [PASS] Role constraints, invalid-value recovery and unsaved-draft return behave as explained.
+  - Where: guide checkpoint 316.
+- [PASS] Both saved criterion revisions reopen without creating a Trading Run.
+  - Where: guide checkpoint 317.
+
 ## Reporting results
 
 Report results as:
