@@ -1,5 +1,10 @@
 # ICT Trading Cockpit — Current Project State
 
+## 2026-10-21 — UX4b native Study criteria editor
+
+`feature/study-criteria-editor-v0` builds on draft #84 with a contextual, pinned criteria browser/editor in the AMDX Lab investigation. Candidate-only revision saves preserve published records and prior evidence. Explicit input/output quarter selection, typed conditions, structural assigned-role options and draft-failure retention are provided. No schema change or plan adoption. Operator 313–317 pending; use `STUDY_CRITERIA_EDITOR_OPERATOR_GUIDE.md`. Read `STUDY_CRITERIA_EDITOR_SLICE.md` for boundaries: recurring scope expressions and empirical evaluation remain later UX4 work.
+
+
 ## 2026-10-21 — Workspace accepted; UX4a candidate revision foundation
 
 Operator reports 311–312 PASS for workspace restoration (draft PR #83). Multi-monitor, mode-aware companion-window direction and the “rally race navigator” motif are recorded in requirements/touchstones as future refinement.
