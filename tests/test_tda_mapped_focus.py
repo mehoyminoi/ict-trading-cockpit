@@ -110,3 +110,34 @@ def test_demo_restores_work_station_and_layout_without_run(tmp_path):
     (unrelated/'keep.txt').write_text('keep')
     with pytest.raises(ValueError,match='empty directory'):
         open_demo(unrelated)
+
+
+def test_demo_restores_resized_window_and_split_proportion(tmp_path):
+    from tools.tda_mapped_focus_demo import open_demo
+    connection, window = open_demo(tmp_path/'trial')
+    window.resize(700,600)
+    window.show()
+    QApplication.processEvents()
+    window.runner.focus_splitter.setSizes([250,450])
+    QApplication.processEvents()
+    QTest.qWait(20)
+    size = window.size()
+    widths = window.runner.focus_splitter.sizes()
+    proportion = widths[0] / sum(widths)
+    window.close()
+    window.deleteLater()
+    QApplication.processEvents()
+    connection.close()
+    connection, restored = open_demo(tmp_path/'trial')
+    try:
+        restored.show()
+        QApplication.processEvents()
+        QTest.qWait(20)
+        assert restored.size() == size
+        widths = restored.runner.focus_splitter.sizes()
+        assert abs(widths[0] / sum(widths) - proportion) < 0.02
+    finally:
+        restored.close()
+        restored.deleteLater()
+        QApplication.processEvents()
+        connection.close()

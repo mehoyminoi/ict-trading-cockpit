@@ -12,6 +12,18 @@ from ict_cockpit.default_process import build_default_process_blueprint
 from ict_cockpit.gui.tda_station_runner_widget import TDAStationRunnerWidget
 
 
+class TrialWindow(QMainWindow):
+    def __init__(self, settings):
+        super().__init__()
+        self.settings = settings
+
+    def closeEvent(self, event):
+        self.runner._save_splitter()
+        self.settings.setValue('window/geometry', self.saveGeometry())
+        self.settings.sync()
+        super().closeEvent(event)
+
+
 def open_demo(directory):
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=True)
@@ -24,12 +36,13 @@ def open_demo(directory):
     try:
         repository = TDAStationSessionRepository(connection)
         runner = TDAStationRunnerWidget(build_default_process_blueprint())
-        runner.configure_workspace_settings(QSettings(str(directory/'layout.ini'), QSettings.Format.IniFormat))
+        settings = QSettings(str(directory/'layout.ini'), QSettings.Format.IniFormat)
+        runner.configure_workspace_settings(settings)
         saved = repository.get_latest()
         if saved is not None:
             runner.load_session(saved)
         runner.session_changed.connect(repository.save)
-        window = QMainWindow()
+        window = TrialWindow(settings)
         window.runner = runner
         window.repository = repository
         scroll = QScrollArea()
@@ -37,6 +50,9 @@ def open_demo(directory):
         scroll.setWidget(runner)
         window.setCentralWidget(scroll)
         window.resize(1440,810)
+        geometry = settings.value('window/geometry')
+        if geometry is not None:
+            window.restoreGeometry(geometry)
         window.setWindowTitle('TDA mapped Focus · synthetic trial · no Trading Run')
         marker.write_text('TDA mapped Focus v0')
         return connection, window

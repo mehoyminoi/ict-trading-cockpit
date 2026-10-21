@@ -25,3 +25,7 @@ Return to the first Deck's Daily Context station (row 3). Enter a short observat
 Change the divider width, select a station and leave a recognizable unfinished observation. Close and reopen using the same command. Selected station, observation, completion state and divider width should restore. The demo should still have no Trading Run.
 
 Report each item PASS / FAIL / QUESTION. This is interaction review, not final station content, four-chart assignment, or final styling approval.
+
+## Narrow 310 retest after the window-restoration correction
+
+Reuse the same trial directory. Resize the window to a noticeably different size, move the divider, and leave a station with unfinished text. Close normally and reopen the same command. Compare both the window dimensions and the division between map and Focus after the window has finished drawing. Station work must remain unchanged. Window placement may be adjusted by Qt if the monitor arrangement changed. Checks 306–309 already passed and need not be repeated.

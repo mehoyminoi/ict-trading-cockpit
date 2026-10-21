@@ -21,3 +21,11 @@ The current published first Deck has five stations: Instrument / Session Context
 ## Developer verification
 
 47 focused tests PASS: five mapped-Focus/demo cases plus existing dual-view/executable TDA (22 together), and runtime orientation, trading-day runtime, main-window, startup and smoke-document regression modules (25 in isolated processes). Native rendering inspected at 1440×810 and 1280×720. Python 3.10 grammar and diff checks pass. No fresh complete-suite result or operator acceptance claimed.
+
+## Operator feedback and 310 correction
+
+Operator reports 306–309 PASS. For 310, the divider restores at the default window size, but the demo reset a resized window on restart, making the comparison unclear. Keep 310 open pending a narrow retest. The demo now saves/restores window geometry as well as the splitter; Qt may constrain placement to available screens. Six mapped-Focus/demo tests pass, including a resized-window/split-proportion restart test after layout settles. Production layout and process behavior are unchanged by this correction.
+
+## Trade Plan drives analytical layout
+
+The operator clarified that pane count/orientation should follow changes to the Trade Plan, with minimal application-layout configuration. Preserve this distinction: the revisioned plan defines analytical topology (Decks, stations, positions, chart roles); workspace preferences define window/monitor geometry and split widths. The existing model supports variable station counts, grid columns and explicit row/column positions, and the renderer derives its grid from them. This is infrastructure support, not a claim that a complete no-code authoring interface or every responsive/orientation rule exists. Do not silently rearrange an in-progress run when a new plan revision is published. Final four-chart assignment remains an explicit definition decision.
