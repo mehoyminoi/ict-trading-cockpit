@@ -1249,10 +1249,10 @@ Historical operator note: 310 needed a resized-window restart correction. The co
 
 Use `WORKSPACE_RESTORATION_OPERATOR_GUIDE.md` with the existing startup demo and a new separate directory. Checks 311–312 remain NOT TESTED.
 
-- [NOT TESTED] Normal cockpit close/reopen restores main-window size and position while preserving startup routing.
+- [PASS] Normal cockpit close/reopen restores main-window size and position while preserving startup routing.
   - Where: guide checkpoint 311.
   - Expected: idle Study remains the starting workspace; geometry restores without process writes.
-- [NOT TESTED] Study Review divider restores even after closing from another workspace.
+- [PASS] Study Review divider restores even after closing from another workspace.
   - Where: guide checkpoint 312.
   - Expected: prior proportions remain when Review is reopened; hidden panes do not overwrite preferences.
 
