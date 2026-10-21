@@ -1185,7 +1185,7 @@ Operator retest, 2026-10-17 (America/Denver): “292 passed” after published c
 
 ## Study-first startup — focused trial
 
-Use `STUDY_FIRST_STARTUP_OPERATOR_GUIDE.md` and the retained separate `tools/study_startup_demo.py`. Checks 296–300 are NOT TESTED.
+Use `STUDY_FIRST_STARTUP_OPERATOR_GUIDE.md` and the retained separate `tools/study_startup_demo.py`. Checks 296–300 PASS; operator results published in `953c812`.
 
 - [PASS] Idle startup opens Study with truthful empty-state and ordinary navigation away.
   - Where: guide checkpoint 296.
@@ -1202,6 +1202,26 @@ Use `STUDY_FIRST_STARTUP_OPERATOR_GUIDE.md` and the retained separate `tools/stu
 - [PASS] Recorded Study suggestions disclose current-revision basis and retain manual selection.
   - Where: guide checkpoint 300.
   - Expected: recorded note and timestamp, no invented skill ranking or old-revision adoption.
+
+## Integrated Study task — focused trial
+
+Use `INTEGRATED_STUDY_TASK_OPERATOR_GUIDE.md` with the separate `tools/integrated_study_task_demo.py`. Checks 301–305 are NOT TESTED.
+
+- [PASS] Investigation question stays beside the maintained calendar and historical reference.
+  - Where: guide checkpoint 301.
+  - Expected: retained question, shared legal entry, truthful unconfigured definitions, no implicit run.
+- [PASS] Explicit capture association preserves displayed investigation context without replacing capture fields.
+  - Where: guide checkpoint 302.
+  - Expected: immutable question/reference/plan snapshot and actual recording time; draft retained; no competency evidence.
+- [PASS] Later investigation edits cannot reassign an already linked capture.
+  - Where: guide checkpoint 303.
+  - Expected: original association remains; different relink rejected with an explanation.
+- [PASS] Saved Review and restart retain original association and current editable investigation separately.
+  - Where: guide checkpoint 304.
+  - Expected: saved find shows original question; current question restores; New investigation preserves existing captures.
+- [PASS] Reduced-height access uses scrolling and investigation navigation preserves active-run ownership.
+  - Where: guide checkpoint 305.
+  - Expected: controls reachable around 1280×720; no run replacement or automatic completion.
 
 ## Reporting results
 
