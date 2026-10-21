@@ -1205,7 +1205,7 @@ Use `STUDY_FIRST_STARTUP_OPERATOR_GUIDE.md` and the retained separate `tools/stu
 
 ## Integrated Study task — focused trial
 
-Use `INTEGRATED_STUDY_TASK_OPERATOR_GUIDE.md` with the separate `tools/integrated_study_task_demo.py`. Checks 301–305 are NOT TESTED.
+Use `INTEGRATED_STUDY_TASK_OPERATOR_GUIDE.md` with the separate `tools/integrated_study_task_demo.py`. Checks 301–305 PASS; operator results published in `6b04866`.
 
 - [PASS] Investigation question stays beside the maintained calendar and historical reference.
   - Where: guide checkpoint 301.
@@ -1222,6 +1222,26 @@ Use `INTEGRATED_STUDY_TASK_OPERATOR_GUIDE.md` with the separate `tools/integrate
 - [PASS] Reduced-height access uses scrolling and investigation navigation preserves active-run ownership.
   - Where: guide checkpoint 305.
   - Expected: controls reachable around 1280×720; no run replacement or automatic completion.
+
+## Native mapped TDA Focus — focused trial
+
+Use `TDA_MAPPED_FOCUS_OPERATOR_GUIDE.md` and the separate `tools/tda_mapped_focus_demo.py`. Checks 306–310 remain NOT TESTED. The actual first Deck has five stations; final four-chart assignment is not accepted by this trial.
+
+- [NOT TESTED] Adjacent map and Focus share observation/selection without navigation marking complete.
+  - Where: guide checkpoint 306.
+  - Expected: correct chart position and role, shared summary, preserved work.
+- [NOT TESTED] Splitter resizing retains both panes and Alt+1–4 preserves ordinary numeric typing.
+  - Where: guide checkpoint 307.
+  - Expected: resize is layout only; shortcuts select spatial slots without completion.
+- [NOT TESTED] Full Deck overview opens the chosen station beside the matching current-Deck map.
+  - Where: guide checkpoint 308.
+  - Expected: unchanged multi-Deck layout and no automatic certification.
+- [NOT TESTED] Explicit completion updates only the selected station and advances the map across the Deck boundary.
+  - Where: guide checkpoint 309.
+  - Expected: next Deck map matches Focus and previous work remains.
+- [NOT TESTED] Restart restores station work, selection, completion and split width in the separate trial.
+  - Where: guide checkpoint 310.
+  - Expected: unfinished work remains unfinished; no Trading Run is created.
 
 ## Reporting results
 

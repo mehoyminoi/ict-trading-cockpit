@@ -1,6 +1,8 @@
 from datetime import datetime
+from textwrap import fill
 
 from PySide6.QtCore import QEvent, Qt, Signal
+from PySide6.QtGui import QAction, QKeySequence
 from PySide6.QtWidgets import (
     QApplication,
     QCheckBox,
@@ -10,6 +12,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QPushButton,
     QTabWidget,
+    QSplitter,
     QTextEdit,
     QVBoxLayout,
     QWidget,
@@ -97,7 +100,8 @@ class TDAStationRunnerWidget(QWidget):
         nav.addStretch()
         nav.addWidget(self.next_button)
 
-        focus_layout = QVBoxLayout(self.focus_page)
+        self.focus_editor = QWidget()
+        focus_layout = QVBoxLayout(self.focus_editor)
         focus_layout.addWidget(self.progress_label)
         focus_layout.addWidget(self.station_state_label)
         focus_layout.addWidget(self.deck_label)
@@ -110,6 +114,38 @@ class TDAStationRunnerWidget(QWidget):
         focus_layout.addWidget(self.observation_input, 1)
         focus_layout.addWidget(self.completion_guidance_label)
         focus_layout.addLayout(nav)
+
+        self.mapped_overview = QWidget()
+        map_layout = QVBoxLayout(self.mapped_overview)
+        self.mapped_heading = QLabel()
+        self.mapped_heading.setWordWrap(True)
+        map_layout.addWidget(self.mapped_heading)
+        map_layout.addWidget(QLabel("Chart positions · Alt+1–4 for a 2×2 layout"))
+        self.mapped_grid = QGridLayout()
+        map_layout.addLayout(self.mapped_grid)
+        self.mapped_buttons = {}
+        self.full_deck_button = QPushButton("Open full Deck overview")
+        self.full_deck_button.clicked.connect(lambda: self.view_tabs.setCurrentWidget(self.deck_page))
+        map_layout.addWidget(self.full_deck_button)
+        map_layout.addStretch()
+        self.focus_splitter = QSplitter(Qt.Orientation.Horizontal)
+        self.focus_splitter.setChildrenCollapsible(False)
+        self.focus_splitter.addWidget(self.mapped_overview)
+        self.focus_splitter.addWidget(self.focus_editor)
+        self.focus_splitter.setStretchFactor(0, 1)
+        self.focus_splitter.setStretchFactor(1, 2)
+        self.focus_splitter.setSizes([360, 720])
+        self._workspace_settings = None
+        self.focus_splitter.splitterMoved.connect(self._save_splitter)
+        QVBoxLayout(self.focus_page).addWidget(self.focus_splitter)
+        self.slot_actions = []
+        for slot in range(1, 5):
+            action = QAction(f"Open mapped chart position {slot}", self)
+            action.setShortcut(QKeySequence(f"Alt+{slot}"))
+            action.setShortcutContext(Qt.ShortcutContext.WidgetWithChildrenShortcut)
+            action.triggered.connect(lambda _checked=False, number=slot: self.open_mapped_slot(number))
+            self.addAction(action)
+            self.slot_actions.append(action)
 
         self.deck_layout = QVBoxLayout(self.deck_page)
         self.deck_overview_heading = QLabel("TDA Deck Overview")
@@ -131,6 +167,68 @@ class TDAStationRunnerWidget(QWidget):
         app = QApplication.instance()
         if app is not None:
             app.installEventFilter(self)
+
+    def configure_workspace_settings(self, settings):
+        self._workspace_settings = settings
+        if settings is not None:
+            state = settings.value("tda/mapped-focus-splitter")
+            if state is not None:
+                self.focus_splitter.restoreState(state)
+
+    def _save_splitter(self, *_args):
+        if self._workspace_settings is not None:
+            self._workspace_settings.setValue("tda/mapped-focus-splitter", self.focus_splitter.saveState())
+            self._workspace_settings.sync()
+
+    @staticmethod
+    def _position(deck, station):
+        if station.layout_row >= 0 and station.layout_column >= 0:
+            return station.layout_row, station.layout_column
+        index = list(deck.stations).index(station)
+        return index // deck.grid_columns, index % deck.grid_columns
+
+    def _position_text(self, deck, station):
+        row, column = self._position(deck, station)
+        names = {(0, 0): "Top left", (0, 1): "Top right", (1, 0): "Bottom left", (1, 1): "Bottom right"}
+        if deck.grid_columns == 2 and (row, column) in names:
+            return f"{row * 2 + column + 1} · {names[row, column]}"
+        return f"Row {row + 1}, column {column + 1}"
+
+    def open_mapped_slot(self, slot):
+        deck = self._current_deck()
+        if deck.grid_columns != 2:
+            return
+        matches = [station for station in deck.stations
+                   if self._position(deck, station) == ((slot - 1) // 2, (slot - 1) % 2)]
+        if len(matches) == 1:
+            self.open_station_from_deck(matches[0].id)
+
+    def _refresh_mapped_overview(self):
+        self._clear_layout(self.mapped_grid)
+        self.mapped_buttons = {}
+        deck = self._current_deck()
+        self.mapped_heading.setText(f"{deck.name}\nTradingView: {deck.tradingview_layout}")
+        for station in deck.stations:
+            row, column = self._position(deck, station)
+            observation = self.session.observation_for(station.id)
+            selected = station.id == self.current_station_id
+            state = self.station_state(observation)
+            summary = observation.observation.replace("\n", " ")[:55] or "No observation yet"
+            button = QPushButton(
+                f"{self._position_text(deck, station)}\n"
+                + fill(station.name, 22) + "\n"
+                + ("▶ Current · " if selected else "") + state.replace("_", " ") + "\n"
+                + fill(summary, 26))
+            button.setMinimumHeight(115)
+            button.setToolTip(f"{self._position_text(deck, station)} · {station.tradingview_role}\nOpen Focus; navigation does not mark complete.")
+            button.setStyleSheet("border: 2px solid palette(highlight); padding: 5px;" if selected else "padding: 5px;")
+            button.clicked.connect(lambda _checked=False, sid=station.id: self.open_station_from_deck(sid))
+            self.mapped_grid.addWidget(button, row, column)
+            self.mapped_buttons[station.id] = button
+        for slot, action in enumerate(self.slot_actions, 1):
+            action.setEnabled(deck.grid_columns == 2 and sum(
+                self._position(deck, station) == ((slot - 1) // 2, (slot - 1) % 2)
+                for station in deck.stations) == 1)
 
     def _new_session(self) -> TDAStationSession:
         observations = [
@@ -388,6 +486,7 @@ class TDAStationRunnerWidget(QWidget):
         return button
 
     def _refresh_deck_view(self) -> None:
+        self._refresh_mapped_overview()
         self._clear_layout(self.deck_overview_layout)
         self.deck_section_headings = []
 
@@ -437,7 +536,7 @@ class TDAStationRunnerWidget(QWidget):
         self.station_label.setText(station.name)
         self.question_label.setText(f"Question\n{station.question}")
         self.tradingview_label.setText(
-            f"TradingView role\n{station.tradingview_role or 'Not defined yet'}"
+            f"Mapped chart {self._position_text(deck, station)}\nTradingView role\n{station.tradingview_role or 'Not defined yet'}"
         )
 
         self._loading = True
