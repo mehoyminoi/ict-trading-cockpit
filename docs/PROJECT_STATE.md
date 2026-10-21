@@ -1,5 +1,10 @@
 # ICT Trading Cockpit — Current Project State
 
+## 2026-10-21 — UX4c reusable selected-quartet scopes
+
+Operator 313–317 PASS is published at `cf9f660` on the editor branch (draft #85). `feature/amdx-reusable-scopes-v0` adds explicit Fixed versus Reusable positional input scopes to that accepted editor. Fixed definitions retain their original serialized identity; reusable scopes bind within the selected quartet only. Saved scoped evaluations retain their definition, concrete cycle, facts/reference and binding trace under a new evaluator revision. Schema remains 47. Read `AMDX_REUSABLE_SCOPES_SLICE.md`; operator checks 318–320 pending. Fact/evidence selection and evaluation UI remain the next substantive UX4 boundary.
+
+
 ## 2026-10-21 — UX4b native Study criteria editor
 
 `feature/study-criteria-editor-v0` builds on draft #84 with a contextual, pinned criteria browser/editor in the AMDX Lab investigation. Candidate-only revision saves preserve published records and prior evidence. Explicit input/output quarter selection, typed conditions, structural assigned-role options and draft-failure retention are provided. No schema change or plan adoption. Operator 313–317 pending; use `STUDY_CRITERIA_EDITOR_OPERATOR_GUIDE.md`. Read `STUDY_CRITERIA_EDITOR_SLICE.md` for boundaries: recurring scope expressions and empirical evaluation remain later UX4 work.

@@ -1271,6 +1271,17 @@ Use `STUDY_CRITERIA_EDITOR_OPERATOR_GUIDE.md` with a new separate directory. All
 - [PASS] Both saved criterion revisions reopen without creating a Trading Run.
   - Where: guide checkpoint 317.
 
+## Reusable criteria scopes — focused trial
+
+Use `AMDX_REUSABLE_SCOPES_OPERATOR_GUIDE.md` with a new synthetic directory.
+
+- [NOT TESTED] Changing Fixed Q2 to Reusable Q2 saves a separate candidate revision.
+  - Where: guide checkpoint 318.
+- [NOT TESTED] Next-date inspection preserves fixed input identity while previewing reusable Q2 on the selected date.
+  - Where: guide checkpoint 319.
+- [NOT TESTED] Reopening and editing preserve the reusable descriptor without automatic adoption or evaluation.
+  - Where: guide checkpoint 320.
+
 ## Reporting results
 
 Report results as:
