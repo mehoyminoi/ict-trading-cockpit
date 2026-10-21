@@ -149,3 +149,27 @@ def test_cancel_return_keeps_unsaved_draft_and_explicit_discard_exits(editor, mo
     d.reject()
     assert not d.isVisible()
     assert repo.definitions.list_revisions(plan_revision='synthetic-plan') == ()
+
+
+def test_reusable_scope_survives_edit_and_previews_new_date(editor):
+    from datetime import timedelta
+    from ict_cockpit.analysis.amdx_rules import QuartetScope
+    d, repo, _ = editor
+    fill(d)
+    scope = d.conditions.cellWidget(0, 0)
+    index = next(i for i in range(scope.count()) if scope.itemData(i) == QuartetScope(2))
+    scope.setCurrentIndex(index)
+    d.save_button.click()
+    saved = d.browser.currentData()
+    assert saved.conditions[0].scope_id == QuartetScope(2)
+    d.edit_button.click()
+    assert d.conditions.cellWidget(0, 0).currentData() == QuartetScope(2)
+    d.discard()
+    later = AMDXCriteriaDialog(repo.definitions, plan_revision='synthetic-plan',
+        cycle=intraday_cycles(REFERENCE + timedelta(days=1))[0], instrument='MNQ',
+        reference=REFERENCE + timedelta(days=1))
+    later.reload(saved)
+    assert 'Reusable: selected quartet Q2' in later.details.toPlainText()
+    assert '2026-10-09' in later.details.toPlainText()
+    assert later.browser.currentData() == saved
+    later.close()
