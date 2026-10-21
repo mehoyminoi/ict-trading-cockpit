@@ -1207,19 +1207,19 @@ Use `STUDY_FIRST_STARTUP_OPERATOR_GUIDE.md` and the retained separate `tools/stu
 
 Use `INTEGRATED_STUDY_TASK_OPERATOR_GUIDE.md` with the separate `tools/integrated_study_task_demo.py`. Checks 301–305 are NOT TESTED.
 
-- [NOT TESTED] Investigation question stays beside the maintained calendar and historical reference.
+- [PASS] Investigation question stays beside the maintained calendar and historical reference.
   - Where: guide checkpoint 301.
   - Expected: retained question, shared legal entry, truthful unconfigured definitions, no implicit run.
-- [NOT TESTED] Explicit capture association preserves displayed investigation context without replacing capture fields.
+- [PASS] Explicit capture association preserves displayed investigation context without replacing capture fields.
   - Where: guide checkpoint 302.
   - Expected: immutable question/reference/plan snapshot and actual recording time; draft retained; no competency evidence.
-- [NOT TESTED] Later investigation edits cannot reassign an already linked capture.
+- [PASS] Later investigation edits cannot reassign an already linked capture.
   - Where: guide checkpoint 303.
   - Expected: original association remains; different relink rejected with an explanation.
-- [NOT TESTED] Saved Review and restart retain original association and current editable investigation separately.
+- [PASS] Saved Review and restart retain original association and current editable investigation separately.
   - Where: guide checkpoint 304.
   - Expected: saved find shows original question; current question restores; New investigation preserves existing captures.
-- [NOT TESTED] Reduced-height access uses scrolling and investigation navigation preserves active-run ownership.
+- [PASS] Reduced-height access uses scrolling and investigation navigation preserves active-run ownership.
   - Where: guide checkpoint 305.
   - Expected: controls reachable around 1280×720; no run replacement or automatic completion.
 
