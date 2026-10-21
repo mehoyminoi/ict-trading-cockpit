@@ -1,5 +1,11 @@
 # ICT Trading Cockpit — Current Project State
 
+## 2026-10-20 — Integrated Study accepted; native mapped Focus trial
+
+Operator checks 301–305 PASS, pushed as `6b04866` on `feature/integrated-study-task-v0`. PR #81 remains draft and unmerged. The Saved Study Finds splitter was positively noted for discoverability; recorded in `UX_DESIGN_TOUCHSTONES.md`. This accepts the bounded Study integration, not final Lab styling.
+
+Local `feature/tda-mapped-focus-v0` starts from that published acceptance. It adds a resizable, retained current-Deck map beside native Focus; full Deck remains available. Shared station work/completion and existing plan definitions remain authoritative. Read `TDA_MAPPED_FOCUS_SLICE.md`: the published first TDA Deck contains five stations, so final four-chart assignment is explicitly still a definition-review task. No schema or Trade Plan changes.
+
 ## 2026-10-20 — Integrated Study task association trial (local, schema 47)
 
 The retained investigation question/calendar now offers an explicit immutable association to an existing Study Find draft or saved capture. Displayed context is pinned at capture navigation, retained through save/restart and shown in Study Review. New investigation does not rewrite prior associations. A nearby definition area truthfully reports unconfigured published criteria; a scroll viewport keeps existing controls reachable at reduced height. Read `INTEGRATED_STUDY_TASK_SLICE.md` and its operator guide. Checks 301–305 remain pending. No publication, merge, classifier or final Lab layout approval. Startup PR #80 now reports remote head `953c812`; operator smoke notes are incorporated in this branch.
