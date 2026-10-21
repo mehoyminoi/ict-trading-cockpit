@@ -1239,7 +1239,7 @@ Use `TDA_MAPPED_FOCUS_OPERATOR_GUIDE.md` and the separate `tools/tda_mapped_focu
 - [PASS] Explicit completion updates only the selected station and advances the map across the Deck boundary.
   - Where: guide checkpoint 309.
   - Expected: next Deck map matches Focus and previous work remains.
-- [NOT TESTED] Restart restores station work, selection, completion and split width in the separate trial.
+- [PASS] Restart restores station work, selection, completion and split width in the separate trial.
   - Where: guide checkpoint 310.
   - Expected: unfinished work remains unfinished; no Trading Run is created.
 
