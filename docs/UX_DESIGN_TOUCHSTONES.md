@@ -52,3 +52,8 @@ Any TDA layout proposal should demonstrate these cases before implementation acc
 7. Reorder a disposable deck definition and verify that chart-role/layout metadata changes deliberately rather than through incidental navigation.
 
 The first prototype can use static chart-role placeholders; electronic TradingView control is not required to test layout parity.
+
+
+## Operator evidence — adjustable overview/detail space (2026-10-20)
+
+During integrated Study check 304, the operator instinctively found and used the Saved Study Finds splitter and called its availability a welcome surprise. Adjustable pane widths are a positive discoverability result: preserve a recognizable drag handle where overview and detail compete for space. Use bounded splitters rather than an unrestricted dockable dashboard; retain meaningful pane identity and test minimum widths, keyboard routes and restart. This is a useful interaction direction, not approval to add resizers everywhere.
