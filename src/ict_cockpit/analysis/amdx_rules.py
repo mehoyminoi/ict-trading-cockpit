@@ -3,7 +3,7 @@
 First resolver: conjunctive typed predicates and explicit priority, unresolved
 ties/unknowns. No universal weighting formula, provider mapping or trading rules.
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 from enum import Enum
 from math import isfinite
@@ -15,6 +15,7 @@ from ict_cockpit.analysis.amdx import (
 
 
 EVALUATION_REVISION = "amdx-priority-v1"
+SCOPED_EVALUATION_REVISION = "amdx-priority-scoped-v2"
 RESOLUTION_POLICY = "Cycle Profile Priority"
 Scalar = str | bool | int | float
 
@@ -58,15 +59,40 @@ class Fact:
 
 
 @dataclass(frozen=True)
+class QuartetScope:
+    """Versioned positional input within the explicitly evaluated quartet.
+
+    Strings retain fixed-identity semantics; no reserved string is reinterpreted.
+    The owning definition's layer determines what Q1–Q4 mean.
+    """
+    position: int
+    kind: str = "selected-quartet-quarter-v1"
+
+    def __post_init__(self):
+        if self.kind != "selected-quartet-quarter-v1":
+            raise ValueError("Unsupported reusable quarter scope")
+        if type(self.position) is not int or self.position not in range(1, 5):
+            raise ValueError("Reusable quarter scope must select Q1 through Q4")
+
+    def bind(self, cycle: Cycle) -> str:
+        return cycle.quarters[self.position - 1].id
+
+
+@dataclass(frozen=True)
 class Condition:
-    scope_id: str
+    scope_id: str | QuartetScope
     key: str
     operator: Operator
     value: Scalar
     unit: str = ""
 
     def __post_init__(self):
-        require_id(self.scope_id)
+        if isinstance(self.scope_id, dict):
+            if set(self.scope_id) != {"kind", "position"}:
+                raise ValueError("Malformed reusable quarter scope")
+            object.__setattr__(self, "scope_id", QuartetScope(**self.scope_id))
+        if not isinstance(self.scope_id, QuartetScope):
+            require_id(self.scope_id)
         require_id(self.key)
         scalar(self.value)
         object.__setattr__(self, "operator", Operator(self.operator))
@@ -177,7 +203,7 @@ class Evaluation:
 
     @classmethod
     def from_payload(cls, value: dict) -> "Evaluation":
-        if (value.get("version") != 1 or value["evaluation"]["revision"] != EVALUATION_REVISION
+        if (value.get("version") != 1 or value["evaluation"]["revision"] not in (EVALUATION_REVISION, SCOPED_EVALUATION_REVISION)
                 or value["evaluation"]["resolution_policy"] != RESOLUTION_POLICY):
             raise ValueError("Unsupported AMDX evaluation revision")
         item = value["evaluation"]
@@ -236,10 +262,15 @@ def evaluate(*, evaluation_id: str, run_id: str, cycle: Cycle, market_reference:
             results.append(Result(definition.id, definition.revision, "Not Applicable", target,
                                   ("Definition layer does not apply to this quartet.",), ()))
             continue
-        conditions = tuple(_condition(c, facts, market_reference) for c in definition.conditions)
+        bound = tuple(replace(c, scope_id=c.scope_id.bind(cycle))
+                      if isinstance(c.scope_id, QuartetScope) else c for c in definition.conditions)
+        conditions = tuple(_condition(c, facts, market_reference) for c in bound)
         states = {c[0] for c in conditions}
         state = "Not Matched" if "Not Matched" in states else "Unknown" if "Unknown" in states else "Matched"
-        reasons = tuple(f"{c.scope_id}/{c.key}: {r[1]}" for c, r in zip(definition.conditions, conditions))
+        reasons = tuple(
+            (f"Selected quartet Q{source.scope_id.position} -> " if isinstance(source.scope_id, QuartetScope) else "")
+            + f"{c.scope_id}/{c.key}: {r[1]}"
+            for source, c, r in zip(definition.conditions, bound, conditions))
         ids = tuple(dict.fromkeys(i for c in conditions for i in c[2]))
         results.append(Result(definition.id, definition.revision, state, target, reasons, ids))
     resolutions = []
@@ -277,4 +308,6 @@ def evaluate(*, evaluation_id: str, run_id: str, cycle: Cycle, market_reference:
     if any(priority is None or d.priority <= priority for d in unknown):
         governing, governing_state = (), "Unknown"
     return Evaluation(evaluation_id, run_id, cycle, market_reference, definitions, facts,
-                      tuple(results), tuple(resolutions), governing, governing_state)
+                      tuple(results), tuple(resolutions), governing, governing_state,
+                      revision=SCOPED_EVALUATION_REVISION if any(isinstance(c.scope_id, QuartetScope)
+                          for d in definitions for c in d.conditions) else EVALUATION_REVISION)
