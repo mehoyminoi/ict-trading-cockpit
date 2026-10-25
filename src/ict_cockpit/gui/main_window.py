@@ -1,7 +1,7 @@
 import sqlite3
 from pathlib import Path
 
-from PySide6.QtCore import QSettings, QTimer
+from PySide6.QtCore import QByteArray, QSettings, QTimer
 from PySide6.QtGui import QAction, QKeySequence
 from PySide6.QtWidgets import (
     QApplication,
@@ -371,6 +371,32 @@ class MainWindow(QMainWindow):
         self._refresh_study_home()
         if shell.active_trading_run is None:
             self.tabs.setCurrentWidget(self.study_home_widget)
+        self._restore_workspace_layout()
+        self.study_find_review_widget.splitter.splitterMoved.connect(self._save_review_layout)
+
+    def _restore_workspace_layout(self):
+        if self.workspace_settings is None:
+            return
+        geometry = self.workspace_settings.value("workspace-window/geometry-v1")
+        if isinstance(geometry, QByteArray):
+            self.restoreGeometry(geometry)
+        divider = self.workspace_settings.value("study-review/splitter-v1")
+        if isinstance(divider, QByteArray):
+            self.study_find_review_widget.splitter.restoreState(divider)
+
+    def _save_review_layout(self, *_args):
+        if self.workspace_settings is not None:
+            self.workspace_settings.setValue("study-review/splitter-v1", self.study_find_review_widget.splitter.saveState())
+            self.workspace_settings.sync()
+
+    def closeEvent(self, event):
+        if self.workspace_settings is not None:
+            self.workspace_settings.setValue("workspace-window/geometry-v1", self.saveGeometry())
+            if self.study_find_review_widget.isVisible():
+                self._save_review_layout()
+            self.workspace_settings.sync()
+        super().closeEvent(event)
+
 
     def _refresh_capture_association(self):
         self.capture_association_label.setText(describe_association(

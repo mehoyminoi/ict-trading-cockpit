@@ -1,5 +1,9 @@
 # ICT Trading Cockpit — Current Project State
 
+## 2026-10-20 — Mapped TDA accepted; shared workspace restoration
+
+Operator 306–310 all PASS, published as `bbf44f8` on `feature/tda-mapped-focus-v0`; PR #82 remains draft/unmerged. The next bounded local slice is `feature/workspace-restoration-v0`: normal MainWindow geometry and Study Review split persistence, using existing per-database workspace settings. Read `WORKSPACE_RESTORATION_SLICE.md` and its two-check operator guide (311–312 pending). Existing TDA split persistence, active-run routing, schema 47 and plan definitions remain unchanged. This closes observed shared-shell friction before UX4 criteria study/authoring.
+
 ## 2026-10-20 — Integrated Study accepted; native mapped Focus trial
 
 Operator checks 301–305 PASS, pushed as `6b04866` on `feature/integrated-study-task-v0`. PR #81 remains draft and unmerged. The Saved Study Finds splitter was positively noted for discoverability; recorded in `UX_DESIGN_TOUCHSTONES.md`. This accepts the bounded Study integration, not final Lab styling.
