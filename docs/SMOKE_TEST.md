@@ -1247,7 +1247,7 @@ Historical operator note: 310 needed a resized-window restart correction. The co
 
 ## Shared workspace restoration — focused trial
 
-Use `WORKSPACE_RESTORATION_OPERATOR_GUIDE.md` with the existing startup demo and a new separate directory. Checks 311–312 remain NOT TESTED.
+Use `WORKSPACE_RESTORATION_OPERATOR_GUIDE.md` with the existing startup demo and a new separate directory. Operator reports checks 311–312 PASS (2026-10-21).
 
 - [PASS] Normal cockpit close/reopen restores main-window size and position while preserving startup routing.
   - Where: guide checkpoint 311.

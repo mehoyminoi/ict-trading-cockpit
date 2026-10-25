@@ -40,6 +40,8 @@ def _working_request(*, clear_applicability=False, **arguments):
 class AMDXRepository:
     def __init__(self, connection: sqlite3.Connection):
         self.connection = connection
+        from ict_cockpit.database.amdx_definition_repository import AMDXDefinitionRepository
+        self.definitions = AMDXDefinitionRepository(self)
         from ict_cockpit.database.amdx_review_repository import AMDXReviewRepository
         self.review = AMDXReviewRepository(self)
         from ict_cockpit.database.amdx_context_repository import AMDXContextRepository
@@ -269,20 +271,7 @@ class AMDXRepository:
                     raise ValueError("Evaluation basis must identify a claim in this run and quartet")
             self._store_cycle(evaluation.cycle)
             for definition in evaluation.definitions:
-                key = (definition.plan_revision, definition.id, definition.revision, definition.publication)
-                definition_json = _json(payload(definition))
-                row = self.connection.execute("""
-                    SELECT payload_json FROM amdx_definition_revision
-                    WHERE plan_revision = ? AND rule_id = ? AND rule_revision = ? AND publication = ?
-                """, key).fetchone()
-                if row:
-                    if row[0] != definition_json:
-                        raise ValueError("A recorded definition revision has different content; use a new revision")
-                else:
-                    self.connection.execute("""
-                        INSERT INTO amdx_definition_revision (plan_revision, rule_id, rule_revision, publication, payload_json)
-                        VALUES (?, ?, ?, ?, ?)
-                    """, key + (definition_json,))
+                self.definitions._store_locked(definition)
             self.connection.execute("""
                 INSERT INTO amdx_evaluation (id, run_id, cycle_id, recorded_at, basis_claim_id, payload_json)
                 VALUES (?, ?, ?, ?, ?, ?)

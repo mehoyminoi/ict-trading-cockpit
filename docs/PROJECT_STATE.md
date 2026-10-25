@@ -1,5 +1,12 @@
 # ICT Trading Cockpit — Current Project State
 
+## 2026-10-21 — Workspace accepted; UX4a candidate revision foundation
+
+Operator reports 311–312 PASS for workspace restoration (draft PR #83). Multi-monitor, mode-aware companion-window direction and the “rally race navigator” motif are recorded in requirements/touchstones as future refinement.
+
+`feature/amdx-criteria-revisions-v0` adds independent candidate save/read/list actions over the existing immutable AMDX definition registry. Saving does not require or create a run/evaluation and cannot publish/adopt a rule. Existing evaluation recording reuses the same registry write. Schema remains 47. Read `AMDX_CRITERIA_REVISIONS_SLICE.md`. No new operator smoke checks: this is the storage boundary before the native criteria editor, not completed UX4. Next: explicit contextual input/target selection and candidate editing; then retained scoped evaluations.
+
+
 ## 2026-10-20 — Mapped TDA accepted; shared workspace restoration
 
 Operator 306–310 all PASS, published as `bbf44f8` on `feature/tda-mapped-focus-v0`; PR #82 remains draft/unmerged. The next bounded local slice is `feature/workspace-restoration-v0`: normal MainWindow geometry and Study Review split persistence, using existing per-database workspace settings. Read `WORKSPACE_RESTORATION_SLICE.md` and its two-check operator guide (311–312 pending). Existing TDA split persistence, active-run routing, schema 47 and plan definitions remain unchanged. This closes observed shared-shell friction before UX4 criteria study/authoring.
