@@ -1282,6 +1282,19 @@ Use `AMDX_REUSABLE_SCOPES_OPERATOR_GUIDE.md` with a new synthetic directory.
 - [PASS] Reopening and editing preserve the reusable descriptor without automatic adoption or evaluation.
   - Where: guide checkpoint 320.
 
+## Integrated criterion Study — focused trial
+
+Use `STUDY_CRITERION_OPERATOR_GUIDE.md` and the seeded synthetic demo. This tests a coherent question/observation/result workflow, not trading validity.
+
+- [NOT TESTED] No observations produces an unsaved Unknown explanation without creating a run.
+  - Where: guide checkpoint 321.
+- [NOT TESTED] A sourced synthetic observation produces a Matched preview and saves only on explicit action.
+  - Where: guide checkpoint 322.
+- [NOT TESTED] False and later-available observations yield distinct Not Matched and Unknown results; changed inputs invalidate previews.
+  - Where: guide checkpoint 323.
+- [NOT TESTED] Reopening recovers the original question, criterion and observations for each separate saved result.
+  - Where: guide checkpoint 324.
+
 ## Reporting results
 
 Report results as:

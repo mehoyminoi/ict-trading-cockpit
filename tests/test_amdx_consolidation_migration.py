@@ -88,7 +88,7 @@ print(json.dumps(metadata))
     original_run = connection.execute('SELECT * FROM trading_session_run WHERE id=?', (metadata['run_id'],)).fetchone()
     if late_failure:
         connection.set_authorizer(lambda action,a,b,*_: sqlite3.SQLITE_DENY
-            if action==sqlite3.SQLITE_PRAGMA and a=='user_version' and b=='47' else sqlite3.SQLITE_OK)
+            if action==sqlite3.SQLITE_PRAGMA and a=='user_version' and b=='48' else sqlite3.SQLITE_OK)
         with pytest.raises(sqlite3.DatabaseError):
             initialize_schema(connection)
         connection.set_authorizer(None)
@@ -96,7 +96,7 @@ print(json.dumps(metadata))
         assert schema_rows(connection) == original_schema
         assert {name: connection.execute('SELECT * FROM '+name).fetchall() for name in names} == before
     initialize_schema(connection)
-    assert connection.execute('PRAGMA user_version').fetchone()[0] == 47
+    assert connection.execute('PRAGMA user_version').fetchone()[0] == 48
     assert {name: connection.execute('SELECT * FROM '+name).fetchall() for name in names} == before
     for table in ('amdx_catalog','amdx_catalog_command','amdx_master_binding','amdx_run_binding',
                   'amdx_run_capture','amdx_run_calendar_command','amdx_run_observed_command'):
@@ -108,7 +108,7 @@ print(json.dumps(metadata))
         owner.run_calendar.get_binding(metadata['run_id'])
     previous = {}
     exec(compile((archived/'src/ict_cockpit/database/schema.py').read_text(), 'actual-main-schema', 'exec'), previous)
-    with pytest.raises(RuntimeError, match='Unsupported database schema version: 47'):
+    with pytest.raises(RuntimeError, match='Unsupported database schema version: 48'):
         previous['initialize_schema'](connection)
     for _ in range(2):
         window = MainWindow(TDARepository(connection), StudyFindRepository(connection))

@@ -161,7 +161,7 @@ class Resolution:
 @dataclass(frozen=True)
 class Evaluation:
     id: str
-    run_id: str
+    run_id: str | None
     cycle: Cycle
     market_reference: datetime
     definitions: tuple[Definition, ...]
@@ -245,10 +245,11 @@ def _condition(condition: Condition, facts: tuple[Fact, ...], reference: datetim
     return ("Matched" if matched else "Not Matched"), "Declared typed comparison evaluated.", (fact.id,)
 
 
-def evaluate(*, evaluation_id: str, run_id: str, cycle: Cycle, market_reference: datetime,
+def evaluate(*, evaluation_id: str, run_id: str | None, cycle: Cycle, market_reference: datetime,
              definitions: tuple[Definition, ...], facts: tuple[Fact, ...]) -> Evaluation:
     require_id(evaluation_id)
-    require_id(run_id)
+    if run_id is not None:
+        require_id(run_id)
     aware(market_reference)
     definitions, facts = tuple(definitions), tuple(facts)
     if len({d.id for d in definitions}) != len(definitions):
