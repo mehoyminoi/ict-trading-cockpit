@@ -1275,11 +1275,11 @@ Use `STUDY_CRITERIA_EDITOR_OPERATOR_GUIDE.md` with a new separate directory. All
 
 Use `AMDX_REUSABLE_SCOPES_OPERATOR_GUIDE.md` with a new synthetic directory.
 
-- [NOT TESTED] Changing Fixed Q2 to Reusable Q2 saves a separate candidate revision.
+- [PASS] Changing Fixed Q2 to Reusable Q2 saves a separate candidate revision.
   - Where: guide checkpoint 318.
-- [NOT TESTED] Next-date inspection preserves fixed input identity while previewing reusable Q2 on the selected date.
+- [PASS] Next-date inspection preserves fixed input identity while previewing reusable Q2 on the selected date.
   - Where: guide checkpoint 319.
-- [NOT TESTED] Reopening and editing preserve the reusable descriptor without automatic adoption or evaluation.
+- [PASS] Reopening and editing preserve the reusable descriptor without automatic adoption or evaluation.
   - Where: guide checkpoint 320.
 
 ## Reporting results
