@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 47
+CURRENT_SCHEMA_VERSION = 48
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -156,6 +156,10 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 46:
             _migrate_version_46_to_47(connection)
             version = 47
+
+        if version == 47:
+            _migrate_version_47_to_48(connection)
+            version = 48
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -1199,3 +1203,21 @@ def _migrate_version_46_to_47(connection):
         WHEN EXISTS(SELECT 1 FROM study_investigation_capture WHERE capture_id=NEW.capture_id)
         BEGIN SELECT RAISE(ABORT, 'Study investigation associations are immutable'); END""")
     connection.execute("PRAGMA user_version = 47")
+
+
+def _migrate_version_47_to_48(connection):
+    connection.execute("""CREATE TABLE study_criterion_evaluation (
+        id TEXT PRIMARY KEY NOT NULL,
+        task_id TEXT NOT NULL,
+        payload_json TEXT NOT NULL
+    )""")
+    connection.execute("CREATE INDEX idx_study_criterion_task ON study_criterion_evaluation(task_id)")
+    for operation in ("UPDATE", "DELETE"):
+        connection.execute(f"""CREATE TRIGGER study_criterion_no_{operation.lower()}
+            BEFORE {operation} ON study_criterion_evaluation
+            BEGIN SELECT RAISE(ABORT, 'Study criterion evaluations are immutable'); END""")
+    connection.execute("""CREATE TRIGGER study_criterion_no_replace
+        BEFORE INSERT ON study_criterion_evaluation
+        WHEN EXISTS(SELECT 1 FROM study_criterion_evaluation WHERE id=NEW.id)
+        BEGIN SELECT RAISE(ABORT, 'Study criterion evaluations are immutable'); END""")
+    connection.execute("PRAGMA user_version = 48")

@@ -241,6 +241,7 @@ class MainWindow(QMainWindow):
         self.integrated_study_task.capture_requested.connect(self._open_investigation_capture)
         self.integrated_study_task.review_requested.connect(self._open_investigation_review)
         self.integrated_study_task.criteria_requested.connect(self._open_study_criteria)
+        self.integrated_study_task.evaluation_requested.connect(self._open_criterion_study)
         self.investigation_return_buttons = []
         self.investigation_context_labels = []
         self.pending_investigation_context = None
@@ -374,6 +375,21 @@ class MainWindow(QMainWindow):
             self.tabs.setCurrentWidget(self.study_home_widget)
         self._restore_workspace_layout()
         self.study_find_review_widget.splitter.splitterMoved.connect(self._save_review_layout)
+
+    def _open_criterion_study(self):
+        from ict_cockpit.gui.study_criterion_dialog import StudyCriterionDialog
+        from ict_cockpit.database.study_criterion_repository import StudyCriterionRepository
+        target = self.amdx_catalog_widget.target
+        if target is None or self.amdx_catalog_widget._read_error:
+            self.status_bar.showMessage("Select a quarter in the Study calendar first.", 8000)
+            return
+        dialog = StudyCriterionDialog(
+            StudyCriterionRepository(self.trading_session_run_repository.amdx),
+            task_id=self.integrated_study_task.task_id, plan_id=self.trade_plan.id,
+            plan_revision=self.trade_plan.revision, question=self.integrated_study_task.question.text(),
+            instrument=target.instrument, cycle=target.cycle, reference=target.market_reference, parent=self,
+        )
+        dialog.exec()
 
     def _open_study_criteria(self):
         from ict_cockpit.gui.amdx_criteria_dialog import AMDXCriteriaDialog
