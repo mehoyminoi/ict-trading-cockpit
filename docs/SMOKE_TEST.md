@@ -1299,11 +1299,11 @@ Use `STUDY_CRITERION_OPERATOR_GUIDE.md` and the seeded synthetic demo. This test
 
 Use `STUDY_MULTIDAY_OPERATOR_GUIDE.md` and a new seeded synthetic directory.
 
-- [NOT TESTED] Next-day Study retains the criterion/question but starts with empty observations and an Unknown preview.
+- [PASS] Next-day Study retains the criterion/question but starts with empty observations and an Unknown preview.
   - Where: guide checkpoint 325.
-- [NOT TESTED] Separately saved days retain their own evidence; inspecting the first does not retarget the second day's inputs.
+- [PASS] Separately saved days retain their own evidence; inspecting the first does not retarget the second day's inputs.
   - Where: guide checkpoint 326.
-- [NOT TESTED] Reopening recovers both dated results and truthful coverage counts without calendar changes.
+- [PASS] Reopening recovers both dated results and truthful coverage counts without calendar changes.
   - Where: guide checkpoint 327.
 
 ## Reporting results
