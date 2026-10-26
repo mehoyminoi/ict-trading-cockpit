@@ -119,6 +119,8 @@ class StudyFindWidget(QWidget):
         self.copy_summary_button = QPushButton("Copy Summary")
         self.copy_summary_button.clicked.connect(self.copy_summary)
 
+        self.save_feedback = QLabel()
+        self.save_feedback.setWordWrap(True)
         self.save_button = QPushButton("Save Study Find")
         self.save_button.clicked.connect(self.submit)
 
@@ -146,6 +148,7 @@ class StudyFindWidget(QWidget):
         layout.addWidget(self.generate_summary_button)
         layout.addWidget(self.summary_preview)
         layout.addWidget(self.copy_summary_button)
+        layout.addWidget(self.save_feedback)
         layout.addWidget(self.save_button)
         layout.addWidget(self.new_study_find_button)
         self.setLayout(layout)
@@ -261,8 +264,10 @@ class StudyFindWidget(QWidget):
         try:
             study_find = self.build_study_find()
         except ValueError as error:
+            self.save_feedback.setText(f"Not saved: {error}. Complete the required field and try again.")
             self.submission_failed.emit(str(error))
             return False
+        self.save_feedback.clear()
         self.study_find_ready.emit(study_find)
         return True
 
@@ -409,6 +414,7 @@ class StudyFindWidget(QWidget):
         self.emit_draft_changed()
 
     def mark_saved(self) -> None:
+        self.save_feedback.setText("Study Find saved.")
         self.save_button.setText("Saved")
         self.save_button.setEnabled(False)
         self.attach_image_button.setEnabled(False)
@@ -433,6 +439,7 @@ class StudyFindWidget(QWidget):
 
         self.summary_preview.clear()
 
+        self.save_feedback.clear()
         self.save_button.setText("Save Study Find")
         self.save_button.setEnabled(True)
         self.attach_image_button.setEnabled(True)

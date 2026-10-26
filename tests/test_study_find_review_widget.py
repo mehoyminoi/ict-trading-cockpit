@@ -100,3 +100,24 @@ def test_review_widget_selects_newest_study_find(
     )
 
     connection.close()
+
+def test_review_automatically_previews_first_attachment(tmp_path):
+    from PySide6.QtGui import QImage
+    app = QApplication.instance() or QApplication([])
+    connection = create_connection(tmp_path / 'preview.db')
+    initialize_schema(connection)
+    repository = StudyFindRepository(connection)
+    find = StudyFind(observation_date=date(2026,10,26), instrument='MNQ',
+                     session='NYAM', pattern_name='Preview', observation='Chart')
+    repository.save(find)
+    path = tmp_path / 'chart.png'
+    image = QImage(32, 24, QImage.Format.Format_RGB32)
+    image.fill(0xffffff)
+    assert image.save(str(path))
+    repository.add_image(find.id, str(path))
+    widget = StudyFindReviewWidget(repository)
+    assert widget.image_list.currentRow() == 0
+    assert not widget.image_preview.pixmap().isNull()
+    assert widget.open_image_button.isEnabled()
+    widget.close()
+    connection.close()

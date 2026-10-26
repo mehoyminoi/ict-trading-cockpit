@@ -15,3 +15,7 @@ Accepted direction: compose one useful Study session before more isolated criter
 ## Verification
 
 35 distinct focused tests passed across overview, integrated Study, criterion/multi-day Study, saved-find Review, MainWindow, association storage and smoke documentation. Native overview inspected at desktop and reduced size; capture detail scrolls when needed. Operator 328–330 pending. No merge authorization.
+
+## Operator checkpoint — 2026-10-26
+
+Operator reports 328–330 PASS. During 329, missing required fields prevented saving without a visible explanation; filling the fields allowed saving. Treat this as a usability defect despite the completed workflow pass. The operator also requests automatic attachment preview on opening a saved find. Local follow-up adds persistent feedback beside Save and selects the first attachment in shared Review (including the overview). These corrections require a focused operator recheck; the original pass is not approval of silent validation.
