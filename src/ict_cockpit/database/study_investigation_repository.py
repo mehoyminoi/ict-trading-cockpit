@@ -12,6 +12,12 @@ class StudyInvestigationRepository:
         row = cursor.fetchone()
         return dict(zip((item[0] for item in cursor.description), row)) if row else None
 
+    def list_for_task(self, task_id):
+        rows = self.connection.execute(
+            "SELECT capture_id FROM study_investigation_capture WHERE task_id=? ORDER BY rowid",
+            (task_id,)).fetchall()
+        return tuple(self.get(row[0]) for row in rows)
+
     def link(self, capture_id, *, task_id, plan_id, plan_revision, question,
              instrument, market_reference, interpretation):
         values = (capture_id, task_id, plan_id, plan_revision, question.strip(),

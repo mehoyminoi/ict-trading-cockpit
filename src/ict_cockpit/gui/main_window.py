@@ -241,6 +241,7 @@ class MainWindow(QMainWindow):
         self.integrated_study_task.capture_requested.connect(self._open_investigation_capture)
         self.integrated_study_task.review_requested.connect(self._open_investigation_review)
         self.integrated_study_task.criteria_requested.connect(self._open_study_criteria)
+        self.integrated_study_task.overview_requested.connect(self._open_investigation_overview)
         self.integrated_study_task.evaluation_requested.connect(self._open_criterion_study)
         self.investigation_return_buttons = []
         self.investigation_context_labels = []
@@ -375,6 +376,17 @@ class MainWindow(QMainWindow):
             self.tabs.setCurrentWidget(self.study_home_widget)
         self._restore_workspace_layout()
         self.study_find_review_widget.splitter.splitterMoved.connect(self._save_review_layout)
+
+    def _open_investigation_overview(self):
+        from ict_cockpit.gui.study_investigation_overview import StudyInvestigationOverview
+        from ict_cockpit.database.study_criterion_repository import StudyCriterionRepository
+        dialog = StudyInvestigationOverview(
+            self.investigation_repository,
+            StudyCriterionRepository(self.trading_session_run_repository.amdx),
+            self.study_find_review_widget.repository,
+            task_id=self.integrated_study_task.task_id, plan_id=self.trade_plan.id,
+            question=self.integrated_study_task.question.text(), parent=self)
+        dialog.exec()
 
     def _open_criterion_study(self):
         from ict_cockpit.gui.study_criterion_dialog import StudyCriterionDialog
