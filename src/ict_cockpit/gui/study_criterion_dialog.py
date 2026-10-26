@@ -3,14 +3,16 @@ from datetime import datetime, timezone
 import sqlite3
 from uuid import uuid4
 
-from PySide6.QtCore import QDateTime, QTimeZone, Qt
+from PySide6.QtCore import QDate, QTime, QDateTime, QTimeZone, Qt
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QComboBox,
     QPushButton, QTextBrowser, QGroupBox, QFormLayout, QDateTimeEdit,
-    QScrollArea, QWidget, QMessageBox,
+    QScrollArea, QWidget, QMessageBox, QDateEdit, QTimeEdit,
 )
 from ict_cockpit.analysis.amdx_rules import Fact, QuartetScope, evaluate
 from ict_cockpit.analysis.market_time import MARKET_TIMEZONE
+from ict_cockpit.analysis.amdx_context import resolve_stack_cycles
+from ict_cockpit.gui.amdx_catalog_widget import historical_reference
 from ict_cockpit.database.study_criterion_repository import StudyCriterionRecord
 
 
@@ -55,14 +57,34 @@ class StudyCriterionDialog(QDialog):
         self.preview_record = None
         self.dirty = False
         self.inputs = []
+        self.retained_question = question
         self.criterion_index = 0
         self.setWindowTitle('Study a criterion · observations and result')
         self.resize(1000, 800)
         outer = QVBoxLayout(self)
-        heading = QLabel(f'{instrument} · {cycle.layer} · pinned information reference {reference.isoformat()}\n'
+        heading = self.heading = QLabel(f'{instrument} · {cycle.layer} · pinned information reference {reference.isoformat()}\n'
                          'Choose one saved criterion. Supply observations and their source; blank values mean unknown. No Trading Run is needed.')
         heading.setWordWrap(True)
         outer.addWidget(heading)
+        dates = QHBoxLayout()
+        dates.addWidget(QLabel('Reference (NY)'))
+        local = reference.astimezone(MARKET_TIMEZONE)
+        self.date_input = QDateEdit(QDate(local.year, local.month, local.day))
+        self.date_input.setDisplayFormat('yyyy-MM-dd')
+        self.date_input.setCalendarPopup(True)
+        self.time_input = QTimeEdit(QTime(local.hour, local.minute))
+        self.time_input.setDisplayFormat('HH:mm')
+        self.fold_input = QComboBox()
+        self.fold_input.addItems(['First occurrence', 'Second occurrence'])
+        self.fold_input.setCurrentIndex(local.fold)
+        self.fold_input.setToolTip('Select which occurrence of a repeated New York autumn hour is intended.')
+        self.apply_date_button = QPushButton('Use this reference')
+        self.previous_day_button = QPushButton('Previous day')
+        self.next_day_button = QPushButton('Next day')
+        for widget in (self.date_input, self.time_input, self.fold_input, self.apply_date_button,
+                       self.previous_day_button, self.next_day_button):
+            dates.addWidget(widget)
+        outer.addLayout(dates)
         self.question = QLineEdit(question)
         self.question.setPlaceholderText('What question are you investigating?')
         outer.addWidget(QLabel('Study question'))
@@ -94,6 +116,9 @@ class StudyCriterionDialog(QDialog):
         self.saved.setMinimumContentsLength(40)
         outer.addWidget(QLabel('Saved results for this investigation (inspection leaves your current inputs unchanged)'))
         outer.addWidget(self.saved)
+        self.coverage = QLabel()
+        self.coverage.setWordWrap(True)
+        outer.addWidget(self.coverage)
         self.result = QTextBrowser()
         self.result.setMinimumHeight(200)
         outer.addWidget(self.result, 1)
@@ -106,7 +131,76 @@ class StudyCriterionDialog(QDialog):
         self.save_button.clicked.connect(self.save)
         self.close_button.clicked.connect(self.reject)
         self.saved.currentIndexChanged.connect(self.inspect_saved)
+        self.date_input.dateChanged.connect(self.reference_pending)
+        self.time_input.timeChanged.connect(self.reference_pending)
+        self.fold_input.currentIndexChanged.connect(self.reference_pending)
+        self.apply_date_button.clicked.connect(self.apply_reference)
+        self.previous_day_button.clicked.connect(lambda: self.step_day(-1))
+        self.next_day_button.clicked.connect(lambda: self.step_day(1))
+        self.update_fold_visibility()
         self.reload_saved()
+
+    def update_fold_visibility(self):
+        day, clock = self.date_input.date(), self.time_input.time()
+        naive = datetime(day.year(), day.month(), day.day(), clock.hour(), clock.minute())
+        first = naive.replace(tzinfo=MARKET_TIMEZONE, fold=0)
+        second = naive.replace(tzinfo=MARKET_TIMEZONE, fold=1)
+        self.fold_input.setVisible(first.utcoffset() != second.utcoffset())
+
+    def reference_pending(self, *_):
+        self.update_fold_visibility()
+        self.preview_button.setEnabled(False)
+        self.save_button.setEnabled(False)
+        self.status.setText(f'Reference selection not applied. Current inputs still belong to {self.reference.isoformat()}. Use this reference or restore the selection.')
+
+    def step_day(self, amount):
+        self.date_input.setDate(self.date_input.date().addDays(amount))
+        self.apply_reference()
+
+    def apply_reference(self):
+        try:
+            reference = historical_reference(self.date_input.date(), self.time_input.time(), self.fold_input.currentIndex())
+            if reference == self.reference:
+                self.preview_button.setEnabled(True)
+                self.save_button.setEnabled(self.preview_record is not None and self.dirty)
+                self.status.setText('This reference is already active; current inputs are retained.')
+                return
+            context = next((c for c in resolve_stack_cycles(reference) if c.cycle.layer == self.cycle.layer), None)
+            if context is None:
+                raise ValueError('This reference has no quartet for the selected layer; choose another date/time')
+        except ValueError as exc:
+            self.status.setText(f'Reference not changed: {exc}. Current observations remain intact.')
+            return
+        if self.dirty and (self.preview_record is not None or self.inputs and any(row[4].text() or row[5].text() for row in self.inputs)):
+            answer = QMessageBox.question(self, 'Change Study reference',
+                'Discard unsaved observations/preview and begin this date with empty observations? The question and criterion are retained.',
+                QMessageBox.StandardButton.Discard | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Cancel)
+            if answer != QMessageBox.StandardButton.Discard:
+                local = self.reference.astimezone(MARKET_TIMEZONE)
+                for widget in (self.date_input, self.time_input, self.fold_input):
+                    widget.blockSignals(True)
+                self.date_input.setDate(QDate(local.year, local.month, local.day))
+                self.time_input.setTime(QTime(local.hour, local.minute))
+                self.fold_input.setCurrentIndex(local.fold)
+                for widget in (self.date_input, self.time_input, self.fold_input):
+                    widget.blockSignals(False)
+                self.update_fold_visibility()
+                self.preview_button.setEnabled(True)
+                self.save_button.setEnabled(self.preview_record is not None)
+                self.status.setText('Date change canceled. Original reference, observations and preview are retained.')
+                return
+        self.reference, self.cycle = reference, context.cycle
+        self.dirty = False  # A deliberate transition has handled any unsaved inputs.
+        self.build_inputs()
+        self.dirty = self.question.text() != self.retained_question
+        self.saved.blockSignals(True)
+        self.saved.setCurrentIndex(0)
+        self.saved.blockSignals(False)
+        self.heading.setText(f'{self.instrument} · {self.cycle.layer} · pinned information reference {reference.isoformat()}\n'
+                             f'Quartet: {self.cycle.quarters[0].start.isoformat()} → {self.cycle.quarters[-1].end.isoformat()}')
+        self.preview_button.setEnabled(True)
+        self.save_button.setEnabled(False)
+        self.status.setText('New reference ready. Same question and criterion; observations and sources start empty. Fixed input scopes retain their original identity.')
 
     def invalidate(self, *_):
         self.preview_record = None
@@ -129,6 +223,7 @@ class StudyCriterionDialog(QDialog):
         while self.fields_layout.count():
             item = self.fields_layout.takeAt(0)
             if item.widget():
+                item.widget().hide()
                 item.widget().deleteLater()
         self.inputs = []
         self.invalidate()
@@ -219,6 +314,7 @@ class StudyCriterionDialog(QDialog):
             self.status.setText(f'Not saved: {exc}. The preview and inputs remain available; retry deliberately.')
             return
         self.dirty = False
+        self.retained_question = saved.question
         self.save_button.setEnabled(False)
         self.reload_saved(saved.evaluation.id)
         self.status.setText('Study result saved independently. No criterion was adopted and no AMDX entry changed.')
@@ -227,12 +323,18 @@ class StudyCriterionDialog(QDialog):
         self.saved.blockSignals(True)
         self.saved.clear()
         self.saved.addItem('Inspect a saved result…', None)
-        for record in self.repository.list_for_task(self.task_id):
+        records = self.repository.list_for_task(self.task_id)
+        for record in records:
             e = record.evaluation
-            self.saved.addItem(f'{e.market_reference.isoformat()} · {e.results[0].state} · {record.question}', e.id)
+            self.saved.addItem(f'{e.market_reference.isoformat()} · {e.results[0].state} · {e.definitions[0].revision} · {record.question}', e.id)
             if e.id == selected:
                 self.saved.setCurrentIndex(self.saved.count()-1)
         self.saved.blockSignals(False)
+        dates = {r.evaluation.market_reference.astimezone(MARKET_TIMEZONE).date() for r in records}
+        revisions = {(r.evaluation.definitions[0].plan_revision, r.evaluation.definitions[0].id,
+                      r.evaluation.definitions[0].revision, r.evaluation.definitions[0].publication) for r in records}
+        self.coverage.setText(f'{len(records)} saved results · {len(dates)} New York reference dates · {len(revisions)} criterion revisions. '
+                             'Repeated evaluations are separate records, not independent trading outcomes or a success rate.')
         if selected:
             self.inspect_saved()
 
