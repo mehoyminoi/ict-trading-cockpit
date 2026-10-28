@@ -19,6 +19,7 @@ A mockup passing functional assertions does not close a touchstone. A touchstone
 
 | Touchstone | Required design meaning | Current state / cross-examination question |
 | --- | --- | --- |
+| **“Do I feel like it helped me learn something?”** | Study must support noticing, questioning, connecting context and returning to useful inquiry, beyond successful data entry. | Real-session feedback reports learning value and exposes context-handoff and follow-up capture gaps. See [findings](STUDY_REAL_SESSION_FINDINGS.md). |
 | **“A shiny new roofing nail gun…looking for the blueprints.”** | Features belong to an executable trading and learning process. | Process/runtime architecture is implemented. Does the proposed surface make the process clearer than the collection of tools? |
 | **“Foundation and Rules define the operating constraints. Playbooks define valid methods. Process operates the trading day. Review / Development improves the system.”** | Major areas have distinct purposes and should be recognizable as such. | Domain ownership exists; mature section identity is unresolved. Can the technician tell which kind of work is happening at a glance? |
 | **“A station really has three jobs: Action → Observe → Carry Forward.”** | A station guides an analytical operation, including legitimate manual chart work, and retains the conclusion needed later. | Actions, observations and completion exist; separate carry-forward presentation remains incomplete. Does Focus say what to do, what to notice and what survives? |
