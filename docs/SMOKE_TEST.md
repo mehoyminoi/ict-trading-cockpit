@@ -1321,11 +1321,11 @@ Use `STUDY_INVESTIGATION_OVERVIEW_OPERATOR_GUIDE.md` with the retained multi-day
 
 Use `STUDY_QUESTION_INBOX_OPERATOR_GUIDE.md` with its new separate fixture.
 
-- [NOT TESTED] A follow-up question retains original wording and source context while leaving current work intact.
+- [PASS] A follow-up question retains original wording and source context while leaving current work intact.
   - Where: guide checkpoint 331.
-- [NOT TESTED] Unsaved question cancellation preserves text; saved source snapshots survive later capture edits.
+- [PASS] Unsaved question cancellation preserves text; saved source snapshots survive later capture edits.
   - Where: guide checkpoint 332.
-- [NOT TESTED] The saved question is retrievable after reopening without replacing the active investigation.
+- [PASS] The saved question is retrievable after reopening without replacing the active investigation.
   - Where: guide checkpoint 333.
 
 ## Reporting results
