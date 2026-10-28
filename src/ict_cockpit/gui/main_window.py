@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (
     QApplication,
     QDialog,
     QMainWindow,
+    QMessageBox,
     QStatusBar,
     QTabWidget,
     QPushButton,
@@ -284,6 +285,10 @@ class MainWindow(QMainWindow):
             editor.selectionChanged.connect(lambda editor=editor: self._remember_question_selection(editor))
         self.keep_study_question_button.clicked.connect(lambda: self._open_study_questions(capture=True))
         self.study_find_widget.layout().insertWidget(4, self.keep_study_question_button)
+        self.discard_study_draft_button = QPushButton("Discard current draft…")
+        self.discard_study_draft_button.clicked.connect(self._discard_study_draft)
+        self.study_find_widget.layout().addWidget(self.discard_study_draft_button)
+
         self.study_questions_button = QPushButton("Study questions…")
         self.study_questions_button.clicked.connect(lambda: self._open_study_questions(capture=False))
         self.integrated_study_task.layout().addWidget(self.study_questions_button)
@@ -933,6 +938,56 @@ class MainWindow(QMainWindow):
 
     def save_pending_draft(self) -> None:
         self.save_pending_tda_draft()
+
+    def _discard_study_draft(self):
+        source = self.study_find_widget
+        if not source.save_button.isEnabled():
+            source.save_feedback.setText("This Study Find is saved. Use Start New Study Find; saved records are not discarded here.")
+            return
+        identity = source.current_study_find_id
+        answer = QMessageBox.question(
+            self, "Discard current Study Find draft?",
+            "Discard this unfinished capture's pattern, observation, notes and attachment list? "
+            "Date, instrument and session will stay as starting context. Saved finds, queued questions "
+            "and their source records will remain. This cannot be undone.",
+            QMessageBox.StandardButton.Discard | QMessageBox.StandardButton.Cancel,
+            QMessageBox.StandardButton.Cancel)
+        if answer != QMessageBox.StandardButton.Discard:
+            return
+        # The confirmation can process events; recheck identity/state before mutation.
+        if source.current_study_find_id != identity or not source.save_button.isEnabled():
+            source.save_feedback.setText("Draft changed while confirming. Nothing discarded; inspect it and try again.")
+            return
+        draft = source.build_draft()
+        pending = self.pending_study_find_draft
+        was_active = self.study_find_draft_save_timer.isActive()
+        self.study_find_draft_save_timer.stop()
+        try:
+            if self.study_find_repository.get_by_id(identity) is not None:
+                raise ValueError("This identity belongs to a saved Study Find")
+            self.study_find_repository.delete_draft(identity)
+        except (ValueError, sqlite3.Error) as error:
+            self.pending_study_find_draft = pending
+            if was_active:
+                self.study_find_draft_save_timer.start()
+            source.save_feedback.setText(f"Draft not discarded: {error}. Your input remains here.")
+            return
+        self.pending_study_find_draft = None
+        blocked = source.blockSignals(True)
+        source._loading_draft = True
+        try:
+            source.reset_form()
+            source.apply_context_defaults(observation_date=draft.observation_date,
+                                          instrument=draft.instrument, session=draft.session)
+        finally:
+            source._loading_draft = False
+            source.blockSignals(blocked)
+        # Sync other projections once, only after the new identity is complete.
+        source.emit_draft_changed()
+        self._quick_question_pending = None
+        self._question_selection_editor = None
+        self.question_capture_feedback.clear()
+        source.save_feedback.setText("Draft discarded. Fresh capture ready with the same date, instrument and session.")
 
     def schedule_study_find_draft_save(self, draft) -> None:
         self.pending_study_find_draft = draft
