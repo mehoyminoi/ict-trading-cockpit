@@ -1,4 +1,6 @@
 import sqlite3
+import json
+from dataclasses import asdict
 from pathlib import Path
 
 from PySide6.QtCore import QByteArray, QSettings, QTimer
@@ -575,6 +577,21 @@ class MainWindow(QMainWindow):
             "Capture matches the opening context. Date is the selected New York calendar date; "
             "session follows the inspected quarter where known. Fields remain editable.")
 
+    def _capture_draft_fingerprint(self):
+        return json.dumps(asdict(self.study_find_widget.build_draft()), sort_keys=True, default=str)
+
+    def _remember_discard_seed(self):
+        self._discard_seed = self._capture_draft_fingerprint()
+        if self.workspace_settings is not None:
+            self.workspace_settings.setValue("study-capture/discard-seed-v1", self._discard_seed)
+            self.workspace_settings.sync()
+
+    def _untouched_discard_seed(self):
+        seed = getattr(self, "_discard_seed", None)
+        if seed is None and self.workspace_settings is not None:
+            seed = self.workspace_settings.value("study-capture/discard-seed-v1", "")
+        return bool(seed) and seed == self._capture_draft_fingerprint()
+
     def _open_investigation_capture(self):
         from ict_cockpit.analysis.market_time import MARKET_TIMEZONE
         pane = self.amdx_catalog_widget
@@ -604,7 +621,19 @@ class MainWindow(QMainWindow):
                 source.reset_form()
             finally:
                 source._loading_draft = False
-        source.apply_context_defaults(**self.capture_context_defaults)
+        if source.save_button.isEnabled() and self._untouched_discard_seed():
+            # Discard's carried context is still only a suggestion, not an authored draft.
+            blocked = source.blockSignals(True)
+            try:
+                source.instrument_input.clear()
+                source.session_input.clear()
+                source.apply_context_defaults(**self.capture_context_defaults)
+            finally:
+                source.blockSignals(blocked)
+            self._remember_discard_seed()
+            source.emit_draft_changed()
+        else:
+            source.apply_context_defaults(**self.capture_context_defaults)
         self._show_investigation_context(0)
         self.link_investigation_button.show()
         self._refresh_capture_association()
@@ -982,6 +1011,7 @@ class MainWindow(QMainWindow):
         finally:
             source._loading_draft = False
             source.blockSignals(blocked)
+        self._remember_discard_seed()
         # Sync other projections once, only after the new identity is complete.
         source.emit_draft_changed()
         self._quick_question_pending = None
