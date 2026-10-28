@@ -1,3 +1,15 @@
+## Current delivery checkpoint — 2026-10-28
+
+Screenshot capture and Cockpit paste are operator-accepted on KDE/X11; further refinement is deferred. Prepared branch `feature/study-discard-context-fix-v0` contains the untouched-discard context correction and narrative-session feedback, based on #93 acceptance `f410179`. Publish as a draft stacked on #93 only after explicit publication authorization; do not merge. Targeted operator recheck is documented in `STUDY_DISCARD_CONTEXT_FIX.md`. Next implementation priority is retaining a Finding/partial answer with explicit investigation association.
+
+## Narrative-session findings — 2026-10-28
+
+Post-discard context handoff defect confirmed and locally corrected; see `STUDY_DISCARD_CONTEXT_FIX.md`. Updated `STUDY_REAL_SESSION_FINDINGS.md` records Finding/partial-answer capture as the next learning blocker, Link/Save control integration, screenshot shortcut troubleshooting and accepted calendar orientation cues. Pause additional narrative-session requests until these reported blockers are addressed. No new smoke pass inferred; no automatic finding-to-evidence promotion. Local correction and documentation are not published yet.
+
+## Current next step — narrative/context Study session
+
+Operator 336–337 PASS is published at `f410179`. Local documentation-only branch `docs/study-narrative-session-v0` prepares `STUDY_NARRATIVE_SESSION_GUIDE.md`: one familiar historical day to evaluate Observation/Notes, time/timeframe context and HTF narrative. This follows the agreed real-session findings sequence; no new production change or numbered smoke gate. Use the existing accepted application. Gather qualitative feedback before adding fields or a larger task-promotion workflow. No publication or merge claimed for this documentation checkpoint.
+
 ## Current local increment — discard unfinished Study capture
 
 Operator 334–335 PASS; retain the dual selected-text/direct-save and empty-selection/composer behavior. Discoverability is parked for later optimization. `feature/study-draft-discard-v0` adds confirmed current-draft discard with autosave cancellation, new identity, retained date/instrument/session and preserved saved records/questions/source references. Schema 49 unchanged. See `STUDY_DRAFT_DISCARD.md`; checks 336–337 pending. No publication or merge claimed by this local checkpoint.

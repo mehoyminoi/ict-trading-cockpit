@@ -65,3 +65,42 @@ def test_saved_find_is_never_discarded(cockpit,monkeypatch):
     assert window.study_find_repository.get_by_id(identity)
     assert w.current_study_find_id==identity
     assert 'saved' in w.save_feedback.text()
+
+
+def test_untouched_discard_seed_follows_new_context_but_authored_draft_does_not(cockpit,monkeypatch):
+    from PySide6.QtCore import QDate,QTime
+    window,c=cockpit;w=fill(window)
+    monkeypatch.setattr(QMessageBox,'question',lambda *a: QMessageBox.StandardButton.Discard)
+    window.discard_study_draft_button.click()
+    pane=window.amdx_catalog_widget
+    window.tabs.setCurrentWidget(pane)
+    pane.date_input.setDate(QDate(2026,10,9));pane.time_input.setTime(QTime(9,15))
+    row=next(i for i,r in enumerate(pane.projection.cycles) if r.context.cycle.layer=='day')
+    pane.table.setCurrentCell(row,3)
+    window.integrated_study_task.capture_button.click()
+    assert w.date_input.date()==QDate(2026,10,9)
+    assert w.session_input.text()=='NYAM'
+    w.notes_input.setPlainText('Now authored')
+    window.tabs.setCurrentWidget(pane)
+    pane.date_input.setDate(QDate(2026,10,12))
+    window.integrated_study_task.capture_button.click()
+    assert w.date_input.date()==QDate(2026,10,9)
+    assert w.notes_input.toPlainText()=='Now authored'
+    assert 'differs' in window.capture_context_notice.text()
+
+
+def test_discard_seed_provenance_survives_reopen(cockpit,monkeypatch):
+    from ict_cockpit.gui.main_window import MainWindow
+    from ict_cockpit.database.tda_repository import TDARepository
+    from ict_cockpit.database.study_find_repository import StudyFindRepository
+    from test_study_home import close
+    window,c=cockpit;w=fill(window)
+    monkeypatch.setattr(QMessageBox,'question',lambda *a: QMessageBox.StandardButton.Discard)
+    window.discard_study_draft_button.click()
+    window.save_pending_study_find_draft()
+    restored=MainWindow(TDARepository(c),StudyFindRepository(c))
+    try:
+        assert restored._untouched_discard_seed()
+        restored.study_find_widget.session_input.setText('Explicit override')
+        assert not restored._untouched_discard_seed()
+    finally:close(restored)
