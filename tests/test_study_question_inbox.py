@@ -93,14 +93,44 @@ def test_capture_action_preserves_work_and_reads_explicit_association_only(cockp
     before=widget.build_draft()
     task_id=window.integrated_study_task.task_id
     original_question=window.integrated_study_task.question.text()
-    def save_and_return(d):
-        assert d.original_text==before.notes
-        assert d.source['association'] is None
-        d.save(window.trade_plan.revision)
-        d.reject()
-    monkeypatch.setattr(StudyQuestionDialog,'exec',save_and_return)
+    def no_dialog(d):
+        raise AssertionError('Selected wording should save without opening a dialog')
+    monkeypatch.setattr(StudyQuestionDialog,'exec',no_dialog)
     window.keep_study_question_button.click()
     assert widget.build_draft()==before
     assert window.integrated_study_task.task_id==task_id
     assert window.integrated_study_task.question.text()==original_question
     assert len(StudyQuestionRepository(c).list_for_plan(window.trade_plan.id))==1
+
+
+def test_quick_capture_uses_latest_selection_retries_and_does_not_duplicate(cockpit, monkeypatch):
+    window,c=cockpit
+    w=window.study_find_widget
+    w.notes_input.setPlainText('Older selection');w.notes_input.selectAll()
+    w.observation_input.setPlainText('Newer selected question?');w.observation_input.selectAll()
+    save=StudyQuestionRepository.save
+    def fail(*args): raise sqlite3.OperationalError('disk unavailable')
+    monkeypatch.setattr(StudyQuestionRepository,'save',fail)
+    window.keep_study_question_button.click()
+    assert 'not saved' in window.question_capture_feedback.text()
+    assert w.observation_input.textCursor().selectedText()=='Newer selected question?'
+    monkeypatch.setattr(StudyQuestionRepository,'save',save)
+    window.keep_study_question_button.click()
+    window.keep_study_question_button.click()
+    records=StudyQuestionRepository(c).list_for_plan(window.trade_plan.id)
+    assert len(records)==1
+    assert records[0]['original_text']=='Newer selected question?'
+    assert 'Question kept' in window.question_capture_feedback.text()
+
+
+def test_no_selection_opens_optional_composer_without_saving(cockpit,monkeypatch):
+    window,c=cockpit
+    seen=[]
+    def inspect(d):
+        seen.append(d.source)
+        assert d.original_text==''
+        d.reject()
+    monkeypatch.setattr(StudyQuestionDialog,'exec',inspect)
+    window.keep_study_question_button.click()
+    assert seen and seen[0]['capture_id']==window.study_find_widget.current_study_find_id
+    assert StudyQuestionRepository(c).list_for_plan(window.trade_plan.id)==()

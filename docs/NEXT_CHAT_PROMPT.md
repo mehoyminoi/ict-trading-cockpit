@@ -1,3 +1,7 @@
+## Current local increment — direct question capture
+
+331–333 PASS published at `6454e04`. `feature/study-question-quick-capture-v0` removes the mandatory composer for selected text, retaining source snapshots and in-place confirmation/failure feedback. Empty selection still opens the optional composer. Schema 49 unchanged. Read `STUDY_QUESTION_QUICK_CAPTURE.md` for pending 334–335; no repeat of earlier tests. No publication/merge claimed by this local checkpoint.
+
 ## Current implementation — Study question inbox
 
 Capture-context targeted checks all PASS; the operator endorses quiet, metered mismatch guidance. The next local branch is `feature/study-question-inbox-v0`, based on published #90 head `212ddcf`. Read `STUDY_QUESTION_INBOX_SLICE.md` and the operator guide before older entries. Schema 49 adds independent question/source snapshots. Keep a question from Study Find, inspect it from the investigation and return without replacing current work. Operator 331–333 pending. No automatic task promotion, competency evidence or question ranking. Keep draft/unmerged; no publication is claimed by this local checkpoint.

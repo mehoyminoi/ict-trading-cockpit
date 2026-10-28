@@ -1328,6 +1328,15 @@ Use `STUDY_QUESTION_INBOX_OPERATOR_GUIDE.md` with its new separate fixture.
 - [PASS] The saved question is retrievable after reopening without replacing the active investigation.
   - Where: guide checkpoint 333.
 
+## Direct Study question capture — focused recheck
+
+Use `STUDY_QUESTION_QUICK_CAPTURE.md` with the existing question-inbox fixture.
+
+- [NOT TESTED] Selected wording saves directly without a dialog and an immediate repeat click does not duplicate it.
+  - Where: guide checkpoint 334.
+- [NOT TESTED] The latest editor selection is used; no selection opens the optional composer and saved questions remain retrievable.
+  - Where: guide checkpoint 335.
+
 ## Reporting results
 
 Report results as:
