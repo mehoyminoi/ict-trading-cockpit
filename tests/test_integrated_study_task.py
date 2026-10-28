@@ -109,15 +109,16 @@ def test_explicit_link_preserves_displayed_context_through_save_and_restart(cock
         assert restored.integrated_study_task.task_id == task.task_id
     finally:
         close(restored)
+    saved_id = source.current_study_find_id
     task.capture_button.click()
-    window.link_investigation_button.click()
-    assert 'cannot be reassigned' in window.capture_association_label.text()
-    assert window.investigation_repository.get(source.current_study_find_id) == link
+    assert source.current_study_find_id != saved_id
+    assert window.investigation_repository.get(saved_id) == link
+    assert window.investigation_repository.get(source.current_study_find_id) is None
     old_id = task.task_id
     task.new_task_button.click()
     assert task.task_id != old_id
     assert task.question.text() == ''
-    assert window.investigation_repository.get(source.current_study_find_id) == link
+    assert window.investigation_repository.get(saved_id) == link
 
 
 def test_small_window_uses_scroll_without_changing_calendar_owner(cockpit):
