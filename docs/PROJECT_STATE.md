@@ -1,3 +1,7 @@
+## Current implementation — Study question inbox
+
+Capture-context targeted checks all PASS; the operator endorses quiet, metered mismatch guidance. The next local branch is `feature/study-question-inbox-v0`, based on published #90 head `212ddcf`. Read `STUDY_QUESTION_INBOX_SLICE.md` and the operator guide before older entries. Schema 49 adds independent question/source snapshots. Keep a question from Study Find, inspect it from the investigation and return without replacing current work. Operator 331–333 pending. No automatic task promotion, competency evidence or question ranking. Keep draft/unmerged; no publication is claimed by this local checkpoint.
+
 ## Current implementation — capture-context continuity
 
 Local `feature/study-capture-context-v0` implements the next slice from real-session feedback. See [STUDY_CAPTURE_CONTEXT_SLICE.md](STUDY_CAPTURE_CONTEXT_SLICE.md): new capture suggestions from inspected context, preserved unfinished drafts with visible mismatch guidance, and fresh entry after a saved capture. Schema 48 unchanged. Configurable global instrument preference and the follow-up-question inbox remain later work. Targeted operator recheck pending; no publication or merge claimed.

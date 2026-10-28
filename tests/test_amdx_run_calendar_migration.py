@@ -38,13 +38,13 @@ def test_actual_v43_migration_preserves_every_old_table_and_does_not_bind_legacy
         assert not connection.execute("SELECT name FROM sqlite_master WHERE name LIKE 'amdx_run_%' OR name='idx_amdx_master_bound_scope'").fetchall()
         assert {name:connection.execute(f'SELECT * FROM "{name}"').fetchall() for name in names}==before
     initialize_schema(connection)
-    assert connection.execute('PRAGMA user_version').fetchone()[0]==48
+    assert connection.execute('PRAGMA user_version').fetchone()[0]==49
     assert {name:connection.execute(f'SELECT * FROM "{name}"').fetchall() for name in names}==before
     for table in ('amdx_run_binding','amdx_run_capture','amdx_run_calendar_command'):
         assert not connection.execute(f'SELECT * FROM {table}').fetchall()
     with pytest.raises(ValueError,match='legacy ownership is unknown'):
         repo.run_calendar.get_binding(run.id)
-    with pytest.raises(RuntimeError,match='Unsupported database schema version: 48'):
+    with pytest.raises(RuntimeError,match='Unsupported database schema version: 49'):
         previous(connection)
     assert not connection.execute('PRAGMA foreign_key_check').fetchall()
     connection.close()

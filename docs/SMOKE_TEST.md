@@ -1310,12 +1310,23 @@ Use `STUDY_MULTIDAY_OPERATOR_GUIDE.md` and a new seeded synthetic directory.
 
 Use `STUDY_INVESTIGATION_OVERVIEW_OPERATOR_GUIDE.md` with the retained multi-day fixture.
 
-- [NOT TESTED] Investigation overview exposes separate retained criterion explanations and returns without moving working context.
+- [PASS] Investigation overview exposes separate retained criterion explanations and returns without moving working context.
   - Where: guide checkpoint 328.
-- [NOT TESTED] Explicitly linked draft and saved Study Find are distinguished and inspectable beside results without inferred evidence links.
+- [PASS] Explicitly linked draft and saved Study Find are distinguished and inspectable beside results without inferred evidence links.
   - Where: guide checkpoint 329.
-- [NOT TESTED] Reopening retains investigation material and permits return to the working question/calendar.
+- [PASS] Reopening retains investigation material and permits return to the working question/calendar.
   - Where: guide checkpoint 330.
+
+## Study follow-up question inbox — focused trial
+
+Use `STUDY_QUESTION_INBOX_OPERATOR_GUIDE.md` with its new separate fixture.
+
+- [NOT TESTED] A follow-up question retains original wording and source context while leaving current work intact.
+  - Where: guide checkpoint 331.
+- [NOT TESTED] Unsaved question cancellation preserves text; saved source snapshots survive later capture edits.
+  - Where: guide checkpoint 332.
+- [NOT TESTED] The saved question is retrievable after reopening without replacing the active investigation.
+  - Where: guide checkpoint 333.
 
 ## Reporting results
 
