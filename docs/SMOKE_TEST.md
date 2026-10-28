@@ -1341,9 +1341,9 @@ Use `STUDY_QUESTION_QUICK_CAPTURE.md` with the existing question-inbox fixture.
 
 Use `STUDY_DRAFT_DISCARD.md` with the existing question-inbox fixture.
 
-- [NOT TESTED] Cancel preserves the draft; confirmed discard clears current content while retaining context and queued questions.
+- [PASS] Cancel preserves the draft; confirmed discard clears current content while retaining context and queued questions.
   - Where: guide checkpoint 336.
-- [NOT TESTED] Discarded content stays absent after reopening and saved Study Finds remain protected.
+- [PASS] Discarded content stays absent after reopening and saved Study Finds remain protected.
   - Where: guide checkpoint 337.
 
 ## Reporting results
