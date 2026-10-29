@@ -24,7 +24,7 @@ def test_fresh_capture_uses_selected_london_not_clock_and_saved_next_day_is_new(
     assert source.session_input.text() == 'London'
     source.pattern_input.setText('First')
     source.observation_input.setPlainText('First day observation')
-    window.link_investigation_button.click()
+    window.link_investigation_action.trigger()
     identity = source.current_study_find_id
     assert source.submit()
     assert window.study_find_repository.get_by_id(identity).observation == 'First day observation'

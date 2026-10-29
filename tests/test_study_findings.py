@@ -174,7 +174,7 @@ def test_saved_capture_association_wins_over_unrelated_navigation(cockpit, monke
     window.integrated_study_task.capture_button.click()
     w = window.study_find_widget
     w.notes_input.setPlainText('Insight')
-    window.link_investigation_button.click()
+    window.link_investigation_action.trigger()
     linked = window.investigation_repository.get(w.current_study_find_id)
     window.pending_investigation_context = {**linked, 'task_id':'other', 'question':'Other investigation'}
     def inspect(d):

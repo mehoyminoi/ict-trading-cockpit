@@ -11,33 +11,53 @@ class StudyFindRepository:
 
     def save(self, study_find: StudyFind) -> None:
         with self.connection:
-            self.connection.execute(
-                """
-                INSERT INTO study_find (
-                    id,
-                    observation_date,
-                    instrument,
-                    session,
-                    pattern_name,
-                    observation,
-                    available_move_handles,
-                    notes,
-                    image_path
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    study_find.id,
-                    study_find.observation_date.isoformat(),
-                    study_find.instrument,
-                    study_find.session,
-                    study_find.pattern_name,
-                    study_find.observation,
-                    study_find.available_move_handles,
-                    study_find.notes,
-                    study_find.image_path,
-                ),
+            self._insert(study_find)
+
+    def _insert(self, study_find: StudyFind) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO study_find (
+                id,
+                observation_date,
+                instrument,
+                session,
+                pattern_name,
+                observation,
+                available_move_handles,
+                notes,
+                image_path
             )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                study_find.id,
+                study_find.observation_date.isoformat(),
+                study_find.instrument,
+                study_find.session,
+                study_find.pattern_name,
+                study_find.observation,
+                study_find.available_move_handles,
+                study_find.notes,
+                study_find.image_path,
+            ),
+        )
+
+    def save_capture(self, study_find: StudyFind, image_paths, *, investigation=None) -> None:
+        """Commit content, ordered image references, optional link and draft removal together."""
+        from ict_cockpit.database.study_investigation_repository import StudyInvestigationRepository
+        images = tuple(image_paths)
+        if any(not isinstance(path, str) or not path.strip() for path in images):
+            raise ValueError("Image references must be nonempty paths")
+        if self.connection.in_transaction:
+            raise RuntimeError("Finish the pending transaction before saving a capture")
+        with self.connection:
+            self.connection.execute("BEGIN IMMEDIATE")
+            self._insert(study_find)
+            for path in images:
+                self._insert_image(study_find.id, path)
+            if investigation is not None:
+                StudyInvestigationRepository(self.connection)._link(study_find.id, **investigation)
+            self.connection.execute("DELETE FROM study_find_draft WHERE id=?", (study_find.id,))
 
     def get_by_id(self, study_find_id: str) -> StudyFind | None:
         row = self.connection.execute(
@@ -155,36 +175,39 @@ class StudyFindRepository:
                 (study_find_id,),
             )
 
-    def add_image(
+    def add_image(self, study_find_id: str, image_path: str) -> None:
+        with self.connection:
+            self._insert_image(study_find_id, image_path)
+
+    def _insert_image(
         self,
         study_find_id: str,
         image_path: str,
     ) -> None:
-        with self.connection:
-            next_order = self.connection.execute(
-                """
-                SELECT COALESCE(MAX(image_order), 0) + 1
-                FROM study_find_image
-                WHERE study_find_id = ?
-                """,
-                (study_find_id,),
-            ).fetchone()[0]
+        next_order = self.connection.execute(
+            """
+            SELECT COALESCE(MAX(image_order), 0) + 1
+            FROM study_find_image
+            WHERE study_find_id = ?
+            """,
+            (study_find_id,),
+        ).fetchone()[0]
 
-            self.connection.execute(
-                """
-                INSERT INTO study_find_image (
-                    study_find_id,
-                    image_path,
-                    image_order
-                )
-                VALUES (?, ?, ?)
-                """,
-                (
-                    study_find_id,
-                    image_path,
-                    next_order,
-                ),
+        self.connection.execute(
+            """
+            INSERT INTO study_find_image (
+                study_find_id,
+                image_path,
+                image_order
             )
+            VALUES (?, ?, ?)
+            """,
+            (
+                study_find_id,
+                image_path,
+                next_order,
+            ),
+        )
 
     def get_images(
         self,
