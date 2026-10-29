@@ -283,6 +283,11 @@ class MainWindow(QMainWindow):
         self.save_to_investigation_button.clicked.connect(self._save_to_investigation)
         save_row.addWidget(self.save_to_investigation_button)
         save_row.addWidget(self.study_find_widget.save_button)
+        self.last_saved_capture_id = None
+        self.view_last_saved_button = QPushButton("View last saved")
+        self.view_last_saved_button.setEnabled(False)
+        self.view_last_saved_button.clicked.connect(self._view_last_saved_capture)
+        save_row.addWidget(self.view_last_saved_button)
         self.study_save_more = QPushButton("More…")
         save_menu = QMenu(self.study_save_more)
         save_menu.addAction(self.link_investigation_action)
@@ -1180,6 +1185,51 @@ class MainWindow(QMainWindow):
 
         self.pending_trade_draft = None
 
+    def _view_last_saved_capture(self):
+        identity = self.last_saved_capture_id
+        if not identity:
+            return
+        from ict_cockpit.gui.study_find_review_widget import StudyFindReviewWidget
+        item = self.study_find_repository.get_by_id(identity)
+        if item is None:
+            self.study_find_widget.save_feedback.setText("Saved capture unavailable; current draft preserved.")
+            return
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Last saved Study Find")
+        dialog.resize(1000, 700)
+        from PySide6.QtWidgets import QVBoxLayout
+        layout = QVBoxLayout(dialog)
+        review = StudyFindReviewWidget(self.study_find_repository)
+        review.study_finds = [item]
+        review.study_list.addItem(item.pattern_name)
+        review.study_list.setCurrentRow(0)
+        layout.addWidget(review)
+        close = QPushButton("Return to current capture")
+        close.clicked.connect(dialog.accept)
+        layout.addWidget(close)
+        dialog.exec()
+
+    def _prepare_next_study_capture(self, saved):
+        source = self.study_find_widget
+        self.last_saved_capture_id = saved.id
+        self.view_last_saved_button.setEnabled(True)
+        blocked = source.blockSignals(True)
+        source._loading_draft = True
+        try:
+            source.reset_form()
+            defaults = self.capture_context_defaults or dict(
+                observation_date=saved.observation_date, instrument=saved.instrument, session=saved.session)
+            source.apply_context_defaults(**defaults)
+        finally:
+            source._loading_draft = False
+            source.blockSignals(blocked)
+        self._remember_discard_seed()
+        self._quick_question_pending = None
+        self._question_selection_editor = None
+        self.question_capture_feedback.clear()
+        source.emit_draft_changed()
+        source.observation_input.setFocus()
+
     def save_study_find(self, study_find) -> None:
         self._persist_study_find(study_find)
 
@@ -1201,6 +1251,9 @@ class MainWindow(QMainWindow):
         self.study_find_widget.save_feedback.setText(message)
         self.status_bar.showMessage(message, 3000)
         self.contextual_study_find_dock.notify_saved(study_find.id)
+        if self.tabs.currentWidget() is self.study_find_widget:
+            self._prepare_next_study_capture(study_find)
+            self.study_find_widget.save_feedback.setText(message + " Fresh capture ready.")
         try:
             self._refresh_capture_association()
             self.study_find_review_widget.refresh()

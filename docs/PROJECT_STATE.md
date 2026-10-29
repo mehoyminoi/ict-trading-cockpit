@@ -1,3 +1,7 @@
+## Current local slice — next Study capture
+
+341–342 operator PASS. Branch `feature/study-next-capture-v0` starts from published #96 (`53ce5b8`). Both full Study save actions prepare a new capture; link-only and failed saves preserve the current form. View last saved opens a separate read-only inspector. Opening-context defaults carry over and can reseed untouched forms through calendar reentry. Watch dock semantics stay unchanged. See `STUDY_NEXT_CAPTURE.md`, pending 343–344. Schema 50 unchanged. Local only; do not merge. Next return to broader Study-to-Review work after this bounded correction.
+
 ## Current local slice — save to investigation
 
 Operator 338–340 PASS on #95. `feature/study-save-to-investigation-v0`, based on published `b8510d2`, combines content, ordered image references, explicit association and draft removal in one transaction. Save destination is beside the save controls; plain save remains available, and link-only moves to More. Context differences require explicit confirmation for combined save; existing associations cannot be reassigned. Schema 50 unchanged. 67 targeted tests PASS. Read `STUDY_SAVE_TO_INVESTIGATION.md` for pending 341–342. Local only; publication as a draft stacked on #95 still requires authorization. Do not merge.
