@@ -30,7 +30,7 @@ def test_discard_removes_only_current_draft_and_cannot_autosave_old_identity(coc
     window,c=cockpit;w=fill(window)
     window.integrated_study_task.question.setText('Current investigation')
     window._open_investigation_capture()
-    window.link_investigation_button.click()
+    window.link_investigation_action.trigger()
     original=w.build_draft();old_id=original.id
     w.notes_input.setPlainText('Question to retain?');w.notes_input.selectAll()
     window.keep_study_question_button.click()

@@ -1350,12 +1350,21 @@ Use `STUDY_DRAFT_DISCARD.md` with the existing question-inbox fixture.
 
 Use `STUDY_FINDINGS_V0.md` with a new separate fixture.
 
-- [NOT TESTED] Selected insight can be explicitly retained as a partial answer and inspected in its investigation without changing the source capture.
+- [PASS] Selected insight can be explicitly retained as a partial answer and inspected in its investigation without changing the source capture.
   - Where: guide checkpoint 338.
-- [NOT TESTED] Standalone findings remain separate from investigation material and selected-question quick capture still works.
+- [PASS] Standalone findings remain separate from investigation material and selected-question quick capture still works.
   - Where: guide checkpoint 339.
-- [NOT TESTED] Retained findings and original source snapshots survive draft discard and reopening.
+- [PASS] Retained findings and original source snapshots survive draft discard and reopening.
   - Where: guide checkpoint 340.
+
+## Save Study Find to investigation
+
+Use `STUDY_SAVE_TO_INVESTIGATION.md`.
+
+- [NOT TESTED] One action saves content and its explicit investigation association; plain save creates no new link.
+  - Where: guide checkpoint 341.
+- [NOT TESTED] Differing context can be cancelled without losing input, and saved associations survive reopening.
+  - Where: guide checkpoint 342.
 
 ## Reporting results
 

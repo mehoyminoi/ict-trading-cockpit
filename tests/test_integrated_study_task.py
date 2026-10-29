@@ -95,7 +95,7 @@ def test_explicit_link_preserves_displayed_context_through_save_and_restart(cock
     task.capture_button.click()
     reference = pane.reference().isoformat()
     task.question.setText('Changed later')
-    window.link_investigation_button.click()
+    window.link_investigation_action.trigger()
     link = window.investigation_repository.get(source.current_study_find_id)
     assert link['question'] == 'Original question'
     assert link['market_reference'] == reference
