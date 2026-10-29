@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (
 from ict_cockpit.database.study_investigation_repository import describe_association
 from ict_cockpit.gui.study_criterion_dialog import describe_result
 from ict_cockpit.gui.study_find_review_widget import StudyFindReviewWidget
+from ict_cockpit.database.study_finding_repository import StudyFindingRepository, describe_finding
 
 
 class StudyInvestigationOverview(QDialog):
@@ -62,8 +63,12 @@ class StudyInvestigationOverview(QDialog):
                 saved_count += int(find is not None)
                 self.entries.append(('capture', (association, find, draft)))
                 self.items.addItem(f'{association["market_reference"]} · {state}\n{association["instrument"]}')
+            findings = StudyFindingRepository(finds.connection).list_for_task(plan_id, task_id)
+            for finding in findings:
+                self.entries.append(('finding', finding))
+                self.items.addItem(f"{finding['kind']} · {finding['finding']}".replace('\n', ' ')[:180])
             self.summary.setText(f'{len(results)} saved criterion results · {saved_count} saved linked finds · '
-                                 f'{len(associations) - saved_count} other capture associations. '
+                                 f'{len(associations) - saved_count} other capture associations · {len(findings)} findings/partial answers. '
                                  'Only explicitly associated material appears here.')
             if self.entries:
                 self.items.setCurrentRow(0)
@@ -81,6 +86,10 @@ class StudyInvestigationOverview(QDialog):
         if not 0 <= row < len(self.entries):
             return
         kind, record = self.entries[row]
+        if kind == 'finding':
+            self.pages.setCurrentWidget(self.detail)
+            self.detail.setPlainText(describe_finding(record))
+            return
         if kind == 'result':
             self.pages.setCurrentWidget(self.detail)
             self.detail.setPlainText(describe_result(record))

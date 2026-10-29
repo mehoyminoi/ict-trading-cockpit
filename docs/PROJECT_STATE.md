@@ -1,3 +1,7 @@
+## Current local slice — Study findings / partial answers
+
+Operator accepted #94 post-discard context recheck on 2026-10-28. Based on published `6908b14`, branch `feature/study-findings-v0` adds independent findings with optional explicit investigation association; partial answers require it. Read `STUDY_FINDINGS_V0.md` for scope and operator checkpoints 338–340 (pending). Schema 50; use a new separate fixture. Existing question quick capture remains intact. No investigation completion, validated-answer status, automatic source-capture link or competency evidence. Screenshot workflow is accepted and refinements deferred. This slice is local only until explicitly authorized for publication as a draft stacked on #94; do not merge.
+
 ## Current delivery checkpoint — 2026-10-28
 
 Screenshot capture and Cockpit paste are operator-accepted on KDE/X11; further refinement is deferred. Prepared branch `feature/study-discard-context-fix-v0` contains the untouched-discard context correction and narrative-session feedback, based on #93 acceptance `f410179`. Publish as a draft stacked on #93 only after explicit publication authorization; do not merge. Targeted operator recheck is documented in `STUDY_DISCARD_CONTEXT_FIX.md`. Next implementation priority is retaining a Finding/partial answer with explicit investigation association.
