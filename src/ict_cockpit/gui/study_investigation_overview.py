@@ -11,7 +11,7 @@ from ict_cockpit.database.study_finding_repository import StudyFindingRepository
 
 
 class StudyInvestigationOverview(QDialog):
-    def __init__(self, links, criteria, finds, *, task_id, plan_id, question, parent=None):
+    def __init__(self, links, criteria, finds, *, task_id, plan_id, question, plan_revision=None, parent=None):
         super().__init__(parent)
         self.setWindowTitle('Study investigation · retained material')
         self.resize(1050, 740)
@@ -41,6 +41,20 @@ class StudyInvestigationOverview(QDialog):
         split.addWidget(self.pages)
         split.setStretchFactor(1, 3)
         layout.addWidget(split, 1)
+        from ict_cockpit.database.study_review_repository import StudyReviewRepository
+        from ict_cockpit.gui.study_review_panel import StudyReviewPanel
+        self.review_panel = StudyReviewPanel(StudyReviewRepository(finds.connection),
+            plan_id=plan_id, plan_revision=plan_revision or 'Unspecified', task_id=task_id,
+            question=question, parent=self)
+        split.addWidget(self.review_panel)
+        split.setStretchFactor(2, 2)
+        self.review_panel.setMinimumWidth(320)
+        self.review_panel.hide()
+        self.review_toggle = QPushButton('Review this investigation…')
+        self.review_toggle.setCheckable(True)
+        self.review_toggle.toggled.connect(self.review_panel.setVisible)
+        layout.addWidget(self.review_toggle)
+        self.review_panel.add_source_button.clicked.connect(self.use_selected_support)
         close = QPushButton('Return to investigation')
         close.clicked.connect(self.accept)
         layout.addWidget(close)
@@ -104,3 +118,16 @@ class StudyInvestigationOverview(QDialog):
             self.detail.setPlainText(describe_association(association) + '\n\n' + (
                 f'Linked draft (not a saved Study Find)\n{draft[0]}\n{draft[1]}\n{draft[2]}' if draft
                 else 'Capture content unavailable. The association receipt remains; no content is inferred.'))
+
+    def use_selected_support(self):
+        row = self.items.currentRow()
+        if not 0 <= row < len(self.entries):
+            self.review_panel.status.setText('Select material in the investigation list first; support is optional.')
+            return
+        kind, record = self.entries[row]
+        identity = record['id'] if kind == 'finding' else record.evaluation.id if kind == 'result' else record[0]['capture_id']
+        self.review_panel.add_source(kind, identity, self.items.item(row).text())
+
+    def done(self, result):
+        if self.review_panel.can_leave():
+            super().done(result)

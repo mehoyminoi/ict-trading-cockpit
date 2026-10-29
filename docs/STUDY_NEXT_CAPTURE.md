@@ -17,3 +17,5 @@ Use the existing findings fixture after publication.
 This is a workflow checkpoint, not final form/layout approval. Schema 50 unchanged; publication and merge are not implied.
 
 Validation: 26 distinct targeted checks passed across combined/standalone saving, failure preservation, capture context, discard, Watch contextual capture and next-capture inspection. Three old assertions expecting a saved form to remain were updated to assert the new identity and preserved saved record. Diff check passed. Operator checks pending.
+
+Operator acceptance: 343–344 PASS on published #97 (`c36c591`). Both save paths, link-only preservation, last-saved inspection and context protection accepted. PR remains draft/unmerged.
