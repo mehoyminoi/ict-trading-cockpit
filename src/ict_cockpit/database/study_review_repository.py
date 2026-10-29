@@ -79,6 +79,10 @@ class StudyReviewRepository:
             raise ValueError('Review identity mismatch')
         return item
 
+    def list_for_plan(self, plan_id):
+        return tuple(self.get(row[0]) for row in self.connection.execute(
+            'SELECT id FROM study_review WHERE plan_id=? ORDER BY rowid DESC', (plan_id,)).fetchall())
+
     def list_for_task(self, plan_id, task_id):
         return tuple(self.get(row[0]) for row in self.connection.execute(
             'SELECT id FROM study_review WHERE plan_id=? AND task_id=? ORDER BY rowid DESC', (plan_id, task_id)).fetchall())

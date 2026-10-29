@@ -30,7 +30,7 @@ Linked drafts remain inspectable, but cannot be used as stable supporting captur
 
 ## 347 — Cancellation and reopening
 
-1. Start a later checkpoint and enter a disposable thought. Try Return to investigation or Escape. Choose Cancel in the unsaved-review prompt. The thought should remain.
+1. Open Investigation overview → Review this investigation. If the previous review is still displayed as saved, click Start a later checkpoint; if the inputs are already blank after reopening, skip that click. Type `Test note — safe to discard` in any prompt without saving. Click Return to investigation or press Escape, then choose Cancel. You should stay in the overview with the unsaved note intact.
 2. Save it or deliberately discard it; confirm that saved checkpoints remain.
 3. Close and reopen this same demo directory. Open Investigation overview → Review this investigation. The saved history and original selected source details should remain.
 
@@ -41,3 +41,11 @@ Qualitative feedback: did this help you keep simultaneous outcomes and identify 
 Schema 51 adds independent immutable investigation review snapshots. Save validates scope and selected source snapshots within one transaction; unchanged retries reuse identity/time. Later source changes do not rewrite existing reviews. A stale selected source must be reselected before a new save. Chart references are paths, not duplicated image files. Review wording is protected against accidental dismissal but is not autosaved across application failure before Keep review checkpoint.
 
 228 distinct targeted tests passed across the new review loop, existing findings/questions/overview, MainWindow, repositories and historical migrations. Actual schema-50 upgrade, rollback and old-reader rejection are covered. The first migration-test attempt lacked the remote parent commit locally; fetching it resolved that setup issue and the rerun passed. Optional panel rendered offscreen and visually inspected. Diff check passed. Operator 345–347 pending; no publication or merge claimed.
+
+## Review checkpoint acceptance and analytical direction — 2026-10-29
+
+345–347 PASS. The deliberate opportunity to take stock and retain simultaneous outcomes is accepted. It is a recording step that should fit a natural pause without interrupting a study groove. This is not acceptance of final layout or proof that it chooses the next useful study target.
+
+The Next study step prompt records a technician-authored intention; it does not implement analytical prioritization. Later cross-session analysis should make recurring questions, uncertainties, reviewed errors and performance patterns inspectable with appropriate filters and visualizations. Repeated mentions may reflect interest or exposure, not deficiency. Distinguish questions raised, practice attempted and reviewed performance. Never turn record counts into independent sample counts, proficiency or a readiness score.
+
+Immediate foundation: read-only retrieval across independent investigations for the current Trade Plan, preserving original questions/revisions and current working context. No additional checkpoint polish or repeated scripted navigation is required beyond validating the new retrieval path. Revisit review utility during a natural real-study pause later; preserve the accepted recording role while assessing whether analysis actually helps choose the next task.

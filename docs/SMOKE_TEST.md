@@ -1379,12 +1379,21 @@ Use `STUDY_NEXT_CAPTURE.md`.
 
 Use `STUDY_REVIEW_OPERATOR_GUIDE.md` with a new separate fixture.
 
-- [NOT TESTED] An uncertainty-only review saves without a conclusion or mandatory support.
+- [PASS] An uncertainty-only review saves without a conclusion or mandatory support.
   - Where: guide checkpoint 345.
-- [NOT TESTED] Multiple outcomes and explicitly selected saved material remain inspectable across appended checkpoints without replacing the current capture.
+- [PASS] Multiple outcomes and explicitly selected saved material remain inspectable across appended checkpoints without replacing the current capture.
   - Where: guide checkpoint 346.
-- [NOT TESTED] Unsaved-review cancellation protects wording and saved history survives reopening.
+- [PASS] Unsaved-review cancellation protects wording and saved history survives reopening.
   - Where: guide checkpoint 347.
+
+## Study history retrieval
+
+Use `STUDY_HISTORY_BROWSER.md` with the retained review fixture.
+
+- [NOT TESTED] History retrieves questions, findings and review checkpoints across investigations with text/type filters and original context.
+  - Where: guide checkpoint 348.
+- [NOT TESTED] Returning from history preserves the working investigation, historical reference and unfinished capture.
+  - Where: guide checkpoint 349.
 
 ## Reporting results
 
