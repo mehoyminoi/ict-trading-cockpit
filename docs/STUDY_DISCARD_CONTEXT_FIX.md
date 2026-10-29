@@ -16,3 +16,7 @@ Use your existing synthetic Study fixture. Do not discard notes you want to keep
 4. Enter a short note. Return to the Lab, choose another date/session, and reopen Study Find. Your note and its original capture date/session should remain; the differing-context notice should explain the discrepancy.
 
 These checks validate context handoff and draft protection, not AMDX interpretation or final Study field design. No need to repeat the full narrative exercise for this correction.
+
+## Operator acceptance — 2026-10-28
+
+Operator reported the targeted recheck passed on published draft PR #94 (`6908b14`): fresh captures inherit selected date/session after discard, and authored drafts remain protected. PR remains draft/unmerged.

@@ -287,6 +287,10 @@ class MainWindow(QMainWindow):
             editor.selectionChanged.connect(lambda editor=editor: self._remember_question_selection(editor))
         self.keep_study_question_button.clicked.connect(lambda: self._open_study_questions(capture=True))
         self.study_find_widget.layout().insertWidget(4, self.keep_study_question_button)
+        self.keep_study_finding_button = QPushButton("Keep finding…")
+        self.keep_study_finding_button.setToolTip("Retain an insight or partial answer; selected Notes or Observation prefill the wording.")
+        self.keep_study_finding_button.clicked.connect(lambda: self._open_study_findings(capture=True))
+        self.study_find_widget.layout().insertWidget(5, self.keep_study_finding_button)
         self.discard_study_draft_button = QPushButton("Discard current draft…")
         self.discard_study_draft_button.clicked.connect(self._discard_study_draft)
         self.study_find_widget.layout().addWidget(self.discard_study_draft_button)
@@ -294,6 +298,9 @@ class MainWindow(QMainWindow):
         self.study_questions_button = QPushButton("Study questions…")
         self.study_questions_button.clicked.connect(lambda: self._open_study_questions(capture=False))
         self.integrated_study_task.layout().addWidget(self.study_questions_button)
+        self.study_findings_button = QPushButton("Study findings…")
+        self.study_findings_button.clicked.connect(lambda: self._open_study_findings(capture=False))
+        self.integrated_study_task.layout().addWidget(self.study_findings_button)
         definition = QLabel(
             f"Published AMDX criteria · Trade Plan {self.trade_plan.revision}: not configured. "
             "Quarter choices below enforce structural AMDX/XAMD legality; they do not classify price action."
@@ -408,23 +415,27 @@ class MainWindow(QMainWindow):
             self._question_selection_editor = editor
             self.question_capture_feedback.clear()
 
+    def _study_capture_snapshot(self):
+        widget = self.study_find_widget
+        draft = widget.build_draft()
+        editor = self._question_selection_editor
+        selected = editor.textCursor().selectedText().replace("\u2029", "\n") if editor else ""
+        source = dict(capture_id=draft.id,
+                      state="Unfinished capture" if widget.save_button.isEnabled() else "Saved Study Find",
+                      date=draft.observation_date.isoformat(), instrument=draft.instrument,
+                      session=draft.session, pattern=draft.pattern_name,
+                      observation=draft.observation, notes=draft.notes,
+                      images=list(draft.image_paths),
+                      association=self.investigation_repository.get(draft.id))
+        return source, selected
+
     def _open_study_questions(self, *, capture=False):
         from ict_cockpit.database.study_question_repository import StudyQuestionRepository
         from ict_cockpit.gui.study_question_dialog import StudyQuestionDialog
         source = None
         selected = ""
         if capture:
-            widget = self.study_find_widget
-            draft = widget.build_draft()
-            editor = self._question_selection_editor
-            selected = editor.textCursor().selectedText().replace("\u2029", "\n") if editor else ""
-            source = dict(capture_id=draft.id,
-                          state="Unfinished capture" if widget.save_button.isEnabled() else "Saved Study Find",
-                          date=draft.observation_date.isoformat(), instrument=draft.instrument,
-                          session=draft.session, pattern=draft.pattern_name,
-                          observation=draft.observation, notes=draft.notes,
-                          images=list(draft.image_paths),
-                          association=self.investigation_repository.get(draft.id))
+            source, selected = self._study_capture_snapshot()
         repository = StudyQuestionRepository(self.study_find_repository.connection)
         if capture and selected.strip():
             from datetime import datetime, timezone
@@ -450,6 +461,26 @@ class MainWindow(QMainWindow):
             plan_id=self.trade_plan.id, plan_revision=self.trade_plan.revision,
             source=source, original_text=selected, parent=self)
         dialog.exec()
+
+    def _open_study_findings(self, *, capture=False):
+        from ict_cockpit.database.study_finding_repository import StudyFindingRepository
+        from ict_cockpit.gui.study_finding_dialog import StudyFindingDialog
+        source, selected, destination = None, "", None
+        try:
+            if capture:
+                source, selected = self._study_capture_snapshot()
+                source["navigation_context"] = self.pending_investigation_context
+                # A saved capture association wins over newer navigation context.
+                destination = source.get("association") or self.pending_investigation_context
+                if destination and not destination.get("question", "").strip():
+                    destination = None
+            dialog = StudyFindingDialog(
+                StudyFindingRepository(self.study_find_repository.connection),
+                plan_id=self.trade_plan.id, plan_revision=self.trade_plan.revision,
+                source=source, original_text=selected, destination=destination, parent=self)
+            dialog.exec()
+        except (ValueError, sqlite3.Error) as error:
+            self.question_capture_feedback.setText(f"Could not open findings: {error}. Your capture remains here.")
 
     def _open_investigation_overview(self):
         from ict_cockpit.gui.study_investigation_overview import StudyInvestigationOverview
