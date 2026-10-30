@@ -1,3 +1,4 @@
+from ict_cockpit.media.workspace_paths import resolve_study_image
 from pathlib import Path
 from uuid import uuid4
 
@@ -457,7 +458,7 @@ class StudyFindWidget(QWidget):
             self.copy_image_button.setEnabled(False)
             return
 
-        pixmap = QPixmap(self.image_paths[row])
+        pixmap = QPixmap(resolve_study_image(self.image_paths[row]))
         if pixmap.isNull():
             self.image_preview.clear()
             self.image_preview.setText("Unable to load chart image")
@@ -478,7 +479,7 @@ class StudyFindWidget(QWidget):
         if selected_row < 0 or selected_row >= len(self.image_paths):
             return
 
-        pixmap = QPixmap(self.image_paths[selected_row])
+        pixmap = QPixmap(resolve_study_image(self.image_paths[selected_row]))
         if pixmap.isNull():
             return
 
