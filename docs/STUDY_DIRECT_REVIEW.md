@@ -20,4 +20,4 @@ This is a short route/guard check, not another full Study workflow test. After a
 
 ## Validation and delivery
 
-19 targeted tests PASS across direct review, review checkpoint, history, investigation overview and MainWindow. Diff check passed. Automated verification covers direct and inspection entry, keyboard activation, no writes on entry, preserved capture/task/reference/tab, hidden-editor close protection, and saving through the existing repository. Publication pending as a draft stacked on #99; do not merge. Operator 350 pending.
+19 targeted tests PASS across direct review, review checkpoint, history, investigation overview and MainWindow. Diff check passed. Automated verification covers direct and inspection entry, keyboard activation, no writes on entry, preserved capture/task/reference/tab, hidden-editor close protection, and saving through the existing repository. Publication pending as a draft stacked on #99; do not merge. Operator 350 PASS. Subsequent natural-session feedback is recorded in `STUDY_REAL_SESSION_FINDINGS.md`.
