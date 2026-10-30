@@ -1422,8 +1422,15 @@ Use `STUDY_INVESTIGATION_RESUME.md` after backing up the durable workspace.
 
 Use `STUDY_REFERENCE_ALIGNMENT.md` in the durable workspace.
 
-- [NOT TESTED] Explicit calendar alignment updates an unlinked draft and its retained reference together, preserves content/images and survives restart; linked records remain protected.
+- [PASS] Explicit calendar alignment updates an unlinked draft and its retained reference together, preserves content/images and survives restart; linked records remain protected.
   - Where: guide checkpoint 354.
+
+## Review question capture
+
+Use `STUDY_REVIEW_QUESTION_CAPTURE.md` after backing up the durable workspace.
+
+- [NOT TESTED] Selected review wording saves to the existing question inbox without a dialog or duplicate repeat, retains review provenance without saving the checkpoint, and no selection opens the composer.
+  - Where: guide checkpoint 355.
 
 ## Reporting results
 

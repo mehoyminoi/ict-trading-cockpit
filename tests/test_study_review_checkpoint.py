@@ -87,14 +87,14 @@ def test_actual_v50_upgrade_preserves_existing_rows_and_rolls_back(tmp_path,inje
     tables=[row[0] for row in c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")]
     before={t:c.execute('SELECT * FROM '+t).fetchall() for t in tables}
     if injected:
-        c.set_authorizer(lambda action,a,b,*_:sqlite3.SQLITE_DENY if action==sqlite3.SQLITE_PRAGMA and a=='user_version' and b=='52' else sqlite3.SQLITE_OK)
+        c.set_authorizer(lambda action,a,b,*_:sqlite3.SQLITE_DENY if action==sqlite3.SQLITE_PRAGMA and a=='user_version' and b=='53' else sqlite3.SQLITE_OK)
         with pytest.raises(sqlite3.DatabaseError):initialize_schema(c)
         c.set_authorizer(None)
         assert c.execute('PRAGMA user_version').fetchone()[0]==50
         assert not c.execute("SELECT name FROM sqlite_master WHERE name='study_review'").fetchall()
     initialize_schema(c)
     assert {t:c.execute('SELECT * FROM '+t).fetchall() for t in tables}==before
-    with pytest.raises(RuntimeError,match='Unsupported database schema version: 52'):old['initialize_schema'](c)
+    with pytest.raises(RuntimeError,match='Unsupported database schema version: 53'):old['initialize_schema'](c)
     c.close()
 
 

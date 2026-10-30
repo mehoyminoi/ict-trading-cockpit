@@ -2,6 +2,8 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 import sqlite3
+import json
+from PySide6.QtCore import QEvent
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPlainTextEdit, QPushButton, QListWidget, QTextBrowser, QMessageBox
 from ict_cockpit.database.study_review_repository import describe_review
 
@@ -20,12 +22,23 @@ class StudyReviewPanel(QWidget):
         label.setWordWrap(True)
         layout.addWidget(label)
         self.fields = {}
+        self._question_field = None
+        self._pending_question = None
         for key, prompt in [('understanding', 'What did I learn?'), ('uncertainty', 'What remains uncertain or conflicts?'), ('next_step', 'What would be useful to study next?')]:
             editor = QPlainTextEdit()
             editor.setPlaceholderText(prompt)
             editor.setMaximumHeight(75)
             layout.addWidget(editor)
             self.fields[key] = editor
+            editor.installEventFilter(self)
+            editor.selectionChanged.connect(lambda k=key: self._remember_question_selection(k))
+        self.keep_question_button = QPushButton('Keep question for later')
+        self.keep_question_button.setToolTip('Select wording in a review prompt to save directly; no selection opens the question composer.')
+        self.keep_question_button.clicked.connect(self.keep_question)
+        layout.addWidget(self.keep_question_button)
+        self.question_feedback = QLabel()
+        self.question_feedback.setWordWrap(True)
+        layout.addWidget(self.question_feedback)
         self.add_source_button = QPushButton('Use selected material as support')
         layout.addWidget(self.add_source_button)
         self.support = QListWidget()
@@ -53,6 +66,45 @@ class StudyReviewPanel(QWidget):
         layout.addWidget(self.detail, 1)
         self.records = []
         self.refresh()
+
+    def eventFilter(self, watched, event):
+        if event.type() == QEvent.Type.FocusIn:
+            self._question_field = next((k for k, editor in self.fields.items() if editor is watched), self._question_field)
+        return super().eventFilter(watched, event)
+
+    def _remember_question_selection(self, key):
+        if self.fields[key].textCursor().hasSelection():
+            self._question_field = key
+
+    def keep_question(self):
+        from ict_cockpit.database.study_question_repository import StudyQuestionRepository
+        from ict_cockpit.gui.study_question_dialog import StudyQuestionDialog
+        editor = self.fields.get(self._question_field)
+        selected = editor.textCursor().selectedText().replace('\u2029', '\n') if editor else ''
+        source = json.loads(json.dumps(dict(kind='review', review_id=self.identity, **self.scope,
+            state='Saved review snapshot' if self.saved else 'Draft review snapshot',
+            selected_field=self._question_field if selected else '',
+            fields={k: e.toPlainText() for k, e in self.fields.items()}, sources=self.sources)))
+        repository = StudyQuestionRepository(self.repository.connection)
+        if not selected.strip():
+            dialog = StudyQuestionDialog(repository, plan_id=self.scope['plan_id'],
+                plan_revision=self.scope['plan_revision'], source=source, parent=self)
+            dialog.exec()
+            if dialog.saved:
+                self.question_feedback.setText('Question kept in the existing Study inbox. Review remains unchanged.')
+            return
+        item = dict(version=2, id=str(uuid4()), plan_id=self.scope['plan_id'], plan_revision=self.scope['plan_revision'],
+                    question=selected.strip(), original_text=selected, source=source,
+                    recorded_at=datetime.now(timezone.utc).isoformat())
+        if self._pending_question and all(self._pending_question[k] == item[k] for k in item if k not in ('id', 'recorded_at')):
+            item = self._pending_question
+        self._pending_question = item
+        try:
+            repository.save(item)
+        except (ValueError, RuntimeError, sqlite3.Error) as error:
+            self.question_feedback.setText(f'Question not saved: {error}. Review wording remains here; retry when ready.')
+            return
+        self.question_feedback.setText('Question kept in the existing Study inbox. Review remains unchanged.')
 
     def add_source(self, kind, identity, label):
         if self.saved:
@@ -110,6 +162,9 @@ class StudyReviewPanel(QWidget):
         for button in (self.save_button, self.add_source_button, self.remove_source_button):
             button.setEnabled(True)
         self.new_button.setEnabled(False)
+        self._pending_question = None
+        self._question_field = None
+        self.question_feedback.clear()
         self.status.setText('Fresh checkpoint; earlier reviews remain below.')
 
     def refresh(self):
