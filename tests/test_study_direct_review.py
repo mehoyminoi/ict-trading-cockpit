@@ -13,6 +13,7 @@ def test_entry_routes_preserve_work_and_do_not_write(cockpit, monkeypatch):
     task = window.integrated_study_task.task_id
     reference = window.amdx_catalog_widget.reference()
     tab = window.tabs.currentWidget()
+    window.study_find_draft_save_timer.stop()  # Exclude unrelated delayed capture autosave.
     changes = connection.total_changes
     routes = []
 

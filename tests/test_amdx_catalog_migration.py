@@ -59,7 +59,7 @@ def test_actual_v41_migration_preserves_every_original_table_without_guessing_as
         assert not connection.execute("SELECT name FROM sqlite_master WHERE name LIKE '%amdx_catalog%'").fetchall()
         for name in names:assert connection.execute(f'SELECT * FROM "{name}"').fetchall() == before[name]
     initialize_schema(connection)
-    assert connection.execute("PRAGMA user_version").fetchone()[0] == 51
+    assert connection.execute("PRAGMA user_version").fetchone()[0] == 52
     for name in names:assert connection.execute(f'SELECT * FROM "{name}"').fetchall() == before[name]
     assert not repo.catalog.list_catalogs()
     assert not connection.execute("SELECT * FROM amdx_catalog_command").fetchall()
@@ -70,7 +70,7 @@ def test_actual_v41_migration_preserves_every_original_table_without_guessing_as
         run_id=run.id, branch_id="working", cycle=cycle, quarter_id=cycle.quarters[2].id,
         anchor=None, recorded_at=reference, market_reference=reference,
         expected_observed_head_id=None, expected_comparison_head_id=None) == observed
-    with pytest.raises(RuntimeError, match="Unsupported database schema version: 51"):
+    with pytest.raises(RuntimeError, match="Unsupported database schema version: 52"):
         previous(connection)
     assert not connection.execute("PRAGMA foreign_key_check").fetchall()
     connection.close()

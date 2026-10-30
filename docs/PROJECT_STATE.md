@@ -1,3 +1,9 @@
+## Current local slice — investigation resumption
+
+Operator 351 PASS on published #102 (`fac47c4`). Original temporary directory was absent; recovery used the verified archive and the operator confirmed meaningful material and image behavior in the durable workspace. Continue from `~/ict-study-workspaces/study-v0`, not `/tmp`.
+
+`feature/study-investigation-resume-v0` adds schema-52 registry and per-capture opening context. Authored drafts block switching until saved/discarded. Current-revision historical wording choices are explicit; resumed questions are read-only, source snapshots unchanged. Calendar reference is retained, not inferred. See `STUDY_INVESTIGATION_RESUME.md`; 352–353 pending. Back up the durable workspace before upgrade. Local only; publish draft stacked on #102 when authorized; do not merge. Full lifecycle/revision and multi-draft editing deferred.
+
 ## Current local slice — durable Study workspace
 
 Operator archive verification PASS (schema 51, one referenced image). `feature/study-durable-workspace-v0` restores a verified archive into a new directory and resolves historical Study image paths through an explicit origin manifest. Database records remain unchanged; no fallback to original images. See `STUDY_DURABLE_WORKSPACE.md` for checkpoint 351, pending. Requires a current archive to include newer work. Pending capture destination limitations are not fixed here; investigation continuity remains next. Publish only when authorized, draft stacked on #101; do not merge.

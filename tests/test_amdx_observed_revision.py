@@ -302,9 +302,9 @@ def test_v40_actual_schema_and_repositories_migrate_without_rewriting_original_r
     assert connection.execute('PRAGMA user_version').fetchone()[0] == 40
     assert not connection.execute("SELECT name FROM sqlite_master WHERE name LIKE 'amdx_observed_%'").fetchall()
     initialize_schema(connection)
-    assert connection.execute('PRAGMA user_version').fetchone()[0] == CURRENT_SCHEMA_VERSION == 51
+    assert connection.execute('PRAGMA user_version').fetchone()[0] == CURRENT_SCHEMA_VERSION == 52
     for t in tables:assert connection.execute(f'SELECT * FROM {t}').fetchall() == before[t]
-    with pytest.raises(RuntimeError,match='Unsupported database schema version: 51'):
+    with pytest.raises(RuntimeError,match='Unsupported database schema version: 52'):
         old_schema['initialize_schema'](connection)
     current=AMDXRepository(connection)
     assert current.review.record_observation(**observed(run,role=Role.A,number=2)) == original

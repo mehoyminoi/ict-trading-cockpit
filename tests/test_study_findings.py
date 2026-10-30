@@ -82,7 +82,7 @@ def test_actual_v49_migration_preserves_question_and_rolls_back(tmp_path, failur
     before = c.execute('SELECT * FROM study_question').fetchall()
     if failure:
         c.set_authorizer(lambda action,a,b,*_: sqlite3.SQLITE_DENY
-            if action == sqlite3.SQLITE_PRAGMA and a == 'user_version' and b == '51' else sqlite3.SQLITE_OK)
+            if action == sqlite3.SQLITE_PRAGMA and a == 'user_version' and b == '52' else sqlite3.SQLITE_OK)
         with pytest.raises(sqlite3.DatabaseError): initialize_schema(c)
         c.set_authorizer(None)
         assert c.execute('PRAGMA user_version').fetchone()[0] == 49
@@ -90,7 +90,7 @@ def test_actual_v49_migration_preserves_question_and_rolls_back(tmp_path, failur
     initialize_schema(c)
     assert c.execute('SELECT * FROM study_question').fetchall() == before
     assert StudyFindingRepository(c).list_for_plan('plan') == ()
-    with pytest.raises(RuntimeError, match='Unsupported database schema version: 51'):
+    with pytest.raises(RuntimeError, match='Unsupported database schema version: 52'):
         old['initialize_schema'](c)
     c.close()
 
