@@ -95,44 +95,48 @@ class StudyFindRepository:
 
     def save_draft(self, draft: StudyFindDraft) -> None:
         with self.connection:
-            self.connection.execute(
-                """
-                INSERT INTO study_find_draft (
-                    id,
-                    observation_date,
-                    instrument,
-                    session,
-                    pattern_name,
-                    observation,
-                    available_move_handles,
-                    notes,
-                    image_paths,
-                    updated_at
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-                ON CONFLICT(id) DO UPDATE SET
-                    observation_date = excluded.observation_date,
-                    instrument = excluded.instrument,
-                    session = excluded.session,
-                    pattern_name = excluded.pattern_name,
-                    observation = excluded.observation,
-                    available_move_handles = excluded.available_move_handles,
-                    notes = excluded.notes,
-                    image_paths = excluded.image_paths,
-                    updated_at = CURRENT_TIMESTAMP
-                """,
-                (
-                    draft.id,
-                    draft.observation_date.isoformat(),
-                    draft.instrument,
-                    draft.session,
-                    draft.pattern_name,
-                    draft.observation,
-                    draft.available_move_handles,
-                    draft.notes,
-                    json.dumps(draft.image_paths),
-                ),
+            self._insert_draft(draft)
+
+    def _insert_draft(self, draft: StudyFindDraft) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO study_find_draft (
+                id,
+                observation_date,
+                instrument,
+                session,
+                pattern_name,
+                observation,
+                available_move_handles,
+                notes,
+                image_paths,
+                updated_at
             )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(id) DO UPDATE SET
+                observation_date = excluded.observation_date,
+                instrument = excluded.instrument,
+                session = excluded.session,
+                pattern_name = excluded.pattern_name,
+                observation = excluded.observation,
+                available_move_handles = excluded.available_move_handles,
+                notes = excluded.notes,
+                image_paths = excluded.image_paths,
+                updated_at = CURRENT_TIMESTAMP
+            """,
+            (
+                draft.id,
+                draft.observation_date.isoformat(),
+                draft.instrument,
+                draft.session,
+                draft.pattern_name,
+                draft.observation,
+                draft.available_move_handles,
+                draft.notes,
+                json.dumps(draft.image_paths),
+            ),
+        )
+
 
     def get_latest_draft(self) -> StudyFindDraft | None:
         row = self.connection.execute(
