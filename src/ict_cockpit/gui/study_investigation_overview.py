@@ -1,4 +1,4 @@
-"""Read-only investigation composition over existing immutable associations/results."""
+"""Investigation inspection with optional review entry over shared retained material."""
 import sqlite3
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QLabel, QListWidget, QTextBrowser, QPushButton,
@@ -11,7 +11,7 @@ from ict_cockpit.database.study_finding_repository import StudyFindingRepository
 
 
 class StudyInvestigationOverview(QDialog):
-    def __init__(self, links, criteria, finds, *, task_id, plan_id, question, plan_revision=None, parent=None):
+    def __init__(self, links, criteria, finds, *, task_id, plan_id, question, plan_revision=None, review_open=False, parent=None):
         super().__init__(parent)
         self.setWindowTitle('Study investigation · retained material')
         self.resize(1050, 740)
@@ -52,7 +52,7 @@ class StudyInvestigationOverview(QDialog):
         self.review_panel.hide()
         self.review_toggle = QPushButton('Review this investigation…')
         self.review_toggle.setCheckable(True)
-        self.review_toggle.toggled.connect(self.review_panel.setVisible)
+        self.review_toggle.toggled.connect(self._set_review_visible)
         layout.addWidget(self.review_toggle)
         self.review_panel.add_source_button.clicked.connect(self.use_selected_support)
         close = QPushButton('Return to investigation')
@@ -95,6 +95,14 @@ class StudyInvestigationOverview(QDialog):
             self.items.clear()
             self.summary.setText('Investigation material could not be loaded; no changes were made.')
             self.detail.setPlainText(str(error))
+
+        self.review_toggle.setChecked(review_open)
+
+    def _set_review_visible(self, visible):
+        self.review_panel.setVisible(visible)
+        self.review_toggle.setText('Hide review entry' if visible else 'Review this investigation…')
+        if visible:
+            self.review_panel.fields['understanding'].setFocus()
 
     def inspect(self, row):
         if not 0 <= row < len(self.entries):
