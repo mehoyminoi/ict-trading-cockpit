@@ -247,6 +247,8 @@ class MainWindow(QMainWindow):
         self.integrated_study_task.review_requested.connect(self._open_investigation_review)
         self.integrated_study_task.criteria_requested.connect(self._open_study_criteria)
         self.integrated_study_task.overview_requested.connect(self._open_investigation_overview)
+        self.integrated_study_task.checkpoint_requested.connect(
+            lambda: self._open_investigation_overview(review_open=True))
         self.integrated_study_task.evaluation_requested.connect(self._open_criterion_study)
         self.investigation_return_buttons = []
         self.investigation_context_labels = []
@@ -518,7 +520,7 @@ class MainWindow(QMainWindow):
                                      plan_id=self.trade_plan.id, parent=self)
         dialog.exec()
 
-    def _open_investigation_overview(self):
+    def _open_investigation_overview(self, *, review_open=False):
         from ict_cockpit.gui.study_investigation_overview import StudyInvestigationOverview
         from ict_cockpit.database.study_criterion_repository import StudyCriterionRepository
         dialog = StudyInvestigationOverview(
@@ -526,7 +528,8 @@ class MainWindow(QMainWindow):
             StudyCriterionRepository(self.trading_session_run_repository.amdx),
             self.study_find_review_widget.repository,
             task_id=self.integrated_study_task.task_id, plan_id=self.trade_plan.id,
-            question=self.integrated_study_task.question.text(), plan_revision=self.trade_plan.revision, parent=self)
+            question=self.integrated_study_task.question.text(), plan_revision=self.trade_plan.revision,
+            review_open=review_open, parent=self)
         dialog.exec()
 
     def _open_criterion_study(self):
