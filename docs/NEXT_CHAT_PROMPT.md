@@ -1,3 +1,15 @@
+## Current local slice — isolated Study backup verification
+
+`feature/study-backup-verification-v0` adds `tools/verify_study_backup.py` and `STUDY_BACKUP_VERIFICATION.md`. Five targeted tests use the actual schema. Real operator archive verification is pending; archive creation alone is not recovery verification. No application/schema change or durable relocation yet. Absolute paths in immutable source snapshots require a deliberate resolver/relocation design; do not rewrite history. Includes preceding natural-session and dependable-workflow documentation. Publish as draft stacked on #100 only when explicitly authorized; do not merge.
+
+## Current priority — dependable daily workflow, 2026-10-30
+
+Operator explicitly prioritizes dependable personal Study/TDA/Watch integration over exploratory/nicety work and requests active scope control. Read `DEPENDABLE_WORKFLOW_MILESTONE.md` and `STUDY_INVESTIGATION_CONTINUITY_V0.md`. Backup archive creation is operator-reported; restore and durable workspace transition remain unverified. Next implementation must couple investigation registry/resumption with safe draft destination handling; pending capture context is currently in-memory, so a selector alone is insufficient. Full lifecycle and chart reconstruction deferred. This is a local design/documentation checkpoint, no production/schema changes or new publication.
+
+## Natural Study acceptance and continuity needs
+
+Published draft #100 (`a744dc9`) stacked on #99, unmerged; operator 350 PASS. Natural session produced useful observations and questions and strengthened acceptance of optional review pauses. Read the latest `STUDY_REAL_SESSION_FINDINGS.md` before new implementation. Priorities: preserve real material currently mixed with the synthetic `/tmp` fixture; specify investigation registry/resumption and deliberate revision; resolve repeated reference-date friction and offer question capture at review's point of need. No automatic competency claims; lifecycle states and chart reconstruction remain design proposals. This documentation update is local only.
+
 ## Current local slice — direct Study review entry
 
 `feature/study-direct-review-v0` applies the accepted task-directed-entry requirement using the existing overview/review editor. Direct Review this investigation opens review immediately; ordinary overview remains collapsed. Hide preserves text/support and the existing close guard. History and schema 51 unchanged. Includes the preceding requirements documentation and operator 348–349 PASS. See `STUDY_DIRECT_REVIEW.md` for bounded checkpoint 350 (pending) and the subsequent natural-study evaluation. Publish only when authorized, as a draft stacked on #99; do not merge. No analytical prioritization or competency assessment is implemented.
