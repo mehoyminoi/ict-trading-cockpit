@@ -1,3 +1,7 @@
+## Current local slice — durable Study workspace
+
+Operator archive verification PASS (schema 51, one referenced image). `feature/study-durable-workspace-v0` restores a verified archive into a new directory and resolves historical Study image paths through an explicit origin manifest. Database records remain unchanged; no fallback to original images. See `STUDY_DURABLE_WORKSPACE.md` for checkpoint 351, pending. Requires a current archive to include newer work. Pending capture destination limitations are not fixed here; investigation continuity remains next. Publish only when authorized, draft stacked on #101; do not merge.
+
 ## Current local slice — isolated Study backup verification
 
 `feature/study-backup-verification-v0` adds `tools/verify_study_backup.py` and `STUDY_BACKUP_VERIFICATION.md`. Five targeted tests use the actual schema. Real operator archive verification is pending; archive creation alone is not recovery verification. No application/schema change or durable relocation yet. Absolute paths in immutable source snapshots require a deliberate resolver/relocation design; do not rewrite history. Includes preceding natural-session and dependable-workflow documentation. Publish as draft stacked on #100 only when explicitly authorized; do not merge.
