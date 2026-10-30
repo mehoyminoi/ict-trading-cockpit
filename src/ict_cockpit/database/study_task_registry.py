@@ -49,3 +49,22 @@ class StudyTaskRegistry:
     def remember_context(self, capture_id, context):
         with self.connection:
             self.connection.execute('INSERT INTO study_capture_context VALUES (?,?) ON CONFLICT(capture_id) DO UPDATE SET payload_json=excluded.payload_json', (capture_id, json.dumps(context)))
+
+    def align_capture(self, draft, expected, target):
+        from datetime import datetime
+        from ict_cockpit.database.study_find_repository import StudyFindRepository
+        if self.connection.in_transaction:
+            raise ValueError('Finish the pending transaction before aligning context')
+        if not expected or any(expected[k] != target[k] for k in ('task_id', 'plan_id', 'plan_revision', 'question')):
+            raise ValueError('Alignment cannot change the investigation')
+        reference = datetime.fromisoformat(target['market_reference'])
+        if reference.tzinfo is None or reference.utcoffset() is None:
+            raise ValueError('Historical reference requires a timezone')
+        with self.connection:
+            self.connection.execute('BEGIN IMMEDIATE')
+            if self.context(draft.id) != expected:
+                raise ValueError('Opening context changed; reopen and inspect before aligning')
+            if self.connection.execute('SELECT 1 FROM study_investigation_capture WHERE capture_id=? UNION ALL SELECT 1 FROM study_find WHERE id=?', (draft.id, draft.id)).fetchone():
+                raise ValueError('Saved or linked capture context cannot be reassigned')
+            StudyFindRepository(self.connection)._insert_draft(draft)
+            self.connection.execute('UPDATE study_capture_context SET payload_json=? WHERE capture_id=?', (json.dumps(target), draft.id))
