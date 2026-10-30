@@ -1429,7 +1429,7 @@ Use `STUDY_REFERENCE_ALIGNMENT.md` in the durable workspace.
 
 Use `STUDY_REVIEW_QUESTION_CAPTURE.md` after backing up the durable workspace.
 
-- [NOT TESTED] Selected review wording saves to the existing question inbox without a dialog or duplicate repeat, retains review provenance without saving the checkpoint, and no selection opens the composer.
+- [PASS] Selected review wording saves to the existing question inbox without a dialog or duplicate repeat, retains review provenance without saving the checkpoint, and no selection opens the composer.
   - Where: guide checkpoint 355.
 
 ## Reporting results
