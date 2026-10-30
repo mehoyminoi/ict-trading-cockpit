@@ -43,18 +43,20 @@ def test_question_snapshot_reopens_and_does_not_require_or_create_run(tmp_path):
 
 def test_migration_rolls_back_then_upgrades_without_backfill(tmp_path):
     c=open_application_database(tmp_path/'migration.db')
+    c.execute('DROP TABLE study_capture_context')
+    c.execute('DROP TABLE study_task_registry')
     c.execute('DROP TABLE study_review')
     c.execute('DROP TABLE study_finding')
     c.execute('DROP TABLE study_question')
     c.execute('PRAGMA user_version=48');c.commit()
     c.set_authorizer(lambda action,a,b,*_: sqlite3.SQLITE_DENY
-        if action==sqlite3.SQLITE_PRAGMA and a=='user_version' and b=='51' else sqlite3.SQLITE_OK)
+        if action==sqlite3.SQLITE_PRAGMA and a=='user_version' and b=='52' else sqlite3.SQLITE_OK)
     with pytest.raises(sqlite3.DatabaseError):initialize_schema(c)
     c.set_authorizer(None)
     assert c.execute('PRAGMA user_version').fetchone()[0]==48
     assert not c.execute("SELECT name FROM sqlite_master WHERE name='study_question'").fetchone()
     initialize_schema(c)
-    assert c.execute('PRAGMA user_version').fetchone()[0]==51
+    assert c.execute('PRAGMA user_version').fetchone()[0]==52
     assert StudyQuestionRepository(c).list_for_plan('plan')==()
     c.close()
 

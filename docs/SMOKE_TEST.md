@@ -1406,8 +1406,17 @@ Use `STUDY_DIRECT_REVIEW.md` with the retained review fixture.
 
 Use `STUDY_DURABLE_WORKSPACE.md` after preserving a current archive.
 
-- [NOT TESTED] Restored durable workspace retains saved material/draft, displays historical images and retains a newly saved image after restart.
+- [PASS] Restored durable workspace retains saved material/draft, displays historical images and retains a newly saved image after restart.
   - Where: guide checkpoint 351.
+
+## Investigation resumption
+
+Use `STUDY_INVESTIGATION_RESUME.md` after backing up the durable workspace.
+
+- [NOT TESTED] Named investigation identity and original material remain available through switching and restart without moving the calendar reference.
+  - Where: guide checkpoint 352.
+- [NOT TESTED] Authored drafts block switching and retain their destination through restart; legacy unbound content requires deliberate destination confirmation.
+  - Where: guide checkpoint 353.
 
 ## Reporting results
 
