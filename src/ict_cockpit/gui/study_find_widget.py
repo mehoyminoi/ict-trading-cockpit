@@ -1,4 +1,6 @@
 from ict_cockpit.media.workspace_paths import resolve_study_image
+from ict_cockpit.gui.editor_feedback import handle_ctrl_y, focus_invalid_field
+import sqlite3
 from pathlib import Path
 from uuid import uuid4
 
@@ -9,7 +11,9 @@ from PySide6.QtWidgets import (
     QDateEdit,
     QDoubleSpinBox,
     QFileDialog,
-    QFormLayout,
+    QHBoxLayout,
+    QSplitter,
+    QScrollArea,
     QLabel,
     QLineEdit,
     QListWidget,
@@ -40,6 +44,7 @@ class StudyFindWidget(QWidget):
     study_find_ready = Signal(StudyFind)
     draft_changed = Signal(StudyFindDraft)
     submission_failed = Signal(str)
+    action_status = Signal(str)
 
     def __init__(
         self,
@@ -129,30 +134,84 @@ class StudyFindWidget(QWidget):
         self.new_study_find_button.hide()
         self.new_study_find_button.clicked.connect(self.reset_form)
 
-        form_layout = QFormLayout()
-        form_layout.addRow("Date", self.date_input)
-        form_layout.addRow("Instrument", self.instrument_input)
-        form_layout.addRow("Session", self.session_input)
-        form_layout.addRow("Pattern", self.pattern_input)
-        form_layout.addRow("Observation", self.observation_input)
-        form_layout.addRow("Available Move", self.available_move_input)
-        form_layout.addRow("Notes", self.notes_input)
+        layout = QVBoxLayout(self)
+        self.context_layout = QVBoxLayout()
+        layout.addLayout(self.context_layout)
+        self.action_feedback = QLabel()
+        self.action_feedback.setWordWrap(True)
+        self.action_feedback.setTextFormat(Qt.TextFormat.PlainText)
+        self.action_feedback.setAccessibleName("Capture action feedback")
+        self.action_feedback.setFixedHeight(self.action_feedback.fontMetrics().lineSpacing() * 2 + 8)
+        layout.addWidget(self.action_feedback)
+        metadata = QHBoxLayout()
+        for label, widget in (("Date", self.date_input), ("Instrument", self.instrument_input), ("Session", self.session_input)):
+            metadata.addWidget(QLabel(label))
+            metadata.addWidget(widget, 1)
+        layout.addLayout(metadata)
+        pattern = QHBoxLayout()
+        pattern.addWidget(QLabel("Pattern"))
+        pattern.addWidget(self.pattern_input, 2)
+        pattern.addWidget(QLabel("Available move"))
+        pattern.addWidget(self.available_move_input, 1)
+        layout.addLayout(pattern)
 
-        layout = QVBoxLayout()
-        layout.addLayout(form_layout)
-        layout.addWidget(self.image_list)
-        layout.addWidget(self.image_preview)
-        layout.addWidget(self.copy_image_button)
-        layout.addWidget(self.attach_image_button)
-        layout.addWidget(self.remove_image_button)
-        layout.addWidget(self.summary_template_label)
-        layout.addWidget(self.generate_summary_button)
-        layout.addWidget(self.summary_preview)
-        layout.addWidget(self.copy_summary_button)
-        layout.addWidget(self.save_feedback)
-        layout.addWidget(self.save_button)
-        layout.addWidget(self.new_study_find_button)
-        self.setLayout(layout)
+        writing = QWidget()
+        writing_layout = QVBoxLayout(writing)
+        writing_layout.setContentsMargins(0, 0, 0, 0)
+        writing_layout.addWidget(QLabel("Observation · what happened in price"))
+        writing_layout.addWidget(self.observation_input, 1)
+        writing_layout.addWidget(QLabel("Notes · interpretation, uncertainty, larger context"))
+        writing_layout.addWidget(self.notes_input, 1)
+        self.entry_actions = QHBoxLayout()
+        writing_layout.addLayout(self.entry_actions)
+        self.entry_feedback = QVBoxLayout()
+        writing_layout.addLayout(self.entry_feedback)
+        charts = QWidget()
+        chart_layout = QVBoxLayout(charts)
+        chart_layout.setContentsMargins(0, 0, 0, 0)
+        chart_layout.addWidget(QLabel("Chart context · paste an image or add a file"))
+        chart_layout.addWidget(self.image_preview, 1)
+        self.image_list.setMaximumHeight(90)
+        chart_layout.addWidget(self.image_list)
+        chart_actions = QHBoxLayout()
+        for button in (self.attach_image_button, self.copy_image_button, self.remove_image_button):
+            chart_actions.addWidget(button)
+        chart_layout.addLayout(chart_actions)
+        chart_layout.addStretch()
+        self.capture_splitter = QSplitter(Qt.Orientation.Horizontal)
+        self.capture_splitter.addWidget(writing)
+        self.capture_splitter.addWidget(charts)
+        self.capture_splitter.setStretchFactor(0, 3)
+        self.capture_splitter.setStretchFactor(1, 2)
+        layout.addWidget(self.capture_splitter, 1)
+
+        summary_actions = QHBoxLayout()
+        summary_actions.addWidget(self.generate_summary_button)
+        self.summary_toggle = QPushButton("Show summary")
+        self.summary_toggle.setCheckable(True)
+        summary_actions.addWidget(self.summary_toggle)
+        summary_actions.addStretch()
+        layout.addLayout(summary_actions)
+        self.summary_area = QWidget()
+        summary_layout = QVBoxLayout(self.summary_area)
+        summary_layout.setContentsMargins(0, 0, 0, 0)
+        summary_layout.addWidget(self.summary_template_label)
+        summary_layout.addWidget(self.summary_preview)
+        summary_layout.addWidget(self.copy_summary_button)
+        layout.addWidget(self.summary_area)
+        self.summary_area.hide()
+        self.summary_toggle.toggled.connect(self._show_summary)
+
+        self.save_area = QVBoxLayout()
+        self.save_area.addWidget(self.save_feedback)
+        self.save_area.addWidget(self.save_button)
+        self.save_area.addWidget(self.new_study_find_button)
+        layout.addLayout(self.save_area)
+        # Keep the familiar typing order despite the visual two-column composition.
+        order = (self.date_input, self.instrument_input, self.session_input,
+                 self.pattern_input, self.observation_input, self.available_move_input, self.notes_input)
+        for before, after in zip(order, order[1:]):
+            QWidget.setTabOrder(before, after)
 
         self._connect_draft_signals()
         self.refresh_summary_template_label()
@@ -160,6 +219,10 @@ class StudyFindWidget(QWidget):
         app = QApplication.instance()
         if app is not None:
             app.installEventFilter(self)
+
+    def _show_summary(self, visible):
+        self.summary_area.setVisible(visible)
+        self.summary_toggle.setText("Hide summary" if visible else "Show summary")
 
     def _connect_draft_signals(self) -> None:
         self.date_input.dateChanged.connect(self.emit_draft_changed)
@@ -171,6 +234,8 @@ class StudyFindWidget(QWidget):
         self.notes_input.textChanged.connect(self.emit_draft_changed)
 
     def eventFilter(self, watched, event) -> bool:
+        if watched in (self.observation_input, self.notes_input) and handle_ctrl_y(watched, event):
+            return True
         if (
             isinstance(watched, QWidget)
             and (watched is self or self.isAncestorOf(watched))
@@ -330,32 +395,64 @@ class StudyFindWidget(QWidget):
                 f"Template · {template.label}"
             )
 
+    def _show_action_error(self, error):
+        fields = {
+            "instrument cannot be empty": ("Instrument", self.instrument_input),
+            "session cannot be empty": ("Session", self.session_input),
+            "pattern_name cannot be empty": ("Pattern", self.pattern_input),
+            "observation cannot be empty": ("Observation", self.observation_input),
+        }
+        field = fields.get(str(error))
+        message = (f"Summary not generated: enter {field[0]}, then try Generate Summary again."
+                   if field else f"Summary not generated: {error}")
+        self.action_feedback.setText(message + " Existing summary and draft retained.")
+        self.action_status.emit(self.action_feedback.text())
+        self.action_feedback.setToolTip(self.action_feedback.text())
+        target = field[1] if field else self.action_feedback
+        if field:
+            focus_invalid_field(target)
+        ancestor = target.parentWidget()
+        while ancestor is not None:
+            if isinstance(ancestor, QScrollArea):
+                ancestor.ensureWidgetVisible(target)
+                break
+            ancestor = ancestor.parentWidget()
+
     def generate_summary(self) -> str:
-        context = StudyFindSummaryContext(
-            study_find=self.build_study_find(),
-            image_paths=self.image_paths,
-        )
-        renderer = SummaryRenderer()
-        template = self._active_summary_template()
-        if template is None:
-            rendered = renderer.render(
-                STUDY_FIND_SUMMARY_V1,
-                context.to_template_values(),
+        try:
+            context = StudyFindSummaryContext(
+                study_find=self.build_study_find(),
+                image_paths=self.image_paths,
             )
-            rendered = (
-                rendered.rstrip()
-                + "\n\nTemplate: Study Find Default · r1\n"
-            )
-        else:
-            rendered = renderer.render_versioned(
-                template,
-                context.to_template_values(),
-            )
+            renderer = SummaryRenderer()
+            template = self._active_summary_template()
+            if template is None:
+                rendered = renderer.render(
+                    STUDY_FIND_SUMMARY_V1,
+                    context.to_template_values(),
+                )
+                rendered = (
+                    rendered.rstrip()
+                    + "\n\nTemplate: Study Find Default · r1\n"
+                )
+            else:
+                rendered = renderer.render_versioned(
+                    template,
+                    context.to_template_values(),
+                )
+        except (ValueError, sqlite3.Error) as error:
+            self._show_action_error(error)
+            return ""
+        self.action_feedback.clear()
         self.summary_preview.setPlainText(rendered)
+        self.summary_toggle.setChecked(True)
+        self.action_status.emit("Study summary generated. Capture has not been saved by this action.")
         return rendered
 
     def copy_summary(self) -> None:
-        QApplication.clipboard().setText(self.generate_summary())
+        rendered = self.generate_summary()
+        if rendered:
+            QApplication.clipboard().setText(rendered)
 
     def choose_chart_image(self) -> None:
         file_path, _ = QFileDialog.getOpenFileName(
@@ -439,6 +536,7 @@ class StudyFindWidget(QWidget):
         self.next_image_number = 1
 
         self.summary_preview.clear()
+        self.action_feedback.clear()
 
         self.save_feedback.clear()
         self.save_button.setText("Save Study Find")

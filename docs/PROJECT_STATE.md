@@ -1,3 +1,15 @@
+## Local follow-up — review redo and invalid-field attention
+
+Capture Ctrl+Y and Pattern focus accepted on #109 correction e3db291. Operator requests same redo in Review and stronger Observation cue. Shared helper now handles Ctrl+Y for capture/review editors, respecting read-only state, and paints a brief focus outline for known required summary inputs. Scroll targets invalid field, with fixed bottom status explanation retained. Ten targeted checks PASS, native cue inspected. Retest pending; same study-capture-layout-v0 branch, update #109 only when authorized; do not merge. Not blanket suite-wide validation coverage.
+
+## Local correction — capture redo and summary feedback
+
+Operator 362–363 PASS overall on #109, with two defects: missing Ctrl+Y redo and terminal-only incomplete-summary failure. Local correction adds scoped Ctrl+Y, reserved local summary error feedback/focus, bottom status reporting and preservation of draft/previous summary/clipboard on failure. User clarified fixed global status location, not error log; wider status normalization remains follow-up. Same branch study-capture-layout-v0; publication/update #109 only when authorized, no merge.
+
+## Current local slice — Study capture layout
+
+Operator 360–361 PASS on #108 (`46e84f8`). `feature/study-capture-layout-v0` groups metadata, places writing beside chart handling, positions quick question/finding actions with text, discloses generated summary on request, groups completion controls and hides only routine matching context/secondary association detail. Existing editors/commands/validation remain; schema 53. See `STUDY_CAPTURE_LAYOUT_V0.md`, 362–363 pending. Local only; publish draft stacked on #108 when authorized; do not merge. Form still scrolls; final styling and persisted divider preference deferred.
+
 ## Current local slice — connected Study container
 
 `feature/study-connected-workspace-v0` composes the existing investigation header, Study start, AMDX calendar and capture editor into one Study surface with local view selection and per-view scrolling beneath persistent orientation. Logical route adapter preserves existing run/capture/page identity; no schema change. Overview/review remain guarded dialogs. See `STUDY_CONNECTED_WORKSPACE_V0.md`; 360–361 pending. Includes preceding assessment and 358–359 acceptance. Local only, draft stacked on #107 when authorized; do not merge.
