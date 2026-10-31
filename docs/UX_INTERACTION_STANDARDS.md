@@ -106,3 +106,7 @@ Exact visual identity remains a native-design question. Distinction must come fr
 ## Actionable blocked states — operator accepted 2026-10-30
 
 When a safe resolution path exists, a blocked action must explain the cause locally and offer a direct route to resolve it while preserving unfinished work. A warning alone is insufficient when the operator must hunt for the blocking object. The accepted Study example is Return to unfinished capture beside blocked New/Resume. The route must not bypass the guard, silently save/discard, or change association/reference. Apply this suite-wide where the domain provides a valid recovery action. Operator 356–357 PASS.
+
+## Familiar inspection dismissal — 358–359 acceptance
+
+Preserve native Escape/Close for temporary read-only inspection. The image viewer must belong to its containing dialog/window and close independently without losing the work beneath it. Do not generalize this into silent dismissal/discard of unsaved authoring; review and capture protections retain precedence. Native Ctrl+Z in observation editing is likewise a behavior to preserve through future widget/layout changes.
