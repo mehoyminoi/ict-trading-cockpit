@@ -1472,10 +1472,21 @@ Use `STUDY_CAPTURE_LAYOUT_V0.md` after publication with the durable workspace.
 
 Use `STUDY_CONNECTED_REVIEW_V0.md` with existing retained material after publication.
 
-- [NOT TESTED] Retained material and direct review share the Study header; image inspection and return preserve question, reference and capture.
+- [PASS] Retained material and direct review share the Study header; image inspection and return preserve question, reference and capture.
   - Where: guide checkpoint 364.
-- [NOT TESTED] Cancel preserves unfinished review through local/global navigation and application close; deliberate Discard removes only that unsaved review.
+- [PASS] Cancel preserves unfinished review through local/global navigation and application close; deliberate Discard removes only that unsaved review.
   - Where: guide checkpoint 365.
+
+## TDA → Watch journey
+
+Use `TDA_WATCH_JOURNEY_V0.md` with its separate synthetic Replay workspace after publication.
+
+- [NOT TESTED] Normal TDA completion carries synthesis and day-specific IF/THEN context into Watch without transcription or authorization claims.
+  - Where: guide checkpoint 366.
+- [NOT TESTED] AMDX entry, Watch capture save/return and deliberate return to analysis preserve the active run and update the carried thesis.
+  - Where: guide checkpoint 367.
+- [NOT TESTED] Reopening restores the same Watch run, revised context, watch point and AMDX entry without duplicate capture saving.
+  - Where: guide checkpoint 368.
 
 ## Reporting results
 
