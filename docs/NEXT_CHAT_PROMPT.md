@@ -1,3 +1,7 @@
+## Current local slice — Study capture layout
+
+Operator 360–361 PASS on #108 (`46e84f8`). `feature/study-capture-layout-v0` groups metadata, places writing beside chart handling, positions quick question/finding actions with text, discloses generated summary on request, groups completion controls and hides only routine matching context/secondary association detail. Existing editors/commands/validation remain; schema 53. See `STUDY_CAPTURE_LAYOUT_V0.md`, 362–363 pending. Local only; publish draft stacked on #108 when authorized; do not merge. Form still scrolls; final styling and persisted divider preference deferred.
+
 ## Current local slice — connected Study container
 
 `feature/study-connected-workspace-v0` composes the existing investigation header, Study start, AMDX calendar and capture editor into one Study surface with local view selection and per-view scrolling beneath persistent orientation. Logical route adapter preserves existing run/capture/page identity; no schema change. Overview/review remain guarded dialogs. See `STUDY_CONNECTED_WORKSPACE_V0.md`; 360–361 pending. Includes preceding assessment and 358–359 acceptance. Local only, draft stacked on #107 when authorized; do not merge.

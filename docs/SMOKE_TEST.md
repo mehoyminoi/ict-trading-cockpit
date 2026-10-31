@@ -1459,6 +1459,15 @@ Use `STUDY_CONNECTED_WORKSPACE_V0.md` with the durable workspace after publicati
 - [PASS] Prior-work/review dialog return and global-workspace return retain the local Study view without changing draft or investigation; existing startup routing remains intact.
   - Where: guide checkpoint 361.
 
+## Study capture layout
+
+Use `STUDY_CAPTURE_LAYOUT_V0.md` after publication with the durable workspace.
+
+- [NOT TESTED] Writing/chart composition, divider and local quick actions preserve draft, undo and existing image behavior through navigation.
+  - Where: guide checkpoint 362.
+- [NOT TESTED] Summary disclosure, association details and completion actions preserve content, truthful destination/warnings and fresh-next-capture behavior.
+  - Where: guide checkpoint 363.
+
 ## Reporting results
 
 Report results as:

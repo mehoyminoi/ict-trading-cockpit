@@ -277,7 +277,7 @@ class MainWindow(QMainWindow):
         self.link_investigation_action.triggered.connect(self._link_investigation_capture)
         self.capture_association_label = QLabel()
         self.capture_association_label.setWordWrap(True)
-        save_layout = self.study_find_widget.layout()
+        save_layout = self.study_find_widget.save_area
         save_index = save_layout.indexOf(self.study_find_widget.save_feedback)
         self.study_save_destination = QLabel()
         self.study_save_destination.setTextFormat(Qt.TextFormat.PlainText)
@@ -298,6 +298,11 @@ class MainWindow(QMainWindow):
         self.study_save_more = QPushButton("More…")
         save_menu = QMenu(self.study_save_more)
         save_menu.addAction(self.link_investigation_action)
+        self.capture_association_details_action = QAction("Show association details", self)
+        self.capture_association_details_action.setCheckable(True)
+        self.capture_association_details_action.toggled.connect(self.capture_association_label.setVisible)
+        save_menu.addAction(self.capture_association_details_action)
+        self.capture_association_label.hide()
         self.study_save_more.setMenu(save_menu)
         save_row.addWidget(self.study_save_more)
         save_layout.insertLayout(save_layout.indexOf(self.study_find_widget.save_feedback) + 1, save_row)
@@ -305,11 +310,11 @@ class MainWindow(QMainWindow):
         self.study_find_widget.draft_changed.connect(lambda _draft: self._refresh_capture_context())
         self.capture_context_notice = QLabel()
         self.capture_context_notice.setWordWrap(True)
-        self.study_find_widget.layout().insertWidget(3, self.capture_context_notice)
+        self.study_find_widget.context_layout.addWidget(self.capture_context_notice)
         self.study_reference_summary = QLabel()
         self.study_reference_summary.setWordWrap(True)
         self.study_reference_summary.setTextFormat(Qt.TextFormat.PlainText)
-        self.study_find_widget.layout().insertWidget(3, self.study_reference_summary)
+        self.study_find_widget.context_layout.insertWidget(0, self.study_reference_summary)
         reference_actions = QHBoxLayout()
         self.select_study_reference_button = QPushButton("Select reference in calendar")
         self.select_study_reference_button.clicked.connect(self._select_capture_reference)
@@ -318,26 +323,26 @@ class MainWindow(QMainWindow):
         self.align_study_reference_button.clicked.connect(self._align_capture_reference)
         self.align_study_reference_button.setEnabled(False)
         reference_actions.addWidget(self.align_study_reference_button)
-        self.study_find_widget.layout().insertLayout(4, reference_actions)
+        self.study_find_widget.context_layout.addLayout(reference_actions)
         self.tabs.currentChanged.connect(lambda _: self._refresh_study_reference())
         self.keep_study_question_button = QPushButton("Keep question for later")
         self.keep_study_question_button.setToolTip("Save selected Notes or Observation directly; without a selection, write a question.")
         self.question_capture_feedback = QLabel()
         self.question_capture_feedback.setWordWrap(True)
-        self.study_find_widget.layout().insertWidget(4, self.question_capture_feedback)
+        self.study_find_widget.entry_feedback.addWidget(self.question_capture_feedback)
         self._question_selection_editor = None
         self._quick_question_pending = None
         for editor in (self.study_find_widget.notes_input, self.study_find_widget.observation_input):
             editor.selectionChanged.connect(lambda editor=editor: self._remember_question_selection(editor))
         self.keep_study_question_button.clicked.connect(lambda: self._open_study_questions(capture=True))
-        self.study_find_widget.layout().insertWidget(4, self.keep_study_question_button)
+        self.study_find_widget.entry_actions.addWidget(self.keep_study_question_button)
         self.keep_study_finding_button = QPushButton("Keep finding…")
         self.keep_study_finding_button.setToolTip("Retain an insight or partial answer; selected Notes or Observation prefill the wording.")
         self.keep_study_finding_button.clicked.connect(lambda: self._open_study_findings(capture=True))
-        self.study_find_widget.layout().insertWidget(5, self.keep_study_finding_button)
+        self.study_find_widget.entry_actions.addWidget(self.keep_study_finding_button)
         self.discard_study_draft_button = QPushButton("Discard current draft…")
         self.discard_study_draft_button.clicked.connect(self._discard_study_draft)
-        self.study_find_widget.layout().addWidget(self.discard_study_draft_button)
+        self.study_find_widget.save_area.addWidget(self.discard_study_draft_button)
 
         self.study_questions_button = QPushButton("Study questions…")
         self.study_questions_button.clicked.connect(lambda: self._open_study_questions(capture=False))
@@ -878,6 +883,7 @@ class MainWindow(QMainWindow):
         self._refresh_study_reference()
         defaults = self.capture_context_defaults
         if not defaults:
+            self.capture_context_notice.hide()
             return
         draft = self.study_find_widget.build_draft()
         differences = []
@@ -888,6 +894,7 @@ class MainWindow(QMainWindow):
         ):
             if suggested and actual != suggested:
                 differences.append(f"{name}: capture {actual or '(empty)'} / selected context {suggested}")
+        self.capture_context_notice.setVisible(bool(differences))
         self.capture_context_notice.setText(
             "Capture context differs — " + "; ".join(differences) +
             ". Your entry is preserved; check before saving or linking."

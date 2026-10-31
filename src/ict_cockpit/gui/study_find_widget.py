@@ -9,7 +9,8 @@ from PySide6.QtWidgets import (
     QDateEdit,
     QDoubleSpinBox,
     QFileDialog,
-    QFormLayout,
+    QHBoxLayout,
+    QSplitter,
     QLabel,
     QLineEdit,
     QListWidget,
@@ -129,30 +130,79 @@ class StudyFindWidget(QWidget):
         self.new_study_find_button.hide()
         self.new_study_find_button.clicked.connect(self.reset_form)
 
-        form_layout = QFormLayout()
-        form_layout.addRow("Date", self.date_input)
-        form_layout.addRow("Instrument", self.instrument_input)
-        form_layout.addRow("Session", self.session_input)
-        form_layout.addRow("Pattern", self.pattern_input)
-        form_layout.addRow("Observation", self.observation_input)
-        form_layout.addRow("Available Move", self.available_move_input)
-        form_layout.addRow("Notes", self.notes_input)
+        layout = QVBoxLayout(self)
+        self.context_layout = QVBoxLayout()
+        layout.addLayout(self.context_layout)
+        metadata = QHBoxLayout()
+        for label, widget in (("Date", self.date_input), ("Instrument", self.instrument_input), ("Session", self.session_input)):
+            metadata.addWidget(QLabel(label))
+            metadata.addWidget(widget, 1)
+        layout.addLayout(metadata)
+        pattern = QHBoxLayout()
+        pattern.addWidget(QLabel("Pattern"))
+        pattern.addWidget(self.pattern_input, 2)
+        pattern.addWidget(QLabel("Available move"))
+        pattern.addWidget(self.available_move_input, 1)
+        layout.addLayout(pattern)
 
-        layout = QVBoxLayout()
-        layout.addLayout(form_layout)
-        layout.addWidget(self.image_list)
-        layout.addWidget(self.image_preview)
-        layout.addWidget(self.copy_image_button)
-        layout.addWidget(self.attach_image_button)
-        layout.addWidget(self.remove_image_button)
-        layout.addWidget(self.summary_template_label)
-        layout.addWidget(self.generate_summary_button)
-        layout.addWidget(self.summary_preview)
-        layout.addWidget(self.copy_summary_button)
-        layout.addWidget(self.save_feedback)
-        layout.addWidget(self.save_button)
-        layout.addWidget(self.new_study_find_button)
-        self.setLayout(layout)
+        writing = QWidget()
+        writing_layout = QVBoxLayout(writing)
+        writing_layout.setContentsMargins(0, 0, 0, 0)
+        writing_layout.addWidget(QLabel("Observation · what happened in price"))
+        writing_layout.addWidget(self.observation_input, 1)
+        writing_layout.addWidget(QLabel("Notes · interpretation, uncertainty, larger context"))
+        writing_layout.addWidget(self.notes_input, 1)
+        self.entry_actions = QHBoxLayout()
+        writing_layout.addLayout(self.entry_actions)
+        self.entry_feedback = QVBoxLayout()
+        writing_layout.addLayout(self.entry_feedback)
+        charts = QWidget()
+        chart_layout = QVBoxLayout(charts)
+        chart_layout.setContentsMargins(0, 0, 0, 0)
+        chart_layout.addWidget(QLabel("Chart context · paste an image or add a file"))
+        chart_layout.addWidget(self.image_preview, 1)
+        self.image_list.setMaximumHeight(90)
+        chart_layout.addWidget(self.image_list)
+        chart_actions = QHBoxLayout()
+        for button in (self.attach_image_button, self.copy_image_button, self.remove_image_button):
+            chart_actions.addWidget(button)
+        chart_layout.addLayout(chart_actions)
+        chart_layout.addStretch()
+        self.capture_splitter = QSplitter(Qt.Orientation.Horizontal)
+        self.capture_splitter.addWidget(writing)
+        self.capture_splitter.addWidget(charts)
+        self.capture_splitter.setStretchFactor(0, 3)
+        self.capture_splitter.setStretchFactor(1, 2)
+        layout.addWidget(self.capture_splitter, 1)
+
+        summary_actions = QHBoxLayout()
+        summary_actions.addWidget(self.generate_summary_button)
+        self.summary_toggle = QPushButton("Show summary")
+        self.summary_toggle.setCheckable(True)
+        summary_actions.addWidget(self.summary_toggle)
+        summary_actions.addStretch()
+        layout.addLayout(summary_actions)
+        self.summary_area = QWidget()
+        summary_layout = QVBoxLayout(self.summary_area)
+        summary_layout.setContentsMargins(0, 0, 0, 0)
+        summary_layout.addWidget(self.summary_template_label)
+        summary_layout.addWidget(self.summary_preview)
+        summary_layout.addWidget(self.copy_summary_button)
+        layout.addWidget(self.summary_area)
+        self.summary_area.hide()
+        self.summary_toggle.toggled.connect(self._show_summary)
+        self.generate_summary_button.clicked.connect(lambda: self.summary_toggle.setChecked(True))
+
+        self.save_area = QVBoxLayout()
+        self.save_area.addWidget(self.save_feedback)
+        self.save_area.addWidget(self.save_button)
+        self.save_area.addWidget(self.new_study_find_button)
+        layout.addLayout(self.save_area)
+        # Keep the familiar typing order despite the visual two-column composition.
+        order = (self.date_input, self.instrument_input, self.session_input,
+                 self.pattern_input, self.observation_input, self.available_move_input, self.notes_input)
+        for before, after in zip(order, order[1:]):
+            QWidget.setTabOrder(before, after)
 
         self._connect_draft_signals()
         self.refresh_summary_template_label()
@@ -160,6 +210,10 @@ class StudyFindWidget(QWidget):
         app = QApplication.instance()
         if app is not None:
             app.installEventFilter(self)
+
+    def _show_summary(self, visible):
+        self.summary_area.setVisible(visible)
+        self.summary_toggle.setText("Hide summary" if visible else "Show summary")
 
     def _connect_draft_signals(self) -> None:
         self.date_input.dateChanged.connect(self.emit_draft_changed)
