@@ -1,3 +1,11 @@
+## Current local slice — connected Study container
+
+`feature/study-connected-workspace-v0` composes the existing investigation header, Study start, AMDX calendar and capture editor into one Study surface with local view selection and per-view scrolling beneath persistent orientation. Logical route adapter preserves existing run/capture/page identity; no schema change. Overview/review remain guarded dialogs. See `STUDY_CONNECTED_WORKSPACE_V0.md`; 360–361 pending. Includes preceding assessment and 358–359 acceptance. Local only, draft stacked on #107 when authorized; do not merge.
+
+## Current checkpoint — whole Study workspace composition
+
+Operator 358–359 PASS on #107 after correction `5fe9222`; native image Close/Escape accepted. Whole-workspace assessment is in `STUDY_WORKSPACE_COMPOSITION_V0.md`: question ownership is visually fragmented across Study startup, AMDX Lab, capture tab and modal review. Proposed next implementation is a native Study container with a stable question/reference header and existing calendar/capture instances, with explicit route helpers preserving Watch/run/draft semantics. Retained-work/review dialogs initially remain until embedded leave guards are designed. This checkpoint is documentation only; no new pull, tests or publication. No merge. Earlier pending statements below are historical.
+
 ## Local correction — full-size chart blocked by investigation modal
 
 Published draft #107 (`b1005cc`) operator 358 exposed parentless image-window ownership: chart was blocked behind the modal investigation. Local correction uses an owned window-modal image dialog with Close/Escape and native-resolution scrolling. Ten targeted tests PASS including modal ownership and independent closure. 358 retest pending; 359 unreported. Same branch `feature/study-overview-reading-v0`, update #107 when authorized; do not merge. No schema changes.

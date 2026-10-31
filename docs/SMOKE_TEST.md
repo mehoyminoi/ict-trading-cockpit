@@ -1446,9 +1446,18 @@ Use `STUDY_WORKSPACE_CLARITY_V0.md` with the durable workspace after publication
 Use `STUDY_OVERVIEW_READING_V0.md` after publication with existing retained material.
 
 - [PASS] Capture previews aid recognition; full text, compact context, disclosed association and first chart remain correct and readable.
-  - Where: guide checkpoint 358. Full-size chart opened behind the modal investigation and could not close independently; local ownership correction ready, operator retest pending.
+  - Where: guide checkpoint 358. Full-size chart ownership correction retested PASS; chart closes independently.
 - [PASS] Prior checkpoints are inspectable without starting a review; browsing preserves a current review and checkpoints cannot be reused as support.
   - Where: guide checkpoint 359.
+
+## Connected Study workspace
+
+Use `STUDY_CONNECTED_WORKSPACE_V0.md` with the durable workspace after publication.
+
+- [PASS] Start/calendar/capture share a persistent investigation/reference header; view switching and scrolling preserve the exact draft, undo and retained destination.
+  - Where: guide checkpoint 360.
+- [PASS] Prior-work/review dialog return and global-workspace return retain the local Study view without changing draft or investigation; existing startup routing remains intact.
+  - Where: guide checkpoint 361.
 
 ## Reporting results
 
