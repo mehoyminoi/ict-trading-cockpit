@@ -2,7 +2,7 @@
 import sqlite3
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QLabel, QListWidget, QTextBrowser, QPushButton,
-    QSplitter, QStackedWidget, QScrollArea,
+    QSplitter, QStackedWidget, QScrollArea, QComboBox, QHBoxLayout,
 )
 from ict_cockpit.database.study_investigation_repository import describe_association
 from ict_cockpit.gui.study_criterion_dialog import describe_result
@@ -26,6 +26,17 @@ class StudyInvestigationOverview(QDialog):
         self.summary = QLabel()
         self.summary.setWordWrap(True)
         layout.addWidget(self.summary)
+        filter_row = QHBoxLayout()
+        filter_row.addWidget(QLabel('Show material'))
+        self.material_filter = QComboBox()
+        for label, kind in [('All material', ''), ('Captures', 'capture'),
+                            ('Findings / partial answers', 'finding'), ('Criterion results', 'result')]:
+            self.material_filter.addItem(label, kind)
+        self.material_filter.setAccessibleName('Investigation material type')
+        filter_row.addWidget(self.material_filter)
+        self.filter_status = QLabel()
+        filter_row.addWidget(self.filter_status, 1)
+        layout.addLayout(filter_row)
         self.items = QListWidget()
         self.detail = QTextBrowser()
         self.find_review = StudyFindReviewWidget(finds)
@@ -88,7 +99,7 @@ class StudyInvestigationOverview(QDialog):
                 self.items.setCurrentRow(0)
             else:
                 self.detail.setPlainText('No retained material for this investigation yet.\n\n'
-                    'Return to evaluate a criterion, or open Study Find, enter content and explicitly link the capture. '
+                    'Return to Open Study Find, enter an example and use Save to investigation. '
                     'Unlinked finds remain available in Review saved finds.')
         except (ValueError, sqlite3.Error) as error:
             self.entries.clear()
@@ -96,7 +107,23 @@ class StudyInvestigationOverview(QDialog):
             self.summary.setText('Investigation material could not be loaded; no changes were made.')
             self.detail.setPlainText(str(error))
 
+        self.material_filter.currentIndexChanged.connect(self._filter_material)
         self.review_toggle.setChecked(review_open)
+
+    def _filter_material(self):
+        kind = self.material_filter.currentData()
+        visible = []
+        for row, (entry_kind, _) in enumerate(self.entries):
+            show = not kind or entry_kind == kind
+            self.items.item(row).setHidden(not show)
+            if show:
+                visible.append(row)
+        self.filter_status.setText(f"{len(visible)} matching items" if visible else "No material of this type")
+        if self.items.currentRow() not in visible:
+            self.items.setCurrentRow(visible[0] if visible else -1)
+        if not visible:
+            self.pages.setCurrentWidget(self.detail)
+            self.detail.setPlainText('No material of this type. Choose All material to return. Your review entry is unchanged.')
 
     def _set_review_visible(self, visible):
         self.review_panel.setVisible(visible)

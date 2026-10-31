@@ -1432,6 +1432,15 @@ Use `STUDY_REVIEW_QUESTION_CAPTURE.md` after backing up the durable workspace.
 - [PASS] Selected review wording saves to the existing question inbox without a dialog or duplicate repeat, retains review provenance without saving the checkpoint, and no selection opens the composer.
   - Where: guide checkpoint 355.
 
+## Study workspace clarity
+
+Use `STUDY_WORKSPACE_CLARITY_V0.md` with the durable workspace after publication.
+
+- [PASS] Blocked New/Resume explains the unfinished capture locally and returns to the same editor/content/destination; resolving it permits switching. Primary and supporting controls remain reachable.
+  - Where: guide checkpoint 356.
+- [PASS] Material filtering preserves investigation identity, unsaved review text and support; empty categories do not show unrelated detail and All material restores access.
+  - Where: guide checkpoint 357.
+
 ## Reporting results
 
 Report results as:
