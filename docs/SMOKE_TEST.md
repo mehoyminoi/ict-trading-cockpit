@@ -1454,9 +1454,9 @@ Use `STUDY_OVERVIEW_READING_V0.md` after publication with existing retained mate
 
 Use `STUDY_CONNECTED_WORKSPACE_V0.md` with the durable workspace after publication.
 
-- [NOT TESTED] Start/calendar/capture share a persistent investigation/reference header; view switching and scrolling preserve the exact draft, undo and retained destination.
+- [PASS] Start/calendar/capture share a persistent investigation/reference header; view switching and scrolling preserve the exact draft, undo and retained destination.
   - Where: guide checkpoint 360.
-- [NOT TESTED] Prior-work/review dialog return and global-workspace return retain the local Study view without changing draft or investigation; existing startup routing remains intact.
+- [PASS] Prior-work/review dialog return and global-workspace return retain the local Study view without changing draft or investigation; existing startup routing remains intact.
   - Where: guide checkpoint 361.
 
 ## Reporting results
