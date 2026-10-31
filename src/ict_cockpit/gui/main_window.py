@@ -16,6 +16,8 @@ from PySide6.QtWidgets import (
     QScrollArea,
     QHBoxLayout,
     QMenu,
+    QWidget,
+    QVBoxLayout,
 )
 
 from ict_cockpit.app_info import APP_VERSION, window_title
@@ -248,7 +250,7 @@ class MainWindow(QMainWindow):
         self.amdx_catalog_widget.layout().insertWidget(1, self.integrated_study_task)
         self.integrated_study_task.capture_requested.connect(self._open_investigation_capture)
         self.integrated_study_task.unfinished_capture_requested.connect(self._return_to_unfinished_capture)
-        self.tabs.currentChanged.connect(self._refresh_study_switch_notice)
+        self.tabs.navigation_changed.connect(self._refresh_study_switch_notice)
         self.integrated_study_task.review_requested.connect(self._open_investigation_review)
         self.integrated_study_task.criteria_requested.connect(self._open_study_criteria)
         self.integrated_study_task.overview_requested.connect(self._open_investigation_overview)
@@ -324,7 +326,7 @@ class MainWindow(QMainWindow):
         self.align_study_reference_button.setEnabled(False)
         reference_actions.addWidget(self.align_study_reference_button)
         self.study_find_widget.context_layout.addLayout(reference_actions)
-        self.tabs.currentChanged.connect(lambda _: self._refresh_study_reference())
+        self.tabs.navigation_changed.connect(lambda _: self._refresh_study_reference())
         self.keep_study_question_button = QPushButton("Keep question for later")
         self.keep_study_question_button.setToolTip("Save selected Notes or Observation directly; without a selection, write a question.")
         self.question_capture_feedback = QLabel()
@@ -360,7 +362,7 @@ class MainWindow(QMainWindow):
         definition.setWordWrap(True)
         self.amdx_catalog_widget.layout().insertWidget(2, definition)
         self.amdx_catalog_widget.set_active(False)
-        self.tabs.currentChanged.connect(lambda _index: self.amdx_catalog_widget.set_active(
+        self.tabs.navigation_changed.connect(lambda _index: self.amdx_catalog_widget.set_active(
             self.tabs.currentWidget() is self.amdx_catalog_widget))
         self.workspace_scroll = QScrollArea()
         self.workspace_scroll.setWidgetResizable(True)
@@ -390,7 +392,7 @@ class MainWindow(QMainWindow):
         shell.runtime.amdx_context_widget.open_stack.connect(self._open_amdx_stack)
         shell.runtime.amdx_context_widget.recorded.connect(lambda _result: self.amdx_catalog_widget.refresh())
         self.amdx_catalog_widget.recorded.connect(lambda _result: shell._refresh_market_time_display())
-        self.tabs.currentChanged.connect(lambda _index: shell.runtime.amdx_context_widget.set_active(
+        self.tabs.navigation_changed.connect(lambda _index: shell.runtime.amdx_context_widget.set_active(
             self.tabs.currentWidget() is self.trade_plan_widget))
         shell.runtime.qt_context_widget.set_intraday_read_only(True)
         shell.runtime.post_market_review_widget.set_coupled_intraday(True)
@@ -431,7 +433,7 @@ class MainWindow(QMainWindow):
         self.contextual_study_find_dock.dismissed.connect(
             self.save_pending_study_find_draft
         )
-        self.tabs.currentChanged.connect(
+        self.tabs.navigation_changed.connect(
             lambda _index: self._sync_contextual_study_find_context()
         )
 
@@ -455,13 +457,19 @@ class MainWindow(QMainWindow):
         for page in (self.amdx_catalog_widget, self.study_find_widget):
             self.tabs.removeTab(self.tabs.indexOf(page))
         self.amdx_catalog_widget.layout().removeWidget(self.integrated_study_task)
+        self.investigation_material_page = QWidget()
+        QVBoxLayout(self.investigation_material_page).setContentsMargins(0, 0, 0, 0)
+        self.investigation_content = None
         self.study_workspace = StudyWorkspace(self.integrated_study_task, [
             ("Start / study direction", self.study_home_widget),
             ("Calendar / AMDX context", self.amdx_catalog_widget),
             ("Capture / current draft", self.study_find_widget),
+            ("Investigation / retained work", self.investigation_material_page),
         ])
         self.tabs.install_study(self.study_workspace)
-        self.tabs.currentChanged.connect(self._refresh_study_workspace_reference)
+        self.study_workspace.before_change = self._allow_study_view_change
+        self.tabs.before_change = self._allow_global_view_change
+        self.tabs.navigation_changed.connect(self._refresh_study_workspace_reference)
         self.amdx_catalog_widget.date_input.dateChanged.connect(self._refresh_study_workspace_reference)
         self.amdx_catalog_widget.time_input.timeChanged.connect(self._refresh_study_workspace_reference)
         self.amdx_catalog_widget.channel_selector.currentTextChanged.connect(self._refresh_study_workspace_reference)
@@ -474,7 +482,7 @@ class MainWindow(QMainWindow):
         self.study_home_widget.calendar_requested.connect(
             lambda: self.tabs.setCurrentWidget(self.amdx_catalog_widget)
         )
-        self.tabs.currentChanged.connect(lambda _index: self._refresh_study_home())
+        self.tabs.navigation_changed.connect(lambda _index: self._refresh_study_home())
         self._refresh_study_save_destination()
         self._refresh_study_home()
         if shell.active_trading_run is None:
@@ -589,6 +597,10 @@ class MainWindow(QMainWindow):
                 "Finish saving or explicitly discard the current Study Find before switching investigations. Your draft is unchanged.")
             self.integrated_study_task.show_switch_blocked()
             return False
+        if not self._leave_study_review():
+            return False
+        if hasattr(self, 'study_workspace') and self.study_workspace.currentWidget() is self.investigation_material_page:
+            self.tabs.setCurrentWidget(self.amdx_catalog_widget)
         self.integrated_study_task.switch_notice.hide()
         self.pending_investigation_context = None
         return True
@@ -599,17 +611,66 @@ class MainWindow(QMainWindow):
                                      plan_id=self.trade_plan.id, parent=self)
         dialog.exec()
 
-    def _open_investigation_overview(self, *, review_open=False):
-        from ict_cockpit.gui.study_investigation_overview import StudyInvestigationOverview
+    def _leave_study_review(self):
+        content = getattr(self, 'investigation_content', None)
+        if content is not None:
+            if not content.review_panel.can_leave():
+                return False
+            content.review_panel.discard_unsaved()
+        return True
+
+    def _allow_study_view_change(self, old, new):
+        if old is self.investigation_material_page and not self._leave_study_review():
+            return False
+        if new is self.investigation_material_page:
+            self._prepare_investigation_content()
+        task = self.integrated_study_task
+        if new is self.investigation_material_page:
+            self._review_question_was_readonly = task.question.isReadOnly()
+            task.question.setReadOnly(True)
+            task.question_state.setText('Retained-work view · return to Calendar to edit a new question; New/Resume changes the investigation.')
+        elif old is self.investigation_material_page:
+            task.question.setReadOnly(getattr(self, '_review_question_was_readonly', task.question.isReadOnly()))
+            task._refresh_question_state()
+        return True
+
+    def _allow_global_view_change(self, old, new):
+        if old is self.study_workspace and not self._leave_study_review():
+            return False
+        if new is self.study_workspace and self.study_workspace.currentWidget() is self.investigation_material_page:
+            self._prepare_investigation_content()
+        return True
+
+    def _prepare_investigation_content(self):
+        from ict_cockpit.gui.study_investigation_overview import StudyInvestigationContent
         from ict_cockpit.database.study_criterion_repository import StudyCriterionRepository
-        dialog = StudyInvestigationOverview(
+        old = self.investigation_content
+        if old is not None:
+            self.investigation_material_page.layout().removeWidget(old)
+            old.deleteLater()
+        self.investigation_content = StudyInvestigationContent(
             self.investigation_repository,
             StudyCriterionRepository(self.trading_session_run_repository.amdx),
             self.study_find_review_widget.repository,
             task_id=self.integrated_study_task.task_id, plan_id=self.trade_plan.id,
             question=self.integrated_study_task.question.text(), plan_revision=self.trade_plan.revision,
-            review_open=review_open, parent=self)
-        dialog.exec()
+            parent=self.investigation_material_page)
+        # The embedded view already has the persistent question header and a
+        # checkpoint category in its retained-material list.
+        self.investigation_content.question_heading.hide()
+        panel = self.investigation_content.review_panel
+        for widget in (panel.history_label, panel.history, panel.detail):
+            widget.hide()
+        self.investigation_material_page.layout().addWidget(self.investigation_content)
+        self.investigation_content.return_requested.connect(
+            lambda: self.tabs.setCurrentWidget(self.amdx_catalog_widget))
+
+    def _open_investigation_overview(self, *, review_open=False):
+        self.tabs.setCurrentWidget(self.investigation_material_page)
+        if self.tabs.currentWidget() is self.investigation_material_page:
+            self.investigation_content.review_toggle.setChecked(review_open)
+            if review_open:
+                self.investigation_content.review_panel.fields['understanding'].setFocus()
 
     def _open_criterion_study(self):
         from ict_cockpit.gui.study_criterion_dialog import StudyCriterionDialog
@@ -655,6 +716,9 @@ class MainWindow(QMainWindow):
             self.workspace_settings.sync()
 
     def closeEvent(self, event):
+        if not self._leave_study_review():
+            event.ignore()
+            return
         if self.workspace_settings is not None:
             self.workspace_settings.setValue("workspace-window/geometry-v1", self.saveGeometry())
             if self.study_find_review_widget.isVisible():
@@ -920,6 +984,8 @@ class MainWindow(QMainWindow):
         return bool(seed) and seed == self._capture_draft_fingerprint()
 
     def _open_investigation_capture(self):
+        if not self._leave_study_review():
+            return
         from ict_cockpit.analysis.market_time import MARKET_TIMEZONE
         pane = self.amdx_catalog_widget
         try:
@@ -1247,11 +1313,11 @@ class MainWindow(QMainWindow):
                 dialog = AMDXReviewStackDialog(self.trading_session_run_repository.amdx, run_id, self, allowed=allowed)
                 def update_active(_index):
                     dialog.pane.set_active(allowed())
-                self.tabs.currentChanged.connect(update_active)
+                self.tabs.navigation_changed.connect(update_active)
                 try:
                     dialog.exec()
                 finally:
-                    self.tabs.currentChanged.disconnect(update_active)
+                    self.tabs.navigation_changed.disconnect(update_active)
                     dialog.pane.set_active(False)
                     dialog.deleteLater()
                 shell._refresh_market_time_display()

@@ -56,13 +56,9 @@ def test_overview_return_preserves_calendar_question_and_capture(cockpit, monkey
     before = connection.total_changes
     reference = pane.reference()
     task_id = window.integrated_study_task.task_id
-    opened = []
-    def inspect_and_return(dialog):
-        opened.append(dialog.windowTitle())
-        dialog.reject()
-    monkeypatch.setattr(StudyInvestigationOverview, 'exec', inspect_and_return)
     window.integrated_study_task.overview_button.click()
-    assert opened
+    assert window.tabs.currentWidget() is window.investigation_material_page
+    window.investigation_content.return_requested.emit()
     assert window.tabs.currentWidget() is pane
     assert pane.reference() == reference
     assert window.integrated_study_task.task_id == task_id
