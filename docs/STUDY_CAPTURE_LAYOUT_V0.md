@@ -33,3 +33,13 @@ Generate Summary should reveal the summary immediately. Hide/reopen it: text and
 ## Validation
 
 37 targeted tests PASS: 11 media/next-capture/context/connected-navigation checks and 26 layout/save-to-investigation/summary/question-inbox/Watch checks. The two new layout checks reran after association disclosure was added. They verify draft and destination preservation, native undo, no data writes from disclosure/divider changes, immediate summary reveal and visible mismatching-context guidance. Native offscreen composition inspected at 1600×900 and 1120×800; narrower views still require scrolling. Diff check passed. Operator density/usability judgment remains pending.
+
+## Acceptance and bounded correction
+
+Operator 362–363 PASS overall, with improved navigation noted. Two follow-ups: Ctrl+Y did not redo; Generate Summary on an incomplete capture emitted a terminal error without useful in-app guidance. Local correction adds Ctrl+Y to editable Observation/Notes while preserving native shortcuts; catches summary validation/template/database errors; reports the missing field in reserved local feedback and the existing bottom status bar; focuses a known missing field; preserves draft, prior summary and clipboard. Summary disclosure opens on successful generation, not on failure. The bottom status bar also reports successful generation. No automatic capture save is implied.
+
+The operator clarified that “log” meant a fixed global status location, not a diagnostics browser. This correction starts using the existing bottom status bar for summary actions. It does not claim all existing errors are normalized or protected from later status messages. See UX_INTERACTION_STANDARDS.md.
+
+Retest: in Observation or Notes, type, Ctrl+Z, then Ctrl+Y. With Pattern empty and other required fields filled, Generate Summary should identify Pattern both locally and in the bottom status bar, focus it, and retain the existing summary/draft. Fill Pattern and retry; summary should open and the status report success. Copy Summary on invalid input must not replace the clipboard. Publication of this correction is pending authorization on #109; no merge.
+
+Correction validation: 10 targeted feedback/layout/summary/media tests PASS. New tests exercise actual Ctrl+Z/Ctrl+Y key events, visible local/global error messages, stable local feedback height, success transition and draft/summary/clipboard preservation. The earlier disclosure test used an incomplete capture and only checked panel visibility; it now supplies valid required fields for successful generation. Operator retest remains pending. Diff check passed.

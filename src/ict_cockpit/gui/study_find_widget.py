@@ -1,4 +1,5 @@
 from ict_cockpit.media.workspace_paths import resolve_study_image
+import sqlite3
 from pathlib import Path
 from uuid import uuid4
 
@@ -11,6 +12,7 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QHBoxLayout,
     QSplitter,
+    QScrollArea,
     QLabel,
     QLineEdit,
     QListWidget,
@@ -41,6 +43,7 @@ class StudyFindWidget(QWidget):
     study_find_ready = Signal(StudyFind)
     draft_changed = Signal(StudyFindDraft)
     submission_failed = Signal(str)
+    action_status = Signal(str)
 
     def __init__(
         self,
@@ -133,6 +136,12 @@ class StudyFindWidget(QWidget):
         layout = QVBoxLayout(self)
         self.context_layout = QVBoxLayout()
         layout.addLayout(self.context_layout)
+        self.action_feedback = QLabel()
+        self.action_feedback.setWordWrap(True)
+        self.action_feedback.setTextFormat(Qt.TextFormat.PlainText)
+        self.action_feedback.setAccessibleName("Capture action feedback")
+        self.action_feedback.setFixedHeight(self.action_feedback.fontMetrics().lineSpacing() * 2 + 8)
+        layout.addWidget(self.action_feedback)
         metadata = QHBoxLayout()
         for label, widget in (("Date", self.date_input), ("Instrument", self.instrument_input), ("Session", self.session_input)):
             metadata.addWidget(QLabel(label))
@@ -191,7 +200,6 @@ class StudyFindWidget(QWidget):
         layout.addWidget(self.summary_area)
         self.summary_area.hide()
         self.summary_toggle.toggled.connect(self._show_summary)
-        self.generate_summary_button.clicked.connect(lambda: self.summary_toggle.setChecked(True))
 
         self.save_area = QVBoxLayout()
         self.save_area.addWidget(self.save_feedback)
@@ -225,6 +233,13 @@ class StudyFindWidget(QWidget):
         self.notes_input.textChanged.connect(self.emit_draft_changed)
 
     def eventFilter(self, watched, event) -> bool:
+        if (watched in (self.observation_input, self.notes_input)
+                and event.type() == QEvent.Type.KeyPress
+                and event.key() == Qt.Key.Key_Y
+                and event.modifiers() == Qt.KeyboardModifier.ControlModifier
+                and not watched.isReadOnly()):
+            watched.redo()
+            return True
         if (
             isinstance(watched, QWidget)
             and (watched is self or self.isAncestorOf(watched))
@@ -384,32 +399,64 @@ class StudyFindWidget(QWidget):
                 f"Template · {template.label}"
             )
 
+    def _show_action_error(self, error):
+        fields = {
+            "instrument cannot be empty": ("Instrument", self.instrument_input),
+            "session cannot be empty": ("Session", self.session_input),
+            "pattern_name cannot be empty": ("Pattern", self.pattern_input),
+            "observation cannot be empty": ("Observation", self.observation_input),
+        }
+        field = fields.get(str(error))
+        message = (f"Summary not generated: enter {field[0]}, then try Generate Summary again."
+                   if field else f"Summary not generated: {error}")
+        self.action_feedback.setText(message + " Existing summary and draft retained.")
+        self.action_status.emit(self.action_feedback.text())
+        self.action_feedback.setToolTip(self.action_feedback.text())
+        target = field[1] if field else self.action_feedback
+        if field:
+            target.setFocus(Qt.FocusReason.OtherFocusReason)
+        ancestor = target.parentWidget()
+        while ancestor is not None:
+            if isinstance(ancestor, QScrollArea):
+                ancestor.ensureWidgetVisible(self.action_feedback)
+                break
+            ancestor = ancestor.parentWidget()
+
     def generate_summary(self) -> str:
-        context = StudyFindSummaryContext(
-            study_find=self.build_study_find(),
-            image_paths=self.image_paths,
-        )
-        renderer = SummaryRenderer()
-        template = self._active_summary_template()
-        if template is None:
-            rendered = renderer.render(
-                STUDY_FIND_SUMMARY_V1,
-                context.to_template_values(),
+        try:
+            context = StudyFindSummaryContext(
+                study_find=self.build_study_find(),
+                image_paths=self.image_paths,
             )
-            rendered = (
-                rendered.rstrip()
-                + "\n\nTemplate: Study Find Default · r1\n"
-            )
-        else:
-            rendered = renderer.render_versioned(
-                template,
-                context.to_template_values(),
-            )
+            renderer = SummaryRenderer()
+            template = self._active_summary_template()
+            if template is None:
+                rendered = renderer.render(
+                    STUDY_FIND_SUMMARY_V1,
+                    context.to_template_values(),
+                )
+                rendered = (
+                    rendered.rstrip()
+                    + "\n\nTemplate: Study Find Default · r1\n"
+                )
+            else:
+                rendered = renderer.render_versioned(
+                    template,
+                    context.to_template_values(),
+                )
+        except (ValueError, sqlite3.Error) as error:
+            self._show_action_error(error)
+            return ""
+        self.action_feedback.clear()
         self.summary_preview.setPlainText(rendered)
+        self.summary_toggle.setChecked(True)
+        self.action_status.emit("Study summary generated. Capture has not been saved by this action.")
         return rendered
 
     def copy_summary(self) -> None:
-        QApplication.clipboard().setText(self.generate_summary())
+        rendered = self.generate_summary()
+        if rendered:
+            QApplication.clipboard().setText(rendered)
 
     def choose_chart_image(self) -> None:
         file_path, _ = QFileDialog.getOpenFileName(
@@ -493,6 +540,7 @@ class StudyFindWidget(QWidget):
         self.next_image_number = 1
 
         self.summary_preview.clear()
+        self.action_feedback.clear()
 
         self.save_feedback.clear()
         self.save_button.setText("Save Study Find")

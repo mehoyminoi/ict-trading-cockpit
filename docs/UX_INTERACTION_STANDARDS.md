@@ -110,3 +110,9 @@ When a safe resolution path exists, a blocked action must explain the cause loca
 ## Familiar inspection dismissal — 358–359 acceptance
 
 Preserve native Escape/Close for temporary read-only inspection. The image viewer must belong to its containing dialog/window and close independently without losing the work beneath it. Do not generalize this into silent dismissal/discard of unsaved authoring; review and capture protections retain precedence. Native Ctrl+Z in observation editing is likewise a behavior to preserve through future widget/layout changes.
+
+## Fixed action-status location — operator clarification
+
+The operator requests a globally visible, stable status area, not an error-log browser. A failed action should be noticeable in the same location without searching for an inserted line or a shifting layout. Use the existing bottom status bar as the initial shared location, paired with local corrective context and field focus when appropriate. Navigation recovery remains appropriate for blocked transitions; invalid input needs local correction instead. Neither a diagnostic log nor animation replaces a clear textual explanation. Motion/highlight proposals remain exploratory and must not rely on color or motion alone.
+
+Initial application: Study summary success/failure also reports in the bottom status bar; missing-field feedback uses reserved local space and field focus. This does not normalize every existing subsystem. Follow-up should define severity, persistence/acknowledgment and precedence so routine status cannot silently displace an unresolved important error. Current status bar still represents the latest reported message, not a persistent unresolved-error queue. No new log area is planned for this request.

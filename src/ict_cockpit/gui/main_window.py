@@ -368,6 +368,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.workspace_scroll)
 
         self.status_bar = QStatusBar()
+        self.study_find_widget.action_status.connect(lambda message: self.status_bar.showMessage(message))
         self.setStatusBar(self.status_bar)
 
         self._configure_feedback_actions()

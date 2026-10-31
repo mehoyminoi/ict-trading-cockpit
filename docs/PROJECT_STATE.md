@@ -1,3 +1,7 @@
+## Local correction — capture redo and summary feedback
+
+Operator 362–363 PASS overall on #109, with two defects: missing Ctrl+Y redo and terminal-only incomplete-summary failure. Local correction adds scoped Ctrl+Y, reserved local summary error feedback/focus, bottom status reporting and preservation of draft/previous summary/clipboard on failure. User clarified fixed global status location, not error log; wider status normalization remains follow-up. Same branch study-capture-layout-v0; publication/update #109 only when authorized, no merge.
+
 ## Current local slice — Study capture layout
 
 Operator 360–361 PASS on #108 (`46e84f8`). `feature/study-capture-layout-v0` groups metadata, places writing beside chart handling, positions quick question/finding actions with text, discloses generated summary on request, groups completion controls and hides only routine matching context/secondary association detail. Existing editors/commands/validation remain; schema 53. See `STUDY_CAPTURE_LAYOUT_V0.md`, 362–363 pending. Local only; publish draft stacked on #108 when authorized; do not merge. Form still scrolls; final styling and persisted divider preference deferred.

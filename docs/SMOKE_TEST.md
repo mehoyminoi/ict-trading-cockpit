@@ -1463,9 +1463,9 @@ Use `STUDY_CONNECTED_WORKSPACE_V0.md` with the durable workspace after publicati
 
 Use `STUDY_CAPTURE_LAYOUT_V0.md` after publication with the durable workspace.
 
-- [NOT TESTED] Writing/chart composition, divider and local quick actions preserve draft, undo and existing image behavior through navigation.
+- [PASS] Writing/chart composition, divider and local quick actions preserve draft, undo and existing image behavior through navigation.
   - Where: guide checkpoint 362.
-- [NOT TESTED] Summary disclosure, association details and completion actions preserve content, truthful destination/warnings and fresh-next-capture behavior.
+- [PASS] Summary disclosure, association details and completion actions preserve content, truthful destination/warnings and fresh-next-capture behavior.
   - Where: guide checkpoint 363.
 
 ## Reporting results
