@@ -19,3 +19,6 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+
+[tool.setuptools.package-data]
+ict_cockpit = ["development_roadmap.md"]
