@@ -1,3 +1,7 @@
+## Local correction — full-size chart blocked by investigation modal
+
+Published draft #107 (`b1005cc`) operator 358 exposed parentless image-window ownership: chart was blocked behind the modal investigation. Local correction uses an owned window-modal image dialog with Close/Escape and native-resolution scrolling. Ten targeted tests PASS including modal ownership and independent closure. 358 retest pending; 359 unreported. Same branch `feature/study-overview-reading-v0`, update #107 when authorized; do not merge. No schema changes.
+
 ## Current local slice — investigation overview reading
 
 Operator 356–357 PASS on published draft #106 (`ca3e626`); actionable recovery endorsed suite-wide and recorded in UX_INTERACTION_STANDARDS.md. `feature/study-overview-reading-v0` adds capture previews, compact saved-context disclosure and read-only checkpoint browsing to the existing overview. Existing review/input/image owners retained; schema 53 unchanged. See `STUDY_OVERVIEW_READING_V0.md`, pending 358–359. 21 focused tests PASS plus seven affected checks rerun after render adjustments. Local only: draft stacked on #106 when authorized; do not merge. No new full-session exercise.

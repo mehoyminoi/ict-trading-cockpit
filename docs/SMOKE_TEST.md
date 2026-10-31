@@ -1445,8 +1445,8 @@ Use `STUDY_WORKSPACE_CLARITY_V0.md` with the durable workspace after publication
 
 Use `STUDY_OVERVIEW_READING_V0.md` after publication with existing retained material.
 
-- [NOT TESTED] Capture previews aid recognition; full text, compact context, disclosed association and first chart remain correct and readable.
-  - Where: guide checkpoint 358.
+- [FAIL] Capture previews aid recognition; full text, compact context, disclosed association and first chart remain correct and readable.
+  - Where: guide checkpoint 358. Full-size chart opened behind the modal investigation and could not close independently; local ownership correction ready, operator retest pending.
 - [NOT TESTED] Prior checkpoints are inspectable without starting a review; browsing preserves a current review and checkpoints cannot be reused as support.
   - Where: guide checkpoint 359.
 

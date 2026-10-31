@@ -28,3 +28,13 @@ Operator 358–359 pending. No migration or new full Study-session exercise. Sch
 ## Validation
 
 21 focused tests PASS across overview reading, existing overview, workspace clarity, direct review, checkpoint persistence/guards and saved-find media. After adjusting row wrapping and empty/single-image space, seven reading/media checks passed again. Tests cover literal text, immutable association inspection, first-image selection, task scoping, read-only checkpoints, rejection as support, preservation of unsaved review and no database writes from inspection. One initial assertion incorrectly named the fixture question; corrected to check its actual retained question. Native offscreen overview render inspected at 1280 × 800. Diff check passed. Operator judgment of density remains pending.
+
+## Operator 358 correction — full-size image ownership
+
+Operator reported that Open Full Size placed the chart behind Cockpit/investigation and it could not be independently activated or closed. The viewer was a parentless QLabel window, outside the modal investigation hierarchy. This is an implementation defect, not operator navigation error. 358 remains failed pending retest; 359 has not been reported.
+
+Correction: use a window-modal QDialog owned by the containing window, with an explicit Close button and Escape. A scroll area preserves the image's native resolution. Closing releases the viewer reference and returns focus to Open Full Size. The shared saved-find viewer covers overview and standalone saved-find review; no capture or review content is changed.
+
+Retest only the affected path: from Investigation overview, open a saved chart full size. It should appear in front and accept input. Close using Close, reopen and close using Escape or the title-bar close control. The investigation should remain open, with the same selected capture and any review text intact. Large images should scroll rather than be cropped beyond reach. Continue the remaining 358/359 checks afterward.
+
+Validation: 10 targeted reading/media/direct-review checks PASS, including a modal-owner regression that verifies the active modal window, original image dimensions, independent Close/Escape, preserved observation and no database writes. KDE/X11 stacking still needs operator retest. Schema unchanged. Correction is local pending authorized publication to the existing #107 branch.

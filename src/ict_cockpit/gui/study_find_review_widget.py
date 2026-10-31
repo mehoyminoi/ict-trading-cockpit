@@ -5,6 +5,9 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QApplication,
+    QDialog,
+    QDialogButtonBox,
+    QScrollArea,
     QHBoxLayout,
     QLabel,
     QListWidget,
@@ -30,7 +33,7 @@ class StudyFindReviewWidget(QWidget):
         self.repository = repository
         self.study_finds: list[StudyFind] = []
         self.image_paths: list[str] = []
-        self.full_size_viewer: QLabel | None = None
+        self.full_size_viewer: QDialog | None = None
 
         self.study_list = QListWidget()
         self.study_list.currentRowChanged.connect(self.show_selected_study_find)
@@ -225,15 +228,34 @@ class StudyFindReviewWidget(QWidget):
         if pixmap.isNull():
             return
 
-        viewer = QLabel()
-        viewer.setPixmap(pixmap)
-        viewer.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        # A parentless top-level window is blocked by a modal investigation dialog.
+        # Make the viewer a child dialog of the active containing window instead.
+        if self.full_size_viewer is not None:
+            self.full_size_viewer.close()
+        viewer = QDialog(self.window())
+        viewer.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
+        viewer.setWindowModality(Qt.WindowModality.WindowModal)
         viewer.setWindowTitle(Path(self.image_paths[row]).name)
-        viewer.resize(
-            min(pixmap.width(), 1400),
-            min(pixmap.height(), 900),
-        )
-        viewer.show()
+        layout = QVBoxLayout(viewer)
+        scroll = QScrollArea(viewer)
+        chart = QLabel()
+        chart.setPixmap(pixmap)
+        chart.resize(pixmap.size())
+        scroll.setWidget(chart)
+        scroll.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(scroll)
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close, parent=viewer)
+        buttons.rejected.connect(viewer.reject)
+        layout.addWidget(buttons)
+        viewer.resize(min(pixmap.width() + 48, 1400), min(pixmap.height() + 100, 900))
 
-        # Keep a reference so Qt does not destroy the standalone viewer.
+        def released(_result):
+            if self.full_size_viewer is viewer:
+                self.full_size_viewer = None
+            self.open_image_button.setFocus()
+
+        viewer.finished.connect(released)
         self.full_size_viewer = viewer
+        viewer.open()
+        viewer.raise_()
+        viewer.activateWindow()
