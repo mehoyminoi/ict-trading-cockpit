@@ -1436,9 +1436,9 @@ Use `STUDY_REVIEW_QUESTION_CAPTURE.md` after backing up the durable workspace.
 
 Use `STUDY_WORKSPACE_CLARITY_V0.md` with the durable workspace after publication.
 
-- [NOT TESTED] Blocked New/Resume explains the unfinished capture locally and returns to the same editor/content/destination; resolving it permits switching. Primary and supporting controls remain reachable.
+- [PASS] Blocked New/Resume explains the unfinished capture locally and returns to the same editor/content/destination; resolving it permits switching. Primary and supporting controls remain reachable.
   - Where: guide checkpoint 356.
-- [NOT TESTED] Material filtering preserves investigation identity, unsaved review text and support; empty categories do not show unrelated detail and All material restores access.
+- [PASS] Material filtering preserves investigation identity, unsaved review text and support; empty categories do not show unrelated detail and All material restores access.
   - Where: guide checkpoint 357.
 
 ## Reporting results
