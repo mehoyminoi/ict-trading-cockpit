@@ -23,9 +23,10 @@ from ict_cockpit.database.study_find_repository import StudyFindRepository
 class StudyFindReviewWidget(QWidget):
     """Read-only workspace for reviewing saved Study Finds."""
 
-    def __init__(self, repository: StudyFindRepository) -> None:
+    def __init__(self, repository: StudyFindRepository, *, compact=False) -> None:
         super().__init__()
 
+        self.compact = compact
         self.repository = repository
         self.study_finds: list[StudyFind] = []
         self.image_paths: list[str] = []
@@ -36,6 +37,13 @@ class StudyFindReviewWidget(QWidget):
 
         self.details_label = QLabel("Select a saved Study Find.")
         self.details_label.setWordWrap(True)
+        self.details_label.setTextFormat(Qt.TextFormat.PlainText)
+        self.capture_heading = QLabel()
+        self.capture_heading.setWordWrap(True)
+        self.capture_heading.setTextFormat(Qt.TextFormat.PlainText)
+        self.provenance_toggle = QPushButton("Show saved context and association")
+        self.provenance_toggle.setCheckable(True)
+        self.provenance_toggle.toggled.connect(self._show_provenance)
 
         self.observation_view = QTextEdit()
         self.observation_view.setReadOnly(True)
@@ -73,6 +81,11 @@ class StudyFindReviewWidget(QWidget):
 
         right_widget = QWidget()
         right_layout = QVBoxLayout()
+        if compact:
+            right_layout.addWidget(self.capture_heading)
+            right_layout.addWidget(self.provenance_toggle)
+            self.details_label.hide()
+            self.image_list.setMaximumHeight(65)
         right_layout.addWidget(self.details_label)
         right_layout.addWidget(QLabel("Observation"))
         right_layout.addWidget(self.observation_view)
@@ -95,6 +108,10 @@ class StudyFindReviewWidget(QWidget):
         self.setLayout(layout)
 
         self.refresh()
+
+    def _show_provenance(self, visible):
+        self.details_label.setVisible(visible)
+        self.provenance_toggle.setText("Hide saved context and association" if visible else "Show saved context and association")
 
     def refresh(self) -> None:
         self.study_finds = self.repository.get_recent()
@@ -124,6 +141,10 @@ class StudyFindReviewWidget(QWidget):
         if study_find.available_move_handles is not None:
             available_move = f"{study_find.available_move_handles:.2f} handles"
 
+        self.capture_heading.setText(
+            f"{study_find.pattern_name or 'Saved Study Find'}\n"
+            f"{study_find.observation_date:%Y-%m-%d} · {study_find.instrument} · {study_find.session}"
+            + (f" · Available move: {available_move}" if available_move else ""))
         self.details_label.setText(
             f"Date: {study_find.observation_date:%y-%m-%d}\n"
             f"Instrument: {study_find.instrument}\n"
@@ -140,6 +161,10 @@ class StudyFindReviewWidget(QWidget):
         for image_path in self.image_paths:
             self.image_list.addItem(Path(image_path).name)
 
+        if self.compact:
+            self.image_list.setVisible(len(self.image_paths) > 1)
+            self.image_preview.setMinimumHeight(140 if self.image_paths else 40)
+            self.image_preview.setMaximumHeight(260 if self.image_paths else 40)
         if self.image_paths:
             self.image_list.setCurrentRow(0)
         else:
@@ -184,6 +209,7 @@ class StudyFindReviewWidget(QWidget):
 
     def clear_selection(self) -> None:
         self.details_label.setText("No saved Study Finds.")
+        self.capture_heading.setText("No saved Study Finds.")
         self.observation_view.clear()
         self.notes_view.clear()
         self.image_paths.clear()

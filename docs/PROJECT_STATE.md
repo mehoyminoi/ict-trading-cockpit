@@ -1,3 +1,7 @@
+## Current local slice — investigation overview reading
+
+Operator 356–357 PASS on published draft #106 (`ca3e626`); actionable recovery endorsed suite-wide and recorded in UX_INTERACTION_STANDARDS.md. `feature/study-overview-reading-v0` adds capture previews, compact saved-context disclosure and read-only checkpoint browsing to the existing overview. Existing review/input/image owners retained; schema 53 unchanged. See `STUDY_OVERVIEW_READING_V0.md`, pending 358–359. 21 focused tests PASS plus seven affected checks rerun after render adjustments. Local only: draft stacked on #106 when authorized; do not merge. No new full-session exercise.
+
 ## Current local slice — Study workspace clarity
 
 Connected natural Study review accepted: real-question material restored intent, emerging common threads useful; density and an inconspicuous unfinished-capture guard are the next UX targets. `feature/study-workspace-clarity-v0` groups primary vs supporting controls, explains read-only questions, provides direct navigation from a blocked switch, and filters existing overview material without replacing review state. No schema change (53). See `STUDY_WORKSPACE_CLARITY_V0.md`. Operator 356–357 pending; local only, draft stacked on #105 when authorized; do not merge. No new full-session exercise required.
