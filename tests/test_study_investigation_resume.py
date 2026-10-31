@@ -76,7 +76,7 @@ def test_migration_preserves_old_data_and_rolls_back(tmp_path):
         old['initialize_schema'](c)
         c.execute("INSERT INTO study_review VALUES ('r','p','t','{}')");c.commit()
         if fail:
-            c.set_authorizer(lambda action,a,b,*_: sqlite3.SQLITE_DENY if action == sqlite3.SQLITE_PRAGMA and a == 'user_version' and b == '52' else sqlite3.SQLITE_OK)
+            c.set_authorizer(lambda action,a,b,*_: sqlite3.SQLITE_DENY if action == sqlite3.SQLITE_PRAGMA and a == 'user_version' and b == '53' else sqlite3.SQLITE_OK)
             with pytest.raises(sqlite3.DatabaseError): initialize_schema(c)
             c.set_authorizer(None)
             assert c.execute('PRAGMA user_version').fetchone()[0] == 51
