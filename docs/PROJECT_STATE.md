@@ -1,3 +1,7 @@
+## Local follow-up — review redo and invalid-field attention
+
+Capture Ctrl+Y and Pattern focus accepted on #109 correction e3db291. Operator requests same redo in Review and stronger Observation cue. Shared helper now handles Ctrl+Y for capture/review editors, respecting read-only state, and paints a brief focus outline for known required summary inputs. Scroll targets invalid field, with fixed bottom status explanation retained. Ten targeted checks PASS, native cue inspected. Retest pending; same study-capture-layout-v0 branch, update #109 only when authorized; do not merge. Not blanket suite-wide validation coverage.
+
 ## Local correction — capture redo and summary feedback
 
 Operator 362–363 PASS overall on #109, with two defects: missing Ctrl+Y redo and terminal-only incomplete-summary failure. Local correction adds scoped Ctrl+Y, reserved local summary error feedback/focus, bottom status reporting and preservation of draft/previous summary/clipboard on failure. User clarified fixed global status location, not error log; wider status normalization remains follow-up. Same branch study-capture-layout-v0; publication/update #109 only when authorized, no merge.

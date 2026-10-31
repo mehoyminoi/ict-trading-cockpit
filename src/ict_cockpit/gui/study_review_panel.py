@@ -6,6 +6,7 @@ import json
 from PySide6.QtCore import QEvent
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPlainTextEdit, QPushButton, QListWidget, QTextBrowser, QMessageBox
 from ict_cockpit.database.study_review_repository import describe_review
+from ict_cockpit.gui.editor_feedback import handle_ctrl_y
 
 
 class StudyReviewPanel(QWidget):
@@ -68,6 +69,8 @@ class StudyReviewPanel(QWidget):
         self.refresh()
 
     def eventFilter(self, watched, event):
+        if watched in self.fields.values() and handle_ctrl_y(watched, event):
+            return True
         if event.type() == QEvent.Type.FocusIn:
             self._question_field = next((k for k, editor in self.fields.items() if editor is watched), self._question_field)
         return super().eventFilter(watched, event)

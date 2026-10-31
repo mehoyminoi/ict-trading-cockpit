@@ -1,4 +1,5 @@
 from ict_cockpit.media.workspace_paths import resolve_study_image
+from ict_cockpit.gui.editor_feedback import handle_ctrl_y, focus_invalid_field
 import sqlite3
 from pathlib import Path
 from uuid import uuid4
@@ -233,12 +234,7 @@ class StudyFindWidget(QWidget):
         self.notes_input.textChanged.connect(self.emit_draft_changed)
 
     def eventFilter(self, watched, event) -> bool:
-        if (watched in (self.observation_input, self.notes_input)
-                and event.type() == QEvent.Type.KeyPress
-                and event.key() == Qt.Key.Key_Y
-                and event.modifiers() == Qt.KeyboardModifier.ControlModifier
-                and not watched.isReadOnly()):
-            watched.redo()
+        if watched in (self.observation_input, self.notes_input) and handle_ctrl_y(watched, event):
             return True
         if (
             isinstance(watched, QWidget)
@@ -414,11 +410,11 @@ class StudyFindWidget(QWidget):
         self.action_feedback.setToolTip(self.action_feedback.text())
         target = field[1] if field else self.action_feedback
         if field:
-            target.setFocus(Qt.FocusReason.OtherFocusReason)
+            focus_invalid_field(target)
         ancestor = target.parentWidget()
         while ancestor is not None:
             if isinstance(ancestor, QScrollArea):
-                ancestor.ensureWidgetVisible(self.action_feedback)
+                ancestor.ensureWidgetVisible(target)
                 break
             ancestor = ancestor.parentWidget()
 
