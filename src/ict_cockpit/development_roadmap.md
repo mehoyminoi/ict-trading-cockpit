@@ -4,7 +4,7 @@
 
 Development status only — separate from your study progress, trade plan and competency assessments. This is a snapshot shipped with your installed version, not a live GitHub tracker.
 
-**Updated:** 2026-10-30 · after acceptance of the capture feedback correction.
+**Updated:** 2026-10-30 · after acceptance of the roadmap reference.
 
 ## Accepted — foundations you have exercised
 
@@ -12,6 +12,7 @@ Development status only — separate from your study progress, trade plan and co
 - **Resume an investigation:** identifiable questions, retained captures, images, findings and review checkpoints; recover your intent after restarting.
 - **Keep study moving:** context-aware capture, quick question/finding retention, save to investigation and preparation of the next capture.
 - **Connected Study workspace:** shared orientation across startup, calendar and capture; clearer writing/chart layout and access to prior work.
+- **Development orientation:** Help → Development roadmap accepted; plain stages keep the whole workflow visible.
 - **Recent correction:** review redo and the brief missing-Observation highlight passed operator checks.
 - **TDA and Watch components:** mapped chart-pane navigation, quiet Watch composition and quick contextual AMDX entry passed their bounded checks. The complete daily journey still needs integration review.
 
@@ -19,17 +20,16 @@ Accepted means the stated behavior passed its review. It does not mean final sty
 
 ## In progress — keep the forest in view
 
-**Development roadmap reference.** One quiet, read-only place for the current destination, accepted work and next steps.
+**Connected investigation review.** Retained work and Take stock now share a local Study view beneath the persistent question/reference header. Cancel protects unfinished review text; deliberate Discard permits leaving. Saved checkpoints refresh the retained list.
 
-**Current operator check:** open Help → Development roadmap, read/scroll it, close with Escape or Close, and return to the same work. This checks access and orientation only; it does not re-test study persistence or assess competency. No new full study session is needed.
+**Current operator check:** inspect retained work, enter a disposable review thought, attempt to leave and choose Cancel, then deliberately discard that disposable thought. Confirm the same investigation/capture remains. This checks connected navigation and review protection, not competency, analytics or final styling. See `docs/STUDY_CONNECTED_REVIEW_V0.md` (364–365). No new full study session is needed.
 
 ## Next — remaining workflow milestones
 
-1. **Study review boundary:** assess bringing retained material and Take stock into the connected workspace. Preserve review text and explicit cancel/discard protection before removing the dialog boundary.
-2. **TDA → Watch journey:** follow a representative plan from mapped chart context into Watch; verify context handoff, AMDX updates and return from supporting tasks.
-3. **Daily continuity:** check startup, activity switching, restart and recovery across the integrated suite using meaningful existing material.
-4. **Consolidation:** review and integrate the tested draft-PR stack through separately authorized merges, then establish a clear everyday launch/recovery baseline.
-5. **Routine-use refinement:** use actual sessions to prioritize remaining navigation, status feedback, chart-facing controls and keyboard friction.
+1. **TDA → Watch journey:** follow a representative plan from mapped chart context into Watch; verify context handoff, AMDX updates and return from supporting tasks.
+2. **Daily continuity:** check startup, activity switching, restart and recovery across the integrated suite using meaningful existing material.
+3. **Consolidation:** review and integrate the tested draft-PR stack through separately authorized merges, then establish a clear everyday launch/recovery baseline.
+4. **Routine-use refinement:** use actual sessions to prioritize remaining navigation, status feedback, chart-facing controls and keyboard friction.
 
 ## Deferred — retained without blocking the core
 
