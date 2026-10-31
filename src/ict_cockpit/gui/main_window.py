@@ -247,6 +247,8 @@ class MainWindow(QMainWindow):
         )
         self.amdx_catalog_widget.layout().insertWidget(1, self.integrated_study_task)
         self.integrated_study_task.capture_requested.connect(self._open_investigation_capture)
+        self.integrated_study_task.unfinished_capture_requested.connect(self._return_to_unfinished_capture)
+        self.tabs.currentChanged.connect(self._refresh_study_switch_notice)
         self.integrated_study_task.review_requested.connect(self._open_investigation_review)
         self.integrated_study_task.criteria_requested.connect(self._open_study_criteria)
         self.integrated_study_task.overview_requested.connect(self._open_investigation_overview)
@@ -339,13 +341,13 @@ class MainWindow(QMainWindow):
 
         self.study_questions_button = QPushButton("Study questions…")
         self.study_questions_button.clicked.connect(lambda: self._open_study_questions(capture=False))
-        self.integrated_study_task.layout().addWidget(self.study_questions_button)
+        self.integrated_study_task.library_actions.addWidget(self.study_questions_button)
         self.study_findings_button = QPushButton("Study findings…")
         self.study_findings_button.clicked.connect(lambda: self._open_study_findings(capture=False))
-        self.integrated_study_task.layout().addWidget(self.study_findings_button)
+        self.integrated_study_task.library_actions.addWidget(self.study_findings_button)
         self.study_history_button = QPushButton("Study history…")
         self.study_history_button.clicked.connect(self._open_study_history)
-        self.integrated_study_task.layout().addWidget(self.study_history_button)
+        self.integrated_study_task.library_actions.addWidget(self.study_history_button)
         definition = QLabel(
             f"Published AMDX criteria · Trade Plan {self.trade_plan.revision}: not configured. "
             "Quarter choices below enforce structural AMDX/XAMD legality; they do not classify price action."
@@ -537,11 +539,23 @@ class MainWindow(QMainWindow):
         return source.save_button.isEnabled() and bool(
             draft.pattern_name or draft.observation or draft.notes or draft.image_paths or draft.available_move_handles)
 
+    def _refresh_study_switch_notice(self, *_args):
+        if not self._authored_study_capture():
+            self.integrated_study_task.switch_notice.hide()
+
+    def _return_to_unfinished_capture(self):
+        # Navigation only: do not run capture-opening/default/context assignment logic.
+        self.investigation_return_buttons[0].show()
+        self.tabs.setCurrentWidget(self.study_find_widget)
+        self.study_find_widget.observation_input.setFocus()
+
     def _can_switch_investigation(self):
         if self._authored_study_capture():
             self.integrated_study_task.status.setText(
                 "Finish saving or explicitly discard the current Study Find before switching investigations. Your draft is unchanged.")
+            self.integrated_study_task.show_switch_blocked()
             return False
+        self.integrated_study_task.switch_notice.hide()
         self.pending_investigation_context = None
         return True
 
