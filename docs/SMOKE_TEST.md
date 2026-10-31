@@ -1441,6 +1441,15 @@ Use `STUDY_WORKSPACE_CLARITY_V0.md` with the durable workspace after publication
 - [PASS] Material filtering preserves investigation identity, unsaved review text and support; empty categories do not show unrelated detail and All material restores access.
   - Where: guide checkpoint 357.
 
+## Investigation overview reading
+
+Use `STUDY_OVERVIEW_READING_V0.md` after publication with existing retained material.
+
+- [PASS] Capture previews aid recognition; full text, compact context, disclosed association and first chart remain correct and readable.
+  - Where: guide checkpoint 358. Full-size chart opened behind the modal investigation and could not close independently; local ownership correction ready, operator retest pending.
+- [PASS] Prior checkpoints are inspectable without starting a review; browsing preserves a current review and checkpoints cannot be reused as support.
+  - Where: guide checkpoint 359.
+
 ## Reporting results
 
 Report results as:
