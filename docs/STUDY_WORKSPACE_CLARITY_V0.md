@@ -33,7 +33,7 @@ With a disposable unfinished note in Study Find, return to the investigation and
 
 Open an investigation with saved material. Use Show material to narrow to captures or findings; All material restores the list. An empty category should say so. If reviewing, type a disposable thought and change the filter: the review text must remain. Cancel/resolve the unsaved review normally. No obligation to create material in every category.
 
-Operator 356–357 pending. Publication requires explicit authorization: feature/study-workspace-clarity-v0, draft stacked on #105; do not merge. Earlier local connected-workflow documentation is included in this branch.
+Operator 356–357 PASS. Recovery action explicitly appreciated as a valid way past the block. Publication requires explicit authorization: feature/study-workspace-clarity-v0, draft stacked on #105; do not merge. Earlier local connected-workflow documentation is included in this branch.
 
 ## Validation
 

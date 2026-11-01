@@ -102,3 +102,7 @@ Monitor relationship is a suite-wide, infrequently changed preference. A future 
 | Review / Development | Synthesis, weaknesses and routed next study | evidence states, traceability, safe transitions |
 
 Exact visual identity remains a native-design question. Distinction must come from task composition and information hierarchy, not merely different accent colors.
+
+## Actionable blocked states — operator accepted 2026-10-30
+
+When a safe resolution path exists, a blocked action must explain the cause locally and offer a direct route to resolve it while preserving unfinished work. A warning alone is insufficient when the operator must hunt for the blocking object. The accepted Study example is Return to unfinished capture beside blocked New/Resume. The route must not bypass the guard, silently save/discard, or change association/reference. Apply this suite-wide where the domain provides a valid recovery action. Operator 356–357 PASS.

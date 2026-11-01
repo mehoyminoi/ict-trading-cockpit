@@ -5,6 +5,9 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QApplication,
+    QDialog,
+    QDialogButtonBox,
+    QScrollArea,
     QHBoxLayout,
     QLabel,
     QListWidget,
@@ -23,19 +26,27 @@ from ict_cockpit.database.study_find_repository import StudyFindRepository
 class StudyFindReviewWidget(QWidget):
     """Read-only workspace for reviewing saved Study Finds."""
 
-    def __init__(self, repository: StudyFindRepository) -> None:
+    def __init__(self, repository: StudyFindRepository, *, compact=False) -> None:
         super().__init__()
 
+        self.compact = compact
         self.repository = repository
         self.study_finds: list[StudyFind] = []
         self.image_paths: list[str] = []
-        self.full_size_viewer: QLabel | None = None
+        self.full_size_viewer: QDialog | None = None
 
         self.study_list = QListWidget()
         self.study_list.currentRowChanged.connect(self.show_selected_study_find)
 
         self.details_label = QLabel("Select a saved Study Find.")
         self.details_label.setWordWrap(True)
+        self.details_label.setTextFormat(Qt.TextFormat.PlainText)
+        self.capture_heading = QLabel()
+        self.capture_heading.setWordWrap(True)
+        self.capture_heading.setTextFormat(Qt.TextFormat.PlainText)
+        self.provenance_toggle = QPushButton("Show saved context and association")
+        self.provenance_toggle.setCheckable(True)
+        self.provenance_toggle.toggled.connect(self._show_provenance)
 
         self.observation_view = QTextEdit()
         self.observation_view.setReadOnly(True)
@@ -73,6 +84,11 @@ class StudyFindReviewWidget(QWidget):
 
         right_widget = QWidget()
         right_layout = QVBoxLayout()
+        if compact:
+            right_layout.addWidget(self.capture_heading)
+            right_layout.addWidget(self.provenance_toggle)
+            self.details_label.hide()
+            self.image_list.setMaximumHeight(65)
         right_layout.addWidget(self.details_label)
         right_layout.addWidget(QLabel("Observation"))
         right_layout.addWidget(self.observation_view)
@@ -95,6 +111,10 @@ class StudyFindReviewWidget(QWidget):
         self.setLayout(layout)
 
         self.refresh()
+
+    def _show_provenance(self, visible):
+        self.details_label.setVisible(visible)
+        self.provenance_toggle.setText("Hide saved context and association" if visible else "Show saved context and association")
 
     def refresh(self) -> None:
         self.study_finds = self.repository.get_recent()
@@ -124,6 +144,10 @@ class StudyFindReviewWidget(QWidget):
         if study_find.available_move_handles is not None:
             available_move = f"{study_find.available_move_handles:.2f} handles"
 
+        self.capture_heading.setText(
+            f"{study_find.pattern_name or 'Saved Study Find'}\n"
+            f"{study_find.observation_date:%Y-%m-%d} · {study_find.instrument} · {study_find.session}"
+            + (f" · Available move: {available_move}" if available_move else ""))
         self.details_label.setText(
             f"Date: {study_find.observation_date:%y-%m-%d}\n"
             f"Instrument: {study_find.instrument}\n"
@@ -140,6 +164,10 @@ class StudyFindReviewWidget(QWidget):
         for image_path in self.image_paths:
             self.image_list.addItem(Path(image_path).name)
 
+        if self.compact:
+            self.image_list.setVisible(len(self.image_paths) > 1)
+            self.image_preview.setMinimumHeight(140 if self.image_paths else 40)
+            self.image_preview.setMaximumHeight(260 if self.image_paths else 40)
         if self.image_paths:
             self.image_list.setCurrentRow(0)
         else:
@@ -184,6 +212,7 @@ class StudyFindReviewWidget(QWidget):
 
     def clear_selection(self) -> None:
         self.details_label.setText("No saved Study Finds.")
+        self.capture_heading.setText("No saved Study Finds.")
         self.observation_view.clear()
         self.notes_view.clear()
         self.image_paths.clear()
@@ -199,15 +228,34 @@ class StudyFindReviewWidget(QWidget):
         if pixmap.isNull():
             return
 
-        viewer = QLabel()
-        viewer.setPixmap(pixmap)
-        viewer.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        # A parentless top-level window is blocked by a modal investigation dialog.
+        # Make the viewer a child dialog of the active containing window instead.
+        if self.full_size_viewer is not None:
+            self.full_size_viewer.close()
+        viewer = QDialog(self.window())
+        viewer.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
+        viewer.setWindowModality(Qt.WindowModality.WindowModal)
         viewer.setWindowTitle(Path(self.image_paths[row]).name)
-        viewer.resize(
-            min(pixmap.width(), 1400),
-            min(pixmap.height(), 900),
-        )
-        viewer.show()
+        layout = QVBoxLayout(viewer)
+        scroll = QScrollArea(viewer)
+        chart = QLabel()
+        chart.setPixmap(pixmap)
+        chart.resize(pixmap.size())
+        scroll.setWidget(chart)
+        scroll.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(scroll)
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close, parent=viewer)
+        buttons.rejected.connect(viewer.reject)
+        layout.addWidget(buttons)
+        viewer.resize(min(pixmap.width() + 48, 1400), min(pixmap.height() + 100, 900))
 
-        # Keep a reference so Qt does not destroy the standalone viewer.
+        def released(_result):
+            if self.full_size_viewer is viewer:
+                self.full_size_viewer = None
+            self.open_image_button.setFocus()
+
+        viewer.finished.connect(released)
         self.full_size_viewer = viewer
+        viewer.open()
+        viewer.raise_()
+        viewer.activateWindow()

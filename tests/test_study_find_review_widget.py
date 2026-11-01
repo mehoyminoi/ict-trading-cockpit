@@ -121,3 +121,48 @@ def test_review_automatically_previews_first_attachment(tmp_path):
     assert widget.open_image_button.isEnabled()
     widget.close()
     connection.close()
+
+
+def test_full_size_image_is_owned_modal_and_closes_independently(tmp_path):
+    from PySide6.QtCore import Qt
+    from PySide6.QtGui import QImage
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QScrollArea
+    app = QApplication.instance() or QApplication([])
+    connection = create_connection(tmp_path / 'viewer.db')
+    initialize_schema(connection)
+    repository = StudyFindRepository(connection)
+    find = StudyFind(observation_date=date(2026,10,30), instrument='MNQ',
+                     session='London', pattern_name='Viewer', observation='Retained observation')
+    repository.save(find)
+    path = tmp_path / 'large-chart.png'
+    image = QImage(1800, 1000, QImage.Format.Format_RGB32)
+    image.fill(0xffffff)
+    assert image.save(str(path))
+    repository.add_image(find.id, str(path))
+    owner = QDialog()
+    widget = StudyFindReviewWidget(repository, compact=True)
+    QVBoxLayout(owner).addWidget(widget)
+    owner.open()
+    app.processEvents()
+    before = connection.total_changes
+    for close_with_escape in (True, False):
+        widget.open_selected_image()
+        app.processEvents()
+        viewer = widget.full_size_viewer
+        assert viewer.parentWidget() is owner
+        assert app.activeModalWidget() is viewer
+        assert viewer.findChild(QScrollArea).widget().pixmap().size() == image.size()
+        if close_with_escape:
+            QTest.keyClick(viewer, Qt.Key.Key_Escape)
+        else:
+            viewer.findChild(QDialogButtonBox).button(QDialogButtonBox.StandardButton.Close).click()
+        app.processEvents()
+        assert widget.full_size_viewer is None
+        assert owner.isVisible()
+        assert app.activeModalWidget() is owner
+        assert widget.observation_view.toPlainText() == find.observation
+    assert connection.total_changes == before
+    owner.reject()
+    widget.close()
+    connection.close()
