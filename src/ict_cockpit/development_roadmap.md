@@ -4,10 +4,11 @@
 
 Development status only — separate from your study progress, trade plan and competency assessments. This is a snapshot shipped with your installed version, not a live GitHub tracker.
 
-**Updated:** 2026-10-31 · durable backup recovery accepted.
+**Updated:** 2026-10-31 · existing-workspace launch accepted.
 
 ## Accepted — foundations you have exercised
 
+- **Everyday workspace launch:** explicit durable-workspace command passed operator 370, retaining familiar material and normal startup/reopen behavior.
 - **Preserve meaningful work:** verified archive recovery and a durable Study workspace. Current durable-backup recovery passed 369; normal workspace resumed.
 - **Resume an investigation:** identifiable questions, retained captures, images, findings and review checkpoints; recover your intent after restarting.
 - **Keep study moving:** context-aware capture, quick question/finding retention, save to investigation and preparation of the next capture.
@@ -21,13 +22,13 @@ Accepted means the stated behavior passed its review. It does not mean final sty
 
 ## In progress — keep the forest in view
 
-**Integration readiness assessed:** the draft stack and cumulative regression checks have been reviewed. Test maintenance is locally verified; publication pending. Study, the bounded TDA → Watch journey and durable recovery retain operator acceptance.
+**Consolidation planning:** existing-workspace launch is accepted. Prepare the exact stack integration order and final validation gate before any separately authorized merges.
 
-**Current operator check:** none pending; 369 passed. No repeat study, journey or recovery exercise is requested. This is not full-suite, whole-daily-workflow, competency or trading authorization acceptance.
+**Current operator check:** none pending; 370 passed. No repeat Study, journey, recovery or launch exercise is requested.
 
 ## Next — remaining workflow milestones
 
-1. **Everyday workspace launch:** open the existing durable workspace directly, with normal Study-first or active-run restoration, without demo seeding or a forced calendar view. Preserve historical data and verify on copies before one focused operator check.
+1. **Prepare consolidation:** reconcile fresh branch heads and acceptance records, define the merge order, and establish the final cumulative validation gate.
 2. **Consolidation:** review and integrate the tested draft-PR stack through separately authorized merges, then establish a clear everyday launch/recovery baseline.
 3. **Routine-use refinement:** use actual sessions to prioritize remaining navigation, status feedback, chart-facing controls and keyboard friction.
 
