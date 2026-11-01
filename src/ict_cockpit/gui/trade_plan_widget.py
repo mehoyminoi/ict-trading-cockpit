@@ -87,6 +87,7 @@ class TradePlanWidget(QWidget):
         progression_regression_review_repository:
             ProgressionRegressionReviewRepository | None = None,
         context_capture_repository=None,
+        workspace_settings=None,
     ) -> None:
         super().__init__()
         self.trade_plan = trade_plan
@@ -143,6 +144,7 @@ class TradePlanWidget(QWidget):
             authorization_gates=trade_plan.authorization_gates,
             context_rules=trade_plan.context_rules,
             trade_plan_revision=trade_plan.revision,
+            workspace_settings=workspace_settings,
         )
 
         self.trading_day_runtime_widget = self.trading_day_shell_widget.runtime
