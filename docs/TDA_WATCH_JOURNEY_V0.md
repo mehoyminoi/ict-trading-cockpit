@@ -1,5 +1,11 @@
 # TDA → Watch integration journey
 
+## Operator acceptance — 2026-10-31
+
+Operator reported **366–368 PASS** against PR #112's published journey (`bfcc205`). The portable chart-facing Study Find capture is also reported to be working very well in practical use. This is positive qualitative workflow feedback, not a new feature request or broader evidence-linkage/competency claim.
+
+The checks below are retained as the accepted procedure; no repeat is requested. This documentation-only update preserves PR #112 as draft/unmerged, stacked on #111. Product code, tests, schema and existing behavioral limits remain unchanged. Prior two end-to-end test passes are retained evidence, not rerun here. Full daily continuity, backup readiness and cumulative full-suite validation are not inferred from this operator acceptance.
+
 ## Why this is the next milestone
 
 Study connected-review checks 364–365 passed. The next dependable-workflow gate is the operating journey: retain chart-derived context, enter Watch without transcribing it, use contextual tools, return to analysis and recover the same work after restart.
@@ -58,10 +64,10 @@ It opens **Trade Plan → process → Run Trading Day**, at **Premarket / TDA**,
 2. Expect Watch in the same Replay run, with the revised thesis, IF/THEN point and D entry still present. Reopening must not create another run or repeat capture saving.
 3. Optionally inspect the saved `Synthetic handoff example` through the saved-find browser, then return through **Trade Plan → Run Trading Day**. Its existence is covered by developer checks; no extra capture is required.
 
-Report 366–368 PASS / FAIL / QUESTION, plus one usability observation if useful: **Could you recognize what you had concluded in TDA and resume Watch without reconstructing it?** This is the remaining operator question; passing automated continuity checks alone cannot answer it.
+Report 366–368 PASS / FAIL / QUESTION, plus one usability observation if useful: **Could you recognize what you had concluded in TDA and resume Watch without reconstructing it?** This was the qualitative operator prompt; the acceptance report above records the supplied feedback without inferring an additional answer.
 
 ## Validation and delivery
 
 Two end-to-end tests PASS: normal (non-override) completion/transition, carried notes and watch-point ID, AMDX update, capture save/return, analysis revision, same run/process/TDA IDs after reopening; plus unfinished-TDA restoration and refusal of an unrelated directory. Native TDA and Watch views inspected at 1600×900. Initial test expected a bare D, but the UI correctly includes interval and entered-state text; the assertion now checks that displayed value within its context. No production-code fix was necessary.
 
-The developer check does not establish operator acceptance or full daily/backup readiness. This local branch is intended as a draft stacked on #111; no merge is authorized. After operator review, resolve concrete handoff gaps if found, then proceed to cross-suite daily continuity and authorized stack consolidation.
+Developer verification and operator acceptance are separate evidence: two end-to-end tests passed previously, and 366–368 are now operator PASS. PR #112 remains draft, stacked on #111; no merge is authorized. Cross-suite daily continuity and separately authorized stack consolidation remain later checkpoints; this acceptance update starts neither.

@@ -1481,11 +1481,11 @@ Use `STUDY_CONNECTED_REVIEW_V0.md` with existing retained material after publica
 
 Use `TDA_WATCH_JOURNEY_V0.md` with its separate synthetic Replay workspace after publication.
 
-- [NOT TESTED] Normal TDA completion carries synthesis and day-specific IF/THEN context into Watch without transcription or authorization claims.
+- [PASS] Normal TDA completion carries synthesis and day-specific IF/THEN context into Watch without transcription or authorization claims.
   - Where: guide checkpoint 366.
-- [NOT TESTED] AMDX entry, Watch capture save/return and deliberate return to analysis preserve the active run and update the carried thesis.
+- [PASS] AMDX entry, Watch capture save/return and deliberate return to analysis preserve the active run and update the carried thesis.
   - Where: guide checkpoint 367.
-- [NOT TESTED] Reopening restores the same Watch run, revised context, watch point and AMDX entry without duplicate capture saving.
+- [PASS] Reopening restores the same Watch run, revised context, watch point and AMDX entry without duplicate capture saving.
   - Where: guide checkpoint 368.
 
 ## Reporting results

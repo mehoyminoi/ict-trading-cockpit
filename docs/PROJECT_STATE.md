@@ -1,6 +1,10 @@
-## Current local slice — TDA → Watch journey
+## Current checkpoint — TDA → Watch operator acceptance
 
-Operator 364–365 PASS on draft #111 (b8f7b42). Local `feature/tda-watch-journey-v0` records acceptance and advances the single roadmap to integration. The previous TDA demo had no run; the Watch demo explicitly overrode incomplete TDA. New `tools/tda_watch_journey_demo.py` starts a separate synthetic Replay at real mapped TDA without filling stations or overriding the handoff. Two end-to-end tests PASS for normal handoff, carried synthesis/watch points, AMDX/capture/return, revised thesis and restart identities; native TDA/Watch views inspected. No production code/schema change. See `TDA_WATCH_JOURNEY_V0.md`, 366–368 pending. Use `~/ict-cockpit-trials/tda-watch-journey-v0`, never the real Study directory for this synthetic exercise. Publish draft stacked on #111 only when authorized; do not merge. Next: cross-suite daily continuity, then authorized stack consolidation. Earlier pending entries below are historical.
+PR #112 `feature/tda-watch-journey-v0`, verified head `bfcc2057a1c160c7a76006196bfa6e906dd8e6eb`, remains draft/unmerged and based on #111 (`feature/study-connected-review-v0`). Operator 366–368 PASS. Portable chart-facing Study Find capture is reported to work very well in practical use; preserve this qualitative acceptance without inventing broader evidence-linkage or competency claims.
+
+Current authorized task is only to record this acceptance against #112's documentation. Smoke results, journey guide, startup checkpoint and bundled roadmap are updated; no source/test/schema changes or new work are introduced. Schema 53 / Alpha 0.7 unchanged. Prior two end-to-end tests PASS on the published journey are not rerun for this documentation-only update. Documentation/diff and protected-file preservation checks apply; no fresh product/full-suite result is claimed.
+
+Architectural frontier remains dependable Study/TDA/Watch integration. TDA → Watch's bounded operator journey is accepted; broader daily continuity and separately authorized consolidation are next, not started here. No new operator check is pending for this slice. The separate workflow-efficiency documentation branch is not folded into #112. Preserve draft/unmerged status and existing stack. Earlier entries below are historical.
 
 ## Publication recovery — 2026-10-31
 

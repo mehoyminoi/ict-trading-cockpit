@@ -4,7 +4,7 @@
 
 Development status only — separate from your study progress, trade plan and competency assessments. This is a snapshot shipped with your installed version, not a live GitHub tracker.
 
-**Updated:** 2026-10-31 · after acceptance of connected Study review.
+**Updated:** 2026-10-31 · after acceptance of the TDA → Watch journey.
 
 ## Accepted — foundations you have exercised
 
@@ -15,15 +15,15 @@ Development status only — separate from your study progress, trade plan and co
 - **Development orientation:** Help → Development roadmap accepted; plain stages keep the whole workflow visible.
 - **Connected investigation review:** retained work and Take stock share the Study workspace; Cancel/Discard protection passed checks 364–365.
 - **Recent correction:** review redo and the brief missing-Observation highlight passed operator checks.
-- **TDA and Watch components:** mapped chart-pane navigation, quiet Watch composition and quick contextual AMDX entry passed their bounded checks. The complete daily journey still needs integration review.
+- **TDA → Watch journey:** implemented and developer-tested (two end-to-end checks); operator 366–368 PASS for the normal handoff, contextual capture/analysis return and restart. The portable chart-facing Study Find capture also works very well in practical use. Broader daily continuity remains a separate gate.
 
 Accepted means the stated behavior passed its review. It does not mean final styling, suite-wide coverage or that draft branches have been merged.
 
 ## In progress — keep the forest in view
 
-**TDA → Watch integration journey.** A separate synthetic Replay trial starts in mapped TDA and uses its normal transition into Watch. Check that context carries forward, supporting tasks return to the same run and restart restores your place.
+**Acceptance recorded.** The bounded TDA → Watch journey is accepted. No new implementation is started by this documentation update.
 
-**Current operator check:** 366–368 in `docs/TDA_WATCH_JOURNEY_V0.md`. Use the dedicated trial directory, not your real Study workspace. Synthetic notes are sufficient; this checks workflow continuity, not market-analysis quality, competency or trading permission. The separate Guided TDA tab is not the mapped runtime used by this journey.
+**Current operator check:** none pending for this slice; 366–368 passed. No repeat is requested. This is not full-suite, whole-daily-workflow, competency or trading authorization acceptance.
 
 ## Next — remaining workflow milestones
 

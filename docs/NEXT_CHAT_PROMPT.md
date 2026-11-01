@@ -1,6 +1,6 @@
-## Current local slice — TDA → Watch journey
+## Current checkpoint — TDA → Watch accepted
 
-Operator 364–365 PASS on draft #111 (b8f7b42). Local `feature/tda-watch-journey-v0` records acceptance and advances the single roadmap to integration. The previous TDA demo had no run; the Watch demo explicitly overrode incomplete TDA. New `tools/tda_watch_journey_demo.py` starts a separate synthetic Replay at real mapped TDA without filling stations or overriding the handoff. Two end-to-end tests PASS for normal handoff, carried synthesis/watch points, AMDX/capture/return, revised thesis and restart identities; native TDA/Watch views inspected. No production code/schema change. See `TDA_WATCH_JOURNEY_V0.md`, 366–368 pending. Use `~/ict-cockpit-trials/tda-watch-journey-v0`, never the real Study directory for this synthetic exercise. Publish draft stacked on #111 only when authorized; do not merge. Next: cross-suite daily continuity, then authorized stack consolidation. Earlier pending entries below are historical.
+Operator 366–368 PASS on PR #112 (`bfcc205` implementation baseline); portable chart-facing Study Find capture also works very well in practical use. See the active checkpoint in `PROJECT_STATE.md` and acceptance in `TDA_WATCH_JOURNEY_V0.md`. This update records results only: no new implementation, operator trial or merge. PR #112 stays draft/unmerged, stacked on #111. Prior two end-to-end test passes are not a new test run. Roadmap now marks the bounded journey accepted; broader daily continuity remains next but is not started. Earlier pending/local entries below are historical.
 
 ## Publication recovery — 2026-10-31
 
