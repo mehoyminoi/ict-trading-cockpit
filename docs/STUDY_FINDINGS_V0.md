@@ -54,3 +54,7 @@ Report PASS, FAIL or QUESTION per checkpoint. No market interpretation is being 
 ## Local validation
 
 230 distinct focused checks passed across the finding/question/overview UI, MainWindow, smoke-document parser, discard/context protection, criterion/repository checks and historical migration suites (overlapping tests were rerun after the final UI changes). The findings composer was rendered offscreen and visually inspected. `git diff --check` passed. Operator 338–340 remain pending; no publication or merge is claimed by this local checkpoint.
+
+## Operator acceptance
+
+338–340 passed. Acceptance covers retention and retrieval, not final popup placement. The operator clarified the broader competency assessment loop. Findings remain learning inputs until deliberately reviewed; popup capture remains provisional.

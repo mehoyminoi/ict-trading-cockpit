@@ -1,3 +1,7 @@
+## Current local slice — save to investigation
+
+Operator 338–340 PASS on #95. `feature/study-save-to-investigation-v0`, based on published `b8510d2`, combines content, ordered image references, explicit association and draft removal in one transaction. Save destination is beside the save controls; plain save remains available, and link-only moves to More. Context differences require explicit confirmation for combined save; existing associations cannot be reassigned. Schema 50 unchanged. 67 targeted tests PASS. Read `STUDY_SAVE_TO_INVESTIGATION.md` for pending 341–342. Local only; publication as a draft stacked on #95 still requires authorization. Do not merge.
+
 ## Current local slice — Study findings / partial answers
 
 Operator accepted #94 post-discard context recheck on 2026-10-28. Based on published `6908b14`, branch `feature/study-findings-v0` adds independent findings with optional explicit investigation association; partial answers require it. Read `STUDY_FINDINGS_V0.md` for scope and operator checkpoints 338–340 (pending). Schema 50; use a new separate fixture. Existing question quick capture remains intact. No investigation completion, validated-answer status, automatic source-capture link or competency evidence. Screenshot workflow is accepted and refinements deferred. This slice is local only until explicitly authorized for publication as a draft stacked on #94; do not merge.

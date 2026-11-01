@@ -3,7 +3,7 @@ import json
 from dataclasses import asdict
 from pathlib import Path
 
-from PySide6.QtCore import QByteArray, QSettings, QTimer
+from PySide6.QtCore import QByteArray, QSettings, QTimer, Qt
 from PySide6.QtGui import QAction, QKeySequence
 from PySide6.QtWidgets import (
     QApplication,
@@ -15,6 +15,8 @@ from PySide6.QtWidgets import (
     QPushButton,
     QLabel,
     QScrollArea,
+    QHBoxLayout,
+    QMenu,
 )
 
 from ict_cockpit.app_info import APP_VERSION, window_title
@@ -264,13 +266,29 @@ class MainWindow(QMainWindow):
             self.investigation_return_buttons.append(button)
         self.tabs.addTab(self.amdx_catalog_widget, "AMDX Lab")
         self.investigation_repository = StudyInvestigationRepository(study_find_repository.connection)
-        self.link_investigation_button = QPushButton("Link this capture to investigation")
-        self.link_investigation_button.hide()
-        self.link_investigation_button.clicked.connect(self._link_investigation_capture)
-        self.study_find_widget.layout().insertWidget(1, self.link_investigation_button)
+        self.link_investigation_action = QAction("Link capture only (do not save content)", self)
+        self.link_investigation_action.triggered.connect(self._link_investigation_capture)
         self.capture_association_label = QLabel()
         self.capture_association_label.setWordWrap(True)
-        self.study_find_widget.layout().insertWidget(2, self.capture_association_label)
+        save_layout = self.study_find_widget.layout()
+        save_index = save_layout.indexOf(self.study_find_widget.save_feedback)
+        self.study_save_destination = QLabel()
+        self.study_save_destination.setTextFormat(Qt.TextFormat.PlainText)
+        self.study_save_destination.setWordWrap(True)
+        save_layout.insertWidget(save_index, self.study_save_destination)
+        save_layout.insertWidget(save_index + 1, self.capture_association_label)
+        save_layout.removeWidget(self.study_find_widget.save_button)
+        save_row = QHBoxLayout()
+        self.save_to_investigation_button = QPushButton("Save to investigation")
+        self.save_to_investigation_button.clicked.connect(self._save_to_investigation)
+        save_row.addWidget(self.save_to_investigation_button)
+        save_row.addWidget(self.study_find_widget.save_button)
+        self.study_save_more = QPushButton("More…")
+        save_menu = QMenu(self.study_save_more)
+        save_menu.addAction(self.link_investigation_action)
+        self.study_save_more.setMenu(save_menu)
+        save_row.addWidget(self.study_save_more)
+        save_layout.insertLayout(save_layout.indexOf(self.study_find_widget.save_feedback) + 1, save_row)
         self.study_find_widget.draft_changed.connect(lambda _draft: self._refresh_capture_association())
         self.study_find_widget.draft_changed.connect(lambda _draft: self._refresh_capture_context())
         self.capture_context_notice = QLabel()
@@ -404,6 +422,7 @@ class MainWindow(QMainWindow):
             lambda: self.tabs.setCurrentWidget(self.amdx_catalog_widget)
         )
         self.tabs.currentChanged.connect(lambda _index: self._refresh_study_home())
+        self._refresh_study_save_destination()
         self._refresh_study_home()
         if shell.active_trading_run is None:
             self.tabs.setCurrentWidget(self.study_home_widget)
@@ -548,6 +567,84 @@ class MainWindow(QMainWindow):
     def _refresh_capture_association(self):
         self.capture_association_label.setText(describe_association(
             self.investigation_repository.get(self.study_find_widget.current_study_find_id)))
+        self._refresh_study_save_destination()
+
+    def _study_save_target(self):
+        existing = self.investigation_repository.get(self.study_find_widget.current_study_find_id)
+        target = existing or self.pending_investigation_context
+        if target is None:
+            return None
+        keys = ('task_id', 'plan_id', 'plan_revision', 'question', 'instrument',
+                'market_reference', 'interpretation')
+        return {key: target[key] for key in keys}
+
+    def _refresh_study_save_destination(self):
+        source = self.study_find_widget
+        try:
+            existing = self.investigation_repository.get(source.current_study_find_id)
+            target = self._study_save_target()
+        except (ValueError, sqlite3.Error) as error:
+            self.study_save_destination.setText(f"Destination unavailable: {error}")
+            self.save_to_investigation_button.setEnabled(False)
+            return
+        if target:
+            prefix = "Existing association (preserved)" if existing else "Save destination"
+            self.study_save_destination.setText(
+                f"{prefix}: {target['question'] or '(enter an investigation question first)'}\n"
+                f"{target['instrument']} · {target['market_reference']} · {target['interpretation']}\n"
+                "Save to investigation retains the content and association together. "
+                "Plain Save Study Find adds no new association; an existing one remains.")
+        else:
+            self.study_save_destination.setText(
+                "No investigation destination. Save Study Find keeps this capture independently. "
+                "Open capture from an investigation to choose a destination.")
+        self.save_to_investigation_button.setEnabled(bool(target and target['question'].strip())
+            and source.save_button.isEnabled() and self.amdx_catalog_widget.run_scope is None)
+        self.link_investigation_action.setEnabled(bool(target and target['question'].strip()))
+
+    def _save_to_investigation(self):
+        from datetime import datetime
+        from ict_cockpit.analysis.market_time import MARKET_TIMEZONE
+        source = self.study_find_widget
+        if not source.save_button.isEnabled():
+            return
+        try:
+            if self.amdx_catalog_widget.run_scope is not None:
+                raise ValueError("Return to the independent Study calendar before saving to an investigation")
+            target = self._study_save_target()
+            if target is None:
+                raise ValueError("Open capture from an investigation first")
+            captured = source.build_study_find()
+            images = tuple(source.image_paths)
+            reference = datetime.fromisoformat(target['market_reference'])
+            if reference.tzinfo is None or reference.utcoffset() is None:
+                raise ValueError("Historical reference requires a timezone")
+            differences = []
+            reference_date = reference.astimezone(MARKET_TIMEZONE).date()
+            if captured.observation_date != reference_date:
+                differences.append(f"Date: capture {captured.observation_date} / destination {reference_date}")
+            if captured.instrument != target['instrument'].strip().upper():
+                differences.append(f"Instrument: capture {captured.instrument} / destination {target['instrument']}")
+            # Session is an inspected-quarter suggestion, not inferred from clock time.
+            existing = self.investigation_repository.get(captured.id)
+            defaults = self.capture_context_defaults or {}
+            if not existing and defaults.get('session') and captured.session != defaults['session']:
+                differences.append(f"Session: capture {captured.session} / inspected {defaults['session']}")
+            if differences:
+                answer = QMessageBox.question(self, "Check capture and destination",
+                    "\n".join(differences) + f"\n\nInvestigation: {target['question']}\n"
+                    "Save with these differences? The entered capture values will be retained.",
+                    QMessageBox.StandardButton.Save | QMessageBox.StandardButton.Cancel,
+                    QMessageBox.StandardButton.Cancel)
+                if answer != QMessageBox.StandardButton.Save:
+                    source.save_feedback.setText("Not saved. Check the capture or destination; your input remains here.")
+                    return
+                if (captured != source.build_study_find() or images != tuple(source.image_paths)
+                        or target != self._study_save_target()):
+                    raise ValueError("Capture or destination changed while confirming; inspect it and try again")
+            self._persist_study_find(captured, investigation=target)
+        except (ValueError, RuntimeError, sqlite3.Error) as error:
+            source.save_feedback.setText(f"Not saved: {error}. Your input remains here.")
 
     def _link_investigation_capture(self):
         pane = self.amdx_catalog_widget
@@ -557,7 +654,7 @@ class MainWindow(QMainWindow):
             draft = self.study_find_widget.build_draft()
             if draft.has_content() and self.study_find_widget.save_button.isEnabled():
                 self.study_find_repository.save_draft(draft)
-            context = self.pending_investigation_context
+            context = self._study_save_target()
             if context is None:
                 raise ValueError("Open Study Find from the investigation before linking")
             self.investigation_repository.link(
@@ -666,7 +763,6 @@ class MainWindow(QMainWindow):
         else:
             source.apply_context_defaults(**self.capture_context_defaults)
         self._show_investigation_context(0)
-        self.link_investigation_button.show()
         self._refresh_capture_association()
         self._refresh_capture_context()
         self.tabs.setCurrentWidget(source)
@@ -1085,22 +1181,32 @@ class MainWindow(QMainWindow):
         self.pending_trade_draft = None
 
     def save_study_find(self, study_find) -> None:
+        self._persist_study_find(study_find)
+
+    def _persist_study_find(self, study_find, *, investigation=None) -> bool:
+        timer_active = self.study_find_draft_save_timer.isActive()
         self.study_find_draft_save_timer.stop()
+        try:
+            self.study_find_repository.save_capture(
+                study_find, self.study_find_widget.image_paths, investigation=investigation)
+        except (ValueError, RuntimeError, sqlite3.Error) as error:
+            if timer_active:
+                self.study_find_draft_save_timer.start()
+            self.study_find_widget.save_feedback.setText(f"Not saved: {error}. Your input remains here.")
+            self.study_find_widget.submission_failed.emit(str(error))
+            return False
         self.pending_study_find_draft = None
-
-        self.study_find_repository.save(study_find)
-
-        for image_path in self.study_find_widget.image_paths:
-            self.study_find_repository.add_image(
-                study_find.id,
-                image_path,
-            )
-
-        self.study_find_repository.delete_draft(study_find.id)
         self.study_find_widget.mark_saved()
-        self.study_find_review_widget.refresh()
-        self.status_bar.showMessage("Study Find saved", 3000)
+        message = "Study Find saved to investigation." if investigation else "Study Find saved."
+        self.study_find_widget.save_feedback.setText(message)
+        self.status_bar.showMessage(message, 3000)
         self.contextual_study_find_dock.notify_saved(study_find.id)
+        try:
+            self._refresh_capture_association()
+            self.study_find_review_widget.refresh()
+        except (ValueError, sqlite3.Error) as error:
+            self.study_find_widget.save_feedback.setText(f"{message} Review refresh failed: {error}. Reopen review to inspect.")
+        return True
 
     def save_trade_record(self, trade) -> None:
         self.trade_draft_save_timer.stop()

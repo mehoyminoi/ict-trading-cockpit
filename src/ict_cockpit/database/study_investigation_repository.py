@@ -18,7 +18,11 @@ class StudyInvestigationRepository:
             (task_id,)).fetchall()
         return tuple(self.get(row[0]) for row in rows)
 
-    def link(self, capture_id, *, task_id, plan_id, plan_revision, question,
+    def link(self, capture_id, **context):
+        with self.connection:
+            return self._link(capture_id, **context)
+
+    def _link(self, capture_id, *, task_id, plan_id, plan_revision, question,
              instrument, market_reference, interpretation):
         values = (capture_id, task_id, plan_id, plan_revision, question.strip(),
                   instrument.strip(), market_reference, interpretation)
@@ -29,20 +33,19 @@ class StudyInvestigationRepository:
             raise ValueError("Historical reference requires a timezone")
         if interpretation not in ('Expected', 'Observed'):
             raise ValueError("Choose Expected or Observed")
-        with self.connection:
-            existing = self.get(capture_id)
-            if existing:
-                if tuple(existing[k] for k in ('capture_id','task_id','plan_id','plan_revision',
-                    'question','instrument','market_reference','interpretation')) == values:
-                    return existing
-                raise ValueError("This capture is already linked; its recorded investigation cannot be reassigned")
-            if not self.connection.execute(
-                "SELECT id FROM study_find WHERE id=? UNION ALL SELECT id FROM study_find_draft WHERE id=?",
-                (capture_id, capture_id)).fetchone():
-                raise ValueError("Enter and retain capture content before linking")
-            self.connection.execute(
-                "INSERT INTO study_investigation_capture VALUES (?,?,?,?,?,?,?,?,?)",
-                (*values, datetime.now(timezone.utc).isoformat()))
+        existing = self.get(capture_id)
+        if existing:
+            if tuple(existing[k] for k in ('capture_id','task_id','plan_id','plan_revision',
+                'question','instrument','market_reference','interpretation')) == values:
+                return existing
+            raise ValueError("This capture is already linked; its recorded investigation cannot be reassigned")
+        if not self.connection.execute(
+            "SELECT id FROM study_find WHERE id=? UNION ALL SELECT id FROM study_find_draft WHERE id=?",
+            (capture_id, capture_id)).fetchone():
+            raise ValueError("Enter and retain capture content before linking")
+        self.connection.execute(
+            "INSERT INTO study_investigation_capture VALUES (?,?,?,?,?,?,?,?,?)",
+            (*values, datetime.now(timezone.utc).isoformat()))
         return self.get(capture_id)
 
 
