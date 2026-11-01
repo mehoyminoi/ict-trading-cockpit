@@ -202,6 +202,7 @@ class MainWindow(QMainWindow):
             self.trade_plan_widget.process_blueprint_widget
         )
 
+        self.trade_plan_widget.tda_station_runner_widget.configure_workspace_settings(self.workspace_settings)
         self.tda_workflow = TDAWorkflowWidget()
         self.study_find_widget = StudyFindWidget(
             self.summary_template_repository
