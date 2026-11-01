@@ -58,6 +58,7 @@ from ict_cockpit.database.context_capture_repository import ContextCaptureReposi
 from ict_cockpit.gui.feedback_dialog import FeedbackDialog
 from ict_cockpit.gui.study_find_review_widget import StudyFindReviewWidget
 from ict_cockpit.gui.study_find_widget import StudyFindWidget
+from ict_cockpit.gui.contextual_study_find_dock import ContextualStudyFindDock
 from ict_cockpit.gui.amdx_master_lab_widget import AMDXMasterLabWidget
 from ict_cockpit.gui.summary_template_workbench_widget import (
     SummaryTemplateWorkbenchWidget,
@@ -280,6 +281,22 @@ class MainWindow(QMainWindow):
         self.study_find_widget.draft_changed.connect(
             self.schedule_study_find_draft_save
         )
+        self.contextual_study_find_dock = ContextualStudyFindDock(
+            self.study_find_widget,
+            settings=self.workspace_settings,
+        )
+        shell.contextual_study_find_requested.connect(
+            self._toggle_contextual_study_find
+        )
+        shell.contextual_study_find_dismiss_requested.connect(
+            self._dismiss_contextual_study_find
+        )
+        self.contextual_study_find_dock.dismissed.connect(
+            self.save_pending_study_find_draft
+        )
+        self.tabs.currentChanged.connect(
+            lambda _index: self._sync_contextual_study_find_context()
+        )
 
         self.pending_trade_draft = None
         self.trade_draft_save_timer = QTimer(self)
@@ -293,6 +310,33 @@ class MainWindow(QMainWindow):
         )
 
         self._restore_drafts()
+
+    def _toggle_contextual_study_find(self, basis) -> None:
+        shell = self.trade_plan_widget.trading_day_shell_widget
+        if (
+            self.tabs.currentWidget() is not self.trade_plan_widget
+            or shell.active_trading_run is None
+            or shell.runtime.current_mode.id != "live-watch"
+        ):
+            return
+        if self.contextual_study_find_dock.isVisible():
+            self.contextual_study_find_dock.dismiss()
+            return
+        self.contextual_study_find_dock.open_for(
+            shell.study_find_button,
+            basis,
+        )
+
+    def _dismiss_contextual_study_find(self) -> None:
+        if self.contextual_study_find_dock.isVisible():
+            self.contextual_study_find_dock.dismiss()
+
+    def _sync_contextual_study_find_context(self) -> None:
+        if (
+            self.tabs.currentWidget() is not self.trade_plan_widget
+            and self.contextual_study_find_dock.isVisible()
+        ):
+            self.contextual_study_find_dock.dismiss()
 
     def _summary_template_published(self, _kind: str) -> None:
         self.study_find_widget.refresh_summary_template_label()
@@ -607,6 +651,7 @@ class MainWindow(QMainWindow):
         self.study_find_widget.mark_saved()
         self.study_find_review_widget.refresh()
         self.status_bar.showMessage("Study Find saved", 3000)
+        self.contextual_study_find_dock.notify_saved(study_find.id)
 
     def save_trade_record(self, trade) -> None:
         self.trade_draft_save_timer.stop()
