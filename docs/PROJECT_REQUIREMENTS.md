@@ -1576,3 +1576,13 @@ Immediate foundation: read-only retrieval across independent investigations for 
 Important suite-wide requirement: **Keep the current task ready to use; disclose supporting tasks when needed.** Explicit task entry should reveal its primary controls immediately; inspection routes may keep secondary work collapsed. Use predictable named actions, shared state and stable spatial anchors, preserving unfinished work. See [the accepted standard and Study-specific acceptance criteria](UX_INTERACTION_STANDARDS.md#task-directed-entry-and-disclosure--accepted-2026-10-29).
 
 For Study, direct Review this investigation should open the existing review editor; inspecting investigation material may leave it collapsed; history remains read-only retrieval. The operator endorsed this resolution of the repeated extra-click friction during 348. This is an accepted requirement, not implemented behavior or a mandate to show review entry everywhere. 348–349 passed.
+
+## Natural Study continuity and preservation — 2026-10-29
+
+Retain the operator's real Study observations as valuable learning and qualitative design material from this stage, with provenance distinguishing synthetic/disposable content. Durable investigation resumption and explicit question/answer revision must preserve historical records without equating settled understanding with competency. PDM-like In work/Stable/reopen semantics are a proposed design direction; exact transitions remain to be specified.
+
+The natural-session findings in `STUDY_REAL_SESSION_FINDINGS.md` record required attention to date/context reliability, capture of follow-up questions where review prompts generate them, beneficial HTF-oriented input scaffolding, four-pane chart parity and future review/practice reconstruction. Existing notes must not become expendable test data merely because the interface is provisional. Full external chart reconstruction and portable archive/restore are not implemented.
+
+## Delivery priority — dependable daily workflow (2026-10-30)
+
+The dependable personal Study/TDA/Watch cockpit is the primary delivery milestone. Exploratory and nicety features receive substantial effort after core functionality is consistently integrated into daily use. Apply `DEPENDABLE_WORKFLOW_MILESTONE.md`: prioritize preservation/recovery, investigation continuity, reference reliability and integrated journeys; give explicit pushback when additions delay these goals. Highest TradingView subscription is available as a planning assumption, not proof of integration access. Operator reports full workspace archive created, originals retained; restoration has not been verified.

@@ -1399,7 +1399,7 @@ Use `STUDY_HISTORY_BROWSER.md` with the retained review fixture.
 
 Use `STUDY_DIRECT_REVIEW.md` with the retained review fixture.
 
-- [NOT TESTED] Direct review opens ready for entry; inspection remains collapsed; hiding preserves wording and the unsaved-review close guard, with working context retained.
+- [PASS] Direct review opens ready for entry; inspection remains collapsed; hiding preserves wording and the unsaved-review close guard, with working context retained.
   - Where: guide checkpoint 350.
 
 ## Reporting results
