@@ -79,8 +79,8 @@ class LiveWatchWidget(QWidget):
         situation_layout = QVBoxLayout(self.situation_frame)
         situation_layout.setContentsMargins(9, 7, 9, 7)
         situation_layout.setSpacing(3)
-        situation_heading = QLabel("Opportunity Situation Brief")
-        situation_heading.setStyleSheet("font-weight: 600;")
+        self.situation_heading = QLabel("Opportunity Situation Brief")
+        self.situation_heading.setStyleSheet("font-weight: 600;")
         self.attention_cue_label = QLabel(
             "QUIET · no configured timed opportunity needs immediate attention"
         )
@@ -90,7 +90,7 @@ class LiveWatchWidget(QWidget):
         self.situation_summary_label.setWordWrap(True)
         self.situation_candidates_label = QLabel("No setup candidates in play")
         self.situation_candidates_label.setWordWrap(True)
-        situation_layout.addWidget(situation_heading)
+        situation_layout.addWidget(self.situation_heading)
         situation_layout.addWidget(self.attention_cue_label)
         situation_layout.addWidget(self.situation_summary_label)
         situation_layout.addWidget(self.situation_candidates_label)
@@ -240,6 +240,17 @@ class LiveWatchWidget(QWidget):
         layout.addWidget(self.evidence_list)
 
         self._render_base_policy({}, {})
+
+    def set_quiet_composition(self, enabled: bool) -> None:
+        """Adjust labels/duplication when hosted by the native Watch composition."""
+
+        self.heading.setVisible(not enabled)
+        self.guidance.setVisible(not enabled)
+        self.situation_heading.setText(
+            "Operating Context · what changed / what matters now"
+            if enabled
+            else "Opportunity Situation Brief"
+        )
 
     def _clear_layout(self, layout) -> None:
         while layout.count():

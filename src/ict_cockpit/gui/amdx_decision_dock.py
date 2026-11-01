@@ -23,6 +23,7 @@ class AMDXDecisionDock(QFrame):
     """One temporary projection of the existing AMDX command."""
 
     dismissed = Signal()
+    display_profile_changed = Signal(str)
 
     def __init__(self, source, *, trade_plan_revision="", settings: QSettings | None = None):
         super().__init__(None, Qt.WindowType.Popup | Qt.WindowType.FramelessWindowHint)
@@ -102,6 +103,7 @@ class AMDXDecisionDock(QFrame):
         if self.settings is not None:
             self.settings.setValue("workspace-displays/chart-relationship", profile)
             self.settings.sync()
+        self.display_profile_changed.emit(profile)
         if self.isVisible() and self.return_anchor is not None:
             self._position_for(self.return_anchor)
 
