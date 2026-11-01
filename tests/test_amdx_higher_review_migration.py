@@ -45,19 +45,19 @@ c.close()
     names=[row[0] for row in c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")]
     before={name:c.execute('SELECT * FROM '+name).fetchall() for name in names}
     if injected:
-        c.set_authorizer(lambda action,a,b,*_:sqlite3.SQLITE_DENY if action==sqlite3.SQLITE_PRAGMA and a=='user_version' and b=='51' else sqlite3.SQLITE_OK)
+        c.set_authorizer(lambda action,a,b,*_:sqlite3.SQLITE_DENY if action==sqlite3.SQLITE_PRAGMA and a=='user_version' and b=='52' else sqlite3.SQLITE_OK)
         with pytest.raises(sqlite3.DatabaseError):initialize_schema(c)
         c.set_authorizer(None)
         assert c.execute('PRAGMA user_version').fetchone()[0]==45
         assert {name:c.execute('SELECT * FROM '+name).fetchall() for name in names}==before
     initialize_schema(c)
-    assert c.execute('PRAGMA user_version').fetchone()[0]==51
+    assert c.execute('PRAGMA user_version').fetchone()[0]==52
     assert {name:c.execute('SELECT * FROM '+name).fetchall() for name in names}==before
     from ict_cockpit.database.amdx_repository import AMDXRepository
     receipt=AMDXRepository(c).run_observed.get_result('review')
     assert receipt.packet['version']==1 and 'scope_proof' not in receipt.packet['request']
     namespace={}
     exec(compile((archived/'src/ict_cockpit/database/schema.py').read_text(),'actual-v45-schema','exec'),namespace)
-    with pytest.raises(RuntimeError,match='Unsupported database schema version: 51'):namespace['initialize_schema'](c)
+    with pytest.raises(RuntimeError,match='Unsupported database schema version: 52'):namespace['initialize_schema'](c)
     assert not c.execute('PRAGMA foreign_key_check').fetchall()
     c.close()

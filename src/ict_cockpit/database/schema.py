@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 51
+CURRENT_SCHEMA_VERSION = 52
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -172,6 +172,10 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 50:
             _migrate_version_50_to_51(connection)
             version = 51
+
+        if version == 51:
+            _migrate_version_51_to_52(connection)
+            version = 52
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -1279,3 +1283,9 @@ def _migrate_version_50_to_51(connection):
         connection.execute(f"CREATE TRIGGER study_review_no_{operation.lower()} BEFORE {operation} ON study_review BEGIN SELECT RAISE(ABORT, 'Study reviews are immutable'); END")
     connection.execute("CREATE TRIGGER study_review_no_replace BEFORE INSERT ON study_review WHEN EXISTS(SELECT 1 FROM study_review WHERE id=NEW.id) BEGIN SELECT RAISE(ABORT, 'Study reviews are immutable'); END")
     connection.execute("PRAGMA user_version = 51")
+
+
+def _migrate_version_51_to_52(connection):
+    connection.execute("CREATE TABLE study_task_registry (task_id TEXT PRIMARY KEY, plan_id TEXT NOT NULL, plan_revision TEXT NOT NULL, question TEXT NOT NULL)")
+    connection.execute("CREATE TABLE study_capture_context (capture_id TEXT PRIMARY KEY, payload_json TEXT NOT NULL)")
+    connection.execute("PRAGMA user_version = 52")

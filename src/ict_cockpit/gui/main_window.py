@@ -238,9 +238,12 @@ class MainWindow(QMainWindow):
             "Workbench",
         )
         self.amdx_catalog_widget = AMDXMasterLabWidget(self.trading_session_run_repository.amdx.master)
+        from ict_cockpit.database.study_task_registry import StudyTaskRegistry
+        self.study_task_registry = StudyTaskRegistry(self.study_find_repository.connection)
         self.integrated_study_task = IntegratedStudyTaskWidget(
             plan_id=self.trade_plan.id, revision=self.trade_plan.revision,
-            settings=self.workspace_settings,
+            settings=self.workspace_settings, registry=self.study_task_registry,
+            can_switch=self._can_switch_investigation,
         )
         self.amdx_catalog_widget.layout().insertWidget(1, self.integrated_study_task)
         self.integrated_study_task.capture_requested.connect(self._open_investigation_capture)
@@ -514,6 +517,20 @@ class MainWindow(QMainWindow):
         except (ValueError, sqlite3.Error) as error:
             self.question_capture_feedback.setText(f"Could not open findings: {error}. Your capture remains here.")
 
+    def _authored_study_capture(self):
+        source = self.study_find_widget
+        draft = source.build_draft()
+        return source.save_button.isEnabled() and bool(
+            draft.pattern_name or draft.observation or draft.notes or draft.image_paths or draft.available_move_handles)
+
+    def _can_switch_investigation(self):
+        if self._authored_study_capture():
+            self.integrated_study_task.status.setText(
+                "Finish saving or explicitly discard the current Study Find before switching investigations. Your draft is unchanged.")
+            return False
+        self.pending_investigation_context = None
+        return True
+
     def _open_study_history(self):
         from ict_cockpit.gui.study_history_browser import StudyHistoryBrowser
         dialog = StudyHistoryBrowser(self.study_find_repository.connection,
@@ -591,7 +608,7 @@ class MainWindow(QMainWindow):
 
     def _study_save_target(self):
         existing = self.investigation_repository.get(self.study_find_widget.current_study_find_id)
-        target = existing or self.pending_investigation_context
+        target = existing or self.study_task_registry.context(self.study_find_widget.current_study_find_id) or self.pending_investigation_context
         if target is None:
             return None
         keys = ('task_id', 'plan_id', 'plan_revision', 'question', 'instrument',
@@ -690,18 +707,41 @@ class MainWindow(QMainWindow):
         except ValueError:
             reference = "Invalid historical reference; correct it in the calendar"
         if index == 0:
-            self.pending_investigation_context = dict(
+            self.integrated_study_task._retain_current()
+            proposed = dict(
                 task_id=self.integrated_study_task.task_id,
                 plan_id=self.trade_plan.id, plan_revision=self.trade_plan.revision,
                 question=self.integrated_study_task.question.text(), instrument=pane.instrument,
                 market_reference=reference, interpretation=pane.channel_selector.currentText(),
             )
+            source = self.study_find_widget
+            retained = self.investigation_repository.get(source.current_study_find_id) or self.study_task_registry.context(source.current_study_find_id)
+            if retained and self._authored_study_capture():
+                self.pending_investigation_context = retained
+            elif self._authored_study_capture() and not retained:
+                answer = QMessageBox.question(self, "Confirm capture destination",
+                    "This unfinished capture has no retained investigation destination. Associate future saves with "
+                    + (proposed['question'] or '(unnamed investigation)') + "? Cancel keeps it unassigned.",
+                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel,
+                    QMessageBox.StandardButton.Cancel)
+                self.pending_investigation_context = proposed if answer == QMessageBox.StandardButton.Yes else None
+                if self.pending_investigation_context:
+                    self.study_task_registry.remember_context(source.current_study_find_id, proposed)
+            else:
+                self.pending_investigation_context = proposed
+                self.study_task_registry.remember_context(source.current_study_find_id, proposed)
         label = self.investigation_context_labels[index]
         label.setText(
             f"Investigation: {self.integrated_study_task.question.text() or 'No question entered'}\n"
             f"{pane.instrument} · {reference} · {pane.channel_selector.currentText()}\n"
             "Navigation context only; not a saved link to this capture or evidence."
         )
+        if index == 0:
+            destination = self.pending_investigation_context
+            label.setText((f"Capture destination: {destination['question']}\n"
+                           f"{destination['instrument']} · {destination['market_reference']} · {destination['interpretation']}\n"
+                           "Retained opening context; association occurs on explicit save/link.")
+                          if destination else "Capture has no retained destination. Plain save remains available; reopen from the investigation to choose a destination.")
         label.show()
         self.investigation_return_buttons[index].show()
 
@@ -782,7 +822,11 @@ class MainWindow(QMainWindow):
             source.emit_draft_changed()
         else:
             source.apply_context_defaults(**self.capture_context_defaults)
-        self._show_investigation_context(0)
+        try:
+            self._show_investigation_context(0)
+        except (ValueError, sqlite3.Error) as error:
+            self.status_bar.showMessage(f"Capture destination could not be retained: {error}", 10000)
+            return
         self._refresh_capture_association()
         self._refresh_capture_context()
         self.tabs.setCurrentWidget(source)
@@ -994,6 +1038,8 @@ class MainWindow(QMainWindow):
         )
         if latest_study_find_draft is not None:
             self.study_find_widget.load_draft(latest_study_find_draft)
+            self.pending_investigation_context = self.study_task_registry.context(latest_study_find_draft.id)
+            self._refresh_capture_association()
             self.status_bar.showMessage(
                 "Restored unfinished Study Find draft",
                 3000,
@@ -1242,6 +1288,8 @@ class MainWindow(QMainWindow):
         self._quick_question_pending = None
         self._question_selection_editor = None
         self.question_capture_feedback.clear()
+        if self.pending_investigation_context:
+            self.study_task_registry.remember_context(source.current_study_find_id, self.pending_investigation_context)
         source.emit_draft_changed()
         source.observation_input.setFocus()
 

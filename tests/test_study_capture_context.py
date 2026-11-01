@@ -39,7 +39,9 @@ def test_fresh_capture_uses_selected_london_not_clock_and_saved_next_day_is_new(
     assert window.study_find_repository.get_by_id(identity)
 
 
-def test_unfinished_capture_retains_inputs_and_exposes_mismatch(cockpit):
+def test_unfinished_capture_retains_inputs_and_exposes_mismatch(cockpit, monkeypatch):
+    from PySide6.QtWidgets import QMessageBox
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.StandardButton.Cancel)
     window,c = cockpit
     pane = select(window)
     source = window.study_find_widget
