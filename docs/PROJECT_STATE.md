@@ -1,3 +1,13 @@
+## Current local checkpoint — existing-workspace launch
+
+`feature/existing-workspace-launch-v0` starts at published #114 `a174ea51febfbb7243674c4a7ba99dc2f74068b9`, draft/unmerged and stacked on #113. Shared main now accepts an explicit existing workspace; `tools/open_cockpit.py` requires that argument. The route opens the retained `demo.db`, media and settings without schema initialization, fixture seeding, forced Calendar navigation or implicit run creation. Marker/provenance remain, and the title identifies the path as a retained trial workspace. Default no-option module behavior remains separate and unchanged in data selection.
+
+Level-2 storage/launch boundary: current schema 53 only; validate managed files, marker, origin roots and database integrity before constructing the shared application. Reject missing/unrecognized paths and old/future schemas. No relocation, database merge, history rewrite or trading-policy change. Alpha 0.7 unchanged. See `EXISTING_WORKSPACE_LAUNCH_V0.md` for the bounded contract and check 370.
+
+Validation: 39 focused/integration checks PASS in 53.51s (15 new launcher checks plus existing startup, geometry, recovery and MainWindow tests). The earlier 14-check development run also passed before the default-route regression was added. Initial test setup corrections addressed screen clamping and an unclosed SQLite fixture connection; no corresponding product defect was inferred. CLI help, Python 3.10 syntax and diff/documentation checks PASS. #114's cumulative 1,317-test evidence is prior evidence, not a fresh full-suite run for this launcher. Operator 370 NOT TESTED; earlier 364–369 results preserved. Real operator data untouched.
+
+Next: publish this branch as a draft stacked on #114 only after explicit authorization; do not merge. Then operator 370 verifies familiar material and normal restart with the new command, after a fresh closed-workspace backup. Until publication/review, keep the existing command. Brand-new workspace creation, installer/shortcut, cross-process locking and consolidation are outside this slice. Earlier checkpoints below are historical.
+
 ## Current local checkpoint — integration readiness assessment
 
 Local `feature/integration-readiness-v0` is based on published #113 acceptance `3d99dacfa7607ad2ec32ed661ad56b5812c61385`. #76–113 remain draft/unmerged; no PR stack modification. `INTEGRATION_READINESS_V0.md` records exact inspected heads and the #83 documentation-only delta, whose 311–312 PASS results are already present at the tip.

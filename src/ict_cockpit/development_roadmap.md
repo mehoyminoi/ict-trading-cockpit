@@ -21,13 +21,13 @@ Accepted means the stated behavior passed its review. It does not mean final sty
 
 ## In progress — keep the forest in view
 
-**Integration readiness assessed:** the draft stack and cumulative regression checks have been reviewed. Test maintenance is locally verified; publication pending. Study, the bounded TDA → Watch journey and durable recovery retain operator acceptance.
+**Everyday workspace launch:** an explicit route to the existing durable workspace is implemented locally and developer-tested. It preserves normal Study-first / active-run restoration without demo seeding or forced Calendar navigation. Publication and operator review are pending. Integration readiness was published in #114.
 
-**Current operator check:** none pending; 369 passed. No repeat study, journey or recovery exercise is requested. This is not full-suite, whole-daily-workflow, competency or trading authorization acceptance.
+**Current operator check:** after publication, check familiar material and close/reopen with the new launch command (370). No new Study capture or trading run is required. Earlier accepted journey and recovery tests need no repeat.
 
 ## Next — remaining workflow milestones
 
-1. **Everyday workspace launch:** open the existing durable workspace directly, with normal Study-first or active-run restoration, without demo seeding or a forced calendar view. Preserve historical data and verify on copies before one focused operator check.
+1. **Accept the everyday launch:** complete the focused familiar-material/restart check, then use its command for the existing durable workspace.
 2. **Consolidation:** review and integrate the tested draft-PR stack through separately authorized merges, then establish a clear everyday launch/recovery baseline.
 3. **Routine-use refinement:** use actual sessions to prioritize remaining navigation, status feedback, chart-facing controls and keyboard friction.
 

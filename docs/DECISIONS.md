@@ -1000,3 +1000,8 @@ An investigation's editable workspace question and its recorded capture associat
 ## 2026-11-01 — Recover later durable Study backups without rewriting history
 
 Developer implementation contract for the authorized daily-continuity work: a subsequent restore extends location mappings in manifest version 2 and retains the previous manifest verbatim as structured data. Preserve database bytes and saved references; resolve media exclusively inside the active workspace. Version 1 remains readable and is still written for initial relocation. Unknown/invalid manifests, ambiguous roots and existing destinations fail closed. Old clients are not compatible with version-2 recovery copies. Schema and trading behavior do not change. See `STUDY_DURABLE_WORKSPACE.md`; operator acceptance pending (369). This supersedes the original deliberate refusal of chained relocation, not provenance or isolated-verification requirements.
+
+
+## 2026-10-31 — Explicit retained-workspace launch
+
+The existing durable Study workspace may be opened through shared application startup with an explicit path, retaining its database, media root, per-database settings and fixture provenance. Do not seed a new fixture, force Calendar, migrate the database or start a run merely by launching. The bounded route accepts only the recognized retained Study layout at the current schema; missing/unrecognized inputs fail without replacement. Keep ordinary no-option main's separate default-database behavior. This implements the integration assessment's next boundary, with operator 370 pending; it does not establish a generic new-workspace/import policy or remove environment eligibility checks. See `EXISTING_WORKSPACE_LAUNCH_V0.md`.

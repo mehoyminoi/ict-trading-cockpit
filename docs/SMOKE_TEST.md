@@ -1495,6 +1495,13 @@ Use `STUDY_DURABLE_WORKSPACE.md`, checkpoint 369, with a fresh closed-workspace 
 - [PASS] A current durable workspace archive restores to a new directory; familiar investigation, capture, image and review material remain accessible after reopening the copy, with originals retained.
   - Where: guide checkpoint 369.
 
+## Existing-workspace normal launch
+
+Use `EXISTING_WORKSPACE_LAUNCH_V0.md` after publication, with the normal durable workspace and a fresh backup.
+
+- [NOT TESTED] Explicit workspace launch opens the retained material with idle Study / existing active-run routing and preserves familiar investigation, observation, image and geometry after reopen.
+  - Where: guide checkpoint 370.
+
 ## Reporting results
 
 Report results as:

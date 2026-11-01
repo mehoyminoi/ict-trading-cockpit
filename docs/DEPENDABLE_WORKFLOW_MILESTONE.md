@@ -18,6 +18,8 @@ Next is integration readiness, not another speculative feature: reconcile stack 
 
 Integration-readiness assessment completed locally: see `INTEGRATION_READINESS_V0.md`. Cumulative 1,317-test coverage is reconciled with explicit rerun history. The remaining everyday-use gap is launch selection/routing, not missing shared Study/TDA/Watch ownership: default main opens a different database, while the retained Study trial forces Calendar. Next prepare an explicit existing-workspace launch route, preserving data and normal startup routing; no new operator study/recovery session requested now.
 
+The bounded existing-workspace launch route is now implemented locally and developer-tested; see `EXISTING_WORKSPACE_LAUNCH_V0.md`. Publication and operator 370 remain pending. After that check, the explicit command can replace the trial launcher's forced Calendar route for the existing durable workspace. Consolidation remains a separately authorized next gate.
+
 ## Original delivery order — historical sequence
 
 1. Preserve real material. Operator reports creating the full workspace archive and retaining originals. Next establish verified recovery and durable working storage; do not relocate path-based image references blindly or require more meaningful work in a disposable location.
