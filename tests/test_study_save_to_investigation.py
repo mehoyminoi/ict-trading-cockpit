@@ -93,11 +93,13 @@ def test_one_action_saves_capture_and_link_and_clears_pending_autosave(cockpit):
     assert window.study_find_repository.get_by_id(identity)
     assert window.investigation_repository.get(identity)['task_id'] == window.integrated_study_task.task_id
     assert 'saved to investigation' in w.save_feedback.text()
-    assert not w.save_button.isEnabled() and not window.save_to_investigation_button.isEnabled()
-    assert window.pending_study_find_draft is None
-    assert not window.study_find_draft_save_timer.isActive()
+    assert w.save_button.isEnabled() and window.save_to_investigation_button.isEnabled()
+    assert w.current_study_find_id != identity
+    assert not w.observation_input.toPlainText()
+    assert window.pending_study_find_draft.id != identity
+    assert window.study_find_draft_save_timer.isActive()
     window.save_pending_study_find_draft()
-    assert window.study_find_repository.get_latest_draft() is None
+    assert window.study_find_repository.get_latest_draft().id != identity
 
 
 def test_plain_save_does_not_create_an_association(cockpit):
@@ -146,7 +148,8 @@ def test_failed_save_keeps_form_pending_draft_and_retry_available(cockpit, monke
     assert w.save_button.isEnabled()
     monkeypatch.setattr(window.study_find_repository, 'save_capture', save)
     window.save_to_investigation_button.click()
-    assert not w.save_button.isEnabled()
+    assert w.save_button.isEnabled()
+    assert w.current_study_find_id != before.id
 
 
 def test_existing_destination_wins_and_modal_change_requires_another_review(cockpit, monkeypatch):
@@ -169,4 +172,4 @@ def test_existing_destination_wins_and_modal_change_requires_another_review(cock
     assert window.study_find_repository.get_by_id(w.current_study_find_id) is None
     monkeypatch.setattr(QMessageBox,'question',lambda *a: QMessageBox.StandardButton.Save)
     window.save_to_investigation_button.click()
-    assert window.investigation_repository.get(w.current_study_find_id) == original
+    assert window.investigation_repository.get(original['capture_id']) == original

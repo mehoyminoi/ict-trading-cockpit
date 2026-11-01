@@ -1361,10 +1361,19 @@ Use `STUDY_FINDINGS_V0.md` with a new separate fixture.
 
 Use `STUDY_SAVE_TO_INVESTIGATION.md`.
 
-- [NOT TESTED] One action saves content and its explicit investigation association; plain save creates no new link.
+- [PASS] One action saves content and its explicit investigation association; plain save creates no new link.
   - Where: guide checkpoint 341.
-- [NOT TESTED] Differing context can be cancelled without losing input, and saved associations survive reopening.
+- [PASS] Differing context can be cancelled without losing input, and saved associations survive reopening.
   - Where: guide checkpoint 342.
+
+## Continue Study capture after saving
+
+Use `STUDY_NEXT_CAPTURE.md`.
+
+- [NOT TESTED] Both Study save actions prepare a clean next capture with retained context and read-only last-saved access.
+  - Where: guide checkpoint 343.
+- [NOT TESTED] Link-only retains input; untouched fresh captures follow new opening context while authored drafts stay protected.
+  - Where: guide checkpoint 344.
 
 ## Reporting results
 
