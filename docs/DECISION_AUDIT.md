@@ -534,3 +534,8 @@ Read `UX_CONTEXT_RECONCILIATION.md` for source fingerprints, repeated 148-pass h
 | UX1 Study doorway was the proposed first native slice. | The Study doorway remains accepted, but the first native proof is the smaller Watch decision dock over already-implemented shared AMDX ownership. This proves projection/command synchronization and support return before broader composition/routing work. | Sequence refined; Study doorway deferred one bounded slice. |
 | Prototype reference wording could stand in until criteria authoring matures. | Alpha 0.7 publishes no AMDX manual-reference definition. Native Watch must show truthful unavailability and may not promote fixture copy, catalog notes or historical evaluation definitions into policy. | Clarified; no invented rule. |
 | Low-friction interaction means minimizing clicks. | The accepted target is a contextual completion loop: correct support, exact legal target, one authoritative command, synchronized result and anchor restoration. Low click count alone is insufficient. | Refined. |
+
+
+## 2026-11-01 — Durable recovery extension
+
+The second-relocation refusal in the original `STUDY_DURABLE_WORKSPACE.md` checkpoint is superseded by the locally implemented version-2 manifest contract. Prior manifests and all historical roots survive; database records are not rewritten. First relocation/v1 compatibility, isolated verification, no original-media fallback and no-overwrite protection remain. Developer tests passed; operator 369 and publication pending. This is not whole-workflow acceptance or permission to merge the draft stack.

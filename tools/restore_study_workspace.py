@@ -7,6 +7,7 @@ import sqlite3
 import tarfile
 import tempfile
 from verify_study_backup import verify
+from ict_cockpit.media.workspace_paths import manifest_roots
 
 
 def restore(archive, destination, original_root='/tmp/ict-study-review-v0'):
@@ -31,12 +32,27 @@ def restore(archive, destination, original_root='/tmp/ict-study-review-v0'):
                     with bundle.extractfile(member) as source, target.open('xb') as output:
                         shutil.copyfileobj(source, output)
         restored = staging / Path(original_root).name
-        if (restored / 'study-workspace-origin.json').exists():
-            raise ValueError('Already relocated workspace: chained relocation is not supported yet')
-        (restored / 'study-workspace-origin.json').write_text(json.dumps({
-            'version': 1, 'original_root': str(original_root),
+        manifest = restored / 'study-workspace-origin.json'
+        previous = json.loads(manifest.read_text()) if manifest.exists() else None
+        roots = manifest_roots(previous) if previous is not None else []
+        source_root = Path(original_root)
+        if source_root not in roots:
+            roots.append(source_root)
+        # Nested roots could map a reference to two different relative paths.
+        all_roots = list(dict.fromkeys(roots + [destination]))
+        for index, root in enumerate(all_roots):
+            for other in all_roots[index + 1:]:
+                if root in other.parents or other in root.parents:
+                    raise ValueError('Overlapping workspace roots; choose a separate destination')
+        data = {
+            'version': 2 if previous is not None else 1,
+            'original_root': str(roots[0]),
             'archive_sha256': report['sha256'], 'verification': report,
-        }, indent=2))
+        }
+        if previous is not None:
+            data['reference_roots'] = [str(root) for root in roots]
+            data['previous_manifest'] = previous
+        manifest.write_text(json.dumps(data, indent=2))
         # Reserve the name exclusively; never overwrite an existing workspace.
         destination.mkdir()
         try:

@@ -1,3 +1,11 @@
+## Current local checkpoint — durable Study backup recovery
+
+`feature/study-durable-recovery-v0` starts at published PR #112 acceptance head `64d72d85db5806f908ed05dfad13ee63a0c251a8`. PR #112 remains draft/unmerged, stacked on #111; 366–368 operator PASS and practical portable-capture feedback stand. No existing PR stack is modified.
+
+Daily-continuity assessment found that current durable backups could be verified but not restored to another directory. This local extension preserves database/settings bytes and historical references, carries prior manifest provenance and root mappings in manifest v2, and refuses unsafe/ambiguous recovery. Initial relocation/v1 compatibility remains. Schema 53 / Alpha 0.7 unchanged. This is a Level-2 persistence/provenance review under the operator's workflow-efficiency protocol; it does not fold in the separate unpublished efficiency-documentation branch.
+
+Executed: 16 backup/restore tests PASS; eight existing media/window-restoration/next-capture tests PASS; CLI and diff checks PASS. Full suite not run; not an acceptance/merge checkpoint. Operator 369 pending in `STUDY_DURABLE_WORKSPACE.md`. Real user data untouched. Roadmap and recovery contract updated. Next authorized task is local preparation/verification; publication requires explicit authorization for this new branch and a draft stacked on #112. Do not merge. After publication, one isolated recovery-copy inspection precedes remaining daily-continuity/consolidation assessment. Earlier entries below are historical.
+
 ## Current checkpoint — TDA → Watch operator acceptance
 
 PR #112 `feature/tda-watch-journey-v0`, verified head `bfcc2057a1c160c7a76006196bfa6e906dd8e6eb`, remains draft/unmerged and based on #111 (`feature/study-connected-review-v0`). Operator 366–368 PASS. Portable chart-facing Study Find capture is reported to work very well in practical use; preserve this qualitative acceptance without inventing broader evidence-linkage or competency claims.
