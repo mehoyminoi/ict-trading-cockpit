@@ -22,8 +22,8 @@ Use the durable workspace after backup and update. Open Review this investigatio
 2. Confirm the review text remains. Do not save the review solely for this check. Return to the investigation; discard only this disposable review if prompted. Open Study questions or Study history filtered to Question. Confirm the saved wording, investigation and Draft review snapshot source are visible, with one retained question from the repeated click.
 3. Return to review, leave no text selected, and click Keep question for later. The familiar composer should open. You may cancel it without adding another question; your review remains unchanged.
 
-No new full study-session trial required. Operator 354 PASS is recorded. Operator 355 pending. Next return to the dependable-workflow integration priorities rather than expanding this into another authoring surface.
+No new full study-session trial required. Operator 354 PASS is recorded. Operator 355 PASS (operator-reported). Next return to the dependable-workflow integration priorities rather than expanding this into another authoring surface.
 
-Publication: local implementation, draft stacked on #104 only when authorized; do not merge.
+Publication: draft PR #105, stacked on #104, remote `f537759`; unmerged.
 
 Validation: 237 targeted tests PASS: 33 question/review/finding/history checks and 204 migration/repository/resumption/backup checks. New checks cover selected-text snapshot capture, immediate repeat deduplication, latest selection, failed-write retry identity, saved-review labeling, no-selection composer, unchanged unsaved-review guard, both retrieval surfaces, and the actual schema-52 upgrade with rollback and old-reader rejection. Existing capture questions and findings remain covered. Diff check passed. An initial test attempted to manipulate a read-only editor and entered the composer unexpectedly; it was corrected to select actual saved wording and the complete focused batch passed.

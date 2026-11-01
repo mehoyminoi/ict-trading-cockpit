@@ -1,3 +1,9 @@
+## Connected Study acceptance and UX findings — 2026-10-30
+
+Operator completed a real-question session and return visit. The last investigation and related historical material restored thought and intent without reconstruction. Repeated concepts and similar chart structures/markup are becoming visible across retained work. Continuity accepted; dense presentation still requires sifting. Do not equate these observed threads with automated analysis or competency evidence.
+
+An unfinished capture made New/Resume appear inert; clearing that capture resolved the block. The explanation and recovery path must be local and actionable, preserving the guard. Ctrl+Z restored accidentally erased observation text and was explicitly appreciated; preserve native editing behavior. Next: cohesive Study UX, starting with `STUDY_WORKSPACE_CLARITY_V0.md`, not more standalone Study feature tests.
+
 # Real chart-assisted Study — findings and next design boundary
 
 Operator feedback following the first realistic session (2026-10-27). This is qualitative learning/workflow evidence, not a new smoke-test pass, final form approval, or proof of a market classification. The operator reports that the cockpit helped surface a new research question and a possible first conscious recognition of apparent manipulation being superseded later in the day.

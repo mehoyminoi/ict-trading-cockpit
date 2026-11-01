@@ -1,3 +1,11 @@
+## Current local slice — Study workspace clarity
+
+Connected natural Study review accepted: real-question material restored intent, emerging common threads useful; density and an inconspicuous unfinished-capture guard are the next UX targets. `feature/study-workspace-clarity-v0` groups primary vs supporting controls, explains read-only questions, provides direct navigation from a blocked switch, and filters existing overview material without replacing review state. No schema change (53). See `STUDY_WORKSPACE_CLARITY_V0.md`. Operator 356–357 pending; local only, draft stacked on #105 when authorized; do not merge. No new full-session exercise required.
+
+## Current checkpoint — connected Study workflow review
+
+Operator 355 PASS on published draft #105 (`f537759`), stacked on #104; unmerged. Schema 53. The component-level Study loop is accepted; the connected natural-session/return-visit review is pending. Read `STUDY_CONNECTED_WORKFLOW_REVIEW.md` for the current sequence, control distinctions, limits and next gates. Use the durable `~/ict-study-workspaces/study-v0`, never the older temporary narrative fixture. No application changes, new operator smoke number, publication or merge in this documentation checkpoint. Earlier entries below are chronological history and may describe now-completed work.
+
 ## Current local slice — questions from review
 
 Operator 354 PASS on published #104 (`40f8069`). `feature/study-review-question-capture-v0` exposes the existing question-capture interaction at the review pause: selected prompt text saves directly, no selection opens the existing composer. Frozen review/investigation provenance distinguishes draft snapshots from saved checkpoints; no fake capture or market reference is created. Schema 53 reader barrier, existing question v1 preserved. Back up durable workspace before upgrade. See `STUDY_REVIEW_QUESTION_CAPTURE.md`; 355 pending. Publish draft stacked on #104 only when authorized; do not merge.

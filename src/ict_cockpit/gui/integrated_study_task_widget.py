@@ -7,6 +7,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEd
 
 
 class IntegratedStudyTaskWidget(QWidget):
+    unfinished_capture_requested = Signal()
     overview_requested = Signal()
     checkpoint_requested = Signal()
     capture_requested = Signal()
@@ -29,40 +30,77 @@ class IntegratedStudyTaskWidget(QWidget):
                 settings.sync()
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
+        heading = QLabel("Study · current investigation")
+        font = heading.font()
+        font.setBold(True)
+        heading.setFont(font)
+        layout.addWidget(heading)
         row = QHBoxLayout()
-        row.addWidget(QLabel("Study question"))
         self.question = QLineEdit()
-        self.question.setPlaceholderText("What are you investigating? Calendar exploration needs no run.")
+        self.question.setAccessibleName("Current study question")
+        self.question.setPlaceholderText("What are you investigating?")
         if settings is not None:
             self.question.setText(str(settings.value(self.key, "")))
         row.addWidget(self.question, 1)
-        self.new_task_button = QPushButton("New investigation")
-        self.new_task_button.clicked.connect(self._new_task)
-        row.addWidget(self.new_task_button)
         self.resume_button = QPushButton("Resume investigation…")
         self.resume_button.setEnabled(registry is not None)
         self.resume_button.clicked.connect(self._resume)
         row.addWidget(self.resume_button)
-        self.capture_button = QPushButton("Open Study Find")
-        self.review_button = QPushButton("Review saved finds")
-        row.addWidget(self.capture_button)
-        row.addWidget(self.review_button)
-        self.criteria_button = QPushButton("Study criteria…")
-        row.addWidget(self.criteria_button)
-        self.criteria_button.clicked.connect(self.criteria_requested.emit)
+        self.new_task_button = QPushButton("New investigation")
+        self.new_task_button.clicked.connect(self._new_task)
+        row.addWidget(self.new_task_button)
         layout.addLayout(row)
+        self.question_state = QLabel()
+        layout.addWidget(self.question_state)
+
+        # Keep the explanation and recovery action beside the controls that were blocked.
+        self.switch_notice = QWidget()
+        notice_layout = QHBoxLayout(self.switch_notice)
+        notice_layout.setContentsMargins(0, 0, 0, 0)
+        message = QLabel("Switch paused: an unfinished Study Find contains work. Save it or deliberately discard it before switching.")
+        message.setWordWrap(True)
+        notice_layout.addWidget(message, 1)
+        self.return_to_draft_button = QPushButton("Return to unfinished capture")
+        self.return_to_draft_button.clicked.connect(self.unfinished_capture_requested.emit)
+        notice_layout.addWidget(self.return_to_draft_button)
+        layout.addWidget(self.switch_notice)
+        self.switch_notice.hide()
+
+        actions = QHBoxLayout()
+        self.capture_button = QPushButton("Open Study Find")
+        self.capture_button.setToolTip("Capture an example for this question; check the calendar reference first.")
         self.overview_button = QPushButton("Investigation overview…")
         self.overview_button.clicked.connect(self.overview_requested.emit)
-        investigation_actions = QHBoxLayout()
-        investigation_actions.addWidget(self.overview_button)
         self.checkpoint_button = QPushButton("Review this investigation…")
-        self.checkpoint_button.setToolTip("Open the review editor directly, with retained material alongside.")
+        self.checkpoint_button.setToolTip("Take stock now; opens the review editor directly.")
         self.checkpoint_button.clicked.connect(self.checkpoint_requested.emit)
-        investigation_actions.addWidget(self.checkpoint_button)
-        layout.addLayout(investigation_actions)
+        for button in (self.capture_button, self.overview_button, self.checkpoint_button):
+            actions.addWidget(button)
+        layout.addLayout(actions)
+
+        self.tools_toggle = QPushButton("Show supporting tools")
+        self.tools_toggle.setCheckable(True)
+        layout.addWidget(self.tools_toggle)
+        self.supporting_tools = QWidget()
+        self.support_layout = QVBoxLayout(self.supporting_tools)
+        self.support_layout.setContentsMargins(0, 0, 0, 0)
+        criteria_row = QHBoxLayout()
+        criteria_row.addWidget(QLabel("Plan criteria"))
+        self.criteria_button = QPushButton("Study criteria…")
+        self.criteria_button.clicked.connect(self.criteria_requested.emit)
+        criteria_row.addWidget(self.criteria_button)
         self.evaluate_button = QPushButton("Evaluate a criterion…")
         self.evaluate_button.clicked.connect(self.evaluation_requested.emit)
-        layout.addWidget(self.evaluate_button)
+        criteria_row.addWidget(self.evaluate_button)
+        self.support_layout.addLayout(criteria_row)
+        self.library_actions = QHBoxLayout()
+        self.library_actions.addWidget(QLabel("Retained work"))
+        self.review_button = QPushButton("Review saved finds")
+        self.library_actions.addWidget(self.review_button)
+        self.support_layout.addLayout(self.library_actions)
+        layout.addWidget(self.supporting_tools)
+        self.supporting_tools.hide()
+        self.tools_toggle.toggled.connect(self._show_tools)
         self.status = QLabel()
         self.status.setWordWrap(True)
         layout.addWidget(self.status)
@@ -74,9 +112,24 @@ class IntegratedStudyTaskWidget(QWidget):
             if known:
                 self.question.setText(known[0])
                 self.question.setReadOnly(True)
-        self.status.setText(f"Investigation draft · {revision} · separate from run intent and evidence. Historical reference and interpretation below belong to the calendar.")
+        self._refresh_question_state()
+        self.status.setText("Choose the chart date/session in the calendar, then Open Study Find. Resume leaves the calendar unchanged.")
+
+    def _show_tools(self, visible):
+        self.supporting_tools.setVisible(visible)
+        self.tools_toggle.setText("Hide supporting tools" if visible else "Show supporting tools")
+
+    def _refresh_question_state(self):
+        self.question_state.setText(
+            "Retained question · wording is read-only. Resume another question or use New investigation."
+            if self.question.isReadOnly() else "New question · enter the question you want to investigate.")
+
+    def show_switch_blocked(self):
+        self.switch_notice.show()
+        self.return_to_draft_button.setFocus()
 
     def _save(self):
+        self._refresh_question_state()
         if self.settings is None:
             self.status.setText("Question retained in this window only; persistent workspace settings unavailable.")
             return
@@ -84,7 +137,7 @@ class IntegratedStudyTaskWidget(QWidget):
         self.settings.setValue(self.key + "/task-id", self.task_id)
         self.settings.sync()
         self.status.setText(
-            "Investigation question saved locally. Use Link this capture in Study Find to preserve an explicit association."
+            "Investigation question saved locally. Use Save to investigation in Study Find to save an associated example."
             if self.settings.status() == QSettings.Status.NoError
             else "Question could not be saved. Keep this window open and correct workspace storage."
         )
@@ -93,6 +146,7 @@ class IntegratedStudyTaskWidget(QWidget):
         if self.registry and self.question.text().strip():
             self.registry.register(self.task_id, self.plan_id, self.revision, self.question.text())
             self.question.setReadOnly(True)
+            self._refresh_question_state()
 
     def _resume(self):
         try:

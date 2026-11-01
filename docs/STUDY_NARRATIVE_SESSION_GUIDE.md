@@ -1,3 +1,5 @@
+> Superseded operational instructions: use `STUDY_CONNECTED_WORKFLOW_REVIEW.md` and the durable workspace. The temporary fixture and pre-save/review sequence below are historical; do not follow them for retained work.
+
 # Real Study session: observation, interpretation and larger context
 
 ## Checkpoint and purpose
