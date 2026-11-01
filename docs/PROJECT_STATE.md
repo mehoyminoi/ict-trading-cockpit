@@ -1,3 +1,11 @@
+## Current checkpoint — TDA → Watch operator acceptance
+
+PR #112 `feature/tda-watch-journey-v0`, verified head `bfcc2057a1c160c7a76006196bfa6e906dd8e6eb`, remains draft/unmerged and based on #111 (`feature/study-connected-review-v0`). Operator 366–368 PASS. Portable chart-facing Study Find capture is reported to work very well in practical use; preserve this qualitative acceptance without inventing broader evidence-linkage or competency claims.
+
+Current authorized task is only to record this acceptance against #112's documentation. Smoke results, journey guide, startup checkpoint and bundled roadmap are updated; no source/test/schema changes or new work are introduced. Schema 53 / Alpha 0.7 unchanged. Prior two end-to-end tests PASS on the published journey are not rerun for this documentation-only update. Documentation/diff and protected-file preservation checks apply; no fresh product/full-suite result is claimed.
+
+Architectural frontier remains dependable Study/TDA/Watch integration. TDA → Watch's bounded operator journey is accepted; broader daily continuity and separately authorized consolidation are next, not started here. No new operator check is pending for this slice. The separate workflow-efficiency documentation branch is not folded into #112. Preserve draft/unmerged status and existing stack. Earlier entries below are historical.
+
 ## Publication recovery — 2026-10-31
 
 The publishing turn found an older scratch checkout; original local commit `71226f9` was absent from refs, reflogs and available unreachable commits. Restored the recorded edits on published #110 head `7917471`. Before adding this recovery note, the recovered diff has the original 12-file / 388-insertion / 95-deletion shape. This is a reconstructed commit, not a claim that the original Git object was recovered. Fresh recovery validation: all 51 targeted tests PASS (315.26 seconds), native 1600×900 and 1120×800 views reinspected, diff check passed; the existing user authorization covers publishing this feature as a draft stacked on #110, with no merge.

@@ -1,3 +1,7 @@
+## Current checkpoint — TDA → Watch accepted
+
+Operator 366–368 PASS on PR #112 (`bfcc205` implementation baseline); portable chart-facing Study Find capture also works very well in practical use. See the active checkpoint in `PROJECT_STATE.md` and acceptance in `TDA_WATCH_JOURNEY_V0.md`. This update records results only: no new implementation, operator trial or merge. PR #112 stays draft/unmerged, stacked on #111. Prior two end-to-end test passes are not a new test run. Roadmap now marks the bounded journey accepted; broader daily continuity remains next but is not started. Earlier pending/local entries below are historical.
+
 ## Publication recovery — 2026-10-31
 
 The publishing turn found an older scratch checkout; original local commit `71226f9` was absent from refs, reflogs and available unreachable commits. Restored the recorded edits on published #110 head `7917471`. Before adding this recovery note, the recovered diff has the original 12-file / 388-insertion / 95-deletion shape. This is a reconstructed commit, not a claim that the original Git object was recovered. Fresh recovery validation: all 51 targeted tests PASS (315.26 seconds), native 1600×900 and 1120×800 views reinspected, diff check passed; the existing user authorization covers publishing this feature as a draft stacked on #110, with no merge.
