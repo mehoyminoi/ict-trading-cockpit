@@ -71,3 +71,11 @@ The scope remains broader Study, with AMDX as the first case. No implementation,
 ## Screenshot workflow accepted — 2026-10-28
 
 Operator confirmed KDE/X11 with `/usr/bin/ksnip` 1.9.2. A desktop-owned Win+Shift+S shortcut invoking `/usr/bin/ksnip -r` worked without issues, and screenshot paste into Cockpit is functional without meaningful friction. Treat this workflow as accepted; defer screenshot refinements. This acceptance does not imply an application code change or acceptance of the pending post-discard context fix.
+
+## Review checkpoint acceptance and analytical direction — 2026-10-29
+
+345–347 PASS. The deliberate opportunity to take stock and retain simultaneous outcomes is accepted. It is a recording step that should fit a natural pause without interrupting a study groove. This is not acceptance of final layout or proof that it chooses the next useful study target.
+
+The Next study step prompt records a technician-authored intention; it does not implement analytical prioritization. Later cross-session analysis should make recurring questions, uncertainties, reviewed errors and performance patterns inspectable with appropriate filters and visualizations. Repeated mentions may reflect interest or exposure, not deficiency. Distinguish questions raised, practice attempted and reviewed performance. Never turn record counts into independent sample counts, proficiency or a readiness score.
+
+Immediate foundation: read-only retrieval across independent investigations for the current Trade Plan, preserving original questions/revisions and current working context. No additional checkpoint polish or repeated scripted navigation is required beyond validating the new retrieval path. Revisit review utility during a natural real-study pause later; preserve the accepted recording role while assessing whether analysis actually helps choose the next task.

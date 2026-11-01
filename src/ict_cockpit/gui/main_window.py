@@ -324,6 +324,9 @@ class MainWindow(QMainWindow):
         self.study_findings_button = QPushButton("Study findings…")
         self.study_findings_button.clicked.connect(lambda: self._open_study_findings(capture=False))
         self.integrated_study_task.layout().addWidget(self.study_findings_button)
+        self.study_history_button = QPushButton("Study history…")
+        self.study_history_button.clicked.connect(self._open_study_history)
+        self.integrated_study_task.layout().addWidget(self.study_history_button)
         definition = QLabel(
             f"Published AMDX criteria · Trade Plan {self.trade_plan.revision}: not configured. "
             "Quarter choices below enforce structural AMDX/XAMD legality; they do not classify price action."
@@ -417,6 +420,9 @@ class MainWindow(QMainWindow):
 
         self._restore_drafts()
         self.study_home_widget = StudyHomeWidget(self.trade_plan.competencies)
+        self.study_home_history_button = QPushButton("Browse Study history…")
+        self.study_home_history_button.clicked.connect(self._open_study_history)
+        self.study_home_widget.layout().addWidget(self.study_home_history_button)
         self.tabs.addTab(self.study_home_widget, "Study")
         self.study_home_widget.study_requested.connect(self._stage_home_study)
         self.study_home_widget.resume_requested.connect(self._resume_home_run)
@@ -505,6 +511,12 @@ class MainWindow(QMainWindow):
             dialog.exec()
         except (ValueError, sqlite3.Error) as error:
             self.question_capture_feedback.setText(f"Could not open findings: {error}. Your capture remains here.")
+
+    def _open_study_history(self):
+        from ict_cockpit.gui.study_history_browser import StudyHistoryBrowser
+        dialog = StudyHistoryBrowser(self.study_find_repository.connection,
+                                     plan_id=self.trade_plan.id, parent=self)
+        dialog.exec()
 
     def _open_investigation_overview(self):
         from ict_cockpit.gui.study_investigation_overview import StudyInvestigationOverview

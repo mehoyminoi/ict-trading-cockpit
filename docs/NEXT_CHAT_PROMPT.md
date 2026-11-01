@@ -1,3 +1,7 @@
+## Current local slice — cross-investigation Study history
+
+345–347 operator PASS on published #98 (`93ce461`). Recording simultaneous study outcomes is accepted; selecting what to study next through analysis is not yet implemented. Preserve the recording/analysis distinction in `STUDY_REAL_SESSION_FINDINGS.md` and requirements. `feature/study-history-browser-v0` adds read-only cross-investigation retrieval of questions, findings/partial answers and review checkpoints for the current plan, across revisions, through text and type filters. No inferred deficiencies, scoring, task replacement or source writes. Schema 51 unchanged. See `STUDY_HISTORY_BROWSER.md` for pending 348–349; use the retained review fixture. Local only; publication as draft stacked on #98 requires authorization. Do not merge.
+
 ## Current local implementation — investigation review checkpoint
 
 The operator accepted the proposed checkpoint, emphasizing optional reflection and simultaneous study outcomes rather than another required form. `feature/study-review-checkpoint-v0` adds a hidden-by-default review area within the existing overview, optional prompts, explicit support snapshots and immutable checkpoint history. Schema 51; use a new separate fixture. 228 targeted tests PASS. Read `STUDY_REVIEW_OPERATOR_GUIDE.md` for pending 345–347. No competency/run/eligibility writes or automatic completion. 343–344 PASS remains recorded. This branch also includes the local design/acceptance documentation atop published #97; publish as a draft stacked on #97 only when authorized. Do not merge.
