@@ -1,3 +1,5 @@
+> Follow-up: 331–333 passed. Selected-text capture is revised by [direct capture](STUDY_QUESTION_QUICK_CAPTURE.md); use its 334–335 recheck on the new branch. The original procedure below is retained as acceptance history.
+
 # Keep a Study question without losing the current thread — 331–333
 
 ## Purpose

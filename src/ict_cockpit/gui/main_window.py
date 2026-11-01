@@ -273,7 +273,15 @@ class MainWindow(QMainWindow):
         self.capture_context_notice = QLabel()
         self.capture_context_notice.setWordWrap(True)
         self.study_find_widget.layout().insertWidget(3, self.capture_context_notice)
-        self.keep_study_question_button = QPushButton("Keep question for later…")
+        self.keep_study_question_button = QPushButton("Keep question for later")
+        self.keep_study_question_button.setToolTip("Save selected Notes or Observation directly; without a selection, write a question.")
+        self.question_capture_feedback = QLabel()
+        self.question_capture_feedback.setWordWrap(True)
+        self.study_find_widget.layout().insertWidget(4, self.question_capture_feedback)
+        self._question_selection_editor = None
+        self._quick_question_pending = None
+        for editor in (self.study_find_widget.notes_input, self.study_find_widget.observation_input):
+            editor.selectionChanged.connect(lambda editor=editor: self._remember_question_selection(editor))
         self.keep_study_question_button.clicked.connect(lambda: self._open_study_questions(capture=True))
         self.study_find_widget.layout().insertWidget(4, self.keep_study_question_button)
         self.study_questions_button = QPushButton("Study questions…")
@@ -388,6 +396,11 @@ class MainWindow(QMainWindow):
         self._restore_workspace_layout()
         self.study_find_review_widget.splitter.splitterMoved.connect(self._save_review_layout)
 
+    def _remember_question_selection(self, editor):
+        if editor.textCursor().hasSelection():
+            self._question_selection_editor = editor
+            self.question_capture_feedback.clear()
+
     def _open_study_questions(self, *, capture=False):
         from ict_cockpit.database.study_question_repository import StudyQuestionRepository
         from ict_cockpit.gui.study_question_dialog import StudyQuestionDialog
@@ -396,8 +409,8 @@ class MainWindow(QMainWindow):
         if capture:
             widget = self.study_find_widget
             draft = widget.build_draft()
-            selected = (widget.notes_input.textCursor().selectedText()
-                        or widget.observation_input.textCursor().selectedText()).replace("\u2029", "\n")
+            editor = self._question_selection_editor
+            selected = editor.textCursor().selectedText().replace("\u2029", "\n") if editor else ""
             source = dict(capture_id=draft.id,
                           state="Unfinished capture" if widget.save_button.isEnabled() else "Saved Study Find",
                           date=draft.observation_date.isoformat(), instrument=draft.instrument,
@@ -405,8 +418,28 @@ class MainWindow(QMainWindow):
                           observation=draft.observation, notes=draft.notes,
                           images=list(draft.image_paths),
                           association=self.investigation_repository.get(draft.id))
+        repository = StudyQuestionRepository(self.study_find_repository.connection)
+        if capture and selected.strip():
+            from datetime import datetime, timezone
+            from uuid import uuid4
+            item = dict(version=1, id=str(uuid4()), plan_id=self.trade_plan.id,
+                        plan_revision=self.trade_plan.revision, question=selected.strip(),
+                        original_text=selected, source=source,
+                        recorded_at=datetime.now(timezone.utc).isoformat())
+            previous = self._quick_question_pending
+            if previous is not None and all(previous[k] == item[k]
+                    for k in item if k not in ('id', 'recorded_at')):
+                item = previous
+            self._quick_question_pending = item
+            try:
+                repository.save(item)
+            except (ValueError, RuntimeError, sqlite3.Error) as error:
+                self.question_capture_feedback.setText(f"Question not saved: {error}. Selection retained; try again.")
+                return
+            self.question_capture_feedback.setText("Question kept. Continue here; find it later in Study questions.")
+            return
         dialog = StudyQuestionDialog(
-            StudyQuestionRepository(self.study_find_repository.connection),
+            repository,
             plan_id=self.trade_plan.id, plan_revision=self.trade_plan.revision,
             source=source, original_text=selected, parent=self)
         dialog.exec()
