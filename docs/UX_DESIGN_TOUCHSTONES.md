@@ -62,3 +62,13 @@ During integrated Study check 304, the operator instinctively found and used the
 ## Operator evidence — spatial restoration relative to external charts (2026-10-20)
 
 After passing the 310 correction, the operator emphasized that stable window placement and size reduce daily effort because Cockpit is arranged relative to TradingView and potentially other programs. Treat restoring position, dimensions and useful divider proportions as working-context recovery, with sensible recovery when screens change. Analytical layout comes from the revisioned Trade Plan; these preferences describe the workstation arrangement and should not require routine manual reconstruction. The shared MainWindow restoration slice implements normal-close recovery; it does not control external applications.
+
+## Multi-monitor operating purpose — accepted 2026-10-21
+
+**“It should feel more like a rally race navigator than a spreadsheet.”**
+
+The cockpit should orient the technician in context and make relevant next actions easy. Optional companion views may remain spatially available without demanding attention: quiet, selective support during live Watch; spacious investigation during Study. The Trade Plan owns analytical structure, workstation profiles own placement, and operating purpose determines emphasis. Stable locations and shared state must survive changes in presentation.
+
+Cross-examination: does a mode change make the right information easier to use without surprise movement, stolen focus, duplicated entry or a new obligation to monitor every screen? Can the technician return from external charts and immediately reacquire the task?
+
+This is accepted future direction, not current multi-window functionality. See the multi-monitor requirement in [Project Requirements](PROJECT_REQUIREMENTS.md). The operator's 311–312 PASS report also confirms that restoring window geometry and Study Review divider state meaningfully reduced setup effort.
