@@ -1413,10 +1413,17 @@ Use `STUDY_DURABLE_WORKSPACE.md` after preserving a current archive.
 
 Use `STUDY_INVESTIGATION_RESUME.md` after backing up the durable workspace.
 
-- [NOT TESTED] Named investigation identity and original material remain available through switching and restart without moving the calendar reference.
+- [PASS] Named investigation identity and original material remain available through switching and restart without moving the calendar reference.
   - Where: guide checkpoint 352.
-- [NOT TESTED] Authored drafts block switching and retain their destination through restart; legacy unbound content requires deliberate destination confirmation.
+- [PASS] Authored drafts block switching and retain their destination through restart; legacy unbound content requires deliberate destination confirmation.
   - Where: guide checkpoint 353.
+
+## Study reference alignment
+
+Use `STUDY_REFERENCE_ALIGNMENT.md` in the durable workspace.
+
+- [NOT TESTED] Explicit calendar alignment updates an unlinked draft and its retained reference together, preserves content/images and survives restart; linked records remain protected.
+  - Where: guide checkpoint 354.
 
 ## Reporting results
 

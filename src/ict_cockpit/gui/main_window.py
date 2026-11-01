@@ -1,6 +1,6 @@
 import sqlite3
 import json
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from pathlib import Path
 
 from PySide6.QtCore import QByteArray, QSettings, QTimer, Qt
@@ -304,6 +304,20 @@ class MainWindow(QMainWindow):
         self.capture_context_notice = QLabel()
         self.capture_context_notice.setWordWrap(True)
         self.study_find_widget.layout().insertWidget(3, self.capture_context_notice)
+        self.study_reference_summary = QLabel()
+        self.study_reference_summary.setWordWrap(True)
+        self.study_reference_summary.setTextFormat(Qt.TextFormat.PlainText)
+        self.study_find_widget.layout().insertWidget(3, self.study_reference_summary)
+        reference_actions = QHBoxLayout()
+        self.select_study_reference_button = QPushButton("Select reference in calendar")
+        self.select_study_reference_button.clicked.connect(self._select_capture_reference)
+        reference_actions.addWidget(self.select_study_reference_button)
+        self.align_study_reference_button = QPushButton("Use selected calendar context")
+        self.align_study_reference_button.clicked.connect(self._align_capture_reference)
+        self.align_study_reference_button.setEnabled(False)
+        reference_actions.addWidget(self.align_study_reference_button)
+        self.study_find_widget.layout().insertLayout(4, reference_actions)
+        self.tabs.currentChanged.connect(lambda _: self._refresh_study_reference())
         self.keep_study_question_button = QPushButton("Keep question for later")
         self.keep_study_question_button.setToolTip("Save selected Notes or Observation directly; without a selection, write a question.")
         self.question_capture_feedback = QLabel()
@@ -745,7 +759,82 @@ class MainWindow(QMainWindow):
         label.show()
         self.investigation_return_buttons[index].show()
 
+    def _selected_capture_context(self):
+        from ict_cockpit.analysis.market_time import MARKET_TIMEZONE
+        pane = self.amdx_catalog_widget
+        if pane.run_scope is not None:
+            raise ValueError("Select an independent Study reference first")
+        reference = pane.reference().astimezone(MARKET_TIMEZONE)
+        session = ""
+        target = pane.target
+        if target is not None and target.cycle.layer == "day":
+            session = next(q.label for q in target.cycle.quarters if q.id == target.quarter_id)
+        elif target is not None and target.cycle.layer == "session":
+            session = next((q.label for row in pane.projection.cycles
+                            if row.context.cycle.layer == "day"
+                            for q in row.context.cycle.quarters
+                            if q.id == target.cycle.parent_quarter_id), "")
+        return reference, dict(observation_date=reference.date(), instrument=pane.instrument, session=session)
+
+    def _select_capture_reference(self):
+        self.tabs.setCurrentWidget(self.amdx_catalog_widget)
+        self.amdx_catalog_widget.date_input.setFocus()
+
+    def _refresh_study_reference(self):
+        if not hasattr(self, 'study_reference_summary'):
+            return
+        try:
+            source = self.study_find_widget
+            target = self._study_save_target()
+            reference, defaults = self._selected_capture_context()
+            retained = target['market_reference'] if target else 'Unassigned'
+            self.study_reference_summary.setText(
+                f"Retained capture reference: {retained}\n"
+                f"Selected calendar reference: {reference.isoformat()} · {defaults['instrument']} · {defaults['session'] or 'no session suggestion'}\n"
+                "New York market time. Compare with your chart; Cockpit does not read the chart's date.")
+            linked = self.investigation_repository.get(source.current_study_find_id)
+            allowed = bool(target and source.save_button.isEnabled() and not linked
+                           and target['task_id'] == self.integrated_study_task.task_id
+                           and self.study_task_registry.context(source.current_study_find_id))
+            self.align_study_reference_button.setEnabled(allowed)
+            self.align_study_reference_button.setToolTip(
+                'Apply the displayed calendar reference and suggested fields without changing notes/images.' if allowed
+                else 'Open an unlinked capture from the current investigation. Saved associations cannot be changed here.')
+        except (ValueError, sqlite3.Error) as error:
+            self.study_reference_summary.setText(f"Study reference unavailable: {error}")
+            self.align_study_reference_button.setEnabled(False)
+
+    def _align_capture_reference(self):
+        source = self.study_find_widget
+        try:
+            if not source.save_button.isEnabled():
+                raise ValueError('Saved captures cannot be changed here')
+            expected = self.study_task_registry.context(source.current_study_find_id)
+            if not expected or expected['task_id'] != self.integrated_study_task.task_id:
+                raise ValueError('Open the capture from its investigation before aligning')
+            reference, defaults = self._selected_capture_context()
+            draft = source.build_draft()
+            updated = replace(draft, observation_date=defaults['observation_date'], instrument=defaults['instrument'],
+                              session=defaults['session'] or draft.session)
+            target = dict(expected, market_reference=reference.isoformat(), instrument=defaults['instrument'],
+                          interpretation=self.amdx_catalog_widget.channel_selector.currentText())
+            self.study_task_registry.align_capture(updated, expected, target)
+            self.study_find_draft_save_timer.stop()
+            self.pending_study_find_draft = None
+            self.pending_investigation_context = target
+            self.capture_context_defaults = defaults
+            source.load_draft(updated)
+            self._refresh_capture_association()
+            self._refresh_capture_context()
+            self.investigation_context_labels[0].setText(
+                f"Capture destination: {target['question']}\n{target['instrument']} · {target['market_reference']} · {target['interpretation']}\n"
+                "Opening context updated explicitly; no saved association changed.")
+            source.save_feedback.setText('Capture reference aligned and draft retained. Notes and images preserved; capture not submitted.')
+        except (ValueError, sqlite3.Error) as error:
+            source.save_feedback.setText(f'Reference not changed: {error}')
+
     def _refresh_capture_context(self):
+        self._refresh_study_reference()
         defaults = self.capture_context_defaults
         if not defaults:
             return
@@ -790,17 +879,7 @@ class MainWindow(QMainWindow):
         except ValueError as error:
             self.status_bar.showMessage(str(error), 10000)
             return
-        session = ""
-        target = pane.target
-        if target is not None and target.cycle.layer == "day":
-            session = next(q.label for q in target.cycle.quarters if q.id == target.quarter_id)
-        elif target is not None and target.cycle.layer == "session":
-            session = next((q.label for row in pane.projection.cycles
-                            if row.context.cycle.layer == "day"
-                            for q in row.context.cycle.quarters
-                            if q.id == target.cycle.parent_quarter_id), "")
-        self.capture_context_defaults = dict(
-            observation_date=reference.date(), instrument=pane.instrument, session=session)
+        reference, self.capture_context_defaults = self._selected_capture_context()
         source = self.study_find_widget
         if not source.save_button.isEnabled():
             # Saved material remains in Review; never clear an unfinished draft.
@@ -1040,6 +1119,7 @@ class MainWindow(QMainWindow):
             self.study_find_widget.load_draft(latest_study_find_draft)
             self.pending_investigation_context = self.study_task_registry.context(latest_study_find_draft.id)
             self._refresh_capture_association()
+            self._refresh_study_reference()
             self.status_bar.showMessage(
                 "Restored unfinished Study Find draft",
                 3000,

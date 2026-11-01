@@ -1,3 +1,7 @@
+## Current local slice — Study reference alignment
+
+Operator 352–353 PASS on published #103 (`5a6df7b`). `feature/study-reference-alignment-v0` adds visible retained/selected references, navigation to existing calendar controls and explicit atomic alignment for an unlinked draft in its current investigation. Content/images and identity remain, saved associations are protected. Schema 52 unchanged. See `STUDY_REFERENCE_ALIGNMENT.md`, pending 354. This cannot detect TradingView's date and does not correct already-saved receipts. Next: question capture directly from review. Publish draft stacked on #103 only when authorized; do not merge.
+
 ## Current local slice — investigation resumption
 
 Operator 351 PASS on published #102 (`fac47c4`). Original temporary directory was absent; recovery used the verified archive and the operator confirmed meaningful material and image behavior in the durable workspace. Continue from `~/ict-study-workspaces/study-v0`, not `/tmp`.
