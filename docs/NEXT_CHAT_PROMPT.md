@@ -1,5 +1,7 @@
 # ICT Trading Cockpit — Next Chat Startup Prompt
 
+Latest checkpoint (2026-10-17): quiet-Watch checks 291–295 PASS. Study-first routing is implemented locally on `feature/study-first-startup-v0`; read `STUDY_FIRST_STARTUP_SLICE.md`, its operator guide and the newest `PROJECT_STATE.md` entry before older frontier text. Checks 296–300 and publication remain pending. Preserve local smoke notes; no merge is authorized.
+
 Copy the prompt below into a fresh ChatGPT conversation when this development chat is approaching or has reached its context limit.
 
 ---

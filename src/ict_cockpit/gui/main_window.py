@@ -58,6 +58,7 @@ from ict_cockpit.database.context_capture_repository import ContextCaptureReposi
 from ict_cockpit.gui.feedback_dialog import FeedbackDialog
 from ict_cockpit.gui.study_find_review_widget import StudyFindReviewWidget
 from ict_cockpit.gui.study_find_widget import StudyFindWidget
+from ict_cockpit.gui.study_home_widget import StudyHomeWidget
 from ict_cockpit.gui.contextual_study_find_dock import ContextualStudyFindDock
 from ict_cockpit.gui.amdx_master_lab_widget import AMDXMasterLabWidget
 from ict_cockpit.gui.summary_template_workbench_widget import (
@@ -310,6 +311,53 @@ class MainWindow(QMainWindow):
         )
 
         self._restore_drafts()
+        self.study_home_widget = StudyHomeWidget(self.trade_plan.competencies)
+        self.tabs.addTab(self.study_home_widget, "Study")
+        self.study_home_widget.study_requested.connect(self._stage_home_study)
+        self.study_home_widget.resume_requested.connect(self._resume_home_run)
+        self.study_home_widget.capture_requested.connect(
+            lambda: self.tabs.setCurrentWidget(self.study_find_widget)
+        )
+        self.study_home_widget.calendar_requested.connect(
+            lambda: self.tabs.setCurrentWidget(self.amdx_catalog_widget)
+        )
+        self.tabs.currentChanged.connect(lambda _index: self._refresh_study_home())
+        self._refresh_study_home()
+        if shell.active_trading_run is None:
+            self.tabs.setCurrentWidget(self.study_home_widget)
+
+    def _refresh_study_home(self):
+        if self.tabs.currentWidget() is not self.study_home_widget:
+            return
+        shell = self.trade_plan_widget.trading_day_shell_widget
+        source = self.study_find_widget
+        has_draft = bool(source.pattern_input.text().strip()
+                         or source.observation_input.toPlainText().strip()
+                         or source.notes_input.toPlainText().strip()
+                         or self.study_find_repository.get_latest_draft())
+        self.study_home_widget.refresh(
+            run=shell.active_trading_run,
+            mode_name=shell.runtime.current_mode.name,
+            directions=self.competency_development_direction_repository.list_for_plan(self.trade_plan.id),
+            revision=self.trade_plan.revision,
+            has_draft=has_draft,
+        )
+
+    def _resume_home_run(self):
+        self.tabs.setCurrentWidget(self.trade_plan_widget)
+        self.trade_plan_widget.focus_runtime()
+
+    def _stage_home_study(self, competency_id):
+        plan = self.trade_plan_widget
+        if plan.trading_day_shell_widget.active_trading_run is not None:
+            self._refresh_study_home()
+            return
+        if not plan.process_run_launcher_widget.prepare_targeted_study(competency_id):
+            return
+        self.tabs.setCurrentWidget(plan)
+        plan.section_list.setCurrentRow(plan._section_ids.index("review-development"))
+        plan.competency_evidence_review_widget.select_work_area("practice")
+        plan.process_run_launcher_widget.study_question_input.setFocus()
 
     def _toggle_contextual_study_find(self, basis) -> None:
         shell = self.trade_plan_widget.trading_day_shell_widget

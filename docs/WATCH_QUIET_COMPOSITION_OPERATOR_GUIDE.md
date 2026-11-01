@@ -1,5 +1,7 @@
 # Native quiet-Watch composition trial
 
+**Acceptance update, 2026-10-17:** operator retest “292 passed” on correction `6561f2c` completes all checks 291–295. Earlier failure/retest instructions below document the resolved issue. No further Watch trial or merge is implied; Study-first startup is the next milestone.
+
 This focused trial checks whether the real native Watch surface now reads as one quiet operating composition while preserving the accepted AMDX decision and Study Find paths. It does not ask for final styling approval and does not simulate or connect a broker.
 
 **Status:** Original implementation verification: **1,155 PASS across 95 isolated module processes**. Operator report on 2026-10-17: **291 and 293–295 PASS; 292 FAIL**. The Q4 entry correction requires the focused retest below; the earlier complete-suite result is not a fresh validation of that correction.

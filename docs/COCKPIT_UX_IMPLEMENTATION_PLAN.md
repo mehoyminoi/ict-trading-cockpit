@@ -1,5 +1,7 @@
 # Whole-cockpit UX and Study implementation plan
 
+**2026-10-17 implementation checkpoint:** quiet-Watch checks 291–295 PASS. The [Study-first startup slice](STUDY_FIRST_STARTUP_SLICE.md) now implements the bounded idle-Study / active-runtime routing policy below. Checks 296–300 await operator review. Recommendation ordering and final Lab topology remain provisional; no complete integrated Study workspace is claimed.
+
 **Status:** Proposed implementation plan for operator review, 2026-10-13. Accepted behavioral requirements are identified below; the workspace arrangement, startup policy and slice sequence are developer recommendations. Reviewing this document or the accompanying interactive walkthrough does not accept final styling, recommendation ranking or a production UI rewrite.
 
 **Review hold — operator feedback, 2026-10-13:** The synthetic walkthrough is not accepted as a mature layout. The operator reports density, homogeneous sections, scattered AMDX context and loss of guided Focus versus accessible Deck. Read [the recovered-context comparison](UX_CONTEXT_RECONCILIATION.md) before another renderer or native UX slice. The original proposal below remains available as the comparison point; adjacency, calendar presentation, support-tool access and usability exits require reconciliation. No UI changes are authorized by this feedback record.
