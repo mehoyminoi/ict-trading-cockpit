@@ -1,3 +1,11 @@
+## Current checkpoint — existing-workspace launch accepted
+
+Operator 370 PASS on #115 implementation `06cf18a592ddc7c8fb68b2f75f35e9a30835ab4e`. PR #115 remains draft/unmerged, stacked on #114 (`feature/integration-readiness-v0`, `a174ea5`). Accepted everyday command: `python tools/open_cockpit.py --workspace "$HOME/ict-study-workspaces/study-v0"`. It opens the same retained database/media/settings with normal idle Study or active-run restoration. Historical fixture provenance remains; no trading authorization follows from launch acceptance.
+
+This update records acceptance and updates the guide, roadmap and milestone. Product code/tests/schema unchanged (53 / Alpha 0.7). Prior 39 application and four documentation passes remain evidence, not fresh executions. Current validation is documentation scope, exact smoke-result preservation, Markdown fences and diff checks. No repeat operator trial or pull is needed for behavior.
+
+Next is a concrete consolidation proposal: refresh stack heads, preserve accepted results including #83's documentation-only delta, and identify the exact merge order and final validation gate. Any cumulative validation required for the post-launch tree remains explicit; #114's 1,317-test result predates the launcher. Do not merge, rebase or retarget without separate authorization. No new product feature is requested by this acceptance. Earlier checkpoints below are historical.
+
 ## Current local checkpoint — existing-workspace launch
 
 `feature/existing-workspace-launch-v0` starts at published #114 `a174ea51febfbb7243674c4a7ba99dc2f74068b9`, draft/unmerged and stacked on #113. Shared main now accepts an explicit existing workspace; `tools/open_cockpit.py` requires that argument. The route opens the retained `demo.db`, media and settings without schema initialization, fixture seeding, forced Calendar navigation or implicit run creation. Marker/provenance remain, and the title identifies the path as a retained trial workspace. Default no-option module behavior remains separate and unchanged in data selection.

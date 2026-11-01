@@ -1,5 +1,7 @@
 # Existing-workspace launch
 
+**Operator 370: PASS (2026-10-31).** Accepted on PR #115 implementation `06cf18a`; draft/unmerged, stacked on #114. The explicit command below is now the accepted everyday entry for the existing durable Study workspace. No repeat check is requested.
+
 This route opens the operator's existing durable Study workspace through the shared application. It removes the trial launcher's forced Calendar navigation and does not seed a question, criterion, trading run, date or interpretation. Existing records and fixture provenance remain; the title identifies the selected path as a retained trial workspace. This is not adoption of synthetic definitions as a Trade Plan.
 
 ## Bounded launch contract
@@ -38,4 +40,4 @@ After a pass, this becomes the normal command for the existing durable Study wor
 
 ## Validation and limits
 
-Developer validation: 39 checks PASS in 53.51s, covering 15 new launcher cases plus existing Study startup, geometry, recovery and MainWindow behavior. Rejected closed workspaces retain their files and environment; absent paths are not created; copied manifests v1/v2 preserve image resolution without originals; active Replay IDs and idle material/settings survive reopen. CLI help, Python 3.10 syntax and diff checks pass. Operator acceptance is separate. Check 370 starts NOT TESTED. No broad redesign, workspace relocation, data merge, schema migration, new-workspace policy, installer, desktop shortcut or PR consolidation is included. Cumulative 1,317-test evidence on #114 remains prior evidence, not a claim that this new launcher has received a fresh full-suite run.
+Developer validation: 39 checks PASS in 53.51s, covering 15 new launcher cases plus existing Study startup, geometry, recovery and MainWindow behavior. Rejected closed workspaces retain their files and environment; absent paths are not created; copied manifests v1/v2 preserve image resolution without originals; active Replay IDs and idle material/settings survive reopen. CLI help, Python 3.10 syntax and diff checks pass. Operator acceptance is separate. Check 370 is operator PASS. No broad redesign, workspace relocation, data merge, schema migration, new-workspace policy, installer, desktop shortcut or PR consolidation is included. Cumulative 1,317-test evidence on #114 remains prior evidence, not a claim that this new launcher has received a fresh full-suite run.
