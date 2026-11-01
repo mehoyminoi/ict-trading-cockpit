@@ -21,13 +21,13 @@ Accepted means the stated behavior passed its review. It does not mean final sty
 
 ## In progress — keep the forest in view
 
-**Integration readiness:** Study, the bounded TDA → Watch journey and durable recovery have operator acceptance. Remaining work is to check everyday launch/activity continuity and cumulative regression evidence before consolidation.
+**Integration readiness assessed:** the draft stack and cumulative regression checks have been reviewed. Test maintenance is locally verified; publication pending. Study, the bounded TDA → Watch journey and durable recovery retain operator acceptance.
 
 **Current operator check:** none pending; 369 passed. No repeat study, journey or recovery exercise is requested. This is not full-suite, whole-daily-workflow, competency or trading authorization acceptance.
 
 ## Next — remaining workflow milestones
 
-1. **Integration readiness:** reconcile stack/acceptance records, check remaining startup and activity-switching coverage, and run cumulative regression validation. Use accepted restart/recovery evidence; ask for another operator check only for a concrete remaining gap.
+1. **Everyday workspace launch:** open the existing durable workspace directly, with normal Study-first or active-run restoration, without demo seeding or a forced calendar view. Preserve historical data and verify on copies before one focused operator check.
 2. **Consolidation:** review and integrate the tested draft-PR stack through separately authorized merges, then establish a clear everyday launch/recovery baseline.
 3. **Routine-use refinement:** use actual sessions to prioritize remaining navigation, status feedback, chart-facing controls and keyboard friction.
 

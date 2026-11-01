@@ -3,7 +3,7 @@ from datetime import datetime
 import sqlite3
 
 import pytest
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QTimer, QCoreApplication, QEvent
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QApplication
 
@@ -25,6 +25,10 @@ def close(window, connection):
         timer.stop()
     window.close()
     window.deleteLater()
+    # Dispose per-test Qt objects before closing their database, rather than
+    # accumulating deferred windows until session-wide QApplication teardown.
+    QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+    QApplication.processEvents()
     connection.close()
 
 
@@ -373,6 +377,8 @@ def test_read_failure_disables_recording_without_clearing_last_validated_view(co
 
 def test_orientation_stays_outside_scroll_and_small_window_keeps_controls_reachable(cockpit):
     window, shell, connection = cockpit
+    # Study-first startup leaves the runtime hidden until the operator selects it.
+    window.tabs.setCurrentWidget(window.trade_plan_widget)
     window.trade_plan_widget.focus_runtime()
     window.resize(1024, 768)
     window.show()
