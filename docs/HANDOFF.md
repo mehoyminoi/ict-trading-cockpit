@@ -4,6 +4,8 @@ Use this file to make chat, branch, and developer handoffs deterministic and to 
 
 Current frontier: AMDX PRs #67–75 are merged into main with their exact reviewed trees, schema v46 / Alpha 0.7. Final code merge `8b7f8ae0e8e6da76bed266f771fce75d4bfaaefb`; 1,136 PASS across 89 isolated modules and all 20 operator checks 261–280 PASS. The functional maintained AMDX foundation is integrated and accepted. Next is the comprehensive whole-cockpit UX/Study implementation plan, with usable criteria authoring/evaluation and controlled legacy/history imports kept explicit. `AMDX_MAIN_SYNC_GUIDE.md` provides user sync and a consistent SQLite backup before regular-app launch; local notes/stashes remain untouched. Read the latest `PROJECT_STATE.md` for the exact main handoff. Earlier unmerged/draft statements below are historical checkpoints.
 
+Current planning deliverables: `COCKPIT_UX_IMPLEMENTATION_PLAN.md`, `UX_CONTEXT_RECONCILIATION.md`, `UX_FRICTION_RESEARCH.md`, `UX_DESIGN_TOUCHSTONES.md` and the accepted `UX_INTERACTION_STANDARDS.md`. TDA parity, the isolated/broader Study-first Lab direction and complete Watch composition are directionally accepted checkpoints; integrated/native judgment remains open. Do not continue open-ended Lab or Watch polish. The reference-and-decision dock passed bounded operator review and is the accepted contextual-completion exemplar: open support at the discernment point, carry the exact legal target, invoke the shared immediate command, synchronize projections, dismiss and return focus. The selected next milestone is `WATCH_NATIVE_DECISION_DOCK_SLICE.md`, implemented as a thin projection over existing Watch/AMDX ownership. Alpha 0.7 has no published AMDX manual-reference definition, so native reference content must remain truthfully unavailable until a versioned plan supplies it. Study Find integration, broader Watch composition and Study-first routing follow. No P&L, broker action, production policy, native UI, schema, plan or smoke result changes are present.
+
 ## Canonical handoff package
 
 A new development chat should read these documents in this order:
@@ -16,6 +18,8 @@ A new development chat should read these documents in this order:
 6. **`docs/PROJECT_EVOLUTION.md`** — chronological architecture history explaining how the current model emerged.
 7. **Relevant code/tests** — Git is authoritative for what is actually implemented.
 8. **Historical source material** — consult only when clarification is still needed after the canonical package.
+
+For UX work, also read **`UX_DESIGN_TOUCHSTONES.md`** and **`WORKSPACE_PARITY.md`** before proposing a layout. They preserve the compact design motifs and the four-pane TradingView-to-TDA positional mapping that broad architecture summaries can otherwise flatten.
 
 Do **not** infer current priority from the recency, detail, or enthusiasm of an older feature discussion. First check whether that idea was later implemented, refined, deferred, or superseded.
 

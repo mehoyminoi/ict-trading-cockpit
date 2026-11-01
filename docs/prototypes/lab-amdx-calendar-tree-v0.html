@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ICT Cockpit · Lab AMDX Calendar &amp; Feature Tree v0.4</title>
+  <style>
+    :root{
+      color-scheme:dark;--bg:#0b1016;--chrome:#0f161f;--panel:#131b25;--panel2:#182330;--panel3:#1d2a38;
+      --line:#2d3c4d;--line2:#40546a;--text:#e6edf5;--muted:#98a8ba;--quiet:#6e8094;--accent:#78b9e7;
+      --accent2:#1b3b51;--q1:#d4bc54;--q2:#bd6868;--q3:#62a87e;--q4:#5d8fc4;--warn:#d79a58;--bad:#d87570;
+      --radius:10px;--shadow:0 14px 38px rgba(0,0,0,.24)
+    }
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font:13px/1.42 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    button,select{font:inherit;color:inherit}.app{height:100vh;min-height:720px;display:grid;grid-template-rows:56px 48px 1fr;overflow:hidden}
+    .topbar{display:flex;align-items:center;gap:16px;padding:8px 16px;border-bottom:1px solid #22303e;background:#0e151d}
+    .brand{min-width:275px}.brand strong{display:block;font-size:15px}.brand span{font-size:11px;color:var(--muted)}
+    .mode{padding:6px 9px;border:1px solid #3f5b70;border-radius:6px;background:#172b39;color:#bcdcf1;font-weight:700;letter-spacing:.07em}
+    .context{color:var(--muted)}.context b{color:var(--text)}.top-actions{margin-left:auto;display:flex;gap:7px}
+    .btn{padding:7px 10px;border:1px solid var(--line2);border-radius:7px;background:var(--panel2);cursor:pointer}.btn:hover{border-color:#66809b;background:var(--panel3)}
+    .btn.primary{background:#20577b;border-color:#397fad}.btn.ghost{background:transparent}.btn.warn{color:#edcc94}.key{margin-left:5px;padding:1px 4px;border:1px solid #53677c;border-bottom-width:2px;border-radius:4px;color:#c6d2dd;font-size:10px}
+    select{padding:7px 26px 7px 8px;border:1px solid var(--line2);border-radius:7px;background:#182330}.lens{border-color:#625a86;background:#242139;color:#d9d1ef}.depth-group{display:flex;border:1px solid var(--line2);border-radius:7px;overflow:hidden}.depth-btn{border:0;border-right:1px solid var(--line2);padding:7px 9px;background:#151f2a;color:var(--muted);cursor:pointer}.depth-btn:last-child{border-right:0}.depth-btn.selected{background:#24465d;color:#e1eff8}
+    .toolbar{display:flex;align-items:center;gap:7px;padding:6px 16px;border-bottom:1px solid #22303e;background:#101821}.tool-label{margin-right:2px;color:var(--quiet);font-size:10px;text-transform:uppercase;letter-spacing:.13em}.spacer{flex:1}
+    .coverage{padding:4px 7px;border:1px solid #69543d;border-radius:999px;color:#d6b784;font-size:11px}.status{color:var(--quiet);font-size:11px}
+    .shell{min-height:0;display:grid;grid-template-columns:292px minmax(500px,1fr) 326px;gap:11px;padding:11px}
+    .panel{min-height:0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow);overflow:hidden}
+    .panel-head{min-height:46px;display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #263443;background:#151e29}.panel-head strong{font-size:13px}.panel-head span{color:var(--quiet);font-size:11px}.tag{margin-left:auto;padding:3px 6px;border:1px solid var(--line);border-radius:999px}
+    .tree-panel{display:grid;grid-template-rows:auto auto 1fr auto}.path-summary{padding:9px 12px;border-bottom:1px solid #24313f;color:var(--muted);font-size:11px}.path-summary b{display:block;color:#d4dee8;margin-bottom:2px}
+    .tree{min-height:0;overflow:auto;padding:7px}.tree-row{width:100%;min-height:34px;display:grid;grid-template-columns:16px 8px 1fr auto;gap:6px;align-items:center;padding:5px 7px;border:1px solid transparent;border-radius:6px;background:transparent;text-align:left;cursor:pointer;color:var(--muted)}
+    .tree-row:hover{background:#18222d}.tree-row.selected{border-color:#527895;background:#182c3a}.tree-row.path:not(.selected){color:#c5d0db}.tree-row.unavailable{opacity:.48}.disclosure{color:#74869a}.qmark{width:3px;align-self:stretch;border-radius:2px;background:#46586b}.tree-row.selected .qmark{background:var(--accent)}
+    .node-label{min-width:0}.node-label b{display:block;color:inherit;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.node-label small{color:var(--quiet)}.role{padding:2px 6px;border:1px solid #415266;border-radius:999px;color:#c7d3df;font-size:10px}.current-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:5px}
+    .tree-foot{padding:9px 11px;border-top:1px solid #263443;color:var(--quiet);font-size:11px;background:#101821}
+    .workspace{display:grid;grid-template-rows:auto auto auto 1fr auto}.crumbs{display:flex;align-items:center;gap:4px;min-width:0;overflow:hidden}.crumb{border:0;background:transparent;color:var(--muted);padding:3px;cursor:pointer;white-space:nowrap}.crumb:hover{color:var(--text)}.chev{color:#536477}.workspace-title{padding:13px 17px 9px}.workspace-title .eyebrow,.eyebrow{color:var(--accent);font-size:10px;text-transform:uppercase;letter-spacing:.13em}.workspace-title h1{margin:3px 0 3px;font-size:22px}.workspace-title p{margin:0;color:var(--muted)}
+    .context-spine{display:flex;gap:5px;align-items:center;overflow:hidden;padding:0 16px 10px}.context-chip{min-width:0;padding:5px 7px;border:1px solid #2c3b4b;border-radius:6px;background:#111922;color:var(--quiet);font-size:10px;white-space:nowrap}.context-chip b{color:#c8d3de;font-weight:600;margin-left:4px}.context-arrow{color:#506174}
+    .canvas{min-height:0;overflow:auto;padding:4px 16px 16px}.canvas-grid{display:grid;gap:9px}.quarter-grid{grid-template-columns:repeat(4,minmax(110px,1fr))}.tile{position:relative;min-height:145px;padding:12px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);cursor:pointer}.tile:hover{border-color:#667f98}.tile.selected{border-color:#62839d;background:#1a3040;box-shadow:inset 0 0 0 1px rgba(120,185,231,.14)}.tile small{color:var(--quiet)}.tile h3{margin:7px 0 4px;font-size:16px}.tile p{margin:0;color:var(--muted);font-size:11px}.entered{position:absolute;right:8px;bottom:8px;color:#b8c5d2;font-size:10px}.implied{color:var(--quiet)}
+    .month-tools{display:flex;align-items:center;gap:7px;margin-bottom:8px}.month-tools .spacer{flex:1}
+    .month-note{margin-bottom:8px;color:var(--quiet);font-size:10px}.month{display:grid;grid-template-columns:70px repeat(7,minmax(72px,1fr));gap:5px}.week-head{border-right:1px solid #2a3948}.dow{padding:4px 7px;color:var(--quiet);font-size:10px;text-transform:uppercase;letter-spacing:.1em}.week-label{min-height:94px;display:flex;flex-direction:column;justify-content:center;padding:5px 8px;border-right:1px solid #354656;color:var(--quiet);text-align:right}.week-label small{font-size:9px;text-transform:uppercase;letter-spacing:.08em}.week-label b{color:#b7c4d0;font-size:13px;font-weight:600}.week-label span{font-size:9px}.week-label.quiet small,.week-label.quiet b,.week-label.quiet span{display:none}.day{position:relative;min-height:94px;padding:7px;border:1px solid #283746;border-radius:7px;background:#151f2a;cursor:pointer}.day:hover{border-color:#5b7188}.day.outside{opacity:.38}.day.selected{border-color:var(--accent);background:#193044}.day.unavailable{background:repeating-linear-gradient(135deg,#151f2a,#151f2a 6px,#18232e 6px,#18232e 12px)}.date{display:flex;justify-content:space-between;color:#d8e2ec}.day-role{margin-top:5px;color:#cad5df;font-weight:700}.news{display:inline-flex;margin-top:5px;gap:4px;align-items:center;color:#d6ad78;font-size:9px}.news i{width:6px;height:6px;border-radius:50%;background:var(--warn)}.open-cue{display:block;width:max-content;margin-top:5px;padding:1px 4px;border:1px solid #6b5c48;border-radius:4px;color:#d5bea0;font-size:8px}.session-mini{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:6px}.session-mini span{min-height:16px;padding:2px 0;border:1px solid #415163;border-radius:3px;background:#17222d;color:#aebdca;font-size:8px;font-weight:700;text-align:center}.cycle-mini{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:3px}.cycle-mini i{height:3px;border-radius:2px;background:#6684a0}
+    .week-strip{grid-template-columns:repeat(5,minmax(100px,1fr))}.week-strip .tile{min-height:190px}.session-grid{grid-template-columns:repeat(4,minmax(110px,1fr))}.session-grid .tile{box-shadow:inset 3px 0 0 #526174}.session-grid .tile.q1{box-shadow:inset 3px 0 0 var(--q1)}.session-grid .tile.q2{box-shadow:inset 3px 0 0 var(--q2)}.session-grid .tile.q3{box-shadow:inset 3px 0 0 var(--q3)}.session-grid .tile.q4{box-shadow:inset 3px 0 0 var(--q4)}.cycle-grid{grid-template-columns:repeat(2,minmax(180px,1fr))}.cycle-grid .tile{min-height:120px}.period-groups{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.period-group{padding:10px;border:1px solid var(--line);border-radius:9px;background:#141e29}.period-group h3{margin:0 0 7px}.children{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}.child{padding:7px;border:1px solid #2b3a49;border-radius:6px;background:#192430;color:var(--muted);text-align:left}.child.current{border-color:#567a95;background:#1a3040}.child b{display:block;color:#d3dee8}.micro-stack{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:5px}.micro-stack i{height:3px;border-radius:2px;background:#526174}
+    .empty-state{padding:24px;border:1px dashed #45586c;border-radius:9px;color:var(--muted)}.workspace-foot{display:flex;align-items:center;gap:10px;padding:9px 13px;border-top:1px solid #263443;background:#101821;color:var(--quiet);font-size:11px}.workspace-foot b{color:#cbd7e2}
+    .detail-panel{display:grid;grid-template-rows:auto auto 1fr auto}.channel{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:9px 11px;border-bottom:1px solid #263443}.channel button{padding:7px;border:1px solid var(--line);border-radius:6px;background:#111922;cursor:pointer;color:var(--muted)}.channel button.selected{border-color:#547a97;background:#193146;color:#dcecf8}
+    .detail-body{min-height:0;overflow:auto;padding:12px}.detail-card{margin-bottom:10px;padding:11px;border:1px solid #2c3b4b;border-radius:8px;background:#17212c}.detail-card h3{margin:0 0 8px;font-size:12px}.kv{display:grid;grid-template-columns:88px 1fr;gap:5px 8px;color:var(--muted);font-size:11px}.kv b{color:#cdd8e3;font-weight:500}.profile{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:8px}.profile span{padding:7px 3px;border:1px solid #354657;background:#111a23;text-align:center;border-radius:4px;color:#d8e2ec}
+    .choices{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.choice{padding:8px;border:1px solid var(--line2);border-radius:6px;background:#1a2633;cursor:pointer}.choice:hover{border-color:#6e8aa4}.choice.selected{border-color:var(--accent);background:#1b3b51}.choice[disabled]{opacity:.4;cursor:not-allowed}.note{color:var(--quiet);font-size:10px;margin-top:7px}.definition{border-left:3px solid #7d6a9d;background:#1a1b29}.detail-foot{padding:10px 11px;border-top:1px solid #263443;background:#101821}.detail-foot .btn{width:100%}
+    .toast{position:fixed;right:18px;bottom:18px;padding:9px 12px;border:1px solid #52748f;border-radius:7px;background:#182a39;box-shadow:var(--shadow);opacity:0;transform:translateY(7px);pointer-events:none;transition:.16s}.toast.show{opacity:1;transform:none}
+    @media(max-width:1180px){.shell{grid-template-columns:250px minmax(450px,1fr) 292px}.brand{min-width:220px}.context{display:none}}
+    @media(max-width:980px){.app{height:auto;min-height:100vh;overflow:auto}.shell{grid-template-columns:230px minmax(480px,1fr)}.detail-panel{grid-column:1/-1;min-height:360px}.detail-body{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.detail-card{margin:0}.quarter-grid,.session-grid{grid-template-columns:repeat(2,1fr)}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><strong>ICT Trading Cockpit</strong><span>Lab multiscale calendar study · iteration 4</span></div>
+    <div class="mode">STUDY · LAB</div>
+    <div class="context">Active lens · <b>AMDX Calendar</b> · MNQ</div>
+    <div class="top-actions"><button class="btn ghost" id="guideBtn">Trial guide</button><button class="btn ghost warn" id="resetBtn">Reset prototype</button></div>
+  </header>
+  <nav class="toolbar">
+    <span class="tool-label">Workbench / lens</span><button class="btn lens" id="lensBtn">Lab · AMDX Calendar ▾</button>
+    <span class="tool-label">Level</span><button class="btn" id="zoomOutBtn">Zoom out <span class="key">−</span></button><button class="btn" id="zoomInBtn">Zoom in <span class="key">+</span></button><button class="btn" id="prevBtn">Previous <span class="key">[</span></button><button class="btn" id="nextBtn">Next <span class="key">]</span></button><button class="btn" id="followBtn">Follow current <span class="key">F</span></button>
+    <span class="tool-label">Context depth</span><div class="depth-group"><button class="depth-btn" data-depth="1">Quiet</button><button class="depth-btn" data-depth="2">Nested</button><button class="depth-btn" data-depth="3">Deep</button></div>
+    <span class="spacer"></span><span class="coverage">News snapshot · incomplete coverage</span><span class="status" id="navStatus">Pinned historical selection</span>
+  </nav>
+  <main class="shell">
+    <aside class="panel tree-panel">
+      <header class="panel-head"><strong>AMDX feature tree</strong><span class="tag">path + neighbors</span></header>
+      <div class="path-summary"><b id="pathTitle">Current path</b><span id="pathText"></span></div>
+      <div class="tree" id="tree"></div>
+      <footer class="tree-foot">Tree navigates. The workspace carries inspection, editing and analysis.</footer>
+    </aside>
+    <section class="panel workspace">
+      <header class="panel-head"><div class="crumbs" id="crumbs"></div><span class="tag" id="levelTag"></span></header>
+      <div class="workspace-title"><div class="eyebrow" id="workspaceEyebrow"></div><h1 id="workspaceHeading"></h1><p id="workspaceSub"></p></div>
+      <div class="context-spine" id="contextSpine"></div>
+      <div class="canvas" id="canvas"></div>
+      <footer class="workspace-foot"><span>Selected:</span><b id="selectedFoot"></b><span class="spacer"></span><span>Navigation writes no interpretation.</span></footer>
+    </section>
+    <aside class="panel detail-panel">
+      <header class="panel-head"><strong>Selected detail</strong><span id="detailLevel"></span><span class="tag">shared calendar</span></header>
+      <div class="channel"><button data-channel="Expected">Expected</button><button data-channel="Observed">Observed</button></div>
+      <div class="detail-body" id="detailBody"></div>
+      <footer class="detail-foot"><button class="btn" id="studyBtn">Capture Study Find <span class="key">C</span></button></footer>
+    </aside>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+(()=>{
+  const KEY='ict-lab-amdx-tree-v04';
+  const nodes={
+    root:{id:'root',level:'Calendar',label:'AMDX / XAMD',sub:'MNQ master calendar',role:'',q:0,parent:null,children:['cycle16']},
+    cycle16:{id:'cycle16',level:'16-year',label:'2011–2026',sub:'Q4 selected',role:'D',q:4,parent:'root',children:['quadPrev','quad']},
+    quadPrev:{id:'quadPrev',level:'Quadrennial',label:'2019–2022',sub:'available history',role:'M',q:3,parent:'cycle16',children:[]},
+    quad:{id:'quad',level:'Quadrennial',label:'2023–2026',sub:'Q4 selected',role:'D',q:4,parent:'cycle16',children:['year2025','year']},
+    year2025:{id:'year2025',level:'Year',label:'2025',sub:'source unavailable',role:'—',q:3,parent:'quad',children:[],unavailable:true},
+    year:{id:'year',level:'Year',label:'2026',sub:'Q4 · Oct–Dec',role:'D',q:4,parent:'quad',children:['quarterQ3','quarter']},
+    quarterQ3:{id:'quarterQ3',level:'Year quarter',label:'Q3 · Jul–Sep',sub:'collapsed sibling',role:'M',q:3,parent:'year',children:[]},
+    quarter:{id:'quarter',level:'Year quarter',label:'Q4 · Oct–Dec',sub:'current path',role:'D',q:4,parent:'year',children:['sep','month','nov']},
+    sep:{id:'sep',level:'Month',label:'September 2026',sub:'Q1 · month calendar',role:'A',q:1,parent:'quarter',children:[],monthKey:'2026-09'},
+    month:{id:'month',level:'Month',label:'October 2026',sub:'Q2 · month calendar',role:'M',q:2,parent:'quarter',children:['weekPrev','week','weekNext'],monthKey:'2026-10'},
+    nov:{id:'nov',level:'Month',label:'November 2026',sub:'Q3 · month calendar',role:'D',q:3,parent:'quarter',children:[],monthKey:'2026-11'},
+    weekPrev:{id:'weekPrev',level:'Week',label:'Oct 5–9',sub:'Q1',role:'A',q:1,parent:'month',children:[]},
+    week:{id:'week',level:'Week',label:'Oct 12–16',sub:'Q2 · selected week',role:'M',q:2,parent:'month',children:['mon','day','wed','thu','fri']},
+    weekNext:{id:'weekNext',level:'Week',label:'Oct 19–23',sub:'Q3',role:'D',q:3,parent:'month',children:[]},
+    mon:{id:'mon',level:'Trading Day',label:'Monday · Oct 12',sub:'Q1',role:'A',q:1,parent:'week',children:[]},
+    day:{id:'day',level:'Trading Day',label:'Tuesday · Oct 13',sub:'Q2 · session quartet',role:'M',q:2,parent:'week',children:['asia','london','session','nypm']},
+    wed:{id:'wed',level:'Trading Day',label:'Wednesday · Oct 14',sub:'Q3',role:'D',q:3,parent:'week',children:[]},
+    thu:{id:'thu',level:'Trading Day',label:'Thursday · Oct 15',sub:'Q4',role:'X(R)',q:4,parent:'week',children:[]},
+    fri:{id:'fri',level:'Trading Day',label:'Friday · Oct 16',sub:'distortion / outside quartet',role:'—',q:0,parent:'week',children:[]},
+    asia:{id:'asia',level:'Session',label:'Asia · Q1',sub:'18:00–00:00 ET',role:'A',q:1,parent:'day',children:[]},
+    london:{id:'london',level:'Session',label:'London · Q2',sub:'00:00–06:00 ET',role:'M',q:2,parent:'day',children:[]},
+    session:{id:'session',level:'Session',label:'NYAM · Q3',sub:'06:00–12:00 ET',role:'D',q:3,parent:'day',children:['c0600','c0730','c0900','cycle']},
+    nypm:{id:'nypm',level:'Session',label:'NYPM · Q4',sub:'12:00–17:00 ET',role:'X(?)',q:4,parent:'day',children:[]},
+    c0600:{id:'c0600',level:'90-minute',label:'06:00–07:30',sub:'Q1',role:'A',q:1,parent:'session',children:[]},
+    c0730:{id:'c0730',level:'90-minute',label:'07:30–09:00',sub:'Q2',role:'M',q:2,parent:'session',children:[]},
+    c0900:{id:'c0900',level:'90-minute',label:'09:00–10:30',sub:'Q3',role:'D',q:3,parent:'session',children:[]},
+    cycle:{id:'cycle',level:'90-minute',label:'10:30–12:00',sub:'Q4 · current reference',role:'X(?)',q:4,parent:'session',children:[],current:true}
+  };
+  const monthFixtures={
+    '2026-09':{id:'sep',name:'September 2026',days:30,start:1,prevDays:31,prev:'August',next:'October',trueOpen:'recorded',news:[2,10,16,22],selected:0},
+    '2026-10':{id:'month',name:'October 2026',days:31,start:3,prevDays:30,prev:'September',next:'November',trueOpen:'due',news:[7,13,15,29],selected:13},
+    '2026-11':{id:'nov',name:'November 2026',days:30,start:6,prevDays:31,prev:'October',next:'December',trueOpen:'unavailable',news:[4,6,12,25],selected:0}
+  };
+  const monthOrder=['sep','month','nov'];
+  const mainPath=['root','cycle16','quad','year','quarter','month','week','day','session','cycle'];
+  const pathSet=new Set(mainPath); const currentId='cycle';
+  const blank={selected:'month',channel:'Observed',depth:2,edits:{},revision:0,captures:0,opens:{year:'recorded',month:'due',week:'recorded',day:'due'}};let state={...blank,edits:{},opens:{...blank.opens}};
+  try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved)state={...state,...saved,edits:{...(saved.edits||{})},opens:{...state.opens,...(saved.opens||{})}}}catch(_){}
+  const $=id=>document.getElementById(id);const esc=v=>String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const ancestry=id=>{const a=[];for(let n=nodes[id];n;n=nodes[n.parent])a.unshift(n.id);return a};
+  const roleFor=n=>state.edits[`${state.channel}:${n.id}`]||n.role;
+  const persist=()=>localStorage.setItem(KEY,JSON.stringify(state));
+  const toast=m=>{$('toast').textContent=m;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1700)};
+  const profileFor=(q,role)=>{const x=role.startsWith('X')?role:'X(?)';const amdx=['A','M','D',x],xamd=[x,'A','M','D'];if((q===1&&role==='A')||(q===2&&role==='M')||(q===3&&role==='D')||(q===4&&role.startsWith('X')))return amdx;if(q>0)return xamd;return ['—','—','—','—']};
+  const optionsFor=q=>q===1?['A','X(C)','X(R)','X(?)']:q===2?['A','M']:q===3?['M','D']:q===4?['D','X(C)','X(R)','X(?)']:[];
+  function select(id){if(!nodes[id])return;state.selected=id;persist();render();}
+  function treeRows(){
+    const visible=['root','cycle16','quadPrev','quad','year2025','year','quarterQ3','quarter','sep','month','nov','weekPrev','week','weekNext','mon','day','wed','thu','fri','asia','london','session','nypm','c0600','c0730','c0900','cycle'];
+    return visible.map(id=>{const n=nodes[id],depth=Math.max(0,ancestry(id).length-2),has=n.children.length>0;return `<button class="tree-row ${state.selected===id?'selected':''} ${pathSet.has(id)?'path':''} ${n.unavailable?'unavailable':''}" data-id="${id}" style="padding-left:${7+depth*12}px"><span class="disclosure">${has&&pathSet.has(id)?'▾':has?'▸':'·'}</span><span class="qmark ${n.q?'q'+n.q:''}"></span><span class="node-label"><b>${n.current?'<i class="current-dot"></i>':''}${esc(n.label)}</b><small>${esc(n.sub)}</small></span><span class="role">${esc(roleFor(n))}</span></button>`}).join('');
+  }
+  function renderTree(){
+    $('tree').innerHTML=treeRows();document.querySelectorAll('.tree-row').forEach(b=>b.addEventListener('click',()=>select(b.dataset.id)));
+    const a=ancestry(state.selected).filter(id=>id!=='root').map(id=>nodes[id].label);$('pathText').textContent=a.join('  ›  ');$('pathTitle').textContent=nodes[state.selected].current?'Current path':'Pinned selection';
+  }
+  function renderCrumbs(){const a=ancestry(state.selected);$('crumbs').innerHTML=a.map((id,i)=>`${i?'<span class="chev">›</span>':''}<button class="crumb" data-id="${id}">${esc(nodes[id].label)}</button>`).join('');document.querySelectorAll('.crumb').forEach(b=>b.addEventListener('click',()=>select(b.dataset.id)));}
+  const microStack=()=>state.depth>1?`<span class="micro-stack"><i></i><i></i><i></i><i></i></span>`:'';
+  const tile=(id,title,sub,role,q,extra='')=>`<button class="tile q${q} ${state.selected===id?'selected':''}" data-select="${id}"><small>Q${q} · ${esc(sub)}</small><h3>${esc(title)}</h3><p>${esc(role)}</p>${microStack()}${extra}</button>`;
+  const openKeyFor=n=>n.level==='Year'?'year':n.level==='Month'?'month':n.level==='Week'?'week':n.level==='Trading Day'?'day':null;
+  const openStatusFor=n=>{if(n.level==='Month'&&n.id!=='month')return monthFixtures[n.monthKey]?.trueOpen||'unavailable';const key=openKeyFor(n);return key?state.opens[key]:null};
+  const openLabelFor=n=>n.level==='Year'?'True year open':n.level==='Month'?'True month open':n.level==='Week'?'True week open':n.level==='Trading Day'?'True day open':'';
+  function quartetCanvas(n){const roles=profileFor(n.q,roleFor(n));return `<div class="canvas-grid quarter-grid">${['Q1','Q2','Q3','Q4'].map((x,i)=>`<div class="tile q${i+1} ${i+1===n.q?'selected':''}"><small>${x}</small><h3>${esc(roles[i])}</h3><p>${i+1===n.q?'selected anchor':'profile-implied context'}</p><span class="entered ${i+1===n.q?'':'implied'}">${i+1===n.q?'entered':'implied'}</span></div>`).join('')}</div>`}
+  function sessionMini(day){const roles=day%2?['A','M','D','X(R)']:['X(C)','A','M','D'];return `<span class="session-mini" title="Asia · London · NYAM · NYPM">${roles.map(r=>`<span>${esc(r)}</span>`).join('')}</span>${day===13?'<span class="cycle-mini" title="Selected NYAM 90-minute cycles"><i></i><i></i><i></i><i></i></span>':''}`}
+  const trueOpenMarker=(label,status)=>`<span class="open-cue">${esc(label)} · ${status==='due'?'unmarked':status}</span>`;
+  function weekRail(row,cells){const meta=[['Distortion','—'],['Week Q1','A'],['Week Q2','M'],['Week Q3','D'],['Week Q4','X(R)'],['Distortion','—']][row],first=cells[row*7],last=cells[row*7+6],range=`${first.month.slice(0,3)} ${first.d}–${last.month.slice(0,3)} ${last.d}`;if(state.depth===1)return '<div class="week-label quiet" aria-label="week boundary"></div>';return `<div class="week-label"><small>${esc(meta[0])}</small><b>${esc(meta[1])}</b>${state.depth===3?`<span>${esc(range)}</span>`:''}</div>`}
+  function monthCanvas(n){const f=monthFixtures[n.monthKey],cells=[];for(let i=0;i<42;i++){const raw=i-f.start+1;if(raw<1)cells.push({d:f.prevDays+raw,out:true,month:f.prev});else if(raw>f.days)cells.push({d:raw-f.days,out:true,month:f.next});else cells.push({d:raw,out:false,month:f.name.split(' ')[0]})}
+    const roleByDow=['A','M','D','X(R)','·','·','·'];
+    const rows=Array.from({length:6},(_,row)=>weekRail(row,cells)+cells.slice(row*7,row*7+7).map((x,dow)=>{const selected=!x.out&&n.id==='month'&&x.d===13,unavailable=!x.out&&x.d===2,news=!x.out&&f.news.includes(x.d),role=!x.out&&!unavailable?roleByDow[dow]:'·',monthOpen=!x.out&&x.d===1?trueOpenMarker('TMO',openStatusFor(n)):'',dayOpen=selected?trueOpenMarker('TDO',state.opens.day):'';return `<button class="day ${x.out?'outside':''} ${selected?'selected':''} ${unavailable?'unavailable':''}" ${selected?'data-select="day"':''}><span class="date"><b>${x.d}</b><small>${esc(x.month)}</small></span>${state.depth>1?`<div class="day-role">${unavailable?'Unavailable':role}</div>`:''}${monthOpen}${dayOpen}${news?'<span class="news"><i></i>high impact</span>':''}${state.depth===3&&!x.out&&!unavailable&&dow<5?sessionMini(x.d):''}</button>`}).join('')).join('');
+    return `<div class="month-tools"><button class="btn" data-monthnav="-1">‹</button><select id="monthPick" aria-label="Month"><option value="sep" ${n.id==='sep'?'selected':''}>September</option><option value="month" ${n.id==='month'?'selected':''}>October</option><option value="nov" ${n.id==='nov'?'selected':''}>November</option></select><select id="yearPick" aria-label="Year"><option value="year2025">2025</option><option value="year" selected>2026</option></select><button class="btn" data-monthnav="1">›</button><span class="spacer"></span><span class="status">Calendar navigation does not move the live clock</span></div><div class="month-note">True opens are shown at their calendar location. Due reminders belong to TDA; Lab inspects and edits the fact.</div><div class="month"><div class="week-head"></div>${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(x=>`<div class="dow">${x}</div>`).join('')}${rows}</div>`}
+  function weekCanvas(){return `<div class="canvas-grid week-strip">${[['mon','Mon 12','A',1],['day','Tue 13','M',2],['wed','Wed 14','D',3],['thu','Thu 15','X(R)',4],['fri','Fri 16','Distortion',4]].map((x,i)=>tile(x[0],x[1],x[0]==='fri'?'outside four-day quartet':'Trading Day',x[2],x[3],`${i===0?trueOpenMarker('TWO',state.opens.week):''}${x[0]==='day'?'<span class="entered">selected day</span>':''}`)).join('')}</div>`}
+  function dayCanvas(){return `<div class="canvas-grid session-grid">${[['asia','Asia','18:00–00:00','A',1],['london','London','00:00–06:00','M',2],['session','NYAM','06:00–12:00','D',3],['nypm','NYPM','12:00–17:00','X(?)',4]].map((x,i)=>tile(x[0],x[1],x[2],x[3],x[4],i===0?trueOpenMarker('TDO',state.opens.day):'')).join('')}</div>`}
+  function sessionCanvas(){return `<div class="canvas-grid cycle-grid">${[['c0600','06:00–07:30','A',1],['c0730','07:30–09:00','M',2],['c0900','09:00–10:30','D',3],['cycle','10:30–12:00','X(?)',4]].map(x=>tile(x[0],x[1],'90-minute cycle',x[2],x[3],x[0]==='cycle'?'<span class="entered"><i class="current-dot"></i>current</span>':'')).join('')}</div>`}
+  const group=(q,title,items,current='',target='',extras={})=>`<section class="period-group q${q}"><h3>Q${q} · ${esc(title)}</h3><div class="children">${items.map(x=>`<button class="child ${x===current?'current':''}" ${x===current&&target?'data-select="'+target+'"':''}><b>${esc(x)}</b>${state.depth>1?'<span>retained role · '+['A','M','D','X(?)'][(q-1)%4]+'</span>'+microStack():''}${extras[x]||''}${state.depth===3&&x===current?'<span>selected descendant path remains visible</span>':''}</button>`).join('')}</div></section>`;
+  function overviewCanvas(n){
+    if(n.id==='root')return `<div class="period-groups">${group(1,'Calendar lens',['16-year structure','True opens'])}${group(2,'Study context',['News snapshots','Definitions'])}${group(3,'Evidence',['Study Finds','Chart captures'])}${group(4,'Other Lab lenses',['Criteria research','Backtest samples'])}</div>`;
+    if(n.id==='cycle16')return `<div class="period-groups">${group(1,'2011–2014',['2011','2012','2013','2014'])}${group(2,'2015–2018',['2015','2016','2017','2018'])}${group(3,'2019–2022',['2019','2020','2021','2022'])}${group(4,'2023–2026',['2023','2024','2025','2026'],'2026','year')}</div>`;
+    if(n.id==='quad'||n.id==='quadPrev')return `<div class="period-groups">${[1,2,3,4].map((q,i)=>group(q,`${2019+i}`,['Jan–Mar','Apr–Jun','Jul–Sep','Oct–Dec'],n.id==='quad'&&q===4?'Oct–Dec':'')).join('')}</div>`;
+    if(n.id==='year')return `<div class="period-groups">${group(1,'Jan–Mar',['January','February','March'],'','',{'January':trueOpenMarker('TYO',state.opens.year)})}${group(2,'Apr–Jun',['April','May','June'])}${group(3,'Jul–Sep',['July','August','September'])}${group(4,'Oct–Dec',['October','November','December'],'October','month')}</div>`;
+    if(n.id==='quarter'||n.id==='quarterQ3')return `<div class="period-groups">${group(1,'First month',['Weeks Q1','Q2','Q3','Q4'])}${group(2,'Second month',['Weeks Q1','Q2','Q3','Q4'],n.id==='quarter'?'Weeks Q2':'',n.id==='quarter'?'week':'')}${group(3,'Third month',['Weeks Q1','Q2','Q3','Q4'])}${group(4,'Quarter context',['True quarter open','News clusters','Definitions','Observed stack'])}</div>`;
+    return `<div class="canvas-grid quarter-grid">${[1,2,3,4].map(q=>`<div class="tile q${q} ${q===n.q?'selected':''}"><small>Q${q}</small><h3>${q===n.q?esc(n.label):'Context retained'}</h3><p>${q===n.q?'Selected descendant path':'Collapsed sibling period'}</p>${microStack()}</div>`).join('')}</div>`;
+  }
+  function renderContextSpine(){const a=ancestry(state.selected).filter(id=>!['root',state.selected].includes(id)),shown=state.depth===1?a.slice(-3):state.depth===2?a.slice(-5):a;$('contextSpine').innerHTML=shown.map((id,i)=>`${i?'<span class="context-arrow">›</span>':''}<span class="context-chip">${esc(nodes[id].level)}<b>${esc(nodes[id].label)} · ${esc(roleFor(nodes[id]))}</b></span>`).join('')}
+  function bindCanvas(){document.querySelectorAll('[data-select]').forEach(b=>b.addEventListener('click',()=>select(b.dataset.select)));document.querySelectorAll('[data-monthnav]').forEach(b=>b.addEventListener('click',()=>navigateMonth(Number(b.dataset.monthnav))));const mp=$('monthPick'),yp=$('yearPick');if(mp)mp.addEventListener('change',()=>select(mp.value));if(yp)yp.addEventListener('change',()=>select(yp.value))}
+  function renderWorkspace(){const n=nodes[state.selected];renderCrumbs();renderContextSpine();$('levelTag').textContent=n.level;$('workspaceEyebrow').textContent=`AMDX Calendar lens · ${state.channel} · ${['Quiet','Nested','Deep'][state.depth-1]} context`;$('workspaceHeading').textContent=n.label;$('workspaceSub').textContent=n.unavailable?'This reference is explicitly unavailable; no role is guessed.':n.sub;$('selectedFoot').textContent=`${n.level} · ${n.label}`;
+    let html;if(n.unavailable)html='<div class="empty-state"><b>Source unavailable</b><br>This historical reference has no maintained entry. Navigation remains available; the fixture does not substitute MNQ data or infer a role.</div>';else if(n.level==='Month')html=monthCanvas(n);else if(['week','weekPrev','weekNext'].includes(n.id))html=weekCanvas();else if(['day','mon','wed','thu','fri'].includes(n.id))html=dayCanvas();else if(['session','asia','london','nypm'].includes(n.id))html=sessionCanvas();else if(n.level==='90-minute')html=quartetCanvas(n);else html=overviewCanvas(n);$('canvas').innerHTML=html;bindCanvas();
+  }
+  function renderDetail(){const n=nodes[state.selected],role=roleFor(n),roles=profileFor(n.q,role),opts=optionsFor(n.q),openKey=openKeyFor(n),openStatus=openStatusFor(n);$('detailLevel').textContent=n.level;document.querySelectorAll('[data-channel]').forEach(b=>b.classList.toggle('selected',b.dataset.channel===state.channel));
+    $('detailBody').innerHTML=`${openKey?`<section class="detail-card"><h3>${openLabelFor(n)}</h3><div class="kv"><span>Status</span><b>${openStatus==='due'?'Unmarked':openStatus==='recorded'?'Recorded':'Unavailable'}</b><span>Ownership</span><b>Market fact · not AMDX judgment</b><span>Lab purpose</span><b>Inspect or edit the period fact</b><span>Reminder surface</span><b>${openStatus==='due'?'TDA when temporally relevant':'None due'}</b></div>${openStatus==='due'?`<button class="btn" data-mark-open="${openKey}" style="margin-top:9px">Mark recorded</button>`:''}</section>`:''}<section class="detail-card"><h3>Selection basis</h3><div class="kv"><span>Target</span><b>${esc(n.label)}</b><span>Channel</span><b>${esc(state.channel)}</b><span>Role</span><b>${esc(role)}</b><span>Recorded</span><b>${state.edits[`${state.channel}:${n.id}`]?'prototype revision '+state.revision:'fixture value'}</b></div><div class="profile">${roles.map((r,i)=>`<span class="p${i+1}">${esc(r)}</span>`).join('')}</div><div class="note">Selected anchor and profile-implied siblings remain distinct.</div></section><section class="detail-card"><h3>Direct legal entry</h3><div class="choices">${opts.length?opts.map(x=>`<button class="choice ${role===x?'selected':''}" data-role="${x}" ${n.unavailable?'disabled':''}>${x}</button>`).join(''):'<span class="note">Select a quarter-bearing level to edit.</span>'}</div><div class="note">One choice revises the compatible quartet immediately. No second Save.</div></section><section class="detail-card definition"><h3>Definition beside the work</h3><div class="kv"><span>Published basis</span><b>Cycle Profile Priority · Rev 3</b><span>Priority cue</span><b>Manipulation location before local appearance</b><span>Coverage</span><b>Manual interpretation · no classifier</b></div></section><section class="detail-card"><h3>Provenance</h3><div class="kv"><span>Instrument</span><b>MNQ</b><span>Reference</span><b>New York market time</b><span>News</span><b>Snapshot incomplete</b><span>Workbench / lens</span><b>Lab · AMDX Calendar</b></div></section>`;
+    document.querySelectorAll('[data-role]').forEach(b=>b.addEventListener('click',()=>{state.edits[`${state.channel}:${n.id}`]=b.dataset.role;state.revision+=1;persist();render();toast(`${b.dataset.role} recorded · compatible quartet updated`)}));document.querySelectorAll('[data-mark-open]').forEach(b=>b.addEventListener('click',()=>{state.opens[b.dataset.markOpen]='recorded';persist();render();toast('True open marked recorded in this fixture')}));
+  }
+  function render(){renderTree();renderWorkspace();renderDetail();document.querySelectorAll('[data-depth]').forEach(b=>b.classList.toggle('selected',Number(b.dataset.depth)===state.depth));$('navStatus').textContent=state.selected===currentId?'Following current reference':'Pinned selection · current remains 10:30–12:00';}
+  function zoom(dir){const n=nodes[state.selected];if(dir<0&&n.parent)select(n.parent);else if(dir>0){const preferred=n.children.find(id=>pathSet.has(id))||n.children[0];if(preferred)select(preferred);else toast('No deeper level in this fixture');}}
+  function sibling(delta){const n=nodes[state.selected],p=n.parent&&nodes[n.parent];if(!p)return;const i=p.children.indexOf(n.id),id=p.children[i+delta];if(id)select(id);else toast(delta<0?'First sibling':'Last sibling');}
+  function navigateMonth(delta){const i=monthOrder.indexOf(state.selected),next=monthOrder[i+delta];if(next)select(next);else toast(delta<0?'First month in fixture':'Last month in fixture')}
+  document.querySelectorAll('[data-channel]').forEach(b=>b.addEventListener('click',()=>{state.channel=b.dataset.channel;persist();render()}));
+  document.querySelectorAll('[data-depth]').forEach(b=>b.addEventListener('click',()=>{state.depth=Number(b.dataset.depth);persist();render();toast(`${['Quiet','Nested','Deep'][state.depth-1]} context depth`)}));
+  $('zoomOutBtn').addEventListener('click',()=>zoom(-1));$('zoomInBtn').addEventListener('click',()=>zoom(1));$('prevBtn').addEventListener('click',()=>sibling(-1));$('nextBtn').addEventListener('click',()=>sibling(1));$('followBtn').addEventListener('click',()=>{select(currentId);toast('Following current · historical pin released')});
+  $('lensBtn').addEventListener('click',()=>alert('Workbench / lens hypothesis\n\nCockpit phases may behave like familiar CAD workbenches: TDA, Watch, Lab and Review retain a shared shell while presenting tools for the operation at hand. AMDX Calendar is the active Lab lens here.\n\nMature Lab also coordinates study questions, chart evidence, criteria research, backtest samples and Study Finds. This motif is promising, not accepted as final navigation.'));
+  $('studyBtn').addEventListener('click',()=>{state.captures+=1;persist();toast(`Study Find staged from ${nodes[state.selected].label}`)});
+  $('resetBtn').addEventListener('click',()=>{if(!confirm('Reset only this standalone prototype state?'))return;localStorage.removeItem(KEY);state={...blank,edits:{},opens:{...blank.opens}};render();toast('Prototype reset')});
+  $('guideBtn').addEventListener('click',()=>alert('Focused trial · iteration 4\n\n1. Recheck Quiet, Nested and Deep on October; their information distinction is retained.\n2. Scan the tree, higher-level groups, quartet cards and detail profile. Q1–Q4 position should be carried by text/order rather than decorative color.\n3. Move into a Trading Day. Only the four named session cards retain a restrained identity edge as a specific test of useful color.\n4. Confirm selection, current reference, news and unavailable states remain easy to reacquire without quarter-color noise.\n5. Continue noting where the overall AMDX Lab form and temporal zoom feel unfinished.\n\nThis is a color-policy refinement, not final AMDX Lab acceptance.'));
+  window.addEventListener('keydown',e=>{if(e.target.matches('input,textarea'))return;if(e.key==='+'||e.key==='=')zoom(1);else if(e.key==='-')zoom(-1);else if(e.key==='[')sibling(-1);else if(e.key===']')sibling(1);else if(e.key.toLowerCase()==='f')select(currentId);else if(e.key.toLowerCase()==='c')$('studyBtn').click()});
+  render();
+})();
+</script>
+</body>
+</html>

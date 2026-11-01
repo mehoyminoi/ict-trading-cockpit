@@ -4,17 +4,13 @@ This document captures broad information hierarchy and flow decisions before det
 
 ## Responsive window targets
 
-The cockpit is a **shared-pane desktop application**, not a full-screen application tied to a monitor resolution. The user's physical displays may be 2560 × 1080, 3440 × 1440, or other sizes, while TradingView and other tools occupy the same display.
+The Cockpit is the **primary desktop working surface**, planned around a 16:9 workspace occupying most of an ultrawide display or a conventional full display. External charts, journals and daily information are arranged around it. This accepted operator override supersedes the former undefined smaller companion-window target.
 
-Responsive behavior therefore follows the **cockpit window's available geometry**, not the monitor's native resolution.
+16:9 is a design reference, not a forced aspect ratio or fullscreen rule. Reflow follows available window geometry. The native baseline still opens at 1120 × 760; that existing default is not the mature design specification.
 
-Representative window classes are testing references rather than hard breakpoints:
+Test a spacious desktop layout with nearby overview/detail and a reduced window where required decisions stay reachable. Collapse supporting descriptions before hiding required controls. Keep quiet whole-stack AMDX orientation available across Study, TDA, Watch and Market Review.
 
-- **Compact pane:** reduced-height / side-by-side use. Critical current-step decisions and actions must remain discoverable without relying on a hidden outer scrollbar.
-- **Standard pane:** approximately the current default 1120 × 760 working size, with the full operating hierarchy comfortable but still compact.
-- **Wide pane:** additional width/height is available. The cockpit may expose more simultaneous context, but the workflow and required decisions do not change.
-
-The exact pixel ranges may evolve from real use. The invariant is more important than the breakpoint: **shrinking the window may reflow or progressively disclose secondary context, but it must not hide required current-step controls in a way that makes a feature appear absent.**
+The Focus/Deck sections below describe responsibilities that should coexist nearby in the mature interface, rather than mandatory separate tabs. Existing compact/wide terminology describes reflow behavior. See [the proposed UX/Study implementation plan](COCKPIT_UX_IMPLEMENTATION_PLAN.md) for the current whole-cockpit map, implementation slices and explicitly open choices.
 
 ## Global operating rule
 
@@ -22,7 +18,7 @@ The exact pixel ranges may evolve from real use. The invariant is more important
 
 The application may retain telemetry, evidence, transitions, and detailed history without demanding that the operator look at all of it during normal work.
 
-Primary controls should remain anchored and reachable. Mouse-wheel / mouse-button workflow navigation should not compete with ordinary page scrolling in operating surfaces designed around those inputs.
+Primary controls should remain anchored and reachable. Shared navigation actions must not compete with ordinary scrolling inside text/detail content. Explicit station actions and future bindings preserve low-motion operation without making wheel scrolling an undisclosed process transition.
 
 A scrollbar is acceptable for genuinely secondary/detail content. It is not acceptable as the only way to discover a required current-step decision such as Models in Play, authorization gates, or the primary process action.
 
@@ -51,7 +47,7 @@ Work one analysis station at a time and deliberately certify completion.
 ### Compact pane
 - Bounded working surface where normal station work does not require vertical scrolling to discover required controls.
 - Station-specific required decision surfaces remain inside the primary Focus hierarchy.
-- Wheel remains reserved for station navigation.
+- Wheel scrolls text/detail content; station navigation uses explicit shared actions.
 - Explanatory chrome collapses before required controls are displaced.
 
 ### Wide pane

@@ -27,7 +27,7 @@ This document is a reconciliation ledger, not a feature backlog. For current req
 | Review/Development | Parallel improvement area, not the final sequential phase after Post-Market. | CURRENT |
 | Process Blueprint | Process -> Mode -> Deck -> Station. A station is an analytical operation, not just a field. | CURRENT / IMPLEMENTED |
 | Station semantics | Action -> Observe -> Carry Forward. Manual chart work is legitimate until automation replaces the implementation. | CURRENT |
-| Focus / Deck | Two projections of the same station/session state; Focus for work, Deck for orientation. | CURRENT / IMPLEMENTED |
+| Focus / Deck | Two projections of the same station/session state; Focus for work, Deck for orientation. Four-pane positional parity, direct mapped Focus return, quiet inactive panes and peripheral selection/state cues are operator-validated directions. TDA may contain as many revision-defined mapped Decks as required. | CURRENT / substrate implemented; focused UX direction accepted |
 | Station completion | Explicit certification is separate from entered work and navigation. Navigation must not silently complete a station. | CURRENT / IMPLEMENTED |
 | Persistence | Remember where the operator was, what was done, and what remains without forcing reconstruction after restart. | CURRENT / IMPLEMENTED |
 | Return to Analysis | Deliberate, not restrictive; reason is useful evidence, not a penalty. | CURRENT / IMPLEMENTED |
@@ -130,7 +130,7 @@ This document is a reconciliation ledger, not a feature backlog. For current req
 | Area | Latest decision | Status |
 |---|---|---|
 | TradingView role | Remains primary visual charting workstation. | CURRENT |
-| Workspace parity | Conceptual chart/deck/process synchronization matters even without electronic control. | CURRENT |
+| Workspace parity | Conceptual chart/deck/process synchronization matters even without electronic control. Four-pane TDA layouts preserve positional chart-to-station mapping so both monitors can be read in the same spatial order; mapping belongs to revisioned deck/station definitions. | CURRENT / substrate implemented; mature renderer OPEN |
 | Deep TradingView embedding/replacement | Large future project; not current. | DEFERRED |
 | Pine/webhook bridge | Potential narrow future integration once the process has a clear need for the data. | DEFERRED |
 | Macro pad / SpaceMouse controller | Promising because mouse interaction became muscle memory; design hardware only after action vocabulary stabilizes. | DEFERRED |
@@ -502,3 +502,35 @@ PR #72/source `c822d04` implements schema-v44 immutable run/master binding, capt
 ## 2026-10-13 — Higher Review proposal becomes bounded native input
 
 `AMDX_HIGHER_REVIEW_PERIOD_CONTRACT.md` now has an implemented current-status banner. Its original-launch-only guard, unimplemented selector notes and proposed additive proof table describe historical checkpoints. The authorized whole-day/default/explicit-orientation semantics are implemented on the maintained Observed ledger; proof is embedded in immutable assessment envelope v2, protected by existing SQL immutability and the same owned transaction. Schema v46 is a format barrier with no retroactive proof or record rewrites. This refines engineering storage, not the product's allowed Review scope. Old v1 receipts retain exact semantics and retry behavior; original Expected captures are unchanged. No Watch history/comparison route or broad historical Lab restriction follows from this bounded run editor. Operator checks 275–280 are pending; main remains v41/unmerged. See `AMDX_HIGHER_REVIEW_GUIDE.md`.
+
+
+## 2026-10-13 — UX proposal reviewed against recovered transcripts
+
+| Prior interpretation / proposal | Current clarification | Status |
+| --- | --- | --- |
+| Close Focus/Deck integration means permanent adjacent expanded panels | Guided Focus and accessible Deck retain distinct responsibilities; historical Deck → selected Focus navigation and chart/action meaning must survive | Proposal interpretation requires correction; replacement access mechanism OPEN |
+| Full-stack table satisfies the calendar UI direction | Actual month-calendar navigation with period selection and editable lower context remains a mature Lab requirement; shared timeline ownership is already implemented | Calendar renderer required downstream; no new storage layer |
+| Repeated panel/chrome style demonstrates quiet shared UX | Operator reports density, homogeneous destinations and dispersed context; shared state does not imply identical composition | Current prototype layout NOT ACCEPTED |
+| Study Find shown as a standing form | Quiet contextual action/shortcut access is historically supported; ribbon/task-bar treatment is an exploratory current preference | Capture accessibility CURRENT; exact control OPEN |
+| Quarter color meanings unspecified | Operator supplies Q1/Asia yellow, Q2/London red, Q3/NYAM green, Q4/NYPM blue | Retained future temporal convention; no RGB/styling implementation |
+
+Read `UX_CONTEXT_RECONCILIATION.md` for source fingerprints, repeated 148-pass handoff/cumulative digest and evidence locators. Older branches, independent flat AMDX entry, smaller footprint and temporary pre-governance states are historical. Current v46/master-calendar/captured-context and published plan-policy boundaries remain authoritative. Renderer work is paused for this comparison; source/tests/tools, both walkthroughs/export and all smoke results are unchanged.
+
+## 2026-10-14 UX guardrail refinement
+
+| Earlier direction | Current resolution | Status |
+| --- | --- | --- |
+| Operator visual/layout preferences should strongly shape the Cockpit. | They remain first-class inputs, but neither operator nor developer suggestions silently override safety, accessibility, semantic clarity or accepted low-friction standards. A documented conflict review precedes adoption. | Refined, not rejected. |
+| Asia/Q1 yellow, London/Q2 red, NYAM/Q3 green and NYPM/Q4 blue should appear across relevant AMDX views. | Retain the palette where session identity is useful and pair it with labels/structure. Do not let it become color-only meaning or collide ambiguously with operational safe/warning/error/selection states. | Refined. |
+| Support detail should be hidden but easily reachable. | Manual Trade Plan definitions/criteria/process are contextual support at the chart-facing edge in Watch, not a permanent dashboard pane. Full authoring and evaluation stay in Lab / Trade Plan work. | Clarified. |
+| Major sections should feel compartmentalized. | Distinct task composition and hierarchy create mode identity; shared chrome, commands, status semantics and provenance retain suite cohesion. Different accent color alone is insufficient. | Clarified. |
+| “No duplicated workflows” could prohibit repeating active AMDX controls in the chart-edge reference. | The temporary decision dock may project the same shared action at the exact discernment step. Target, legal choices, labels, state and revision semantics must remain identical; no second owner or Save exists. | Explicit exception for a synchronized projection, not a workflow duplication. |
+| Prototype monitor-profile controls appear in the daily ribbon. | Mature monitor relationship and chart-facing edge belong to a remembered global Workspace & Displays setting. Prototype buttons remain comparison fixtures only. | Refined. |
+
+## 2026-10-15 Native-slice sequencing refinement
+
+| Earlier direction | Current resolution | Status |
+| --- | --- | --- |
+| UX1 Study doorway was the proposed first native slice. | The Study doorway remains accepted, but the first native proof is the smaller Watch decision dock over already-implemented shared AMDX ownership. This proves projection/command synchronization and support return before broader composition/routing work. | Sequence refined; Study doorway deferred one bounded slice. |
+| Prototype reference wording could stand in until criteria authoring matures. | Alpha 0.7 publishes no AMDX manual-reference definition. Native Watch must show truthful unavailability and may not promote fixture copy, catalog notes or historical evaluation definitions into policy. | Clarified; no invented rule. |
+| Low-friction interaction means minimizing clicks. | The accepted target is a contextual completion loop: correct support, exact legal target, one authoritative command, synchronized result and anchor restoration. Low click count alone is insufficient. | Refined. |
