@@ -6,6 +6,10 @@ from pathlib import Path, PurePosixPath
 import sqlite3
 import tarfile
 import tempfile
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+from ict_cockpit.media.workspace_paths import manifest_roots, reference_relative
 
 
 def image_references(value):
@@ -66,10 +70,7 @@ def verify(archive, original_root):
         manifest = workspace / 'study-workspace-origin.json'
         if manifest.exists():
             origin = json.loads(manifest.read_text())
-            legacy_root = Path(origin['original_root'])
-            if origin['version'] != 1 or not legacy_root.is_absolute() or '..' in legacy_root.parts:
-                raise ValueError('Invalid workspace origin manifest')
-            reference_roots.append(legacy_root)
+            reference_roots.extend(manifest_roots(origin))
         connection = sqlite3.connect(database.as_uri() + '?mode=ro', uri=True)
         try:
             if connection.execute('PRAGMA integrity_check').fetchall() != [('ok',)]:
@@ -102,14 +103,9 @@ def verify(archive, original_root):
                 if '..' in path.parts:
                     external.append(reference)
                     continue
-                relative = None
-                for reference_root in reference_roots:
-                    try:
-                        relative = path.relative_to(reference_root)
-                        break
-                    except ValueError:
-                        pass
-                if relative is None:
+                try:
+                    relative = reference_relative(path, reference_roots)
+                except ValueError:
                     external.append(reference)
                     continue
                 restored = workspace / relative

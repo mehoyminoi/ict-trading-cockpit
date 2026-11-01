@@ -995,3 +995,8 @@ No broker owner exists in Alpha 0.7. The safety projection must therefore show b
 ## 2026-10-20 — Explicit investigation/capture provenance (local UX2 implementation)
 
 An investigation's editable workspace question and its recorded capture associations have different lifetimes. Explicit linking records an immutable snapshot of the displayed question, plan/revision, instrument, historical reference, interpretation and actual recording time against the existing capture ID. Later investigation edits cannot retroactively change the capture's context. Navigation alone does not associate an unrelated draft or create competency evidence. Saved Review shows the recorded basis, not whichever investigation is currently open. This implements provenance/continuity requirements; the extra linking control and final layout remain subject to operator review.
+
+
+## 2026-11-01 — Recover later durable Study backups without rewriting history
+
+Developer implementation contract for the authorized daily-continuity work: a subsequent restore extends location mappings in manifest version 2 and retains the previous manifest verbatim as structured data. Preserve database bytes and saved references; resolve media exclusively inside the active workspace. Version 1 remains readable and is still written for initial relocation. Unknown/invalid manifests, ambiguous roots and existing destinations fail closed. Old clients are not compatible with version-2 recovery copies. Schema and trading behavior do not change. See `STUDY_DURABLE_WORKSPACE.md`; operator acceptance pending (369). This supersedes the original deliberate refusal of chained relocation, not provenance or isolated-verification requirements.

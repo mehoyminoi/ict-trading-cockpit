@@ -1,8 +1,16 @@
 # Durable Study workspace
 
+## Current status — operator 369 PASS
+
+The operator confirmed recovery check 369 passed and normal work resumed in `~/ict-study-workspaces/study-v0`. PR #113 implementation `e640dde` remains draft/unmerged, stacked on #112. Prior 24 focused developer checks remain recorded evidence; no fresh product tests or whole-suite acceptance are claimed by this documentation update.
+
+**Already using the durable workspace?** Use [checkpoint 369](#durable-backup-recovery-extension--checkpoint-369) below for a fresh backup and separate recovery copy. No repeat is requested after a pass. The `YOUR-ARCHIVE` block and checkpoint 351 immediately below are historical initial-move instructions, not the current recovery procedure. Keep the working original, archive and recovery copy.
+
+## Historical initial move — schema 51 / checkpoint 351
+
 This slice restores a verified archive into a new persistent directory without rewriting database records or historical image references. A `study-workspace-origin.json` manifest maps the original root to this workspace at display time. Capture and saved-find preview/copy/enlargement use the mapped image exclusively; new captures use the new workspace media directory. Raw historical path text remains original provenance. Schema 51 unchanged; this remains the existing mixed synthetic/real fixture, not a declaration that fixture rules are adopted.
 
-## Before switching
+### Before the initial move
 
 Close Cockpit. If you have made entries since the earlier archive, create a fresh one using the previous backup commands. Restoring an old archive does not include newer work. Keep originals and archives. Use a new destination; existing destinations are refused.
 
@@ -29,10 +37,51 @@ mkdir -p "$HOME/ict-study-backups"
 tar -czf "$HOME/ict-study-backups/study-durable-$(date +%Y%m%d-%H%M%S).tar.gz" -C "$HOME/ict-study-workspaces" study-v0
 ```
 
-Verify that archive with `verify_study_backup.py ARCHIVE --original-root "$HOME/ict-study-workspaces/study-v0"`. The verifier now understands preserved historical paths through the manifest. A second relocation of an already-relocated archive is deliberately refused by the restore tool; restoring a later archive to another path needs an explicit extension. No symlinks back to temporary storage or silent snapshot rewriting are used.
+Verify that archive with `verify_study_backup.py ARCHIVE --original-root "$HOME/ict-study-workspaces/study-v0"`. The verifier now understands preserved historical paths through the manifest. The original implementation refused a second relocation. The recovery extension below supersedes that limitation; use the matching updated application and tools for version-2 manifests. No symlinks back to temporary storage or silent snapshot rewriting are used.
 
 ## Validation
 
 30 targeted tests PASS: nine restore/backup/next-capture checks and 21 existing capture/review/media checks. Diff check passed. Automated checks cover unchanged database bytes, original preservation, resolution with originals absent, no fallback to original images when a copied image is missing, refusal to overwrite, invalid/external path handling and verification of a subsequent durable archive. Original archive verification was operator PASS: schema 51, three saved finds/associations, one draft/question/image reference and five reviews. Archive SHA-256 `a08968ccebad82561714b5db03a2b117556027c30d54e1beb38c8859a38c7889`. This does not certify work created after that archive.
 
 Operator 351 pending. Local implementation; publication requires authorization as a draft stacked on #101. Do not merge.
+
+
+## Durable backup recovery extension — checkpoint 369
+
+The restore tool now accepts archives from an already-restored durable workspace. Each recovery retains all earlier root mappings and the previous manifest, plus the new archive digest and verification report. Historical database bytes, saved image references and workspace settings are copied unchanged. Images created before and after earlier restores remain resolvable using only the restored directory. No fallback to old directories is allowed. Existing destinations, ambiguous nested roots, invalid manifests and unsafe archive members are refused.
+
+Initial relocation still writes manifest version 1. A subsequent relocation writes version 2 with explicit `reference_roots` and the unchanged `previous_manifest`. This is a media-location format extension, not a database migration (schema 53 unchanged). Older clients do not understand version 2: use this branch or a later integrated version to open the recovery copy. Keep the working original and archives; do not switch between old/new clients on the recovery copy. Manifest provenance is retained metadata, not cryptographic authentication of the operator's files.
+
+### Operator check 369 — recover a current backup into a separate copy
+
+Do this only after the recovery branch is published and checked out. Close all Cockpit windows first. From the repository directory, run:
+
+```bash
+mkdir -p "$HOME/ict-study-backups"
+study_recovery_stamp="$(date +%Y%m%d-%H%M%S)"
+study_recovery_archive="$HOME/ict-study-backups/study-durable-$study_recovery_stamp.tar.gz"
+study_recovery_copy="$HOME/ict-study-workspaces/recovery-check-$study_recovery_stamp"
+tar -czf "$study_recovery_archive" -C "$HOME/ict-study-workspaces" study-v0 &&
+python tools/restore_study_workspace.py "$study_recovery_archive" \
+  --original-root "$HOME/ict-study-workspaces/study-v0" \
+  --destination "$study_recovery_copy" &&
+python tools/study_criterion_demo.py --data-dir "$study_recovery_copy"
+```
+
+The chained commands stop before opening a copy if backup or restore fails. A `Restored workspace:` message is expected. In the copy, open a familiar investigation and saved Study Find. Check its question, observation, chart image and retained review material. Close and reopen the same copy with:
+
+```bash
+python tools/study_criterion_demo.py --data-dir "$study_recovery_copy"
+```
+
+The variable remains available only in that terminal; the restore output prints the exact path if needed later. Confirm the same material remains available. This is an inspection: no new Study session or disposable capture is required. Close the copy and resume everyday study with your unchanged normal path:
+
+```bash
+python tools/study_criterion_demo.py --data-dir "$HOME/ict-study-workspaces/study-v0"
+```
+
+Keep the archive, original and recovery copy. Do not delete, rename or relocate original data. Automated disposable tests cover recovery when original directories are absent; you do not need to simulate data loss manually.
+
+### Verification and remaining scope
+
+Developer checks: 16 backup/restore tests PASS, including three successive recoveries with new image references at each generation, exact database/settings preservation, retained manifest provenance, archive/source preservation, invalid formats, overlapping roots, symlink escape and no fallback to old media. Eight existing media, window-restoration and next-capture tests PASS. Standalone restore CLI help and diff checks passed. No full-suite run is claimed. Operator checkpoint 369 is now PASS, with the normal workspace resumed. This closes one recovery gap, not all daily-continuity or stack-consolidation gates.
