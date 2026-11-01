@@ -24,6 +24,10 @@ This document describes **current intended product truth**, not the chronologica
 
 ---
 
+## Study learning-workflow clarification
+
+Real-session feedback establishes learning utility as a central acceptance question: **“Do I feel like it helped me learn something?”** Study Find fields remain provisional. Preserve easy context inheritance without overwriting drafts, narrative/HTF/time orientation, and the ability to capture follow-up questions without abandoning the current investigation. See [real-session findings](STUDY_REAL_SESSION_FINDINGS.md) for observed defects, tentative vocabulary/measurement ideas and the recommended sequence. Proposed mechanisms in that ledger are not final schema decisions.
+
 ## 1. Product mission
 
 Build a local-first **trading process operating system** that makes discretionary trading more structured, repeatable, analyzable, teachable, and deliberately boring.

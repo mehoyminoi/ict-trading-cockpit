@@ -1,3 +1,11 @@
+## Current implementation — capture-context continuity
+
+Local `feature/study-capture-context-v0` implements the next slice from real-session feedback. See [STUDY_CAPTURE_CONTEXT_SLICE.md](STUDY_CAPTURE_CONTEXT_SLICE.md): new capture suggestions from inspected context, preserved unfinished drafts with visible mismatch guidance, and fresh entry after a saved capture. Schema 48 unchanged. Configurable global instrument preference and the follow-up-question inbox remain later work. Targeted operator recheck pending; no publication or merge claimed.
+
+## Latest qualitative Study checkpoint — 2026-10-27
+
+Operator 328–330 PASS and save-feedback correction recheck accepted. Real chart-assisted Study exposed a wrong-date capture handoff, desired selected-session/default-instrument suggestions, and a concrete need to park follow-up questions without losing the current inquiry. Read [STUDY_REAL_SESSION_FINDINGS.md](STUDY_REAL_SESSION_FINDINGS.md) before new work. Next recommended slice: capture-context continuity, followed by a bounded Study question inbox. This supersedes the earlier generic next-step wording below. Current fields remain provisional; vocabulary linking, multiple moves and confluence sequences are exploratory directions. No new operator smoke pass or market classification is inferred from the qualitative session.
+
 ## Current checkpoint — 2026-10-26
 
 Operator 325–327 PASS is published at `51ba1e5`; schema 48. The next accepted milestone is **Study investigation overview and return loop**, on `feature/study-investigation-overview-v0`. Read `STUDY_INVESTIGATION_OVERVIEW_SLICE.md` and its operator guide (328–330 pending). It composes existing explicitly linked captures and saved criterion results without new evidence/adoption semantics. No merge is authorized.

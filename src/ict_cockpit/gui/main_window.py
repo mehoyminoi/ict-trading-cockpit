@@ -246,6 +246,7 @@ class MainWindow(QMainWindow):
         self.investigation_return_buttons = []
         self.investigation_context_labels = []
         self.pending_investigation_context = None
+        self.capture_context_defaults = None
         for destination in (self.study_find_widget, self.study_find_review_widget):
             button = QPushButton("Return to AMDX investigation")
             button.setToolTip("Return without saving, completing, or changing the current investigation.")
@@ -268,6 +269,10 @@ class MainWindow(QMainWindow):
         self.capture_association_label.setWordWrap(True)
         self.study_find_widget.layout().insertWidget(2, self.capture_association_label)
         self.study_find_widget.draft_changed.connect(lambda _draft: self._refresh_capture_association())
+        self.study_find_widget.draft_changed.connect(lambda _draft: self._refresh_capture_context())
+        self.capture_context_notice = QLabel()
+        self.capture_context_notice.setWordWrap(True)
+        self.study_find_widget.layout().insertWidget(3, self.capture_context_notice)
         definition = QLabel(
             f"Published AMDX criteria · Trade Plan {self.trade_plan.revision}: not configured. "
             "Quarter choices below enforce structural AMDX/XAMD legality; they do not classify price action."
@@ -483,15 +488,61 @@ class MainWindow(QMainWindow):
         label.show()
         self.investigation_return_buttons[index].show()
 
+    def _refresh_capture_context(self):
+        defaults = self.capture_context_defaults
+        if not defaults:
+            return
+        draft = self.study_find_widget.build_draft()
+        differences = []
+        for name, actual, suggested in (
+            ("date", draft.observation_date.isoformat(), defaults["observation_date"].isoformat()),
+            ("instrument", draft.instrument, defaults["instrument"]),
+            ("session", draft.session, defaults["session"]),
+        ):
+            if suggested and actual != suggested:
+                differences.append(f"{name}: capture {actual or '(empty)'} / selected context {suggested}")
+        self.capture_context_notice.setText(
+            "Capture context differs — " + "; ".join(differences) +
+            ". Your entry is preserved; check before saving or linking."
+            if differences else
+            "Capture matches the opening context. Date is the selected New York calendar date; "
+            "session follows the inspected quarter where known. Fields remain editable.")
+
     def _open_investigation_capture(self):
-        # Navigation only: do not overwrite or silently associate an existing draft.
+        from ict_cockpit.analysis.market_time import MARKET_TIMEZONE
+        pane = self.amdx_catalog_widget
+        try:
+            reference = pane.reference().astimezone(MARKET_TIMEZONE)
+            if pane._read_error or pane.run_scope is not None:
+                raise ValueError("Return to a valid independent Study calendar before opening capture.")
+        except ValueError as error:
+            self.status_bar.showMessage(str(error), 10000)
+            return
+        session = ""
+        target = pane.target
+        if target is not None and target.cycle.layer == "day":
+            session = next(q.label for q in target.cycle.quarters if q.id == target.quarter_id)
+        elif target is not None and target.cycle.layer == "session":
+            session = next((q.label for row in pane.projection.cycles
+                            if row.context.cycle.layer == "day"
+                            for q in row.context.cycle.quarters
+                            if q.id == target.cycle.parent_quarter_id), "")
+        self.capture_context_defaults = dict(
+            observation_date=reference.date(), instrument=pane.instrument, session=session)
+        source = self.study_find_widget
+        if not source.save_button.isEnabled():
+            # Saved material remains in Review; never clear an unfinished draft.
+            source._loading_draft = True
+            try:
+                source.reset_form()
+            finally:
+                source._loading_draft = False
+        source.apply_context_defaults(**self.capture_context_defaults)
         self._show_investigation_context(0)
         self.link_investigation_button.show()
         self._refresh_capture_association()
-        self.tabs.setCurrentWidget(self.study_find_widget)
-        self.status_bar.showMessage(
-            "Study Find retains its own date/context. Investigation question is not automatically linked.", 10000
-        )
+        self._refresh_capture_context()
+        self.tabs.setCurrentWidget(source)
 
     def _open_investigation_review(self):
         self._show_investigation_context(1)
