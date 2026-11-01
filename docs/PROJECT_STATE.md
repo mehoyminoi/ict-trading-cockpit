@@ -1,3 +1,11 @@
+## Current checkpoint — durable recovery operator acceptance
+
+Operator 369 PASS on published PR #113 implementation `e640dde6f0f251e770f8d511101a89b1f653b0b5`; normal workspace resumed at `~/ict-study-workspaces/study-v0`. PR #113 remains draft/unmerged, based on #112 (`feature/tda-watch-journey-v0`, acceptance head `64d72d8`). Existing stack and schema 53 / Alpha 0.7 unchanged.
+
+This documentation-only follow-up records the result, clarifies historical initial-move versus current recovery instructions, and updates the roadmap/milestone evidence. Prior 24 focused checks are retained evidence, not rerun. Documentation checks only; cumulative full-suite validation remains outstanding. No further operator recovery trial is requested.
+
+Next authorized work is integration-readiness assessment: reconcile current stack heads and acceptance evidence, inspect everyday startup/activity-switching coverage across Study and TDA/Watch, and run cumulative regression validation before proposing consolidation. Accepted Study use, 364–368 and recovery 369 should not be repeated without a specific uncovered risk. Separate retained Study and Replay trial successes do not yet establish one everyday launch/data-ownership workflow. Identify that boundary before inventing a unified launcher or another feature. No merge, rebase, trading authorization or additional product behavior is authorized. The separate workflow-efficiency documentation branch remains outside this update. Earlier checkpoints below are historical.
+
 ## Current local checkpoint — durable Study backup recovery
 
 `feature/study-durable-recovery-v0` starts at published PR #112 acceptance head `64d72d85db5806f908ed05dfad13ee63a0c251a8`. PR #112 remains draft/unmerged, stacked on #111; 366–368 operator PASS and practical portable-capture feedback stand. No existing PR stack is modified.

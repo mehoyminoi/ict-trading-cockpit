@@ -1492,7 +1492,7 @@ Use `TDA_WATCH_JOURNEY_V0.md` with its separate synthetic Replay workspace after
 
 Use `STUDY_DURABLE_WORKSPACE.md`, checkpoint 369, with a fresh closed-workspace backup and a separate recovery copy.
 
-- [NOT TESTED] A current durable workspace archive restores to a new directory; familiar investigation, capture, image and review material remain accessible after reopening the copy, with originals retained.
+- [PASS] A current durable workspace archive restores to a new directory; familiar investigation, capture, image and review material remain accessible after reopening the copy, with originals retained.
   - Where: guide checkpoint 369.
 
 ## Reporting results

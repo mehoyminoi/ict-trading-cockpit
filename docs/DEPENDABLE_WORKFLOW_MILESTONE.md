@@ -10,7 +10,13 @@ Accepted priority, 2026-10-30: deliver a dependable personal cockpit integrated 
 - Recovery: preserve the actual database, images and settings; verify restore on a separate copy; migrations must preserve real records. Backup creation alone is not a tested recovery path.
 - Integration: run complete representative journeys with meaningful material, then consolidate the tested draft-PR stack through separately authorized integration/merge work. Individual passing smoke checks do not establish a release.
 
-## Delivery order
+## Current evidence and next gate — 2026-10-31
+
+Meaningful Study use and resumption have operator feedback; connected review 364–365, normal TDA → Watch Replay journey 366–368, and durable backup recovery 369 passed. The operator resumed the normal durable Study workspace after the recovery-copy check. No repeat of these accepted exercises is requested.
+
+Next is integration readiness, not another speculative feature: reconcile stack heads and acceptance, inspect everyday launch/activity continuity, and complete cumulative regression validation. Separate retained Study and Replay trial success does not establish that one ordinary launch owns both workflows safely. Verify that boundary before proposing integration changes. Consolidation remains separately authorized; no draft PR is merged by acceptance.
+
+## Original delivery order — historical sequence
 
 1. Preserve real material. Operator reports creating the full workspace archive and retaining originals. Next establish verified recovery and durable working storage; do not relocate path-based image references blindly or require more meaningful work in a disposable location.
 2. Durable investigation registry and safe resumption: see `STUDY_INVESTIGATION_CONTINUITY_V0.md`. This is the next implementation contract, with recovery safeguards before testing against real material.

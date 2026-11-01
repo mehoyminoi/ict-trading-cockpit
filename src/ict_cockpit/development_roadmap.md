@@ -4,11 +4,11 @@
 
 Development status only — separate from your study progress, trade plan and competency assessments. This is a snapshot shipped with your installed version, not a live GitHub tracker.
 
-**Updated:** 2026-11-01 · durable backup recovery prepared after the accepted TDA → Watch journey.
+**Updated:** 2026-10-31 · durable backup recovery accepted.
 
 ## Accepted — foundations you have exercised
 
-- **Preserve meaningful work:** verified archive recovery and a durable Study workspace.
+- **Preserve meaningful work:** verified archive recovery and a durable Study workspace. Current durable-backup recovery passed 369; normal workspace resumed.
 - **Resume an investigation:** identifiable questions, retained captures, images, findings and review checkpoints; recover your intent after restarting.
 - **Keep study moving:** context-aware capture, quick question/finding retention, save to investigation and preparation of the next capture.
 - **Connected Study workspace:** shared orientation across startup, calendar and capture; clearer writing/chart layout and access to prior work.
@@ -21,13 +21,13 @@ Accepted means the stated behavior passed its review. It does not mean final sty
 
 ## In progress — keep the forest in view
 
-**Daily continuity — recovery:** a current durable Study backup can now be restored to another location while preserving historical references. Implemented locally and developer-tested; publication and operator review remain pending.
+**Integration readiness:** Study, the bounded TDA → Watch journey and durable recovery have operator acceptance. Remaining work is to check everyday launch/activity continuity and cumulative regression evidence before consolidation.
 
-**Current operator check:** after publication, inspect familiar material in a separate recovery copy (369). Keep originals unchanged. The accepted 366–368 journey needs no repeat. This is not full-suite, whole-daily-workflow, competency or trading authorization acceptance.
+**Current operator check:** none pending; 369 passed. No repeat study, journey or recovery exercise is requested. This is not full-suite, whole-daily-workflow, competency or trading authorization acceptance.
 
 ## Next — remaining workflow milestones
 
-1. **Daily continuity:** check startup, activity switching, restart and recovery across the integrated suite using meaningful existing material.
+1. **Integration readiness:** reconcile stack/acceptance records, check remaining startup and activity-switching coverage, and run cumulative regression validation. Use accepted restart/recovery evidence; ask for another operator check only for a concrete remaining gap.
 2. **Consolidation:** review and integrate the tested draft-PR stack through separately authorized merges, then establish a clear everyday launch/recovery baseline.
 3. **Routine-use refinement:** use actual sessions to prioritize remaining navigation, status feedback, chart-facing controls and keyboard friction.
 

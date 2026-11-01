@@ -1,8 +1,16 @@
 # Durable Study workspace
 
+## Current status — operator 369 PASS
+
+The operator confirmed recovery check 369 passed and normal work resumed in `~/ict-study-workspaces/study-v0`. PR #113 implementation `e640dde` remains draft/unmerged, stacked on #112. Prior 24 focused developer checks remain recorded evidence; no fresh product tests or whole-suite acceptance are claimed by this documentation update.
+
+**Already using the durable workspace?** Use [checkpoint 369](#durable-backup-recovery-extension--checkpoint-369) below for a fresh backup and separate recovery copy. No repeat is requested after a pass. The `YOUR-ARCHIVE` block and checkpoint 351 immediately below are historical initial-move instructions, not the current recovery procedure. Keep the working original, archive and recovery copy.
+
+## Historical initial move — schema 51 / checkpoint 351
+
 This slice restores a verified archive into a new persistent directory without rewriting database records or historical image references. A `study-workspace-origin.json` manifest maps the original root to this workspace at display time. Capture and saved-find preview/copy/enlargement use the mapped image exclusively; new captures use the new workspace media directory. Raw historical path text remains original provenance. Schema 51 unchanged; this remains the existing mixed synthetic/real fixture, not a declaration that fixture rules are adopted.
 
-## Before switching
+### Before the initial move
 
 Close Cockpit. If you have made entries since the earlier archive, create a fresh one using the previous backup commands. Restoring an old archive does not include newer work. Keep originals and archives. Use a new destination; existing destinations are refused.
 
@@ -76,4 +84,4 @@ Keep the archive, original and recovery copy. Do not delete, rename or relocate 
 
 ### Verification and remaining scope
 
-Developer checks: 16 backup/restore tests PASS, including three successive recoveries with new image references at each generation, exact database/settings preservation, retained manifest provenance, archive/source preservation, invalid formats, overlapping roots, symlink escape and no fallback to old media. Eight existing media, window-restoration and next-capture tests PASS. Standalone restore CLI help and diff checks passed. No full-suite run or operator acceptance is claimed; checkpoint 369 is pending. This closes one recovery gap, not all daily-continuity or stack-consolidation gates.
+Developer checks: 16 backup/restore tests PASS, including three successive recoveries with new image references at each generation, exact database/settings preservation, retained manifest provenance, archive/source preservation, invalid formats, overlapping roots, symlink escape and no fallback to old media. Eight existing media, window-restoration and next-capture tests PASS. Standalone restore CLI help and diff checks passed. No full-suite run is claimed. Operator checkpoint 369 is now PASS, with the normal workspace resumed. This closes one recovery gap, not all daily-continuity or stack-consolidation gates.
