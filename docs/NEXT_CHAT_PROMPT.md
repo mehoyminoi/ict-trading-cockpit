@@ -1,3 +1,11 @@
+## Current local implementation — investigation review checkpoint
+
+The operator accepted the proposed checkpoint, emphasizing optional reflection and simultaneous study outcomes rather than another required form. `feature/study-review-checkpoint-v0` adds a hidden-by-default review area within the existing overview, optional prompts, explicit support snapshots and immutable checkpoint history. Schema 51; use a new separate fixture. 228 targeted tests PASS. Read `STUDY_REVIEW_OPERATOR_GUIDE.md` for pending 345–347. No competency/run/eligibility writes or automatic completion. 343–344 PASS remains recorded. This branch also includes the local design/acceptance documentation atop published #97; publish as a draft stacked on #97 only when authorized. Do not merge.
+
+## Next design checkpoint — investigation review (2026-10-29)
+
+343–344 operator PASS on #97. Capture-loop correction is accepted; return to broader Study-to-Review work. `STUDY_REVIEW_CHECKPOINT_V0.md` inventories existing overview/findings and proposes a small investigation-owned review: current understanding, uncertainty/counterexamples, next study step, with explicit supporting-source references. Existing competency evidence requires a run; independent investigations must not manufacture one or silently become proficiency evidence. No review implementation, schema change, publication or merge in this documentation checkpoint. Review the bounded contract before building it; no new smoke test requested yet.
+
 ## Current local slice — next Study capture
 
 341–342 operator PASS. Branch `feature/study-next-capture-v0` starts from published #96 (`53ce5b8`). Both full Study save actions prepare a new capture; link-only and failed saves preserve the current form. View last saved opens a separate read-only inspector. Opening-context defaults carry over and can reseed untouched forms through calendar reentry. Watch dock semantics stay unchanged. See `STUDY_NEXT_CAPTURE.md`, pending 343–344. Schema 50 unchanged. Local only; do not merge. Next return to broader Study-to-Review work after this bounded correction.

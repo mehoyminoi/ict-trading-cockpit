@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 50
+CURRENT_SCHEMA_VERSION = 51
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -168,6 +168,10 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 49:
             _migrate_version_49_to_50(connection)
             version = 50
+
+        if version == 50:
+            _migrate_version_50_to_51(connection)
+            version = 51
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -1266,3 +1270,12 @@ def _migrate_version_49_to_50(connection):
         WHEN EXISTS(SELECT 1 FROM study_finding WHERE id=NEW.id)
         BEGIN SELECT RAISE(ABORT, 'Study finding snapshots are immutable'); END""")
     connection.execute("PRAGMA user_version = 50")
+
+
+def _migrate_version_50_to_51(connection):
+    connection.execute("CREATE TABLE study_review (id TEXT PRIMARY KEY NOT NULL, plan_id TEXT NOT NULL, task_id TEXT NOT NULL, payload_json TEXT NOT NULL)")
+    connection.execute("CREATE INDEX idx_study_review_scope ON study_review(plan_id,task_id)")
+    for operation in ('UPDATE', 'DELETE'):
+        connection.execute(f"CREATE TRIGGER study_review_no_{operation.lower()} BEFORE {operation} ON study_review BEGIN SELECT RAISE(ABORT, 'Study reviews are immutable'); END")
+    connection.execute("CREATE TRIGGER study_review_no_replace BEFORE INSERT ON study_review WHEN EXISTS(SELECT 1 FROM study_review WHERE id=NEW.id) BEGIN SELECT RAISE(ABORT, 'Study reviews are immutable'); END")
+    connection.execute("PRAGMA user_version = 51")

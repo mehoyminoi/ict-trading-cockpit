@@ -514,7 +514,7 @@ class MainWindow(QMainWindow):
             StudyCriterionRepository(self.trading_session_run_repository.amdx),
             self.study_find_review_widget.repository,
             task_id=self.integrated_study_task.task_id, plan_id=self.trade_plan.id,
-            question=self.integrated_study_task.question.text(), parent=self)
+            question=self.integrated_study_task.question.text(), plan_revision=self.trade_plan.revision, parent=self)
         dialog.exec()
 
     def _open_criterion_study(self):

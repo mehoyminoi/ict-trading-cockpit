@@ -1370,10 +1370,21 @@ Use `STUDY_SAVE_TO_INVESTIGATION.md`.
 
 Use `STUDY_NEXT_CAPTURE.md`.
 
-- [NOT TESTED] Both Study save actions prepare a clean next capture with retained context and read-only last-saved access.
+- [PASS] Both Study save actions prepare a clean next capture with retained context and read-only last-saved access.
   - Where: guide checkpoint 343.
-- [NOT TESTED] Link-only retains input; untouched fresh captures follow new opening context while authored drafts stay protected.
+- [PASS] Link-only retains input; untouched fresh captures follow new opening context while authored drafts stay protected.
   - Where: guide checkpoint 344.
+
+## Investigation review checkpoint
+
+Use `STUDY_REVIEW_OPERATOR_GUIDE.md` with a new separate fixture.
+
+- [NOT TESTED] An uncertainty-only review saves without a conclusion or mandatory support.
+  - Where: guide checkpoint 345.
+- [NOT TESTED] Multiple outcomes and explicitly selected saved material remain inspectable across appended checkpoints without replacing the current capture.
+  - Where: guide checkpoint 346.
+- [NOT TESTED] Unsaved-review cancellation protects wording and saved history survives reopening.
+  - Where: guide checkpoint 347.
 
 ## Reporting results
 

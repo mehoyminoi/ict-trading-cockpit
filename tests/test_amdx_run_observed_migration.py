@@ -63,12 +63,12 @@ c.close()
         assert not c.execute("SELECT name FROM sqlite_master WHERE name LIKE '%run_observed%'").fetchall()
         assert {name:c.execute('SELECT * FROM '+name).fetchall() for name in names}==before
     initialize_schema(c)
-    assert c.execute('PRAGMA user_version').fetchone()[0]==50
+    assert c.execute('PRAGMA user_version').fetchone()[0]==51
     assert {name:c.execute('SELECT * FROM '+name).fetchall() for name in names}==before
     assert not c.execute('SELECT * FROM amdx_run_observed_command').fetchall()
     assert not c.execute('PRAGMA foreign_key_check').fetchall()
     namespace={}
     exec(compile((archived/'src/ict_cockpit/database/schema.py').read_text(),'actual-v44-schema','exec'),namespace)
-    with pytest.raises(RuntimeError,match='Unsupported database schema version: 50'):
+    with pytest.raises(RuntimeError,match='Unsupported database schema version: 51'):
         namespace['initialize_schema'](c)
     c.close()
