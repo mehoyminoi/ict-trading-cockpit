@@ -1,3 +1,4 @@
+from ict_cockpit.media.workspace_paths import resolve_study_image
 from pathlib import Path
 
 from PySide6.QtCore import Qt
@@ -152,7 +153,7 @@ class StudyFindReviewWidget(QWidget):
             self.open_image_button.setEnabled(False)
             return
 
-        pixmap = QPixmap(self.image_paths[row])
+        pixmap = QPixmap(resolve_study_image(self.image_paths[row]))
         if pixmap.isNull():
             self.image_preview.clear()
             self.image_preview.setText("Unable to load chart image")
@@ -175,7 +176,7 @@ class StudyFindReviewWidget(QWidget):
         if row < 0 or row >= len(self.image_paths):
             return
 
-        pixmap = QPixmap(self.image_paths[row])
+        pixmap = QPixmap(resolve_study_image(self.image_paths[row]))
         if pixmap.isNull():
             return
 
@@ -194,7 +195,7 @@ class StudyFindReviewWidget(QWidget):
         if row < 0 or row >= len(self.image_paths):
             return
 
-        pixmap = QPixmap(self.image_paths[row])
+        pixmap = QPixmap(resolve_study_image(self.image_paths[row]))
         if pixmap.isNull():
             return
 

@@ -62,6 +62,14 @@ def verify(archive, original_root):
             raise ValueError('Unexpected fixture marker')
         if not (workspace / 'demo.db.workspace.ini').is_file():
             raise ValueError('Archive is missing workspace settings')
+        reference_roots = [original_root]
+        manifest = workspace / 'study-workspace-origin.json'
+        if manifest.exists():
+            origin = json.loads(manifest.read_text())
+            legacy_root = Path(origin['original_root'])
+            if origin['version'] != 1 or not legacy_root.is_absolute() or '..' in legacy_root.parts:
+                raise ValueError('Invalid workspace origin manifest')
+            reference_roots.append(legacy_root)
         connection = sqlite3.connect(database.as_uri() + '?mode=ro', uri=True)
         try:
             if connection.execute('PRAGMA integrity_check').fetchall() != [('ok',)]:
@@ -94,9 +102,14 @@ def verify(archive, original_root):
                 if '..' in path.parts:
                     external.append(reference)
                     continue
-                try:
-                    relative = path.relative_to(original_root)
-                except ValueError:
+                relative = None
+                for reference_root in reference_roots:
+                    try:
+                        relative = path.relative_to(reference_root)
+                        break
+                    except ValueError:
+                        pass
+                if relative is None:
                     external.append(reference)
                     continue
                 restored = workspace / relative

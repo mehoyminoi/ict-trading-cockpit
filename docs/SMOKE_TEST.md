@@ -1402,6 +1402,13 @@ Use `STUDY_DIRECT_REVIEW.md` with the retained review fixture.
 - [PASS] Direct review opens ready for entry; inspection remains collapsed; hiding preserves wording and the unsaved-review close guard, with working context retained.
   - Where: guide checkpoint 350.
 
+## Durable Study workspace
+
+Use `STUDY_DURABLE_WORKSPACE.md` after preserving a current archive.
+
+- [NOT TESTED] Restored durable workspace retains saved material/draft, displays historical images and retains a newly saved image after restart.
+  - Where: guide checkpoint 351.
+
 ## Reporting results
 
 Report results as:
