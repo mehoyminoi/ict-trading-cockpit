@@ -87,3 +87,7 @@ Keep navigation and interpretation input separate: scrolling to inspect a level/
 The operator reviewed `AMDX_CYCLE_RULE_CONTRACT.md` on 2026-10-11. Structural coupling, fluidity/provenance and prominent versioned rule definitions are retained. Automatic phase recording and in-place Watch updates remain accepted. The examples above clarify why definition mutability, priority and empirical comparison need a common contract; they are not yet adopted executable classifiers or a published Trade Plan revision.
 
 Enough is known to build the framework foundation. A complete AMDX rulebook is unnecessary before that work; only the criteria actually made executable need fully specified targets, inputs, conditions and resolution semantics. Continue discussing/refining the rule content alongside architectural implementation rather than stopping all work until every interpretation method is settled.
+
+## Reusable input scope extension — 2026-10-21
+
+The UX4c slice adds an explicitly versioned selected-quartet positional input descriptor alongside unchanged fixed scope identities. See [Reusable scopes](AMDX_REUSABLE_SCOPES_SLICE.md). The definition layer provides meaning (e.g. day/Q2 = London), binding is retained in evaluation trace, and no rule is automatically adopted or evaluated by browsing dates. Cross-quartet/cross-layer temporal expressions remain future work.

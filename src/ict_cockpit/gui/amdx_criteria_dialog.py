@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (
     QMessageBox, QScrollArea,
 )
 from ict_cockpit.analysis.amdx import XSubtype, available_roles
-from ict_cockpit.analysis.amdx_rules import Condition, Definition, Operator, OutputKind
+from ict_cockpit.analysis.amdx_rules import Condition, Definition, Operator, OutputKind, QuartetScope
 
 
 class AMDXCriteriaDialog(QDialog):
@@ -65,7 +65,7 @@ class AMDXCriteriaDialog(QDialog):
         self.conditions = QTableWidget(0, 6)
         self.conditions.setHorizontalHeaderLabels(["Input quarter", "Feature name", "Comparison", "Value type", "Value", "Unit"])
         self.conditions.setMinimumHeight(170)
-        form.addRow(QLabel("All conditions must match. Inputs are pinned to these explicit quarters; they are not recurring rules."))
+        form.addRow(QLabel("All conditions must match. Fixed inputs keep their original date; reusable inputs follow Q1–Q4 of each selected quartet."))
         form.addRow(self.conditions)
         condition_actions = QHBoxLayout()
         self.add_button = QPushButton("Add condition")
@@ -136,7 +136,12 @@ class AMDXCriteriaDialog(QDialog):
                  d.rationale, f"Output: {d.output_kind.value} · Q{d.target_position} · {d.role.value}" + (f"({d.subtype.value})" if d.subtype else ""),
                  f"Priority: {d.priority} (smaller wins)", "Inputs (all required):"]
         for c in d.conditions:
-            scope = quarter_names.get(c.scope_id, f"Outside pinned quartet: {c.scope_id}")
+            if isinstance(c.scope_id, QuartetScope):
+                q = self.cycle.quarters[c.scope_id.position - 1]
+                scope = f"Reusable: selected quartet Q{q.position} → {q.label} ({q.start.isoformat()})"
+            else:
+                scope = quarter_names.get(c.scope_id, f"Outside pinned quartet: {c.scope_id}")
+                scope = f"Fixed: {scope}"
             lines.append(f"{scope}: {c.key} {c.operator.value} {c.value!r} {c.unit}")
         self.details.setPlainText("\n".join(lines))
 
@@ -160,13 +165,16 @@ class AMDXCriteriaDialog(QDialog):
         self.conditions.insertRow(row)
         scope = QComboBox()
         for q in self.cycle.quarters:
-            scope.addItem(f"Q{q.position} · {q.label}", q.id)
+            scope.addItem(f"Fixed Q{q.position} · {q.label}", q.id)
+        for q in self.cycle.quarters:
+            scope.addItem(f"Reusable Q{q.position} · selected quartet", QuartetScope(q.position))
         if condition is not None:
-            index = scope.findData(condition.scope_id)
+            index = next((i for i in range(scope.count()) if scope.itemData(i) == condition.scope_id), -1)
             if index < 0:
                 scope.addItem(f"Outside quartet: {condition.scope_id}", condition.scope_id)
                 index = scope.count()-1
             scope.setCurrentIndex(index)
+        scope.setToolTip("Fixed keeps an exact quarter identity. Reusable selects that position in the explicitly evaluated quartet; it does not fetch facts or adopt a rule.")
         key = QLineEdit(condition.key if condition else "")
         operator = QComboBox()
         for op in Operator:
