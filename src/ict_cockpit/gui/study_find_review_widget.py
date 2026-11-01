@@ -139,7 +139,10 @@ class StudyFindReviewWidget(QWidget):
         for image_path in self.image_paths:
             self.image_list.addItem(Path(image_path).name)
 
-        self.update_image_preview(-1)
+        if self.image_paths:
+            self.image_list.setCurrentRow(0)
+        else:
+            self.update_image_preview(-1)
 
     def update_image_preview(self, row: int) -> None:
         if row < 0 or row >= len(self.image_paths):

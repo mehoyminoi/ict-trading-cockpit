@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEd
 
 
 class IntegratedStudyTaskWidget(QWidget):
+    overview_requested = Signal()
     capture_requested = Signal()
     review_requested = Signal()
     criteria_requested = Signal()
@@ -41,6 +42,9 @@ class IntegratedStudyTaskWidget(QWidget):
         row.addWidget(self.criteria_button)
         self.criteria_button.clicked.connect(self.criteria_requested.emit)
         layout.addLayout(row)
+        self.overview_button = QPushButton("Investigation overview…")
+        self.overview_button.clicked.connect(self.overview_requested.emit)
+        layout.addWidget(self.overview_button)
         self.evaluate_button = QPushButton("Evaluate a criterion…")
         self.evaluate_button.clicked.connect(self.evaluation_requested.emit)
         layout.addWidget(self.evaluate_button)

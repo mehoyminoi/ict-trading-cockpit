@@ -1,3 +1,11 @@
+## Current checkpoint — 2026-10-26
+
+Operator 325–327 PASS is published at `51ba1e5`; schema 48. The next accepted milestone is **Study investigation overview and return loop**, on `feature/study-investigation-overview-v0`. Read `STUDY_INVESTIGATION_OVERVIEW_SLICE.md` and its operator guide (328–330 pending). It composes existing explicitly linked captures and saved criterion results without new evidence/adoption semantics. No merge is authorized.
+
+Near term: review this connected session, then use a realistic chart-assisted Study question to determine the next Study-to-Review handoff. Preserve the broader Lab identity; AMDX is one foundational lens. Further comparison dashboards, automatic scoring and isolated AMDX polishing remain deferred.
+
+The dated entries below are historical checkpoints, not competing next-step instructions. Where they say pending/next, use this current checkpoint and the latest operator results instead.
+
 # Whole-cockpit UX and Study implementation plan
 
 **2026-10-20 operator checkpoint:** startup 296–300 and integrated Study 301–305 PASS. Next bounded UX3 work is adjacent native TDA map/Focus, as described in `TDA_MAPPED_FOCUS_SLICE.md`. It preserves the current five-station first Deck; it does not silently adopt the earlier prototype’s four-station content.

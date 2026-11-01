@@ -272,3 +272,16 @@ def test_study_find_widget_ignores_empty_clipboard() -> None:
     assert not pasted
     assert widget.image_paths == []
     assert widget.image_list.count() == 0
+
+
+def test_invalid_save_has_persistent_feedback_and_retains_input():
+    app = QApplication.instance() or QApplication([])
+    widget = StudyFindWidget()
+    widget.pattern_input.setText('Keep my draft')
+    widget.instrument_input.clear()
+    assert widget.submit() is False
+    assert 'Not saved: instrument cannot be empty' in widget.save_feedback.text()
+    assert widget.pattern_input.text() == 'Keep my draft'
+    assert widget.save_button.isEnabled()
+    widget.reset_form()
+    assert widget.save_feedback.text() == ''

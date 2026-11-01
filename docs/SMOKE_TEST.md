@@ -1306,6 +1306,17 @@ Use `STUDY_MULTIDAY_OPERATOR_GUIDE.md` and a new seeded synthetic directory.
 - [PASS] Reopening recovers both dated results and truthful coverage counts without calendar changes.
   - Where: guide checkpoint 327.
 
+## Study investigation overview — connected trial
+
+Use `STUDY_INVESTIGATION_OVERVIEW_OPERATOR_GUIDE.md` with the retained multi-day fixture.
+
+- [NOT TESTED] Investigation overview exposes separate retained criterion explanations and returns without moving working context.
+  - Where: guide checkpoint 328.
+- [NOT TESTED] Explicitly linked draft and saved Study Find are distinguished and inspectable beside results without inferred evidence links.
+  - Where: guide checkpoint 329.
+- [NOT TESTED] Reopening retains investigation material and permits return to the working question/calendar.
+  - Where: guide checkpoint 330.
+
 ## Reporting results
 
 Report results as:

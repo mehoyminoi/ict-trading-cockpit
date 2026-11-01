@@ -1,3 +1,11 @@
+## Current checkpoint — 2026-10-26
+
+Operator 325–327 PASS is published at `51ba1e5`; schema 48. The next accepted milestone is **Study investigation overview and return loop**, on `feature/study-investigation-overview-v0`. Read `STUDY_INVESTIGATION_OVERVIEW_SLICE.md` and its operator guide (328–330 pending). It composes existing explicitly linked captures and saved criterion results without new evidence/adoption semantics. No merge is authorized.
+
+Near term: review this connected session, then use a realistic chart-assisted Study question to determine the next Study-to-Review handoff. Preserve the broader Lab identity; AMDX is one foundational lens. Further comparison dashboards, automatic scoring and isolated AMDX polishing remain deferred.
+
+The dated entries below are historical checkpoints, not competing next-step instructions. Where they say pending/next, use this current checkpoint and the latest operator results instead.
+
 Newest frontier: multi-day criterion Study on `feature/study-multiday-criterion-v0`, based on 321–324 PASS `1258b43` (draft #87). See `STUDY_MULTIDAY_SLICE.md` and guide 325–327. Explicit date navigation retains criterion/question, clears observation values/sources, preserves independent saved results, and leaves the calendar alone. Schema 48 unchanged. Explain full-program purpose and review scope before each operator trial. Keep draft/unmerged.
 
 Newest frontier: integrated criterion Study on `feature/study-criterion-evaluation-v0`, based on 318–320 PASS `2b9fca5`. Schema 48 adds independent immutable Study results; no fake run or adopted criterion. See `STUDY_CRITERION_SLICE.md` and operator guide 321–324. User requested clearer orientation: explain where each round fits, what it enables and what they are judging. Seeded synthetic demo avoids repeating criterion setup. Keep draft/unmerged.
