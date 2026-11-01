@@ -11,7 +11,6 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QStatusBar,
-    QTabWidget,
     QPushButton,
     QLabel,
     QScrollArea,
@@ -67,6 +66,7 @@ from ict_cockpit.gui.feedback_dialog import FeedbackDialog
 from ict_cockpit.gui.study_find_review_widget import StudyFindReviewWidget
 from ict_cockpit.gui.study_find_widget import StudyFindWidget
 from ict_cockpit.gui.study_home_widget import StudyHomeWidget
+from ict_cockpit.gui.study_workspace import StudyWorkspace, WorkspaceTabs
 from ict_cockpit.gui.integrated_study_task_widget import IntegratedStudyTaskWidget
 from ict_cockpit.database.study_investigation_repository import StudyInvestigationRepository, describe_association
 from ict_cockpit.gui.contextual_study_find_dock import ContextualStudyFindDock
@@ -227,7 +227,7 @@ class MainWindow(QMainWindow):
             self._summary_template_published
         )
 
-        self.tabs = QTabWidget()
+        self.tabs = WorkspaceTabs()
         self.tabs.addTab(self.trade_plan_widget, "Trade Plan")
         self.tabs.addTab(self.tda_workflow, "Guided TDA")
         self.tabs.addTab(self.study_find_widget, "Study Find")
@@ -260,7 +260,7 @@ class MainWindow(QMainWindow):
         self.pending_investigation_context = None
         self.capture_context_defaults = None
         for destination in (self.study_find_widget, self.study_find_review_widget):
-            button = QPushButton("Return to AMDX investigation")
+            button = QPushButton("Return to investigation calendar")
             button.setToolTip("Return without saving, completing, or changing the current investigation.")
             button.hide()
             button.clicked.connect(lambda: self.tabs.setCurrentWidget(self.amdx_catalog_widget))
@@ -444,7 +444,21 @@ class MainWindow(QMainWindow):
         self.study_home_history_button = QPushButton("Browse Study history…")
         self.study_home_history_button.clicked.connect(self._open_study_history)
         self.study_home_widget.layout().addWidget(self.study_home_history_button)
-        self.tabs.addTab(self.study_home_widget, "Study")
+        # Remove global pages before reparenting their existing widget instances.
+        for page in (self.amdx_catalog_widget, self.study_find_widget):
+            self.tabs.removeTab(self.tabs.indexOf(page))
+        self.amdx_catalog_widget.layout().removeWidget(self.integrated_study_task)
+        self.study_workspace = StudyWorkspace(self.integrated_study_task, [
+            ("Start / study direction", self.study_home_widget),
+            ("Calendar / AMDX context", self.amdx_catalog_widget),
+            ("Capture / current draft", self.study_find_widget),
+        ])
+        self.tabs.install_study(self.study_workspace)
+        self.tabs.currentChanged.connect(self._refresh_study_workspace_reference)
+        self.amdx_catalog_widget.date_input.dateChanged.connect(self._refresh_study_workspace_reference)
+        self.amdx_catalog_widget.time_input.timeChanged.connect(self._refresh_study_workspace_reference)
+        self.amdx_catalog_widget.channel_selector.currentTextChanged.connect(self._refresh_study_workspace_reference)
+        self._refresh_study_workspace_reference()
         self.study_home_widget.study_requested.connect(self._stage_home_study)
         self.study_home_widget.resume_requested.connect(self._resume_home_run)
         self.study_home_widget.capture_requested.connect(
@@ -538,6 +552,19 @@ class MainWindow(QMainWindow):
         draft = source.build_draft()
         return source.save_button.isEnabled() and bool(
             draft.pattern_name or draft.observation or draft.notes or draft.image_paths or draft.available_move_handles)
+
+    def _refresh_study_workspace_reference(self, *_args):
+        if not hasattr(self, 'study_workspace'):
+            return
+        pane = self.amdx_catalog_widget
+        try:
+            reference = pane.reference().isoformat()
+            scope = 'Run reference' if pane.run_scope is not None else 'Selected calendar reference'
+            self.study_workspace.reference.setText(
+                f'{scope}: {pane.instrument} · {reference} · {pane.channel_selector.currentText()}\n'
+                'Capture retains its own destination; compare it with your chart.')
+        except (ValueError, sqlite3.Error) as error:
+            self.study_workspace.reference.setText(f'Calendar reference unavailable: {error}')
 
     def _refresh_study_switch_notice(self, *_args):
         if not self._authored_study_capture():
@@ -1020,6 +1047,8 @@ class MainWindow(QMainWindow):
     def current_feedback_context(self) -> tuple[str, str]:
         current_widget = self.tabs.currentWidget()
         tab_name = self.tabs.tabText(self.tabs.currentIndex())
+        if self.tabs.current_surface() is self.study_workspace:
+            tab_name = f'Study · {self.study_workspace.selector.currentText()}'
 
         if current_widget is self.trade_plan_widget:
             return tab_name, self.trade_plan_widget.feedback_record_id

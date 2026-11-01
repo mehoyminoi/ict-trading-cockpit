@@ -38,3 +38,7 @@ Correction: use a window-modal QDialog owned by the containing window, with an e
 Retest only the affected path: from Investigation overview, open a saved chart full size. It should appear in front and accept input. Close using Close, reopen and close using Escape or the title-bar close control. The investigation should remain open, with the same selected capture and any review text intact. Large images should scroll rather than be cropped beyond reach. Continue the remaining 358/359 checks afterward.
 
 Validation: 10 targeted reading/media/direct-review checks PASS, including a modal-owner regression that verifies the active modal window, original image dimensions, independent Close/Escape, preserved observation and no database writes. KDE/X11 stacking still needs operator retest. Schema unchanged. Correction is local pending authorized publication to the existing #107 branch.
+
+## Operator acceptance
+
+358 and 359 PASS after published correction `5fe9222` on draft PR #107. Independent image Close/Escape accepted; Escape explicitly appreciated as familiar low-friction behavior. Earlier pending/failure notes above record the sequence, not current acceptance. Next is `STUDY_WORKSPACE_COMPOSITION_V0.md`; no further isolated overview polishing or full Study-session exercise is requested.
