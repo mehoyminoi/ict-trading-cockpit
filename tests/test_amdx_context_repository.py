@@ -87,7 +87,7 @@ def test_each_higher_cycle_records_one_entry_and_restores_without_legacy_rewrite
         assert row.inference.roles[2].origin == "Technician"
         assert all(r.origin == "Implied" for i, r in enumerate(row.inference.roles) if i != 2)
         assert run_bytes(reopened, run.id) == original
-        assert reopened.execute("PRAGMA user_version").fetchone()[0] == 49
+        assert reopened.execute("PRAGMA user_version").fetchone()[0] == 50
     finally:
         reopened.close()
     assert run_bytes(connection, run.id) == original
