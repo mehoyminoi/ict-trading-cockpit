@@ -1,5 +1,21 @@
 # ICT Trading Cockpit — Current Project State
 
+## 2026-10-20 — Integrated Study task association trial (local, schema 47)
+
+The retained investigation question/calendar now offers an explicit immutable association to an existing Study Find draft or saved capture. Displayed context is pinned at capture navigation, retained through save/restart and shown in Study Review. New investigation does not rewrite prior associations. A nearby definition area truthfully reports unconfigured published criteria; a scroll viewport keeps existing controls reachable at reduced height. Read `INTEGRATED_STUDY_TASK_SLICE.md` and its operator guide. Checks 301–305 remain pending. No publication, merge, classifier or final Lab layout approval. Startup PR #80 now reports remote head `953c812`; operator smoke notes are incorporated in this branch.
+
+Schema 47 adds immutable capture association snapshots without inferring links in legacy data. Historical migration failure injection exposed a version-only barrier outside a transaction; initialization now starts the rollback boundary before that barrier. Separate synthetic databases only.
+
+## 2026-10-20 — Integrated Study task first increment (local)
+
+`feature/integrated-study-task-v0` adds retained per-plan/revision investigation intent beside the existing AMDX Lab and explicit capture/Review return routes. Read `INTEGRATED_STUDY_TASK_SLICE.md` for ownership and outstanding UX2 work. Structured task/capture associations and in-context definitions are not implemented; navigation context is explicitly not saved evidence provenance. No schema/policy/broker changes, publication or merge. The operator's locally saved 296–300 results remain untouched.
+
+## 2026-10-20 — Study-first startup operator acceptance
+
+The operator reports all checks 296–300 PASS on published startup commit `81468de`, after clarification of checks 297 and 300. The operator's `docs/SMOKE_TEST.md` results are saved on their workstation but not yet pushed; this checkpoint does not replace that file. PR #80 remains draft, stacked on #79, and unmerged. Acceptance covers startup, explicit staging/launch, active-run recovery, capture draft recovery and recorded suggestion basis/manual selection continuity. Final Lab layout and recommendation ranking remain open.
+
+Next planned milestone: UX2 — Integrated Study task, as defined in `COCKPIT_UX_IMPLEMENTATION_PLAN.md`: keep question/reference adjacent to the shared AMDX investigation, preserve capture continuity and offer an explicit Review route without fabricated evidence or a separate process/authorization path. Implementation scope must be checked against existing owners before coding. No new application validation is claimed; the prior 45 focused tests belong to the startup implementation.
+
 ## 2026-10-17 — Study-first startup implemented locally
 
 The operator retest “292 passed” completes quiet-Watch checks 291–295 on published correction `6561f2c`; PR #79 remains draft and unmerged. On `feature/study-first-startup-v0`, idle startup now opens a small Study doorway; an active run still restores directly to its existing runtime. Study remains accessible as a top-level tab without displacing active work. A current-revision, explicitly saved Study direction supplies a disclosed most-recent-update suggestion, with timestamp offsets respected. No matching dated direction produces a truthful empty state. Manual selection survives navigation within the window; no new settings or draft ownership is introduced.

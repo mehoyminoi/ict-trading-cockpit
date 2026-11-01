@@ -9,6 +9,9 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QStatusBar,
     QTabWidget,
+    QPushButton,
+    QLabel,
+    QScrollArea,
 )
 
 from ict_cockpit.app_info import APP_VERSION, window_title
@@ -59,6 +62,8 @@ from ict_cockpit.gui.feedback_dialog import FeedbackDialog
 from ict_cockpit.gui.study_find_review_widget import StudyFindReviewWidget
 from ict_cockpit.gui.study_find_widget import StudyFindWidget
 from ict_cockpit.gui.study_home_widget import StudyHomeWidget
+from ict_cockpit.gui.integrated_study_task_widget import IntegratedStudyTaskWidget
+from ict_cockpit.database.study_investigation_repository import StudyInvestigationRepository, describe_association
 from ict_cockpit.gui.contextual_study_find_dock import ContextualStudyFindDock
 from ict_cockpit.gui.amdx_master_lab_widget import AMDXMasterLabWidget
 from ict_cockpit.gui.summary_template_workbench_widget import (
@@ -227,11 +232,51 @@ class MainWindow(QMainWindow):
             "Workbench",
         )
         self.amdx_catalog_widget = AMDXMasterLabWidget(self.trading_session_run_repository.amdx.master)
+        self.integrated_study_task = IntegratedStudyTaskWidget(
+            plan_id=self.trade_plan.id, revision=self.trade_plan.revision,
+            settings=self.workspace_settings,
+        )
+        self.amdx_catalog_widget.layout().insertWidget(1, self.integrated_study_task)
+        self.integrated_study_task.capture_requested.connect(self._open_investigation_capture)
+        self.integrated_study_task.review_requested.connect(self._open_investigation_review)
+        self.investigation_return_buttons = []
+        self.investigation_context_labels = []
+        self.pending_investigation_context = None
+        for destination in (self.study_find_widget, self.study_find_review_widget):
+            button = QPushButton("Return to AMDX investigation")
+            button.setToolTip("Return without saving, completing, or changing the current investigation.")
+            button.hide()
+            button.clicked.connect(lambda: self.tabs.setCurrentWidget(self.amdx_catalog_widget))
+            context = QLabel()
+            context.setWordWrap(True)
+            context.hide()
+            destination.layout().insertWidget(0, context)
+            destination.layout().insertWidget(0, button)
+            self.investigation_context_labels.append(context)
+            self.investigation_return_buttons.append(button)
         self.tabs.addTab(self.amdx_catalog_widget, "AMDX Lab")
+        self.investigation_repository = StudyInvestigationRepository(study_find_repository.connection)
+        self.link_investigation_button = QPushButton("Link this capture to investigation")
+        self.link_investigation_button.hide()
+        self.link_investigation_button.clicked.connect(self._link_investigation_capture)
+        self.study_find_widget.layout().insertWidget(1, self.link_investigation_button)
+        self.capture_association_label = QLabel()
+        self.capture_association_label.setWordWrap(True)
+        self.study_find_widget.layout().insertWidget(2, self.capture_association_label)
+        self.study_find_widget.draft_changed.connect(lambda _draft: self._refresh_capture_association())
+        definition = QLabel(
+            f"Published AMDX criteria · Trade Plan {self.trade_plan.revision}: not configured. "
+            "Quarter choices below enforce structural AMDX/XAMD legality; they do not classify price action."
+        )
+        definition.setWordWrap(True)
+        self.amdx_catalog_widget.layout().insertWidget(2, definition)
         self.amdx_catalog_widget.set_active(False)
         self.tabs.currentChanged.connect(lambda _index: self.amdx_catalog_widget.set_active(
             self.tabs.currentWidget() is self.amdx_catalog_widget))
-        self.setCentralWidget(self.tabs)
+        self.workspace_scroll = QScrollArea()
+        self.workspace_scroll.setWidgetResizable(True)
+        self.workspace_scroll.setWidget(self.tabs)
+        self.setCentralWidget(self.workspace_scroll)
 
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
@@ -325,6 +370,64 @@ class MainWindow(QMainWindow):
         self._refresh_study_home()
         if shell.active_trading_run is None:
             self.tabs.setCurrentWidget(self.study_home_widget)
+
+    def _refresh_capture_association(self):
+        self.capture_association_label.setText(describe_association(
+            self.investigation_repository.get(self.study_find_widget.current_study_find_id)))
+
+    def _link_investigation_capture(self):
+        pane = self.amdx_catalog_widget
+        try:
+            if pane.run_scope is not None:
+                raise ValueError("Return to Study calendar before linking an independent investigation")
+            draft = self.study_find_widget.build_draft()
+            if draft.has_content() and self.study_find_widget.save_button.isEnabled():
+                self.study_find_repository.save_draft(draft)
+            context = self.pending_investigation_context
+            if context is None:
+                raise ValueError("Open Study Find from the investigation before linking")
+            self.investigation_repository.link(
+                self.study_find_widget.current_study_find_id, **context)
+            self._refresh_capture_association()
+        except (ValueError, sqlite3.Error) as exc:
+            self.capture_association_label.setText(f"Link not saved: {exc}")
+
+    def _show_investigation_context(self, index):
+        pane = self.amdx_catalog_widget
+        try:
+            reference = pane.reference().isoformat()
+        except ValueError:
+            reference = "Invalid historical reference; correct it in the calendar"
+        if index == 0:
+            self.pending_investigation_context = dict(
+                task_id=self.integrated_study_task.task_id,
+                plan_id=self.trade_plan.id, plan_revision=self.trade_plan.revision,
+                question=self.integrated_study_task.question.text(), instrument=pane.instrument,
+                market_reference=reference, interpretation=pane.channel_selector.currentText(),
+            )
+        label = self.investigation_context_labels[index]
+        label.setText(
+            f"Investigation: {self.integrated_study_task.question.text() or 'No question entered'}\n"
+            f"{pane.instrument} · {reference} · {pane.channel_selector.currentText()}\n"
+            "Navigation context only; not a saved link to this capture or evidence."
+        )
+        label.show()
+        self.investigation_return_buttons[index].show()
+
+    def _open_investigation_capture(self):
+        # Navigation only: do not overwrite or silently associate an existing draft.
+        self._show_investigation_context(0)
+        self.link_investigation_button.show()
+        self._refresh_capture_association()
+        self.tabs.setCurrentWidget(self.study_find_widget)
+        self.status_bar.showMessage(
+            "Study Find retains its own date/context. Investigation question is not automatically linked.", 10000
+        )
+
+    def _open_investigation_review(self):
+        self._show_investigation_context(1)
+        self.study_find_review_widget.refresh()
+        self.tabs.setCurrentWidget(self.study_find_review_widget)
 
     def _refresh_study_home(self):
         if self.tabs.currentWidget() is not self.study_home_widget:

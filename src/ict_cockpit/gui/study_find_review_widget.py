@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
 )
 
 from ict_cockpit.analysis.study_find import StudyFind
+from ict_cockpit.database.study_investigation_repository import StudyInvestigationRepository, describe_association
 from ict_cockpit.database.study_find_repository import StudyFindRepository
 
 
@@ -127,7 +128,8 @@ class StudyFindReviewWidget(QWidget):
             f"Instrument: {study_find.instrument}\n"
             f"Session: {study_find.session}\n"
             f"Pattern: {study_find.pattern_name}\n"
-            f"Available Move: {available_move}"
+            f"Available Move: {available_move}\n"
+            + describe_association(StudyInvestigationRepository(self.repository.connection).get(study_find.id))
         )
         self.observation_view.setPlainText(study_find.observation)
         self.notes_view.setPlainText(study_find.notes)

@@ -1,6 +1,9 @@
 # ICT Trading Cockpit — Next Chat Startup Prompt
 
-Latest checkpoint (2026-10-17): quiet-Watch checks 291–295 PASS. Study-first routing is implemented locally on `feature/study-first-startup-v0`; read `STUDY_FIRST_STARTUP_SLICE.md`, its operator guide and the newest `PROJECT_STATE.md` entry before older frontier text. Checks 296–300 and publication remain pending. Preserve local smoke notes; no merge is authorized.
+Latest checkpoint (2026-10-17): quiet-Watch checks 291–295 PASS. Study-first routing is implemented locally on `feature/study-first-startup-v0`; read `STUDY_FIRST_STARTUP_SLICE.md`, its operator guide and the newest `PROJECT_STATE.md` entry before older frontier text. Startup was published as `81468de` in draft PR #80, stacked on #79. Operator checks 296–300 PASS (2026-10-20); smoke notes are saved on the operator’s workstation but not yet pushed. Next planned milestone is UX2 — Integrated Study task. Preserve local smoke notes; no merge is authorized.
+
+Latest local follow-up: `feature/integrated-study-task-v0` implements the schema-47 retained investigation/capture association trial. Read `INTEGRATED_STUDY_TASK_SLICE.md`, its operator guide and newest PROJECT_STATE entry. No publication or merge; 301–305 pending. Operator startup smoke results from remote head `953c812` are incorporated.
+
 
 Copy the prompt below into a fresh ChatGPT conversation when this development chat is approaching or has reached its context limit.
 

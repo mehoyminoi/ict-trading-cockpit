@@ -1,12 +1,16 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 46
+CURRENT_SCHEMA_VERSION = 47
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
     with connection:
         version = connection.execute("PRAGMA user_version").fetchone()[0]
+
+        # Include version-only barriers in the same rollback boundary as DDL.
+        if version < CURRENT_SCHEMA_VERSION and not connection.in_transaction:
+            connection.execute("BEGIN")
 
         if version == 0:
             _initialize_version_1(connection)
@@ -148,6 +152,10 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
             # Older readers must not open a database that may contain envelope v2.
             connection.execute("PRAGMA user_version = 46")
             version = 46
+
+        if version == 46:
+            _migrate_version_46_to_47(connection)
+            version = 47
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")
@@ -1165,3 +1173,29 @@ def _migrate_version_44_to_45(connection: sqlite3.Connection) -> None:
         WHEN EXISTS (SELECT 1 FROM amdx_run_observed_command WHERE id=NEW.id OR sequence=NEW.sequence)
         BEGIN SELECT RAISE(ABORT, 'AMDX run assessments are immutable'); END""")
     connection.execute("PRAGMA user_version = 45")
+
+
+def _migrate_version_46_to_47(connection):
+    if not connection.in_transaction:
+        connection.execute("BEGIN")
+    connection.execute("""CREATE TABLE study_investigation_capture (
+        capture_id TEXT PRIMARY KEY NOT NULL,
+        task_id TEXT NOT NULL,
+        plan_id TEXT NOT NULL,
+        plan_revision TEXT NOT NULL,
+        question TEXT NOT NULL CHECK(length(trim(question)) > 0),
+        instrument TEXT NOT NULL,
+        market_reference TEXT NOT NULL,
+        interpretation TEXT NOT NULL CHECK(interpretation IN ('Expected','Observed')),
+        recorded_at TEXT NOT NULL
+    )""")
+    connection.execute("CREATE INDEX idx_study_investigation_task ON study_investigation_capture(task_id)")
+    for operation in ("UPDATE", "DELETE"):
+        connection.execute(f"""CREATE TRIGGER study_investigation_no_{operation.lower()}
+            BEFORE {operation} ON study_investigation_capture
+            BEGIN SELECT RAISE(ABORT, 'Study investigation associations are immutable'); END""")
+    connection.execute("""CREATE TRIGGER study_investigation_no_replace
+        BEFORE INSERT ON study_investigation_capture
+        WHEN EXISTS(SELECT 1 FROM study_investigation_capture WHERE capture_id=NEW.capture_id)
+        BEGIN SELECT RAISE(ABORT, 'Study investigation associations are immutable'); END""")
+    connection.execute("PRAGMA user_version = 47")
