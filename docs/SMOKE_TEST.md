@@ -1332,10 +1332,19 @@ Use `STUDY_QUESTION_INBOX_OPERATOR_GUIDE.md` with its new separate fixture.
 
 Use `STUDY_QUESTION_QUICK_CAPTURE.md` with the existing question-inbox fixture.
 
-- [NOT TESTED] Selected wording saves directly without a dialog and an immediate repeat click does not duplicate it.
+- [PASS] Selected wording saves directly without a dialog and an immediate repeat click does not duplicate it.
   - Where: guide checkpoint 334.
-- [NOT TESTED] The latest editor selection is used; no selection opens the optional composer and saved questions remain retrievable.
+- [PASS] The latest editor selection is used; no selection opens the optional composer and saved questions remain retrievable.
   - Where: guide checkpoint 335.
+
+## Discard current Study Find draft — focused recheck
+
+Use `STUDY_DRAFT_DISCARD.md` with the existing question-inbox fixture.
+
+- [PASS] Cancel preserves the draft; confirmed discard clears current content while retaining context and queued questions.
+  - Where: guide checkpoint 336.
+- [PASS] Discarded content stays absent after reopening and saved Study Finds remain protected.
+  - Where: guide checkpoint 337.
 
 ## Reporting results
 

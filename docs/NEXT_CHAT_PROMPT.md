@@ -1,3 +1,7 @@
+## Current local increment — discard unfinished Study capture
+
+Operator 334–335 PASS; retain the dual selected-text/direct-save and empty-selection/composer behavior. Discoverability is parked for later optimization. `feature/study-draft-discard-v0` adds confirmed current-draft discard with autosave cancellation, new identity, retained date/instrument/session and preserved saved records/questions/source references. Schema 49 unchanged. See `STUDY_DRAFT_DISCARD.md`; checks 336–337 pending. No publication or merge claimed by this local checkpoint.
+
 ## Current local increment — direct question capture
 
 331–333 PASS published at `6454e04`. `feature/study-question-quick-capture-v0` removes the mandatory composer for selected text, retaining source snapshots and in-place confirmation/failure feedback. Empty selection still opens the optional composer. Schema 49 unchanged. Read `STUDY_QUESTION_QUICK_CAPTURE.md` for pending 334–335; no repeat of earlier tests. No publication/merge claimed by this local checkpoint.
