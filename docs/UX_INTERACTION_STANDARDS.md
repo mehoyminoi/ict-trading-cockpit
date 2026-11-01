@@ -21,6 +21,28 @@ Read with [UX Friction Research](UX_FRICTION_RESEARCH.md), [UX Design Touchstone
 9. **Theme-ready semantics.** Dark and future light themes should map the same semantic tokens and preserve hierarchy, contrast and redundant meaning. Theme is presentation, not a second information model.
 10. **Evaluate journeys, not decoration.** Review reacquisition, hunting, interpretation, movement, recovery and error prevention in realistic tasks. Click count, density and visual preference are evidence, not standalone verdicts.
 
+## Task-directed entry and disclosure — accepted 2026-10-29
+
+**Keep the current task ready to use; disclose supporting tasks when needed.** This is an important suite-wide requirement, not a blanket preference for fewer clicks or fewer visible controls.
+
+An explicit entry action must open its primary task ready for use, without a second reveal action for the feature just requested. Inspection and other secondary tasks may keep that same feature collapsed. Initial presentation must follow the named action predictably, not inferred intent, click frequency or surprise adaptive rearrangement. Keep familiar spatial anchors, accessible controls and a way to collapse supporting areas. Different entry routes must use the same authoritative workspace, commands and data owners.
+
+For Study investigations:
+
+| Entry purpose | Required initial presentation |
+| --- | --- |
+| Inspect investigation material | Evidence/findings prominent; review editor may remain collapsed. |
+| Review this investigation | Existing review editor already open, supporting material nearby, collapse available. |
+| Browse Study history | Saved records prominent; no new-entry form. |
+
+Entering or collapsing must preserve the investigation, reference, unfinished capture and unsaved review protections. Opening review must not create a checkpoint, complete an investigation or imply an obligation to fill every prompt. Do not change all overview entry routes to show a form by default.
+
+Acceptance should include mouse and keyboard entry, immediate access to the requested task, stable return to prior work, and preservation of unfinished content. Assess total interaction cost: hunting, reading, remembering, reorientation and clicks. Revisit frequency and utility in natural study sessions; scripted repeated reviews alone do not establish the best universal default.
+
+Status: accepted requirement; the local `feature/study-direct-review-v0` implementation applies it to Study review (see `STUDY_DIRECT_REVIEW.md`); operator 350 remains pending. Operator noticed the extra reveal click repeatedly during checkpoint 348 and explicitly endorsed this resolution. Functional checks 348–349 passed independently of this UX refinement.
+
+Supporting guidance: [Progressive disclosure](https://www.nngroup.com/articles/progressive-disclosure/) and [Interaction cost](https://www.nngroup.com/articles/interaction-cost-definition/). The task-specific routing above is the project's design decision, not a claim that these sources prescribe this exact layout.
+
 ## Contextual completion loop
 
 The accepted Watch reference-and-decision dock supplies a reusable interaction pattern for low-friction work:

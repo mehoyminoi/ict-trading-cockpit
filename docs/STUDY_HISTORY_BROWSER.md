@@ -27,4 +27,8 @@ Reuse `/tmp/ict-study-review-v0`; schema 51 is unchanged. Your existing 345–34
 
 This trial evaluates retrieval and context preservation, not whether a statistical insight or competency judgment has been produced. Later practical evaluation should ask whether retrieved history reveals useful candidate questions for analysis; no performance conclusion follows from repeated wording alone.
 
-Validation: 17 targeted tests PASS across history scope/filter/order/read-only behavior, read failure, current-work preservation, review persistence, overview and MainWindow. The initial test run exposed Study home button initialization order; moving registration after home construction fixed it and the full targeted rerun passed. Browser rendered offscreen and visually inspected. Diff check passed. Operator 348–349 remain pending; local only until publication authorization.
+Validation: 17 targeted tests PASS across history scope/filter/order/read-only behavior, read failure, current-work preservation, review persistence, overview and MainWindow. The initial test run exposed Study home button initialization order; moving registration after home construction fixed it and the full targeted rerun passed. Browser rendered offscreen and visually inspected. Diff check passed. Published as draft PR #99, stacked on #98, at `fedd532`. Operator 348–349 PASS. No merge.
+
+## Accepted UX follow-up
+
+The repeated reveal click for review entry in 348 is a design refinement, not a failed retrieval check. The operator accepted task-directed entry as an important requirement: direct review opens the editor; inspection can keep it collapsed. See `UX_INTERACTION_STANDARDS.md`. This checkpoint records the decision without changing UI behavior.

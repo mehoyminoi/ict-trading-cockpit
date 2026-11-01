@@ -1,3 +1,13 @@
+## Current local slice — direct Study review entry
+
+`feature/study-direct-review-v0` applies the accepted task-directed-entry requirement using the existing overview/review editor. Direct Review this investigation opens review immediately; ordinary overview remains collapsed. Hide preserves text/support and the existing close guard. History and schema 51 unchanged. Includes the preceding requirements documentation and operator 348–349 PASS. See `STUDY_DIRECT_REVIEW.md` for bounded checkpoint 350 (pending) and the subsequent natural-study evaluation. Publish only when authorized, as a draft stacked on #99; do not merge. No analytical prioritization or competency assessment is implemented.
+
+## Current checkpoint — Study history accepted; task-directed entry required
+
+Published draft #99 (`feature/study-history-browser-v0`, `fedd532`), stacked on #98; unmerged. Operator 348–349 PASS. Read-only cross-investigation retrieval is accepted, not analytical prioritization or competency assessment. This local documentation checkpoint records acceptance and the important suite-wide task-directed-entry requirement in `UX_INTERACTION_STANDARDS.md` and `PROJECT_REQUIREMENTS.md`.
+
+Next bounded implementation: a direct Review this investigation route into the existing overview with its review editor already revealed; ordinary inspection remains collapsed and history remains retrieval-only. Preserve shared ownership, scope, drafts and close guards. Do not build a second review form or reverse all defaults. After that, use a natural study pause to evaluate the capture → finding → review → history loop before expanding analytical prioritization. No new operator test is needed for this documentation-only checkpoint. No UI/schema change, new publication or merge claimed.
+
 ## Current local slice — cross-investigation Study history
 
 345–347 operator PASS on published #98 (`93ce461`). Recording simultaneous study outcomes is accepted; selecting what to study next through analysis is not yet implemented. Preserve the recording/analysis distinction in `STUDY_REAL_SESSION_FINDINGS.md` and requirements. `feature/study-history-browser-v0` adds read-only cross-investigation retrieval of questions, findings/partial answers and review checkpoints for the current plan, across revisions, through text and type filters. No inferred deficiencies, scoring, task replacement or source writes. Schema 51 unchanged. See `STUDY_HISTORY_BROWSER.md` for pending 348–349; use the retained review fixture. Local only; publication as draft stacked on #98 requires authorization. Do not merge.

@@ -1390,10 +1390,17 @@ Use `STUDY_REVIEW_OPERATOR_GUIDE.md` with a new separate fixture.
 
 Use `STUDY_HISTORY_BROWSER.md` with the retained review fixture.
 
-- [NOT TESTED] History retrieves questions, findings and review checkpoints across investigations with text/type filters and original context.
+- [PASS] History retrieves questions, findings and review checkpoints across investigations with text/type filters and original context.
   - Where: guide checkpoint 348.
-- [NOT TESTED] Returning from history preserves the working investigation, historical reference and unfinished capture.
+- [PASS] Returning from history preserves the working investigation, historical reference and unfinished capture.
   - Where: guide checkpoint 349.
+
+## Direct Study review entry
+
+Use `STUDY_DIRECT_REVIEW.md` with the retained review fixture.
+
+- [NOT TESTED] Direct review opens ready for entry; inspection remains collapsed; hiding preserves wording and the unsaved-review close guard, with working context retained.
+  - Where: guide checkpoint 350.
 
 ## Reporting results
 
