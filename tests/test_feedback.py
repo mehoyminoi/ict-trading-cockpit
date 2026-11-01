@@ -138,7 +138,7 @@ def test_main_window_feedback_context_tracks_active_tab(tmp_path) -> None:
     window.tabs.setCurrentWidget(window.study_find_widget)
     context, record_id = window.current_feedback_context()
 
-    assert context == "Study Find"
+    assert context == "Study · Capture / current draft"
     assert record_id == window.study_find_widget.current_study_find_id
 
     connection.close()

@@ -318,7 +318,7 @@ def test_main_window_lab_uses_same_storage_and_cancels_entry_on_tab_exit(pane):
         lab.clock = lambda: NOW
         lab.choose(Role.M)
         assert len(repo.history(widget.catalog.id).claims) == 1
-        assert window.current_feedback_context() == ("AMDX Lab", widget.catalog.id)
+        assert window.current_feedback_context() == ("Study · Calendar / AMDX context", widget.catalog.id)
     finally:
         window.close()
         window.deleteLater()

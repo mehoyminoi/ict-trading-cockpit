@@ -137,4 +137,11 @@ def test_small_window_uses_scroll_without_changing_calendar_owner(cockpit):
     assert window.height() == 720
     assert window.workspace_scroll.widget() is window.tabs
     assert window.amdx_catalog_widget.parent() is not None
-    assert window.workspace_scroll.verticalScrollBar().maximum() > 0
+    # Connected Study owns scrolling per view; the outer shell may fit now.
+    scroll = window.study_workspace.stack.currentWidget()
+    assert scroll.widget() is window.amdx_catalog_widget
+    assert scroll.verticalScrollBar().maximum() > 0
+    scroll.verticalScrollBar().setValue(scroll.verticalScrollBar().maximum())
+    QApplication.processEvents()
+    assert scroll.verticalScrollBar().value() > 0
+    assert window.tabs.currentWidget() is window.amdx_catalog_widget

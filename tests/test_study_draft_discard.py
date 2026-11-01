@@ -29,6 +29,8 @@ def test_cancel_and_failure_preserve_draft(cockpit,monkeypatch):
 def test_discard_removes_only_current_draft_and_cannot_autosave_old_identity(cockpit,monkeypatch,tmp_path):
     window,c=cockpit;w=fill(window)
     window.integrated_study_task.question.setText('Current investigation')
+    # The authored draft needs deliberate approval of its investigation destination.
+    monkeypatch.setattr(QMessageBox,'question',lambda *a: QMessageBox.StandardButton.Yes)
     window._open_investigation_capture()
     window.link_investigation_action.trigger()
     original=w.build_draft();old_id=original.id

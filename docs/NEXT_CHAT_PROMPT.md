@@ -1,3 +1,13 @@
+## Current local checkpoint — integration readiness assessment
+
+Local `feature/integration-readiness-v0` is based on published #113 acceptance `3d99dacfa7607ad2ec32ed661ad56b5812c61385`. #76–113 remain draft/unmerged; no PR stack modification. `INTEGRATION_READINESS_V0.md` records exact inspected heads and the #83 documentation-only delta, whose 311–312 PASS results are already present at the tip.
+
+Cumulative validation: all 1,317 collected tests accounted for across 127 modules, combining 1,237 passing tests in 121 unchanged modules with 80 passing rerun tests in six corrected modules. Initial run had four failing modules and two timeouts; the AMDX rerun also had a native exit before per-test deferred widget disposal was corrected. See assessment for exact evidence and limits; not one uninterrupted green run. Only tests/docs/roadmap changed. Schema 53 / Alpha 0.7 and product code unchanged. Operator 364–369 acceptance preserved; no new smoke test.
+
+Architectural frontier: everyday launch/data selection. Normal main opens its default database; the meaningful durable workspace is `study-v0/demo.db`, and its trial launcher forces Calendar after normal startup routing. Recommended next implementation is an explicit existing-workspace launch route with no seeding, implicit run start, relocation or historical rewrite. Validate idle Study and active Replay on copies before operator review. Do not change the user's current command yet.
+
+Next authorized task: publish this assessment/test maintenance only after explicit new-branch authorization as a draft stacked on #113. No merge/rebase. Then prepare the bounded launcher contract/proof; consolidation remains separately authorized. Separate workflow-efficiency documentation remains outside this slice. Earlier checkpoints below are historical.
+
 ## Current checkpoint — durable recovery operator acceptance
 
 Operator 369 PASS on published PR #113 implementation `e640dde6f0f251e770f8d511101a89b1f653b0b5`; normal workspace resumed at `~/ict-study-workspaces/study-v0`. PR #113 remains draft/unmerged, based on #112 (`feature/tda-watch-journey-v0`, acceptance head `64d72d8`). Existing stack and schema 53 / Alpha 0.7 unchanged.

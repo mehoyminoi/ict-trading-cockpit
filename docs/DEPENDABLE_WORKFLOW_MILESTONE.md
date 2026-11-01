@@ -16,6 +16,8 @@ Meaningful Study use and resumption have operator feedback; connected review 364
 
 Next is integration readiness, not another speculative feature: reconcile stack heads and acceptance, inspect everyday launch/activity continuity, and complete cumulative regression validation. Separate retained Study and Replay trial success does not establish that one ordinary launch owns both workflows safely. Verify that boundary before proposing integration changes. Consolidation remains separately authorized; no draft PR is merged by acceptance.
 
+Integration-readiness assessment completed locally: see `INTEGRATION_READINESS_V0.md`. Cumulative 1,317-test coverage is reconciled with explicit rerun history. The remaining everyday-use gap is launch selection/routing, not missing shared Study/TDA/Watch ownership: default main opens a different database, while the retained Study trial forces Calendar. Next prepare an explicit existing-workspace launch route, preserving data and normal startup routing; no new operator study/recovery session requested now.
+
 ## Original delivery order — historical sequence
 
 1. Preserve real material. Operator reports creating the full workspace archive and retaining originals. Next establish verified recovery and durable working storage; do not relocate path-based image references blindly or require more meaningful work in a disposable location.
