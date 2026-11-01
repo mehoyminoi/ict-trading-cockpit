@@ -1,5 +1,10 @@
 # ICT Trading Cockpit — Current Project State
 
+## 2026-10-26 — Multi-day criterion Study, schema 48 unchanged
+
+Operator 321–324 PASS is published at `1258b43`. `feature/study-multiday-criterion-v0` extends the accepted dialog with explicit reference changes and previous/next-day navigation. Question/criterion stay selected; observations do not carry forward. Separate saved results remain inspectable without moving current inputs, with counts of records/reference dates/revisions rather than a success rate. Read `STUDY_MULTIDAY_SLICE.md` and the three-check operator guide for pending 325–327. No schema migration, calendar changes, automatic adoption or Trading Run.
+
+
 ## 2026-10-25 — Integrated criterion Study, schema 48
 
 Operator 318–320 PASS is published at `2b9fca5`. `feature/study-criterion-evaluation-v0` adds question → retained criterion → sourced observations → explained preview → explicit independent save and reopen. No Trading Run, calendar update, plan adoption or competency evidence is created. Schema 48 adds immutable independent Study evaluation records; existing run-owned evaluations remain separate. Read `STUDY_CRITERION_SLICE.md`; use the seeded `study_criterion_demo.py` and `STUDY_CRITERION_OPERATOR_GUIDE.md` for pending 321–324. Operator orientation must explain full-program purpose, next enablement and review scope before each test round.

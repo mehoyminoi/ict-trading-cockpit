@@ -1295,6 +1295,17 @@ Use `STUDY_CRITERION_OPERATOR_GUIDE.md` and the seeded synthetic demo. This test
 - [PASS] Reopening recovers the original question, criterion and observations for each separate saved result.
   - Where: guide checkpoint 324.
 
+## Multi-day criterion Study — focused trial
+
+Use `STUDY_MULTIDAY_OPERATOR_GUIDE.md` and a new seeded synthetic directory.
+
+- [PASS] Next-day Study retains the criterion/question but starts with empty observations and an Unknown preview.
+  - Where: guide checkpoint 325.
+- [PASS] Separately saved days retain their own evidence; inspecting the first does not retarget the second day's inputs.
+  - Where: guide checkpoint 326.
+- [PASS] Reopening recovers both dated results and truthful coverage counts without calendar changes.
+  - Where: guide checkpoint 327.
+
 ## Reporting results
 
 Report results as:
