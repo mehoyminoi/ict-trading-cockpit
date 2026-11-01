@@ -1468,6 +1468,15 @@ Use `STUDY_CAPTURE_LAYOUT_V0.md` after publication with the durable workspace.
 - [PASS] Summary disclosure, association details and completion actions preserve content, truthful destination/warnings and fresh-next-capture behavior.
   - Where: guide checkpoint 363.
 
+## Connected investigation review
+
+Use `STUDY_CONNECTED_REVIEW_V0.md` with existing retained material after publication.
+
+- [NOT TESTED] Retained material and direct review share the Study header; image inspection and return preserve question, reference and capture.
+  - Where: guide checkpoint 364.
+- [NOT TESTED] Cancel preserves unfinished review through local/global navigation and application close; deliberate Discard removes only that unsaved review.
+  - Where: guide checkpoint 365.
+
 ## Reporting results
 
 Report results as:

@@ -1,5 +1,5 @@
 """Presentation-only Study container and routing for existing workspace pages."""
-from PySide6.QtCore import Signal, Qt
+from PySide6.QtCore import Signal, Qt, QSignalBlocker
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QStackedWidget, QTabWidget, QScrollArea, QFrame
 
 
@@ -8,6 +8,7 @@ class StudyWorkspace(QWidget):
 
     def __init__(self, investigation, pages):
         super().__init__()
+        self.before_change = lambda old, new: True
         self.pages = tuple(widget for _, widget in pages)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(4, 4, 4, 4)
@@ -34,8 +35,16 @@ class StudyWorkspace(QWidget):
             self.scrolls.append(scroll)
             self.stack.addWidget(scroll)
         layout.addWidget(self.stack, 1)
-        self.selector.currentIndexChanged.connect(self.stack.setCurrentIndex)
+        self.selector.currentIndexChanged.connect(self._select)
         self.stack.currentChanged.connect(self._changed)
+
+    def _select(self, index):
+        old = self.stack.currentIndex()
+        if index != old and not self.before_change(self.pages[old], self.pages[index]):
+            with QSignalBlocker(self.selector):
+                self.selector.setCurrentIndex(old)
+            return
+        self.stack.setCurrentIndex(index)
 
     def _changed(self, index):
         self.selector.setCurrentIndex(index)
@@ -45,7 +54,7 @@ class StudyWorkspace(QWidget):
         return self.pages[self.stack.currentIndex()]
 
     def setCurrentWidget(self, widget):
-        self.stack.setCurrentIndex(self.pages.index(widget))
+        self._select(self.pages.index(widget))
 
 
 class WorkspaceTabs(QTabWidget):
@@ -53,12 +62,29 @@ class WorkspaceTabs(QTabWidget):
 
     currentWidget/setCurrentWidget intentionally expose logical page identity to
     existing run/capture guards and demo callers. current_surface exposes the
-    physical global tab. Inner navigation emits the existing change notification
-    only while Study is the visible surface. No domain command is performed here.
+    physical global tab. Consumers use navigation_changed, emitted only after a
+    permitted transition. Rejected native tab selections are restored before
+    application observers run. Inner navigation is notified only while Study is
+    visible. No domain command is performed here.
     """
+    navigation_changed = Signal(int)
+
     def __init__(self):
         super().__init__()
         self.study = None
+        self.before_change = lambda old, new: True
+        self._accepted_surface = None
+        self.currentChanged.connect(self._surface_changed)
+
+    def _surface_changed(self, index):
+        target = self.current_surface()
+        old = self._accepted_surface
+        if old is not None and old is not target and not self.before_change(old, target):
+            with QSignalBlocker(self):
+                super().setCurrentIndex(self.indexOf(old))
+            return
+        self._accepted_surface = target
+        self.navigation_changed.emit(index)
 
     def install_study(self, study):
         self.study = study
@@ -71,7 +97,7 @@ class WorkspaceTabs(QTabWidget):
 
     def _study_changed(self):
         if self.current_surface() is self.study:
-            self.currentChanged.emit(self.currentIndex())
+            self.navigation_changed.emit(self.currentIndex())
 
     def current_surface(self):
         return super().currentWidget()

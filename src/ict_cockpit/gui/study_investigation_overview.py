@@ -1,8 +1,8 @@
 """Investigation inspection with optional review entry over shared retained material."""
 import sqlite3
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
-    QDialog, QVBoxLayout, QLabel, QListWidget, QTextBrowser, QPushButton,
+    QDialog, QWidget, QVBoxLayout, QLabel, QListWidget, QTextBrowser, QPushButton,
     QSplitter, QStackedWidget, QScrollArea, QComboBox, QHBoxLayout,
 )
 from ict_cockpit.database.study_review_repository import StudyReviewRepository, describe_review
@@ -18,13 +18,14 @@ def preview(text, limit=105):
     return line if len(line) <= limit else line[:limit - 1] + '…'
 
 
-class StudyInvestigationOverview(QDialog):
+class StudyInvestigationContent(QWidget):
+    return_requested = Signal()
     def __init__(self, links, criteria, finds, *, task_id, plan_id, question, plan_revision=None, review_open=False, parent=None):
         super().__init__(parent)
         self.setWindowTitle('Study investigation · retained material')
         self.resize(1280, 800)
         layout = QVBoxLayout(self)
-        heading = QLabel(f'Study question: {question or "Not yet entered"}')
+        heading = self.question_heading = QLabel(f'Study question: {question or "Not yet entered"}')
         heading.setWordWrap(True)
         heading.setTextFormat(Qt.TextFormat.PlainText)
         font = heading.font()
@@ -82,16 +83,28 @@ class StudyInvestigationOverview(QDialog):
         self.review_toggle = QPushButton('Review this investigation…')
         self.review_toggle.setCheckable(True)
         self.review_toggle.toggled.connect(self._set_review_visible)
-        layout.addWidget(self.review_toggle)
+        filter_row.addWidget(self.review_toggle)
         self.review_panel.add_source_button.clicked.connect(self.use_selected_support)
         close = QPushButton('Return to investigation')
-        close.clicked.connect(self.accept)
-        layout.addWidget(close)
+        close.clicked.connect(self.return_requested.emit)
+        filter_row.addWidget(close)
+        self.links, self.criteria, self.finds = links, criteria, finds
+        self.task_id, self.plan_id = task_id, plan_id
         self.entries = []
         self.items.currentRowChanged.connect(self.inspect)
+        self.refresh_material()
+        self.review_panel.checkpoint_saved.connect(self.refresh_material)
+
+        self.material_filter.currentIndexChanged.connect(self._filter_material)
+        self.review_toggle.setChecked(review_open)
+
+    def refresh_material(self):
+        previous = self.items.currentRow()
+        self.entries.clear()
+        self.items.clear()
         try:
-            results = tuple(r for r in criteria.list_for_task(task_id) if r.plan_id == plan_id)
-            associations = tuple(r for r in links.list_for_task(task_id) if r['plan_id'] == plan_id)
+            results = tuple(r for r in self.criteria.list_for_task(self.task_id) if r.plan_id == self.plan_id)
+            associations = tuple(r for r in self.links.list_for_task(self.task_id) if r['plan_id'] == self.plan_id)
             for record in results:
                 e = record.evaluation
                 self.entries.append(('result', record))
@@ -99,8 +112,8 @@ class StudyInvestigationOverview(QDialog):
                                    f'Criterion {e.definitions[0].revision} · {record.instrument}')
             saved_count = 0
             for association in associations:
-                find = finds.get_by_id(association['capture_id'])
-                draft = finds.connection.execute('SELECT pattern_name,observation,notes FROM study_find_draft WHERE id=?',
+                find = self.finds.get_by_id(association['capture_id'])
+                draft = self.finds.connection.execute('SELECT pattern_name,observation,notes FROM study_find_draft WHERE id=?',
                                                 (association['capture_id'],)).fetchone() if find is None else None
                 state = 'Saved Study Find' if find else 'Linked draft' if draft else 'Capture unavailable'
                 saved_count += int(find is not None)
@@ -111,7 +124,7 @@ class StudyInvestigationOverview(QDialog):
                 self.items.addItem(f'{state} · {preview(title, 70)}\n'
                                    f'{association["market_reference"]} · {association["instrument"]}{session}\n'
                                    f'{preview(excerpt)}')
-            findings = StudyFindingRepository(finds.connection).list_for_task(plan_id, task_id)
+            findings = StudyFindingRepository(self.finds.connection).list_for_task(self.plan_id, self.task_id)
             for finding in findings:
                 self.entries.append(('finding', finding))
                 self.items.addItem(f"{finding['kind']} · {finding['finding']}".replace('\n', ' ')[:180])
@@ -135,8 +148,9 @@ class StudyInvestigationOverview(QDialog):
             self.summary.setText('Investigation material could not be loaded; no changes were made.')
             self.detail.setPlainText(str(error))
 
-        self.material_filter.currentIndexChanged.connect(self._filter_material)
-        self.review_toggle.setChecked(review_open)
+        if 0 <= previous < self.items.count():
+            self.items.setCurrentRow(previous)
+        self._filter_material()
 
     def _filter_material(self):
         kind = self.material_filter.currentData()
@@ -149,7 +163,7 @@ class StudyInvestigationOverview(QDialog):
         self.filter_status.setText(f"{len(visible)} matching items" if visible else "No material of this type")
         if self.items.currentRow() not in visible:
             self.items.setCurrentRow(visible[0] if visible else -1)
-        if not visible:
+        if not visible and self.entries:
             self.pages.setCurrentWidget(self.detail)
             self.detail.setPlainText('No material of this type. Choose All material to return. Your review entry is unchanged.')
 
@@ -198,6 +212,22 @@ class StudyInvestigationOverview(QDialog):
         identity = record['id'] if kind == 'finding' else record.evaluation.id if kind == 'result' else record[0]['capture_id']
         self.review_panel.add_source(kind, identity, self.items.item(row).text())
 
+class StudyInvestigationOverview(QDialog):
+    """Compatibility dialog shell for independent inspection routes."""
+    def __init__(self, *args, parent=None, **kwargs):
+        super().__init__(parent)
+        self.setWindowTitle('Study investigation · retained material')
+        self.resize(1280, 800)
+        self.content = StudyInvestigationContent(*args, parent=self, **kwargs)
+        QVBoxLayout(self).addWidget(self.content)
+        self.content.return_requested.connect(self.accept)
+
+    def __getattr__(self, name):
+        content = self.__dict__.get('content')
+        if content is not None:
+            return getattr(content, name)
+        raise AttributeError(name)
+
     def done(self, result):
-        if self.review_panel.can_leave():
+        if self.content.review_panel.can_leave():
             super().done(result)

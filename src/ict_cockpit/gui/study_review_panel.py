@@ -3,13 +3,14 @@ from datetime import datetime, timezone
 from uuid import uuid4
 import sqlite3
 import json
-from PySide6.QtCore import QEvent
+from PySide6.QtCore import QEvent, Signal
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPlainTextEdit, QPushButton, QListWidget, QTextBrowser, QMessageBox
 from ict_cockpit.database.study_review_repository import describe_review
 from ict_cockpit.gui.editor_feedback import handle_ctrl_y
 
 
 class StudyReviewPanel(QWidget):
+    checkpoint_saved = Signal()
     def __init__(self, repository, *, plan_id, plan_revision, task_id, question, parent=None):
         super().__init__(parent)
         self.repository = repository
@@ -58,7 +59,8 @@ class StudyReviewPanel(QWidget):
         self.status = QLabel()
         self.status.setWordWrap(True)
         layout.addWidget(self.status)
-        layout.addWidget(QLabel('Saved checkpoints · newest first'))
+        self.history_label = QLabel('Saved checkpoints · newest first')
+        layout.addWidget(self.history_label)
         self.history = QListWidget()
         self.history.setMaximumHeight(65)
         self.history.currentRowChanged.connect(self.inspect)
@@ -150,6 +152,7 @@ class StudyReviewPanel(QWidget):
         self.new_button.setEnabled(True)
         self.refresh()
         self.status.setText('Review kept. Return to study whenever ready; the investigation remains open.')
+        self.checkpoint_saved.emit()
 
     def start_new(self):
         if not self.saved:
@@ -185,6 +188,11 @@ class StudyReviewPanel(QWidget):
     def inspect(self, row):
         if 0 <= row < len(self.records):
             self.detail.setPlainText(describe_review(self.records[row]))
+
+    def discard_unsaved(self):
+        if not self.saved:
+            self.saved = True
+            self.start_new()
 
     def can_leave(self):
         if self.saved or not (self.sources or any(e.toPlainText().strip() for e in self.fields.values())):
