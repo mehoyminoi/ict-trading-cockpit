@@ -83,7 +83,7 @@ class StudyFindReviewWidget(QWidget):
         right_layout.addLayout(image_button_layout)
         right_widget.setLayout(right_layout)
 
-        splitter = QSplitter(Qt.Orientation.Horizontal)
+        splitter = self.splitter = QSplitter(Qt.Orientation.Horizontal)
         splitter.addWidget(left_widget)
         splitter.addWidget(right_widget)
         splitter.setStretchFactor(0, 1)

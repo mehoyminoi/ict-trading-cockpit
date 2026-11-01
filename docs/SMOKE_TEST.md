@@ -1225,7 +1225,7 @@ Use `INTEGRATED_STUDY_TASK_OPERATOR_GUIDE.md` with the separate `tools/integrate
 
 ## Native mapped TDA Focus — focused trial
 
-Use `TDA_MAPPED_FOCUS_OPERATOR_GUIDE.md` and the separate `tools/tda_mapped_focus_demo.py`. Operator checks 306–309 PASS; 310 remains open pending the resized-window restart retest. The actual first Deck has five stations; final four-chart assignment is not accepted by this trial.
+Use `TDA_MAPPED_FOCUS_OPERATOR_GUIDE.md` and the separate `tools/tda_mapped_focus_demo.py`. Operator checks 306–310 PASS, published in `bbf44f8`. The actual first Deck has five stations; final four-chart assignment is not accepted by this trial.
 
 - [PASS] Adjacent map and Focus share observation/selection without navigation marking complete.
   - Where: guide checkpoint 306.
@@ -1243,7 +1243,18 @@ Use `TDA_MAPPED_FOCUS_OPERATOR_GUIDE.md` and the separate `tools/tda_mapped_focu
   - Where: guide checkpoint 310.
   - Expected: unfinished work remains unfinished; no Trading Run is created.
 
-Operator note: divider restoration was observable at the default size, but the demo did not restore a resized window. The corrected demo retains window geometry; only 310 needs retesting.
+Historical operator note: 310 needed a resized-window restart correction. The correction was retested and all 306–310 checks now PASS.
+
+## Shared workspace restoration — focused trial
+
+Use `WORKSPACE_RESTORATION_OPERATOR_GUIDE.md` with the existing startup demo and a new separate directory. Checks 311–312 remain NOT TESTED.
+
+- [PASS] Normal cockpit close/reopen restores main-window size and position while preserving startup routing.
+  - Where: guide checkpoint 311.
+  - Expected: idle Study remains the starting workspace; geometry restores without process writes.
+- [PASS] Study Review divider restores even after closing from another workspace.
+  - Where: guide checkpoint 312.
+  - Expected: prior proportions remain when Review is reopened; hidden panes do not overwrite preferences.
 
 ## Reporting results
 
