@@ -9,6 +9,7 @@ class IntegratedStudyTaskWidget(QWidget):
     capture_requested = Signal()
     review_requested = Signal()
     criteria_requested = Signal()
+    evaluation_requested = Signal()
 
     def __init__(self, *, plan_id, revision, settings=None):
         super().__init__()
@@ -40,6 +41,9 @@ class IntegratedStudyTaskWidget(QWidget):
         row.addWidget(self.criteria_button)
         self.criteria_button.clicked.connect(self.criteria_requested.emit)
         layout.addLayout(row)
+        self.evaluate_button = QPushButton("Evaluate a criterion…")
+        self.evaluate_button.clicked.connect(self.evaluation_requested.emit)
+        layout.addWidget(self.evaluate_button)
         self.status = QLabel()
         self.status.setWordWrap(True)
         layout.addWidget(self.status)

@@ -1,5 +1,10 @@
 # ICT Trading Cockpit — Current Project State
 
+## 2026-10-25 — Integrated criterion Study, schema 48
+
+Operator 318–320 PASS is published at `2b9fca5`. `feature/study-criterion-evaluation-v0` adds question → retained criterion → sourced observations → explained preview → explicit independent save and reopen. No Trading Run, calendar update, plan adoption or competency evidence is created. Schema 48 adds immutable independent Study evaluation records; existing run-owned evaluations remain separate. Read `STUDY_CRITERION_SLICE.md`; use the seeded `study_criterion_demo.py` and `STUDY_CRITERION_OPERATOR_GUIDE.md` for pending 321–324. Operator orientation must explain full-program purpose, next enablement and review scope before each test round.
+
+
 ## 2026-10-21 — UX4c reusable selected-quartet scopes
 
 Operator 313–317 PASS is published at `cf9f660` on the editor branch (draft #85). `feature/amdx-reusable-scopes-v0` adds explicit Fixed versus Reusable positional input scopes to that accepted editor. Fixed definitions retain their original serialized identity; reusable scopes bind within the selected quartet only. Saved scoped evaluations retain their definition, concrete cycle, facts/reference and binding trace under a new evaluator revision. Schema remains 47. Read `AMDX_REUSABLE_SCOPES_SLICE.md`; operator checks 318–320 pending. Fact/evidence selection and evaluation UI remain the next substantive UX4 boundary.
