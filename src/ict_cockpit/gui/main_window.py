@@ -273,6 +273,12 @@ class MainWindow(QMainWindow):
         self.capture_context_notice = QLabel()
         self.capture_context_notice.setWordWrap(True)
         self.study_find_widget.layout().insertWidget(3, self.capture_context_notice)
+        self.keep_study_question_button = QPushButton("Keep question for later…")
+        self.keep_study_question_button.clicked.connect(lambda: self._open_study_questions(capture=True))
+        self.study_find_widget.layout().insertWidget(4, self.keep_study_question_button)
+        self.study_questions_button = QPushButton("Study questions…")
+        self.study_questions_button.clicked.connect(lambda: self._open_study_questions(capture=False))
+        self.integrated_study_task.layout().addWidget(self.study_questions_button)
         definition = QLabel(
             f"Published AMDX criteria · Trade Plan {self.trade_plan.revision}: not configured. "
             "Quarter choices below enforce structural AMDX/XAMD legality; they do not classify price action."
@@ -381,6 +387,29 @@ class MainWindow(QMainWindow):
             self.tabs.setCurrentWidget(self.study_home_widget)
         self._restore_workspace_layout()
         self.study_find_review_widget.splitter.splitterMoved.connect(self._save_review_layout)
+
+    def _open_study_questions(self, *, capture=False):
+        from ict_cockpit.database.study_question_repository import StudyQuestionRepository
+        from ict_cockpit.gui.study_question_dialog import StudyQuestionDialog
+        source = None
+        selected = ""
+        if capture:
+            widget = self.study_find_widget
+            draft = widget.build_draft()
+            selected = (widget.notes_input.textCursor().selectedText()
+                        or widget.observation_input.textCursor().selectedText()).replace("\u2029", "\n")
+            source = dict(capture_id=draft.id,
+                          state="Unfinished capture" if widget.save_button.isEnabled() else "Saved Study Find",
+                          date=draft.observation_date.isoformat(), instrument=draft.instrument,
+                          session=draft.session, pattern=draft.pattern_name,
+                          observation=draft.observation, notes=draft.notes,
+                          images=list(draft.image_paths),
+                          association=self.investigation_repository.get(draft.id))
+        dialog = StudyQuestionDialog(
+            StudyQuestionRepository(self.study_find_repository.connection),
+            plan_id=self.trade_plan.id, plan_revision=self.trade_plan.revision,
+            source=source, original_text=selected, parent=self)
+        dialog.exec()
 
     def _open_investigation_overview(self):
         from ict_cockpit.gui.study_investigation_overview import StudyInvestigationOverview
