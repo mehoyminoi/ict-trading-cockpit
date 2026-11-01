@@ -73,7 +73,7 @@ def test_v46_upgrade_retains_capture_and_has_no_inferred_links(tmp_path, injecte
         assert not c.execute("SELECT name FROM sqlite_master WHERE name='study_investigation_capture'").fetchall()
         assert StudyFindRepository(c).get_latest_draft().pattern_name == 'Pre-migration draft'
     initialize_schema(c)
-    assert c.execute('PRAGMA user_version').fetchone()[0] == 52
+    assert c.execute('PRAGMA user_version').fetchone()[0] == 53
     assert StudyFindRepository(c).get_latest_draft().pattern_name == 'Pre-migration draft'
     assert c.execute('SELECT count(*) FROM study_investigation_capture').fetchone()[0] == 0
     initialize_schema(c)

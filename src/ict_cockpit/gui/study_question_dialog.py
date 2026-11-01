@@ -28,7 +28,7 @@ class StudyQuestionDialog(QDialog):
         self.status.setWordWrap(True)
         self.records = []
         if source:
-            label = QLabel('Keep the question and a snapshot of this capture. Your current investigation stays in place. '
+            label = QLabel('Keep the question and a snapshot of this source. Your current investigation stays in place. '
                            'Selected wording is retained separately if you refine it below.')
             label.setWordWrap(True)
             layout.addWidget(label)
@@ -60,7 +60,7 @@ class StudyQuestionDialog(QDialog):
             if self.records:
                 self.items.setCurrentRow(0)
             else:
-                self.detail.setPlainText('No saved questions yet. In Study Find, optionally select wording in Notes or Observation, then choose Keep question for later…')
+                self.detail.setPlainText('No saved questions yet. Select wording in Study Find or a review prompt, then choose Keep question for later; no selection opens the composer.')
         except (ValueError, sqlite3.Error) as error:
             self.status.setText(f'Could not load questions: {error}')
 
@@ -69,6 +69,10 @@ class StudyQuestionDialog(QDialog):
             return
         item = self.records[row]
         source = item['source']
+        if item['version'] == 2:
+            from ict_cockpit.database.study_question_repository import describe_review_question
+            self.detail.setPlainText(describe_review_question(item))
+            return
         association = source.get('association')
         context = (f"Linked investigation: {association['question']}\nReference: {association['market_reference']}"
                    if association else 'No explicit saved investigation association at capture time.')
@@ -85,7 +89,7 @@ class StudyQuestionDialog(QDialog):
         if not self.question.toPlainText().strip():
             self.status.setText('Enter a question before keeping it.')
             return
-        item = dict(version=1, id=self.identity, plan_id=self.plan_id, plan_revision=revision,
+        item = dict(version=2 if self.source.get("kind") == "review" else 1, id=self.identity, plan_id=self.plan_id, plan_revision=revision,
                     question=self.question.toPlainText().strip(), original_text=self.original_text,
                     source=self.source, recorded_at=datetime.now(timezone.utc).isoformat())
         if self.pending_item is not None and all(
@@ -106,7 +110,7 @@ class StudyQuestionDialog(QDialog):
     def reject(self):
         if self.source and not self.saved and self.question.toPlainText().strip():
             answer = QMessageBox.question(self, 'Unsaved question',
-                'Discard this unsaved question and return? Your source capture will remain unchanged.',
+                'Discard this unsaved question and return? Your source work will remain unchanged.',
                 QMessageBox.StandardButton.Discard | QMessageBox.StandardButton.Cancel,
                 QMessageBox.StandardButton.Cancel)
             if answer != QMessageBox.StandardButton.Discard:

@@ -1,7 +1,7 @@
 import sqlite3
 
 
-CURRENT_SCHEMA_VERSION = 52
+CURRENT_SCHEMA_VERSION = 53
 
 
 def initialize_schema(connection: sqlite3.Connection) -> None:
@@ -176,6 +176,11 @@ def initialize_schema(connection: sqlite3.Connection) -> None:
         if version == 51:
             _migrate_version_51_to_52(connection)
             version = 52
+
+        if version == 52:
+            # Reader barrier: questions can now retain review sources (payload v2).
+            connection.execute("PRAGMA user_version = 53")
+            version = 53
 
         if version != CURRENT_SCHEMA_VERSION:
             raise RuntimeError(f"Unsupported database schema version: {version}")

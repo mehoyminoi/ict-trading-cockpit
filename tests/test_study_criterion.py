@@ -166,7 +166,7 @@ def test_v47_upgrade_preserves_existing_definitions_and_rolls_back_on_failure(tm
     assert c.execute("SELECT name FROM sqlite_master WHERE name='study_criterion_evaluation'").fetchone() is None
     monkeypatch.setattr(schema, '_migrate_version_47_to_48', migrate)
     schema.initialize_schema(c)
-    assert c.execute('PRAGMA user_version').fetchone()[0] == 52
+    assert c.execute('PRAGMA user_version').fetchone()[0] == 53
     assert AMDXRepository(c).definitions.list_revisions(plan_revision=d.plan_revision) == (d,)
     c.close()
     reopened = open_application_database(path)

@@ -9,6 +9,9 @@ from ict_cockpit.database.study_review_repository import StudyReviewRepository, 
 
 
 def describe_question(item):
+    if item['version'] == 2:
+        from ict_cockpit.database.study_question_repository import describe_review_question
+        return describe_review_question(item)
     source = item['source']
     association = source.get('association')
     context = (f"Source investigation: {association['question']}\nReference: {association['market_reference']}"

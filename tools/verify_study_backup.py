@@ -77,8 +77,8 @@ def verify(archive, original_root):
             if connection.execute('PRAGMA foreign_key_check').fetchone():
                 raise ValueError('Restored database has foreign-key violations')
             version = connection.execute('PRAGMA user_version').fetchone()[0]
-            if version not in (51, 52):
-                raise ValueError(f'This verifier supports schemas 51 and 52, found {version}')
+            if version not in (51, 52, 53):
+                raise ValueError(f'This verifier supports schemas 51, 52 and 53, found {version}')
             counts, references = {}, set()
             tables = connection.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'").fetchall()
             for (table,) in tables:

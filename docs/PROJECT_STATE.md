@@ -1,3 +1,7 @@
+## Current local slice — questions from review
+
+Operator 354 PASS on published #104 (`40f8069`). `feature/study-review-question-capture-v0` exposes the existing question-capture interaction at the review pause: selected prompt text saves directly, no selection opens the existing composer. Frozen review/investigation provenance distinguishes draft snapshots from saved checkpoints; no fake capture or market reference is created. Schema 53 reader barrier, existing question v1 preserved. Back up durable workspace before upgrade. See `STUDY_REVIEW_QUESTION_CAPTURE.md`; 355 pending. Publish draft stacked on #104 only when authorized; do not merge.
+
 ## Current local slice — Study reference alignment
 
 Operator 352–353 PASS on published #103 (`5a6df7b`). `feature/study-reference-alignment-v0` adds visible retained/selected references, navigation to existing calendar controls and explicit atomic alignment for an unlinked draft in its current investigation. Content/images and identity remain, saved associations are protected. Schema 52 unchanged. See `STUDY_REFERENCE_ALIGNMENT.md`, pending 354. This cannot detect TradingView's date and does not correct already-saved receipts. Next: question capture directly from review. Publish draft stacked on #103 only when authorized; do not merge.
