@@ -240,6 +240,7 @@ class MainWindow(QMainWindow):
         self.amdx_catalog_widget.layout().insertWidget(1, self.integrated_study_task)
         self.integrated_study_task.capture_requested.connect(self._open_investigation_capture)
         self.integrated_study_task.review_requested.connect(self._open_investigation_review)
+        self.integrated_study_task.criteria_requested.connect(self._open_study_criteria)
         self.investigation_return_buttons = []
         self.investigation_context_labels = []
         self.pending_investigation_context = None
@@ -373,6 +374,19 @@ class MainWindow(QMainWindow):
             self.tabs.setCurrentWidget(self.study_home_widget)
         self._restore_workspace_layout()
         self.study_find_review_widget.splitter.splitterMoved.connect(self._save_review_layout)
+
+    def _open_study_criteria(self):
+        from ict_cockpit.gui.amdx_criteria_dialog import AMDXCriteriaDialog
+        target = self.amdx_catalog_widget.target
+        if target is None or self.amdx_catalog_widget._read_error:
+            self.status_bar.showMessage("Select a quarter in the Study calendar before opening criteria.", 8000)
+            return
+        dialog = AMDXCriteriaDialog(
+            self.trading_session_run_repository.amdx.definitions,
+            plan_revision=self.trade_plan.revision, cycle=target.cycle,
+            instrument=target.instrument, reference=target.market_reference, parent=self,
+        )
+        dialog.exec()
 
     def _restore_workspace_layout(self):
         if self.workspace_settings is None:

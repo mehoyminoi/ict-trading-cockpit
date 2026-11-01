@@ -1,3 +1,5 @@
+Newest frontier: UX4b contextual Study criteria browser/editor on `feature/study-criteria-editor-v0`, stacked on draft #84. Operator 313–317 pending; see `STUDY_CRITERIA_EDITOR_OPERATOR_GUIDE.md`. Candidate saves are independent, immutable and never publication/adoption/evaluation. Explicit input scopes remain cycle-specific; recurring bindings and empirical evaluation are not complete. No schema change; keep draft/unmerged.
+
 Newest frontier (2026-10-21): operator 311–312 PASS. UX4a independent candidate-definition revisions are implemented on `feature/amdx-criteria-revisions-v0`; see `AMDX_CRITERIA_REVISIONS_SLICE.md`. No new UI trial or schema change. Next is a contextual candidate editor using this registry; do not claim the whole UX4 milestone complete or infer automatic publication/adoption. Multi-monitor mode-aware companion requirements are recorded for later refinement. Keep PRs draft/unmerged.
 
 # ICT Trading Cockpit — Next Chat Startup Prompt
