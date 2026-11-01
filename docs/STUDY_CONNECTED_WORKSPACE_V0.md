@@ -40,3 +40,5 @@ From the same Study header, open Investigation overview or Review this investiga
 ## Validation
 
 37 distinct targeted tests PASS: 27 covering connected navigation, integrated Study, resume, alignment, fresh next capture, Watch capture and workspace restoration; eight Study-home/workspace-clarity checks; two direct-review checks. After adding per-view scrolling, the two new navigation checks and two direct-review checks passed together again. Tests retain logical route identity, no unintended association writes, draft/undo preservation and reference distinction. Native offscreen views inspected at 1600×900 and 1120×800; the first render exposed whole-workspace scrolling and was corrected to keep the header outside per-view scrolling. Diff check passed. Existing capture form density remains a declared limitation, not final UX approval.
+
+Operator acceptance: 360–361 PASS on published draft #108 (`46e84f8`). Next is capture layout; earlier pending notes above are historical.
