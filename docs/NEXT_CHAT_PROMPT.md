@@ -1,3 +1,7 @@
+## Current checkpoint — operator roadmap and review-boundary assessment
+
+#109 correction published as 9059e70 (local 125a571); both operator retests PASS. Local `feature/development-roadmap-v0` adds Help → Development roadmap from one bundled Markdown source, using plain stages and an explicit current check. No domain/schema change. Six targeted existing tests PASS; native viewer and MainWindow route/preservation verified. See `DEVELOPMENT_ROADMAP_V0.md`. Operator reference check pending; publish draft stacked on #109 only when authorized, do not merge. Next implementation must preserve review leave/cancel protections across embedded navigation before replacing the current dialog. Earlier pending entries below are historical.
+
 ## Local follow-up — review redo and invalid-field attention
 
 Capture Ctrl+Y and Pattern focus accepted on #109 correction e3db291. Operator requests same redo in Review and stronger Observation cue. Shared helper now handles Ctrl+Y for capture/review editors, respecting read-only state, and paints a brief focus outline for known required summary inputs. Scroll targets invalid field, with fixed bottom status explanation retained. Ten targeted checks PASS, native cue inspected. Retest pending; same study-capture-layout-v0 branch, update #109 only when authorized; do not merge. Not blanket suite-wide validation coverage.

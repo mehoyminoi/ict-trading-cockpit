@@ -372,6 +372,7 @@ class MainWindow(QMainWindow):
         self.setStatusBar(self.status_bar)
 
         self._configure_feedback_actions()
+        self._configure_help_actions()
 
         self.tda_workflow.tda_ready.connect(self.save_tda)
         self.study_find_widget.study_find_ready.connect(self.save_study_find)
@@ -1031,6 +1032,19 @@ class MainWindow(QMainWindow):
             "Summary template revision published",
             3000,
         )
+
+    def _configure_help_actions(self):
+        from ict_cockpit.gui.development_roadmap import DevelopmentRoadmap
+        self.development_roadmap = DevelopmentRoadmap(self)
+        menu = self.menuBar().addMenu('Help')
+        self.development_roadmap_action = QAction('Development roadmap…', self)
+        menu.addAction(self.development_roadmap_action)
+        self.development_roadmap_action.triggered.connect(self._show_development_roadmap)
+
+    def _show_development_roadmap(self):
+        self.development_roadmap.show()
+        self.development_roadmap.raise_()
+        self.development_roadmap.activateWindow()
 
     def _configure_feedback_actions(self) -> None:
         feedback_menu = self.menuBar().addMenu("Feedback")
