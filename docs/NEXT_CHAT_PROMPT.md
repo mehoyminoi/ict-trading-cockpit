@@ -1,3 +1,17 @@
+## Current checkpoint — consolidated main baseline
+
+PRs **#76–115 are merged into main** in dependency order with 40 merge commits, under explicit operator authorization. Final code merge: `4242c157c77b1cbc88c9ae3d3a1ffe0b358f69db`; tree: `169ac1902902497181a8d2b6227067a186d197a4`, exactly equal to accepted #115 `6a5605f5137d4b92597b9be75495bd546f0320af`. Every intermediate tree and both parents were verified; a final audit confirmed all PRs closed/merged into main and all 40 source branches retained. No rebase, squash, branch deletion or gate override occurred. See `CONSOLIDATION_PLAN_V0.md` for the frozen heads and actual merge record.
+
+Validation: the fresh pre-merge final gate passed **1,332 tests across 128 isolated modules in 173.30s** (Python 3.12.14 / PySide6 6.12.0 / pytest 9.1.1, offscreen, four workers). All module exits and JUnit collection counts matched; no failures/errors/skips/timeouts/pytest warning summaries. This was one complete module-isolated run, not one single-process Qt run. The exact merged tree preserves that evidence; tests were not redundantly rerun after tree-identical merges. All 90 operator checkpoints 281–370 remain PASS with their original qualifications. No repeat operator exercise is pending.
+
+This final main handoff changes documentation and the bundled Markdown roadmap only. Runtime, tests, tools, schema 53 and Trade Plan Alpha 0.7 remain unchanged from the validated tip. User databases, images, settings, archives and recovery copies were untouched. Separate unpublished workflow-efficiency documentation is not incorporated. Existing source-precedence rules still apply.
+
+Everyday launch: `python tools/open_cockpit.py --workspace "$HOME/ict-study-workspaces/study-v0"`. Follow `COCKPIT_MAIN_SYNC_GUIDE.md` to preserve local notes and switch to main. Keep the existing workspace; do not recreate, relocate or import it. Default module launch and older trial launchers are not substitutes for this command. Retained trial provenance and existing trading authorization boundaries remain.
+
+**Architectural frontier / next task:** the accepted personal Study/TDA/Watch baseline is consolidated. Continue ordinary use and prioritize observed workflow friction, data continuity, navigation, status feedback and chart-facing efficiency. No new feature is selected or implemented by this handoff; propose a bounded next slice from evidence. Advanced analytics, full investigation lifecycle, chart reconstruction, broad themes and companion-window refinements remain deferred. Help → Development roadmap reflects the completed integration. No consolidation blocker remains; routine-use evidence will guide the next change.
+
+Earlier checkpoints below are historical and do not override this merged-main state.
+
 ## Current checkpoint — existing-workspace launch accepted
 
 Operator 370 PASS on #115 implementation `06cf18a592ddc7c8fb68b2f75f35e9a30835ab4e`. PR #115 remains draft/unmerged, stacked on #114 (`feature/integration-readiness-v0`, `a174ea5`). Accepted everyday command: `python tools/open_cockpit.py --workspace "$HOME/ict-study-workspaces/study-v0"`. It opens the same retained database/media/settings with normal idle Study or active-run restoration. Historical fixture provenance remains; no trading authorization follows from launch acceptance.

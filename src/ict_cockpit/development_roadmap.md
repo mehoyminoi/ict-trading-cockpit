@@ -4,9 +4,11 @@
 
 Development status only — separate from your study progress, trade plan and competency assessments. This is a snapshot shipped with your installed version, not a live GitHub tracker.
 
-**Updated:** 2026-10-31 · existing-workspace launch accepted.
+**Updated:** 2026-11-01 · accepted stack consolidated on main.
 
 ## Accepted — foundations you have exercised
+
+- **Consolidated everyday baseline:** PRs #76–115 merged with history and branches preserved. All resulting trees verified; final tree matches the 1,332-test regression gate. Operator checks 281–370 remain accepted.
 
 - **Everyday workspace launch:** explicit durable-workspace command passed operator 370, retaining familiar material and normal startup/reopen behavior.
 - **Preserve meaningful work:** verified archive recovery and a durable Study workspace. Current durable-backup recovery passed 369; normal workspace resumed.
@@ -16,21 +18,20 @@ Development status only — separate from your study progress, trade plan and co
 - **Development orientation:** Help → Development roadmap accepted; plain stages keep the whole workflow visible.
 - **Connected investigation review:** retained work and Take stock share the Study workspace; Cancel/Discard protection passed checks 364–365.
 - **Recent correction:** review redo and the brief missing-Observation highlight passed operator checks.
-- **TDA → Watch journey:** implemented and developer-tested (two end-to-end checks); operator 366–368 PASS for the normal handoff, contextual capture/analysis return and restart. The portable chart-facing Study Find capture also works very well in practical use. Broader daily continuity remains a separate gate.
+- **TDA → Watch journey:** implemented and developer-tested (two end-to-end checks); operator 366–368 PASS for the normal handoff, contextual capture/analysis return and restart. The portable chart-facing Study Find capture also works very well in practical use. Everyday launch and durable recovery are also accepted within their documented scope.
 
-Accepted means the stated behavior passed its review. It does not mean final styling, suite-wide coverage or that draft branches have been merged.
+Accepted means the stated behavior passed its review. This stack is now merged; final styling, every future feature and suite-wide coverage of local refinements remain separate.
 
 ## In progress — keep the forest in view
 
-**Consolidation planning:** existing-workspace launch is accepted. Prepare the exact stack integration order and final validation gate before any separately authorized merges.
+**Routine use and observation:** use the consolidated Study / TDA / Watch baseline to identify the next meaningful friction point. No new product slice is currently in implementation.
 
-**Current operator check:** none pending; 370 passed. No repeat Study, journey, recovery or launch exercise is requested.
+**Current operator check:** none pending. No repeat Study, journey, recovery or launch exercise is requested for consolidation. Keep using the existing durable workspace.
 
 ## Next — remaining workflow milestones
 
-1. **Prepare consolidation:** reconcile fresh branch heads and acceptance records, define the merge order, and establish the final cumulative validation gate.
-2. **Consolidation:** review and integrate the tested draft-PR stack through separately authorized merges, then establish a clear everyday launch/recovery baseline.
-3. **Routine-use refinement:** use actual sessions to prioritize remaining navigation, status feedback, chart-facing controls and keyboard friction.
+1. **Adopt the main baseline:** follow the main sync guide while preserving local notes and existing workspace data.
+2. **Routine-use refinement:** prioritize observed navigation, status feedback, chart-facing controls and keyboard friction; choose a bounded next change from practical evidence.
 
 ## Deferred — retained without blocking the core
 

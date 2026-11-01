@@ -1,5 +1,7 @@
 # Sync the merged AMDX main checkpoint
 
+> Historical schema-v46 instructions. For the current schema-53 retained Study workspace and consolidated #76–115 baseline, use [COCKPIT_MAIN_SYNC_GUIDE.md](COCKPIT_MAIN_SYNC_GUIDE.md). Do not substitute the older launch/data-selection commands below for the current workspace command.
+
 PRs **#67–75 are merged into main**, in the reviewed order with merge commits. Main now contains the shared maintained AMDX calendar and bounded higher Review, schema **v46**, Trade Plan **Alpha 0.7**. All 20 operator checks 261–280 are PASS. The merged implementation tree exactly matches reviewed checkpoint `15e64af8d51f946696e9927b5ce731857bdc8602`; the final code merge is `8b7f8ae0e8e6da76bed266f771fce75d4bfaaefb`. A subsequent main checkpoint adds only these sync/handoff notes.
 
 ## 1 — Close the application and sync main

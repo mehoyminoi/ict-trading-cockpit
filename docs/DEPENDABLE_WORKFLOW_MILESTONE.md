@@ -10,15 +10,15 @@ Accepted priority, 2026-10-30: deliver a dependable personal cockpit integrated 
 - Recovery: preserve the actual database, images and settings; verify restore on a separate copy; migrations must preserve real records. Backup creation alone is not a tested recovery path.
 - Integration: run complete representative journeys with meaningful material, then consolidate the tested draft-PR stack through separately authorized integration/merge work. Individual passing smoke checks do not establish a release.
 
-## Current evidence and next gate — 2026-10-31
+## Current evidence — consolidated baseline
 
-Meaningful Study use and resumption have operator feedback; connected review 364–365, normal TDA → Watch Replay journey 366–368, and durable backup recovery 369 passed. The operator resumed the normal durable Study workspace after the recovery-copy check. No repeat of these accepted exercises is requested.
+Meaningful Study use and resumption, connected review 364–365, normal TDA → Watch Replay 366–368, durable recovery 369 and everyday launch 370 are operator-accepted. All 90 checkpoints 281–370 remain PASS with their documented limits. The final 1,332-test gate passed across 128 isolated modules; see `CONSOLIDATION_PLAN_V0.md` for method and execution evidence.
 
-Next is integration readiness, not another speculative feature: reconcile stack heads and acceptance, inspect everyday launch/activity continuity, and complete cumulative regression validation. Separate retained Study and Replay trial success does not establish that one ordinary launch owns both workflows safely. Verify that boundary before proposing integration changes. Consolidation remains separately authorized; no draft PR is merged by acceptance.
+PRs #76–115 are now merged into main using merge commits, with all source branches retained. Final code merge `4242c157c77b1cbc88c9ae3d3a1ffe0b358f69db` has the exact validated #115 tree. Every intermediate tree and parent pair was checked. The final handoff is documentation-only; schema 53 / Alpha 0.7 and the accepted runtime remain unchanged.
 
-Integration-readiness assessment completed locally: see `INTEGRATION_READINESS_V0.md`. Cumulative 1,317-test coverage is reconciled with explicit rerun history. The remaining everyday-use gap is launch selection/routing, not missing shared Study/TDA/Watch ownership: default main opens a different database, while the retained Study trial forces Calendar. Next prepare an explicit existing-workspace launch route, preserving data and normal startup routing; no new operator study/recovery session requested now.
+The dependable personal baseline is ready for continued ordinary use through `python tools/open_cockpit.py --workspace "$HOME/ict-study-workspaces/study-v0"`. See `COCKPIT_MAIN_SYNC_GUIDE.md`. This establishes the accepted bounded journeys, not completion of every future feature or final UX approval. No repeat smoke exercise is requested merely because the stack was consolidated.
 
-The bounded existing-workspace launch route is published in draft PR #115 and operator 370 PASS; see `EXISTING_WORKSPACE_LAUNCH_V0.md`. The explicit command is now accepted for the existing durable workspace. Next prepare a concrete stack-consolidation proposal and final validation gate; merging remains separately authorized.
+Next is routine-use refinement driven by observed friction and continuity needs. Keep the core Study/TDA/Watch loop ahead of speculative additions. No specific new implementation is selected in this documentation checkpoint.
 
 ## Original delivery order — historical sequence
 
