@@ -63,6 +63,10 @@ class AMDXSharedContextWidget(AMDXContextWidget):
 
     def load_context(self, run, market_context, mode_id, **kwargs):
         previous = self.run.id if self.run else None
+        if (self._gesture_target and self.run and run
+                and self.run.market_time_context.get("captured_at") != market_context.get("captured_at")
+                and run.replay_qualification_withheld):
+            self._gesture_cancelled = True
         if previous != (run.id if run else None):
             self._shared_needs_reload = False
         retained_failure = self.status_label.text()

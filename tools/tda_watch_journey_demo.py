@@ -79,7 +79,7 @@ def open_demo(directory):
             "TDA → Watch journey · synthetic MNQ Replay · separate database"
         )
         notice = QLabel(
-            "Synthetic MNQ Replay · 2026-10-09 09:15 NY · real TDA → Watch path · no broker · not the separate Guided TDA tab"
+            "Synthetic MNQ Replay · launch reference 2026-10-09 09:15 NY · real TDA → Watch path · no broker · not the separate Guided TDA tab"
         )
         notice.setWordWrap(True)
         window.statusBar().addPermanentWidget(notice, 1)

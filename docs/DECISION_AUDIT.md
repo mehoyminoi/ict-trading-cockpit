@@ -539,3 +539,8 @@ Read `UX_CONTEXT_RECONCILIATION.md` for source fingerprints, repeated 148-pass h
 ## 2026-11-01 — Durable recovery extension
 
 The second-relocation refusal in the original `STUDY_DURABLE_WORKSPACE.md` checkpoint is superseded by the locally implemented version-2 manifest contract. Prior manifests and all historical roots survive; database records are not rewritten. First relocation/v1 compatibility, isolated verification, no original-media fallback and no-overwrite protection remain. Developer tests passed; operator 369 and publication pending. This is not whole-workflow acceptance or permission to merge the draft stack.
+
+
+## 2026-11-02 — Replay reference progression refinement
+
+Historical/deterministic Replay time remains the rule. The formerly fixed current reference now has an explicitly authorized manual forward command; immutable original launch time is not repurposed. Clock movement alone cannot promote retained criteria to Authorized. Administrative reference receipts are distinct from observed market evidence, even though the compatible evidence envelope is reused with a versioned discriminator. No automatic synchronization, interval-observation inference, requalification, cross-day continuation or trading-rule adoption follows. Implemented on `feature/replay-reference-v0`; operator 371–373 pending. See [REPLAY_REFERENCE_V0.md](REPLAY_REFERENCE_V0.md). Earlier main integration acceptance does not establish complete Trial B or TDA/Watch usability.

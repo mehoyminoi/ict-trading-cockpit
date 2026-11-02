@@ -424,12 +424,15 @@ class PostMarketReviewWidget(QWidget):
             if not trading_run.evidence:
                 self.live_changes_list.addItem("No Live Watch observations or thesis changes were recorded.")
             for item in trading_run.evidence:
-                if item.kind is RunEvidenceKind.THESIS_STATE:
+                if "manual_replay_reference_receipt_v1" in item.market_time_context:
+                    text = f"Replay reference change · administrative\n{item.note}"
+                elif item.kind is RunEvidenceKind.THESIS_STATE:
                     text = f"Thesis → {item.thesis_state.value}"
                     if item.note:
                         text += f"\n{item.note}"
                 else:
                     text = f"Observation\n{item.note}"
+                text += f"\nMarket reference: {item.market_time_context.get('captured_at', 'Unknown')} · Recorded: {item.created_at}"
                 self.live_changes_list.addItem(text)
 
             for state, button in self.interpretation_buttons.items():

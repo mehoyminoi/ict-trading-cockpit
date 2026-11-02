@@ -4,7 +4,7 @@
 
 Development status only — separate from your study progress, trade plan and competency assessments. This is a snapshot shipped with your installed version, not a live GitHub tracker.
 
-**Updated:** 2026-11-01 · accepted stack consolidated on main.
+**Updated:** 2026-11-02 · manual Replay reference prerequisite; operator acceptance pending.
 
 ## Accepted — foundations you have exercised
 
@@ -24,14 +24,14 @@ Accepted means the stated behavior passed its review. This stack is now merged; 
 
 ## In progress — keep the forest in view
 
-**Routine use and observation:** use the consolidated Study / TDA / Watch baseline to identify the next meaningful friction point. No new product slice is currently in implementation.
+**Trial B prerequisite:** manual forward progression of one Replay reference, preserving launch context/evidence and withholding authorization from retained assessments. Implemented; focused validation recorded in the handoff. This is not automatic TradingView synchronization or adopted Silver Bullet rules.
 
-**Current operator check:** none pending. No repeat Study, journey, recovery or launch exercise is requested for consolidation. Keep using the existing durable workspace.
+**Current operator check:** 371–373 in a new isolated Replay fixture. Authentic durable Study work remains separate. No repeat historical smoke campaign is requested.
 
 ## Next — remaining workflow milestones
 
-1. **Adopt the main baseline:** follow the main sync guide while preserving local notes and existing workspace data.
-2. **Routine-use refinement:** prioritize observed navigation, status feedback, chart-facing controls and keyboard friction; choose a bounded next change from practical evidence.
+1. **Accept the bounded prerequisite:** verify manual time progression, continuity and truthful evidence in the isolated fixture.
+2. **Manual-first Trial B rehearsal:** NYAM Silver Bullet as an exploratory process/usability exercise, not strategy validation. Broader TDA/Watch operational readiness and Rev A analytical definition remain unfinished.
 
 ## Deferred — retained without blocking the core
 

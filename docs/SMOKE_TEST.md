@@ -1502,6 +1502,17 @@ Use `EXISTING_WORKSPACE_LAUNCH_V0.md` after publication, with the normal durable
 - [PASS] Explicit workspace launch opens the retained material with idle Study / existing active-run routing and preserves familiar investigation, observation, image and geometry after reopen.
   - Where: guide checkpoint 370.
 
+## Manual Replay reference — Trial B prerequisite
+
+Use `REPLAY_REFERENCE_V0.md` in its new isolated fixture, never the authentic Study workspace.
+
+- [NOT TESTED] One Replay run advances manually with current Watch/QT orientation and preserved original context; time alone grants no qualification.
+  - Where: guide checkpoint 371.
+- [NOT TESTED] Restart retains the advanced reference; rewinds and another trading day reject without damage; identical time is a no-op.
+  - Where: guide checkpoint 372.
+- [NOT TESTED] Interruption/stand-down and Review distinguish administrative time changes from observations, preserving historical and actual timestamps.
+  - Where: guide checkpoint 373.
+
 ## Reporting results
 
 Report results as:

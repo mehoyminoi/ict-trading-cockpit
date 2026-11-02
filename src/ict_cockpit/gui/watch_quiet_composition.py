@@ -112,7 +112,12 @@ class WatchOrientationRail(QFrame):
         context = dict(run.market_time_context or {}) if run is not None else {}
         session = str(context.get("session", "Closed"))
         self.position_label.setText(f"Position\nWatch · {session}")
-        self.market_time_label.setText(f"Market time\n{_market_clock(context)} ET")
+        replay = run is not None and run.environment.value == "Replay"
+        self.market_time_label.setText(
+            f"{'Manual Replay' if replay else 'Market time'}\n{_market_clock(context)} ET")
+        self.market_time_label.setToolTip(
+            str(context.get("captured_at", "Unknown")) +
+            (" · America/New_York · operator-selected, not TradingView-synchronized" if replay else ""))
         self.interval_label.setText(
             "Active interval\n"
             + (projection.target_label.replace("Working AMDX · ", "") if projection else "Unavailable")
@@ -351,7 +356,11 @@ class WatchProcessSafetyStrip(QFrame):
             if item.source_type == "Playbook"
         ]
         results = [run.candidate_authorization(item.id) for item in candidates]
-        if any(item.status is AuthorizationStatus.AUTHORIZED for item in results):
+        if run.replay_qualification_withheld:
+            authorization = "Replay authorization withheld"
+            authorization_detail = "Retained assessment; not revalidated"
+            authorization_state = "unavailable"
+        elif any(item.status is AuthorizationStatus.AUTHORIZED for item in results):
             authorization = "Candidate authorized"
             authorization_detail = "Plan gates and configured threshold clear"
             authorization_state = "clear"

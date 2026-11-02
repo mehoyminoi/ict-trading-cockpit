@@ -220,6 +220,13 @@ class TradingDayShellWidget(QWidget):
         layout.addWidget(self.summary_label)
         layout.addWidget(self.resume_context_label)
         layout.addWidget(self.market_time_label)
+        self.replay_reference_button = QPushButton("Set Replay reference…")
+        self.replay_reference_button.clicked.connect(self._open_replay_reference)
+        self.replay_reference_button.setMaximumWidth(210)
+        self.replay_reference_status = QLabel()
+        self.replay_reference_status.setWordWrap(True)
+        layout.addWidget(self.replay_reference_button)
+        layout.addWidget(self.replay_reference_status)
         layout.addWidget(self.runtime.amdx_context_widget)
         layout.addWidget(self.run_history_label)
         layout.addWidget(self.run_history)
@@ -326,6 +333,42 @@ class TradingDayShellWidget(QWidget):
         elif mode.id == "post-market":
             text += " · Review in progress"
         return text
+
+    def _open_replay_reference(self):
+        from ict_cockpit.gui.replay_reference_dialog import ReplayReferenceDialog
+        try:
+            dialog = ReplayReferenceDialog(self)
+        except (ValueError, TypeError, KeyError) as error:
+            self.replay_reference_status.setText(f"Reference unchanged · {error}")
+            return
+        dialog.exec()
+
+    def set_replay_reference(self, requested, *, expected_run=None, operation_id=None):
+        from ict_cockpit.database.replay_reference import advance_replay_reference
+        if (self.active_trading_run is None or self.calendar_repository is None
+                or self.runtime.current_mode.id not in ("tda", "live-watch")):
+            raise ValueError("Set Replay reference is available only in active TDA or Watch")
+        expected_run = expected_run or self.active_trading_run
+        if expected_run.id != self.active_trading_run.id:
+            raise ValueError("Active run changed; reopen Set Replay reference")
+        try:
+            updated = advance_replay_reference(self.calendar_repository, expected_run,
+                requested, operation_id=operation_id)
+        except sqlite3.Error as error:
+            raise ValueError(f"Could not save reference: {error}") from error
+        self.active_trading_run = updated
+        self.trading_runs[:] = [updated if r.id == updated.id else r for r in self.trading_runs]
+        self._sync_legacy_aliases()
+        # Refresh projections only. Do not reload TDA/Review editors or Study drafts.
+        self.runtime.trading_run = updated
+        self.runtime.qt_context_widget.load_context(updated.qt_context, updated.market_time_context)
+        self.runtime.live_watch_widget.load_run_context(updated,
+            self.runtime.tda_station_runner_widget.session, self.blueprint)
+        self._update_view()
+        self.replay_reference_status.setText(
+            "Manual Replay reference · " + updated.market_time_context["captured_at"]
+            + " · not TradingView-synchronized. Intervening price action is not assumed observed.")
+        return updated
 
     def _market_time_context_for_new_run(self) -> dict:
         historical = self.run_environment in {
@@ -796,6 +839,15 @@ class TradingDayShellWidget(QWidget):
         self._refresh_market_time_display()
 
         active = self.active_trading_run is not None
+        replay_active = bool(active and self.active_trading_run.environment is RunEnvironment.REPLAY
+                             and self.runtime.current_mode.id in ("tda", "live-watch"))
+        self.replay_reference_button.setVisible(replay_active)
+        self.replay_reference_status.setVisible(replay_active)
+        self.replay_reference_button.setEnabled(replay_active and self.calendar_repository is not None)
+        if replay_active:
+            self.replay_reference_status.setText("Manual Replay reference · "
+                + str(self.active_trading_run.market_time_context.get("captured_at", "Unknown"))
+                + " · not synchronized with TradingView")
         reference_available = bool(
             active
             and self.runtime.current_mode.id == "live-watch"

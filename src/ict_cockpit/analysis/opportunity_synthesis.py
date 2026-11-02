@@ -112,6 +112,8 @@ def synthesize_candidate(
         development_state = "Closed"
     elif authorization.status is AuthorizationStatus.AUTHORIZED:
         development_state = "Authorized"
+    elif trading_run.replay_qualification_withheld:
+        development_state = "Retained / not revalidated"
     elif developing:
         development_state = "Developing"
     elif temporal_state == "Upcoming":
