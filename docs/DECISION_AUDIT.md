@@ -539,3 +539,23 @@ Read `UX_CONTEXT_RECONCILIATION.md` for source fingerprints, repeated 148-pass h
 ## 2026-11-01 — Durable recovery extension
 
 The second-relocation refusal in the original `STUDY_DURABLE_WORKSPACE.md` checkpoint is superseded by the locally implemented version-2 manifest contract. Prior manifests and all historical roots survive; database records are not rewritten. First relocation/v1 compatibility, isolated verification, no original-media fallback and no-overwrite protection remain. Developer tests passed; operator 369 and publication pending. This is not whole-workflow acceptance or permission to merge the draft stack.
+
+## 2026-11-01 — Design preservation and discovery clarification
+
+See the [discovery checkpoint](DECISIONS.md#2026-11-01--trading-process-discovery-checkpoint-v1) and preceding reconstructed design-preservation checkpoint.
+
+| Earlier interpretation or ambiguity | Current clarification | Status |
+| --- | --- | --- |
+| 16:9/majority-screen target or four-pane example fixes mature geometry | Responsive shared-monitor operation and revision-defined chart/deck parity govern; dimensions, timeframes and equipment remain examples | Superseded constraint; parity retained |
+| Operational presentation can follow content as cosmetic polish | Guidance, hierarchy, feedback, keyboard access and low effort are functional readiness requirements | Clarified |
+| Carry-forward is only nearby records or new forms | Progressively assemble recorded information into usable conclusions while preserving operator authority and provenance | Accepted intent; mechanisms open |
+| Weekly work is only implicit HTF context | Weekly Preparation includes optional continuity, chart preparation and manual news verification; W0–W7 are proposed responsibilities | Direction accepted; procedures/adoption unresolved |
+| Indicators are undifferentiated later enhancements | Purpose-built analytical assistance is high priority after Rev A process definition | Sequencing refined; specific indicators unapproved |
+| Revision/status labels can also imply authorization | Identity, revision, lifecycle, authorization scope and lineage are distinct; stable/candidate coexistence remains | Clarified; lifecycle mechanics unresolved |
+| Procedural completion proves a correct prediction | Completed assessment can yield uncertain/conflicting findings; unresolved work remains visible | Clarified; completion criteria explicit |
+| Attention cues invite entry; H3a/H3b prove a benefit | Cues invite inspection, not trading; divided-attention and decision-time-context hypotheses remain separate | Design direction / research hypotheses |
+| Candidate news preference enables a restriction or exception | No adopted policy, windows, existing-position effect or event whitelist follows from discovery | Candidate only |
+| Structured homework establishes effectiveness or ordinary adherence | Named historical artifacts and self-report motivate research, without causal/statistical conclusions | Evidence limits preserved |
+| Consolidation and synthetic journey imply routine TDA/Watch readiness | Technical/bounded acceptance remains; full functional and experiential readiness is unestablished | Readiness interpretation corrected; results unchanged |
+
+The earlier unpublished amendments are reconstructed from recorded approvals, not recovered as a patch. Original decision entries, source precedence and implementation acceptance remain intact. No schema, new status enumeration, automated inference or trading permission is adopted.

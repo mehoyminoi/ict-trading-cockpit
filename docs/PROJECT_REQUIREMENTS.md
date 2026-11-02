@@ -4,7 +4,7 @@
 **Reconciled:** 2026-10-08  
 **Role:** Canonical current product requirements and milestone roadmap.
 
-**Implementation-status clarification (2026-10-16):** Milestones A–C and the shared AMDX foundation/native consumers are implemented and merged on main, schema v46 / Alpha 0.7. Earlier descriptions of the “current frontier” and the reconciliation queue below are historical rationale, not an instruction to rebuild completed work. Focused prototypes have directionally accepted TDA parity, Study-first Lab and complete Watch relationships. Standalone polishing is closed. The [Watch decision-dock slice](WATCH_NATIVE_DECISION_DOCK_SLICE.md) is operator accepted through checks 281–285 and [contextual Study Find](WATCH_CONTEXTUAL_STUDY_FIND_SLICE.md) through 286–290. The [native quiet-Watch composition](WATCH_QUIET_COMPOSITION_SLICE.md) is implemented for bounded checks 291–295 over those existing owners. Broker/account/risk/position/order facts remain explicitly unavailable, with P&L and commands absent. Study-first routing follows this trial. Accepted 16:9, quiet Watch, shared calendar and nearby overview/detail requirements remain authoritative.
+**Implementation-status clarification (2026-10-16):** Milestones A–C and the shared AMDX foundation/native consumers are implemented and merged on main, schema v46 / Alpha 0.7. Earlier descriptions of the “current frontier” and the reconciliation queue below are historical rationale, not an instruction to rebuild completed work. Focused prototypes have directionally accepted TDA parity, Study-first Lab and complete Watch relationships. Standalone polishing is closed. The [Watch decision-dock slice](WATCH_NATIVE_DECISION_DOCK_SLICE.md) is operator accepted through checks 281–285 and [contextual Study Find](WATCH_CONTEXTUAL_STUDY_FIND_SLICE.md) through 286–290. The [native quiet-Watch composition](WATCH_QUIET_COMPOSITION_SLICE.md) is implemented for bounded checks 291–295 over those existing owners. Broker/account/risk/position/order facts remain explicitly unavailable, with P&L and commands absent. Study-first routing follows this trial. Quiet Watch, shared calendar and nearby overview/detail requirements remain authoritative. The 16:9 target is superseded by §15.2; this paragraph otherwise records historical implementation status.
 
 Companion documents:
 
@@ -68,7 +68,9 @@ Important context must not exist only in generated prose or images.
 
 The operating surface should reveal what is useful **now**.
 
-Configuration, revision publishing, deeper research, evidence synthesis, and process design belong outside the active market-operating flow.
+Configuration, revision publishing, deeper research, cross-run evidence evaluation, and process design belong outside the active market-operating flow. This does not exclude operational synthesis of recorded context (§2.11).
+
+Procedure-led operation gently guides the next useful action while tolerating deliberate exceptions and preserving unfinished work. Exception tolerance does not bypass safety or authorization requirements; required steps and permissible overrides belong to the adopted process.
 
 ### 2.4 Preserve honest incompleteness
 
@@ -101,11 +103,15 @@ Required behavior and future architecture:
 
 Revisioning therefore protects both **historical truth** and **experimental isolation**. A successful `rX` can remain trusted while `rY` is studied, rehearsed, validated, accepted, or rejected.
 
+Separate Trade Plan identity (which plan), immutable revision (exact definition), lifecycle state (development/adoption standing), authorization scope (permitted uses) and lineage (derivation). Preserve stable/candidate coexistence and experimental isolation. No revision label, stable designation or software test result establishes empirical validity or grants execution permission. Exact transitions, adoption and storage mechanisms remain unresolved.
+
 ### 2.6 Low-friction operation
 
 During active market work, the Cockpit should reduce interaction cost rather than create another journaling burden.
 
 Navigation, evidence capture, acknowledgement, and future hardware bindings should target shared application actions rather than duplicate domain logic.
+
+Reduce decision fatigue and mechanical work: choosing the next action, searching, repeated transcription, unnecessary confirmation and reconstructing context are interaction costs.
 
 ### 2.7 Persistence is a product feature
 
@@ -130,6 +136,14 @@ A hidden required control, awkward transition, or repeated context reconstructio
 A richly discussed old feature is not automatically current work.
 
 Current priority follows accepted architecture, the decision audit, and the active frontier—not the amount of historical discussion devoted to a feature.
+
+### 2.11 Progressive synthesis and reviewability
+
+Across TDA, Watch, Study, Review and eventual Trade Plan development, reuse and progressively assemble relevant recorded information into digestible working conclusions rather than requiring reconstruction in blank forms. Preserve sources/revisions, prospective recording time, uncertainty and the distinction between evidence and operator interpretation; deliberate operator approval remains authoritative. Normal operation should naturally retain an explainable decision trail and progressively assemble mentor-ready Study Find/trade summaries. No additional adherence form, artificial competency score, automatic market inference or recommendation system is authorized. Exact assembly and presentation mechanisms remain open.
+
+### 2.12 Interpretation guardrail
+
+Distinguish accepted principles, operator self-report, observed artifact content, research hypotheses, candidate procedures/policies and unresolved mechanisms. Examples, current equipment, preferences and hypothetical solutions do not become binding numbers, timeframes, layouts or trading rules without approval. See [discovery checkpoint](DECISIONS.md#2026-11-01--trading-process-discovery-checkpoint-v1).
 
 ---
 
@@ -194,7 +208,7 @@ A mature station separates:
 
 Manual chart actions are valid process steps. The Cockpit should not pretend automation exists where it does not.
 
-If a later indicator automates a manual operation, the Station can remain stable while its implementation changes.
+If a later indicator automates a manual operation, the Station can remain stable while its implementation changes. Purpose-built visual chart indicators are high-priority analytical assistance after Rev A process definition, selected for defined analytical needs or recurring mechanical work. Specific indicators, calculations, validation and integrations remain unresolved; indicator output does not confer trading authorization.
 
 ### 4.2 Focus and Deck views
 
@@ -211,11 +225,13 @@ Operator clarification on 2026-10-13: Deck is not merely an organizational overv
 
 Focused operator trial on 2026-10-13 accepts this relationship and flow as a strong direction. TDA may use however many revision-defined Decks are required; each standard Deck can pair with a four-pane TradingView layout and reuse positional mapping. Preserve existing useful wheel and mouse-button navigation while testing direct `1`–`4` position selection, keyboard shortcuts and later macro-pad/CAD-mouse bindings over the same actions. Selected-pane borders, complete/current/pending cues and restrained state colors are functional reacquisition aids when the technician looks to TradingView and back. Preserve non-color state meaning; exact palette, border treatment, bindings and deck switching remain open. See `TDA_LAYOUT_PARITY_OPERATOR_REVIEW.md`.
 
+The four-pane arrangement above is an example. The Trade Plan defines an ordered, revision-controlled deck sequence paired with TradingView layouts, with arbitrary supported chart roles/timeframe combinations, including repeated timeframes for different analytical purposes. The process determines the number of decks. Reciprocal chart work and Cockpit guidance preserve spatial parity, context and useful carry-forward. A full graphical editor and automatic tab switching are not initial prerequisites.
+
 ### 4.3 Navigation versus certification
 
 Navigation does not imply completion.
 
-Entered work can be Pending/In Progress while explicit completion remains a deliberate certification step.
+Entered work can be Pending/In Progress while explicit completion remains a deliberate certification step. A required analytical assessment can legitimately yield neutral, conflicting, unknown or incomplete findings. Procedural sufficiency does not certify analytical certainty or prediction accuracy, and does not silently complete unfinished work. Applicability, completion and override criteria remain explicit plan decisions.
 
 Mouse/wheel/navigation behavior that has become operationally natural should be protected from accidental redesign unless repeated use justifies a change.
 
@@ -246,6 +262,12 @@ The core loop is:
 `TDA / Analysis -> Watch -> Post-Market Review`
 
 The loop is conceptually shared across training/execution environments even though the operating emphasis can differ.
+
+### 5.3A Weekly Preparation
+
+Weekly Preparation includes optional prior-week reflection, guidance for marking plan-required higher-timeframe levels/PD arrays in TradingView, and manual collection/verification of applicable high-impact economic news until suitable import functionality supports that task. Existing bounded imports do not establish complete or verified weekly coverage. Produce reusable, provenance-bearing context for Daily TDA without unnecessary daily duplication; retain source, recording time, applicability, coverage and unknowns rather than silently asserting freshness or permission.
+
+The proposed W0–W7 responsibilities are recorded once in the [discovery checkpoint](DECISIONS.md#2026-11-01--trading-process-discovery-checkpoint-v1). W3 analysis and W4 chart preparation may occur during one natural chart visit. These are candidate analytical operations, not fixed decks/screens, adopted rules or compulsory directional conclusions. Applicability, fields, completion criteria, refresh and adoption remain unresolved.
 
 ### 5.4 TDA / Analysis
 
@@ -280,6 +302,8 @@ Its job is to:
 
 Ordinary observations may eventually become almost invisible interactions. Meaningful decisions/state changes should remain deliberate.
 
+Watch should coordinate ambient monitoring, planned or evidence-supported focused observation and deliberate return to other work. Attention cues provide reasons to inspect conditions, not pressure to enter trades. Time-based cues, condition detection, notifications and data-source capabilities remain implementation decisions; this does not claim automatic market observation exists. Separate H3a/H3b research hypotheses are retained in the [discovery checkpoint](DECISIONS.md#2026-11-01--trading-process-discovery-checkpoint-v1).
+
 ### 5.6 Return to Analysis
 
 Return to Analysis is **deliberate, not restrictive**.
@@ -299,7 +323,7 @@ A no-trade run may still contain:
 - process evidence,
 - useful review material.
 
-Capital protection plus process adherence can represent a successful run.
+Capital protection plus process adherence can represent a successful run. Neutral/uncertain interpretations, No Trade/Stand Down outcomes and Study Instead as a chosen activity are distinct legitimate meanings, not one mutually exclusive status list or missing-data substitutes. Exact transitions remain unresolved.
 
 ### 5.8 Post-Market Review
 
@@ -670,6 +694,8 @@ High-impact/red-folder news relationships are a key TDA/Study input for anticipa
 
 ## 12. Economic news and calendar context
 
+**Candidate Rev A policy, not adopted:** the operator prefers initially restricting new entries around applicable high-impact events, considering model/event exceptions only after sufficient competency and validation evidence. The [discovery checkpoint](DECISIONS.md#2026-11-01--trading-process-discovery-checkpoint-v1) preserves examples and unresolved scope, windows, effects, existing-position treatment and exception governance. This documentation enables no restriction and changes no current trading permission.
+
 Economic/news integration remains a meaningful later contextual/safety enhancement.
 
 Future requirements include:
@@ -791,9 +817,9 @@ Workflow modes/decks/stations should correspond naturally to the chart workspace
 
 ### 15.2 Responsive active workspace
 
-The Cockpit is the primary working surface in the operator's desktop layout. Plan the mature interface around a **16:9 workspace** occupying the majority of the operator's ultrawide display, or the full display on a conventional screen. Charts, journals and other daily information are arranged around the Cockpit. This operator override on 2026-10-11 supersedes the earlier undefined smaller-footprint / compact-companion requirement.
+Operate responsively beside matched TradingView layouts, preserving analytical parity, stable orientation, readable content, accessible controls and low interaction cost. The current shared 21:9 monitor, equal or unequal application splits and roughly 16:9/4:3 Cockpit windows are examples, not mandated geometry. Evaluate the intended shared-monitor workflow and representative narrower arrangements, accommodating future monitor configurations. This 2026-11-01 clarification supersedes the majority-screen/16:9 target without reinstating a fixed compact-companion requirement.
 
-16:9 is a design target, not an implemented fixed-aspect window restriction or an exact pixel resolution. Layout remains responsive to available space. More room should support nearby orientation and task detail while preserving low interaction and memory burden; it is not a reason to expose every control simultaneously.
+Quiet, welcoming, coherent and tastefully dynamic presentation is functional usability. Hierarchy, progressive disclosure, context-sensitive emphasis, readable feedback, keyboard interaction and low cognitive effort must accompany analytical content. Intended-use readiness requires functional and experiential quality. Optional themes, decorative animations and broad customization may remain deferred.
 
 Required controls must remain discoverable without excessive scrolling or hidden layout dependencies.
 

@@ -1,6 +1,6 @@
 # Dependable personal Study/TDA/Watch milestone
 
-Accepted priority, 2026-10-30: deliver a dependable personal cockpit integrated into the operator's daily routine before allocating substantial effort to exploratory features. Preserve the accepted design language and friction improvements where they materially support correct work; visual polish is not the release criterion.
+Accepted priority, 2026-10-30: deliver a dependable personal cockpit integrated into the operator's daily routine before allocating substantial effort to exploratory features. Preserve the accepted design language and friction improvements where they materially support correct work; operational UX is part of readiness, while optional decorative polish is not the release criterion.
 
 ## Completion means usable journeys
 
@@ -16,9 +16,9 @@ Meaningful Study use and resumption, connected review 364–365, normal TDA → 
 
 PRs #76–115 are now merged into main using merge commits, with all source branches retained. Final code merge `4242c157c77b1cbc88c9ae3d3a1ffe0b358f69db` has the exact validated #115 tree. Every intermediate tree and parent pair was checked. The final handoff is documentation-only; schema 53 / Alpha 0.7 and the accepted runtime remain unchanged.
 
-The dependable personal baseline is ready for continued ordinary use through `python tools/open_cockpit.py --workspace "$HOME/ict-study-workspaces/study-v0"`. See `COCKPIT_MAIN_SYNC_GUIDE.md`. This establishes the accepted bounded journeys, not completion of every future feature or final UX approval. No repeat smoke exercise is requested merely because the stack was consolidated.
+The consolidated technical baseline supports accepted bounded Study and component journeys through `python tools/open_cockpit.py --workspace "$HOME/ict-study-workspaces/study-v0"`; see `COCKPIT_MAIN_SYNC_GUIDE.md`. Synthetic checks 366–368 establish continuity within their guide, not complete preparation/observational usability. Intended-use readiness requires adopted analytical content, useful carry-forward, explainable decision trails and effective responsive presentation across the loop. Neutral/uncertain findings and No Trade/Stand Down outcomes remain legitimate; procedural sufficiency does not demonstrate trading effectiveness. No repeat smoke exercise is requested for consolidation.
 
-Next is routine-use refinement driven by observed friction and continuity needs. Keep the core Study/TDA/Watch loop ahead of speculative additions. No specific new implementation is selected in this documentation checkpoint.
+Next is detailed Rev A analytical discovery and progressive synthesis, starting with HTF contributions to W5/W6. Content and necessary presentation develop together; Rev A remains a candidate. See [discovery checkpoint](DECISIONS.md#2026-11-01--trading-process-discovery-checkpoint-v1). No product implementation or trading-rule adoption follows from this documentation work.
 
 ## Original delivery order — historical sequence
 

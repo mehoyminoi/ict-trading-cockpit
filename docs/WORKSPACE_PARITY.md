@@ -22,7 +22,13 @@ For TDA, this can mean a dedicated TradingView chart or chart cell for each focu
 
 The goal is not to duplicate TradingView inside the cockpit. TradingView remains the visual market-analysis surface; the cockpit supplies process structure, prompts, conclusions, persistence, and trade-plan context.
 
-## Four-pane TDA parity contract
+## Configurable reciprocal work — clarified 2026-11-01
+
+The Trade Plan defines ordered, revision-controlled decks paired with TradingView layouts, supported chart roles/timeframe combinations (including repeated timeframes for different purposes), and as many decks as the process needs. W/D/15m/5m and the four-pane mapping below are examples. Cockpit guidance informs chart preparation/inspection; chart observations inform retained interpretation and carry-forward. HTF interpretation and plan-required chart preparation may happen during the same natural chart visit (proposed W3/W4), without separate compulsory decks or duplicated entry. Automatic tab switching, chart control and a fixed indicator list are not implied.
+
+Responsive operation must preserve analytical mapping, readable content, accessible controls and spatial orientation beside charts. The current shared 21:9 monitor, application splits and 16:9/4:3 references are examples. Evaluate shared-monitor and narrower arrangements; resizing must not silently remap chart roles. A full graphical process editor is not required initially. See the [discovery checkpoint](DECISIONS.md#2026-11-01--trading-process-discovery-checkpoint-v1).
+
+## Four-pane TDA parity example
 
 For a four-pane TradingView TDA layout, parity is spatial as well as sequential. Each chart pane can be assigned to the corresponding cockpit station pane in the same position:
 
