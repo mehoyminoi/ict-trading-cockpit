@@ -8,6 +8,12 @@ Read with [UX Friction Research](UX_FRICTION_RESEARCH.md), [UX Design Touchstone
 
 **Salience should be earned.** The interface should answer **“What changed since my last glance?”** before asking the technician to reread stable information. Stable facts remain available and legible; changed, unsafe, unresolved or newly actionable facts receive stronger treatment.
 
+## Operational readiness — clarified 2026-11-01
+
+Quiet, welcoming, coherent and tastefully dynamic operation is functional usability. Guidance, hierarchy, progressive disclosure, stable orientation, readable feedback, keyboard interaction and low cognitive effort must accompany analytical content. Evaluate complete tasks beside matched charts in the intended shared-monitor workflow and representative narrower arrangements, not an exact aspect ratio. Optional themes, decorative motion and broad customization may remain deferred.
+
+Reduce choosing, searching, transcription and retrospective reconstruction without surprise rearrangement, forced certainty or safety bypass. Progressive synthesis reuses recorded work while retaining operator interpretation, uncertainty and approval. Watch should coordinate ambient monitoring, focused observation and deliberate return to other work; cues give reasons to inspect, not pressure to enter. Notification/detection mechanisms remain open. Naturally retained decision trails should support mentor-ready summaries without another adherence form or artificial score. See the [discovery checkpoint](DECISIONS.md#2026-11-01--trading-process-discovery-checkpoint-v1).
+
 ## Accepted interaction standards
 
 1. **Clear attention states.** Quiet/background, current/selected, attention requested, blocked/unsafe, confirmed and unavailable/unknown must remain distinguishable. “No action needed” should not compete visually with a real change.

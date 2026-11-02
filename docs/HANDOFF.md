@@ -10,7 +10,7 @@ This final main handoff changes documentation and the bundled Markdown roadmap o
 
 Everyday launch: `python tools/open_cockpit.py --workspace "$HOME/ict-study-workspaces/study-v0"`. Follow `COCKPIT_MAIN_SYNC_GUIDE.md` to preserve local notes and switch to main. Keep the existing workspace; do not recreate, relocate or import it. Default module launch and older trial launchers are not substitutes for this command. Retained trial provenance and existing trading authorization boundaries remain.
 
-**Architectural frontier / next task:** the accepted personal Study/TDA/Watch baseline is consolidated. Continue ordinary use and prioritize observed workflow friction, data continuity, navigation, status feedback and chart-facing efficiency. No new feature is selected or implemented by this handoff; propose a bounded next slice from evidence. Advanced analytics, full investigation lifecycle, chart reconstruction, broad themes and companion-window refinements remain deferred. Help → Development roadmap reflects the completed integration. No consolidation blocker remains; routine-use evidence will guide the next change.
+**Architectural frontier / next task:** detailed Rev A analytical discovery and progressive synthesis: how HTF observations contribute to W5/W6 weekly outlook and conditional scenarios. Rev A remains an evidence-informed candidate process, not an adopted Trade Plan. See [discovery checkpoint](DECISIONS.md#2026-11-01--trading-process-discovery-checkpoint-v1) for W0–W7, evidence classifications and unresolved mechanisms. The earlier unavailable amendments are reconstructed from recorded approvals on verified main `0a10928`, not recovered from a patch. Current scope is documentation-only editing; no commit/publication, merge, product/schema change or trading-rule adoption is authorized. Historical acceptance remains valid within scope; complete TDA/Watch/integrated-loop functional and experiential readiness is not established. No repeat smoke exercise is requested.
 
 Earlier checkpoints below are historical and do not override this merged-main state.
 
@@ -37,7 +37,7 @@ A new development chat should read these documents in this order:
 7. **Relevant code/tests** — Git is authoritative for what is actually implemented.
 8. **Historical source material** — consult only when clarification is still needed after the canonical package.
 
-For UX work, also read **`UX_DESIGN_TOUCHSTONES.md`** and **`WORKSPACE_PARITY.md`** before proposing a layout. They preserve the compact design motifs and the four-pane TradingView-to-TDA positional mapping that broad architecture summaries can otherwise flatten.
+For UX work, also read **`UX_DESIGN_TOUCHSTONES.md`** and **`WORKSPACE_PARITY.md`** before proposing a layout. They preserve the compact design motifs and configurable TradingView-to-TDA positional parity (including four-pane examples) that broad architecture summaries can otherwise flatten.
 
 Do **not** infer current priority from the recency, detail, or enthusiasm of an older feature discussion. First check whether that idea was later implemented, refined, deferred, or superseded.
 

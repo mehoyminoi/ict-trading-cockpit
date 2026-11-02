@@ -4,11 +4,11 @@
 
 Development status only — separate from your study progress, trade plan and competency assessments. This is a snapshot shipped with your installed version, not a live GitHub tracker.
 
-**Updated:** 2026-11-01 · accepted stack consolidated on main.
+**Updated:** 2026-11-01 · discovery checkpoint preserved; technical baseline unchanged.
 
 ## Accepted — foundations you have exercised
 
-- **Consolidated everyday baseline:** PRs #76–115 merged with history and branches preserved. All resulting trees verified; final tree matches the 1,332-test regression gate. Operator checks 281–370 remain accepted.
+- **Consolidated technical baseline:** PRs #76–115 merged with history and branches preserved. All resulting trees verified; final tree matches the 1,332-test regression gate. Operator checks 281–370 remain accepted.
 
 - **Everyday workspace launch:** explicit durable-workspace command passed operator 370, retaining familiar material and normal startup/reopen behavior.
 - **Preserve meaningful work:** verified archive recovery and a durable Study workspace. Current durable-backup recovery passed 369; normal workspace resumed.
@@ -24,14 +24,15 @@ Accepted means the stated behavior passed its review. This stack is now merged; 
 
 ## In progress — keep the forest in view
 
-**Routine use and observation:** use the consolidated Study / TDA / Watch baseline to identify the next meaningful friction point. No new product slice is currently in implementation.
+**Trading Process Discovery & Evidence Assessment:** the discovery checkpoint preserves proposed Weekly Preparation responsibilities and research questions. Rev A remains a candidate process; no trading rules have been adopted. Bounded Study and component acceptance remain valid, but full TDA/Watch/integrated-loop functional and experiential readiness is not established. No product implementation is in progress.
 
 **Current operator check:** none pending. No repeat Study, journey, recovery or launch exercise is requested for consolidation. Keep using the existing durable workspace.
 
 ## Next — remaining workflow milestones
 
-1. **Adopt the main baseline:** follow the main sync guide while preserving local notes and existing workspace data.
-2. **Routine-use refinement:** prioritize observed navigation, status feedback, chart-facing controls and keyboard friction; choose a bounded next change from practical evidence.
+1. **Detailed Rev A analytical discovery:** determine how HTF observations contribute to W5/W6 weekly outlook, progressive synthesis and conditional scenarios.
+2. **Define content and usable presentation together:** preserve responsive chart/deck parity, reusable context and low effort; implementation remains separately authorized.
+3. **After Rev A process definition:** prioritize purpose-built visual indicators for defined analytical needs; specific indicators and policies remain unapproved.
 
 ## Deferred — retained without blocking the core
 

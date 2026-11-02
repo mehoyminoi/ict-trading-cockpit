@@ -1005,3 +1005,68 @@ Developer implementation contract for the authorized daily-continuity work: a su
 ## 2026-10-31 — Explicit retained-workspace launch
 
 The existing durable Study workspace may be opened through shared application startup with an explicit path, retaining its database, media root, per-database settings and fixture provenance. Do not seed a new fixture, force Calendar, migrate the database or start a run merely by launching. The bounded route accepts only the recognized retained Study layout at the current schema; missing/unrecognized inputs fail without replacement. Keep ordinary no-option main's separate default-database behavior. This implements the integration assessment's next boundary, with operator 370 pending; it does not establish a generic new-workspace/import policy or remove environment eligibility checks. See `EXISTING_WORKSPACE_LAUNCH_V0.md`.
+
+## 2026-11-01 — Recent Design Decisions Preservation Checkpoint
+
+**Status:** accepted design intent; unspecified mechanisms and implementation are not approved. Reconstructed from the recorded operator approvals and refinements, not recovered from the unavailable unpublished patch. The prior detached worktree/patch was not present in the accessible checkout; this reconstruction starts from verified main `0a10928b3200490848816f1653920446b31db250`.
+
+Preserve procedure-led, gently guided, exception-tolerant operation; progressive synthesis as operational reuse/assembly of recorded information; reduced decision fatigue and mechanical work; Weekly Preparation with optional prior-week reflection, reciprocal chart marking and manual news collection/verification; and configurable, revision-controlled deck-to-layout parity. Operator interpretation, uncertainty and deliberate approval remain authoritative. These directions do not authorize automatic market inference or recommendations.
+
+Purpose-built visual chart indicators are high-priority assistance after Rev A process definition, with specific indicators and calculations unresolved. Neutral/uncertain interpretations, No Trade/Stand Down outcomes and Study Instead activity retain distinct meanings. Separate Trade Plan identity, immutable revision, lifecycle state, authorization scope and lineage; preserve stable/candidate coexistence, exact historical provenance and experimental isolation. Lifecycle transitions/adoption mechanisms remain open; Rev A naming or stable status grants no execution permission or empirical validation.
+
+Operational presentation develops with analytical content: functional and experiential usability are both required. Responsive shared-monitor operation supersedes fixed aspect-ratio/majority-screen interpretations. Four-pane/timeframe arrangements, dimensions and current equipment remain examples. Preserve established safety and approval boundaries. Canonical detail remains in PROJECT_REQUIREMENTS.md, WORKSPACE_PARITY.md and UX_INTERACTION_STANDARDS.md.
+
+## 2026-11-01 — Trading Process Discovery Checkpoint v1
+
+**Status and source:** operator-approved documentation preservation of Design & Roadmap discovery, including the supplied complete W0–W7 catalog and evidence-source clarification. Accepted product principles are distinguished below from candidate procedures/policies, self-report and hypotheses. No Rev A rules, schema or product implementation are adopted.
+
+### Discovery evidence and limits
+
+The operator reports that Design & Roadmap directly examined the following operator-supplied historical materials. Their artifact descriptions below are attributed to that assessment; they were not independently inspected or verified in this Implementation environment during this reconciliation. No page-level citations, source hashes, causation, statistical performance or demonstrated trading effectiveness are claimed.
+
+| Named source | Artifact content reported by Design & Roadmap | Evidence limit |
+| --- | --- | --- |
+| January 5–9, 2026 Trilium weekly note screenshots | Nested calendar, weekly news screenshot, HTF/preparation fields, annotated chart and daily market narratives | Historical artifact description; not proof of a consistent routine or prospective timing of every entry |
+| `HW 4-23-25 Jesse - Digging out of a hole.pdf` | Simulated $1,000 drawdown exercise; documented risk planning, monthly-to-intraday TDA, conditional entry planning and chart evidence | Homework/simulation, not a live-performance sample or adopted risk rule |
+| `HW 4-25-25 - 30 day trading challenge.pdf` | Six documented simulated trades across April–May 2025; early-entry observations, revised confirmations, timing nonadherence and final process reflection | Limited historical examples, not causal or statistical validation |
+| Operator-reported ordinary routine | Intermittent weekly preparation, frequent abbreviated TDA, work-related divided attention, discretionary entries and inconsistent trade-summary sharing | Self-report, distinct from directly observed artifact content |
+
+The reported contrast between structured homework and inconsistent ordinary preparation/execution motivates discovery; it does not establish why outcomes occurred. Preserve prospective preparation versus retrospective justification and do not backdate interpretations or infer that an annotated chart proves a pre-entry plan.
+
+### Candidate operating pattern and research hypotheses
+
+**Prepared Decision Loop:** Purpose → Gather evidence → Form conditional expectation → Observe against the plan → Decide, preserve and learn. This is an evidence-informed process-design hypothesis, not an adopted trading rule, mandatory screen sequence or automated inference system.
+
+- **H3a:** investigate the relationship between divided attention and process adherence.
+- **H3b:** investigate the usefulness of presenting planned conditions at decision time.
+
+Keep these hypotheses separate; neither is a demonstrated causal effect. The accepted attention-coordination direction is ambient monitoring, planned or evidence-supported focused observation and deliberate return to other work. Cues should give reasons to inspect conditions, not pressure to trade. Timing cues, detection, notifications and data-source capabilities remain unresolved; automatic market observation is not claimed.
+
+### Proposed Weekly Preparation responsibilities
+
+| ID | Responsibility | Proposed scope |
+| --- | --- | --- |
+| W0 | Prior-week continuity | Optional reflection and explicit carry-forward of still-relevant levels, narratives, hypotheses and unresolved questions. Prior-week review is not required to start preparation. |
+| W1 | Orient upcoming week | Establish instrument, week identity, applicable plan/process revision, prior context and available information. |
+| W2 | Economic-event preparation | Manually collect and verify applicable high-impact news with source and coverage, initially reusing calendar/screenshot practices. Distinguish absent, incomplete and unknown coverage; lack of coverage is not evidence of no events. |
+| W3 | Higher-timeframe analysis | Interpret relevant market structure, liquidity, dealing ranges, PD arrays, prior-candle relationships and higher-order QT. |
+| W4 | Chart-reference preparation | Prepare applicable chart levels and markings manually or with purpose-built visual indicators. W3/W4 may be satisfied during the same natural chart visit. |
+| W5 | Weekly QT and hypotheses | Preserve prospective interpretations, expected profiles, alternatives and uncertainty, with recording-time and source provenance. |
+| W6 | Weekly scenarios | Progressively synthesize prior observations into operator-reviewed conditional expectations, important timing, supporting/contradictory evidence and possible invalidations. |
+| W7 | Complete and carry forward | Confirm required procedural work, preserve outstanding unknowns/incompleteness and present reusable weekly context for Daily TDA without redundant transcription. |
+
+These are proposed logical analytical responsibilities, not fixed decks/screens, a final indicator list, adopted trading rules or compulsory directional conclusions. Applicability, fields, completion criteria and Trade Plan adoption remain unresolved. Performing an assessment may yield neutral, conflicting, unknown or incomplete findings; procedural sufficiency does not establish prediction accuracy or silently certify unfinished work.
+
+### Candidate news policy and research scope
+
+The operator prefers a conservative **candidate Rev A** policy: initially restrict new entries around applicable high-impact/red-folder events; consider model/event-specific exceptions only after sufficient competency and validation evidence. NFP/FOMC are examples presently anticipated for avoidance; CPI/PMI are examples for possible exception research, not an approved exception list. Exact impact scope, event windows, safety effects, treatment of existing positions and exception governance remain unresolved. No live restriction is adopted or enabled; event facts alone do not change current authorization.
+
+Study Asia-session models and their fit with the operator's available attention separately from market-profitability claims. London unattended trading remains a deferred execution/safety concept, not a near-term authorization. Preserve the future separation of anticipation, evidence, plan authorization, conditional order intent, execution and protective management.
+
+### Reviewability, readiness and next task
+
+Normal operation should naturally retain an explainable decision trail and progressively assemble mentor-ready Study Find/trade summaries, reducing retrospective reconstruction. No extra adherence form or artificial competency scoring is requested. Preserve evidence versus interpretation, uncertainty and deliberate approval; synthesis is not automatic market inference.
+
+Baseline: `0a10928`, schema 53 / Alpha 0.7. Historical 1,332-test evidence and operator checks 281–370 retain their original scopes. Bounded Study utility and technical continuity do not establish full TDA/Watch/integrated-loop readiness. This checkpoint adds no implementation acceptance.
+
+**Next:** detailed Rev A analytical discovery and progressive synthesis, starting with how HTF observations contribute to W5/W6 weekly outlook and conditional scenarios. Rev A remains an evidence-informed candidate process. Documentation editing alone is authorized; committing, PR publication, merging, product implementation, schema changes and trading-rule adoption require separate authorization.
