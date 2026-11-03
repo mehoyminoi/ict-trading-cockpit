@@ -581,10 +581,19 @@ class TradingSessionRun:
             playbook_id=candidate.source_id if candidate and candidate.source_type == "Playbook" else None,
         )
 
+    @property
+    def replay_qualification_withheld(self) -> bool:
+        from ict_cockpit.analysis.replay_reference import REPLAY_ADVANCE_KEY
+        return self.environment is RunEnvironment.REPLAY and REPLAY_ADVANCE_KEY in self.market_time_context
+
     def candidate_authorization(self, candidate_id: str) -> AuthorizationResult:
         candidate = self.setup_candidate_by_id(candidate_id)
         if candidate is None:
             return AuthorizationResult(AuthorizationStatus.NOT_CONFIGURED, detail="Setup candidate is unavailable.")
+        if self.replay_qualification_withheld:
+            from ict_cockpit.analysis.replay_reference import FRESHNESS_MESSAGE
+            return AuthorizationResult(AuthorizationStatus.BLOCKED,
+                blockers=[FRESHNESS_MESSAGE], detail=FRESHNESS_MESSAGE)
         if not self.authorization_policy_snapshot:
             return AuthorizationResult(
                 AuthorizationStatus.NOT_CONFIGURED,

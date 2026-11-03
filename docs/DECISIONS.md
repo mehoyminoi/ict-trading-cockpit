@@ -1005,3 +1005,10 @@ Developer implementation contract for the authorized daily-continuity work: a su
 ## 2026-10-31 — Explicit retained-workspace launch
 
 The existing durable Study workspace may be opened through shared application startup with an explicit path, retaining its database, media root, per-database settings and fixture provenance. Do not seed a new fixture, force Calendar, migrate the database or start a run merely by launching. The bounded route accepts only the recognized retained Study layout at the current schema; missing/unrecognized inputs fail without replacement. Keep ordinary no-option main's separate default-database behavior. This implements the integration assessment's next boundary, with operator 370 pending; it does not establish a generic new-workspace/import policy or remove environment eligibility checks. See `EXISTING_WORKSPACE_LAUNCH_V0.md`.
+
+
+## 2026-11-02 — Bounded manual Replay reference for Trial B
+
+**Status:** Design & Roadmap authorized implementation; operator acceptance pending. One operator-selected current reference may advance within the original run's 18:00 New York futures day. Original launch snapshots, ownership, prior evidence and AMDX claims remain unchanged. A distinct administrative receipt retains old/new market instants and actual recording time, without asserting intervening observation. Current time and shared context commit together through the existing transaction owner; no schema migration.
+
+Advanced Replay runs retain prior assessments but withhold application authorization until a separately designed requalification capability exists. This hold does not affect unadvanced runs or other environments and cannot be cleared merely by checking criteria. Live/Forward clocks, trading rules and actual permissions remain unchanged. See [REPLAY_REFERENCE_V0.md](REPLAY_REFERENCE_V0.md). After isolated acceptance, proceed to manual-first Trial B, not automated strategy validation. PR #116 is independent.

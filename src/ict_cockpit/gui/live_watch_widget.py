@@ -289,7 +289,9 @@ class LiveWatchWidget(QWidget):
         self.evidence_list.clear()
         for item in reversed(evidence[-12:]):
             time_text = item.created_at[11:19] if len(item.created_at) >= 19 else item.created_at
-            if item.kind is RunEvidenceKind.THESIS_STATE:
+            if "manual_replay_reference_receipt_v1" in item.market_time_context:
+                text = f"{time_text} · Administrative · {item.note}"
+            elif item.kind is RunEvidenceKind.THESIS_STATE:
                 detail = item.thesis_state.value + (f" — {item.note}" if item.note else "")
                 text = f"{time_text} · Thesis: {detail}"
             else:
@@ -365,10 +367,16 @@ class LiveWatchWidget(QWidget):
         )
         self._load_tda_context(tda_session, blueprint)
         self._render_authorization_gates(trading_run)
+        if trading_run.replay_qualification_withheld:
+            from ict_cockpit.analysis.replay_reference import FRESHNESS_MESSAGE
+            self.authorization_summary_label.setText(FRESHNESS_MESSAGE)
         if trading_run.setup_candidates:
             self._render_candidates(trading_run.setup_candidates, tda_session, trading_run)
         else:
             self._render_base_policy(trading_run.entry_condition_states, trading_run.watch_point_states, tda_session)
+        if trading_run.replay_qualification_withheld:
+            self.readiness_count_label.setText("Retained criteria · not revalidated at current Replay reference")
+            self.readiness_status_label.setText(FRESHNESS_MESSAGE)
 
     def _render_authorization_gates(self, trading_run: TradingRun) -> None:
         self._clear_layout(self.authorization_layout)
@@ -603,7 +611,10 @@ class LiveWatchWidget(QWidget):
         required = snapshot.get("required_entry_count")
         if criteria:
             satisfied = sum(candidate.entry_condition_states.get(str(item.get("id", "")), False) for item in criteria)
-            layout.addWidget(QLabel(f"Setup readiness: {satisfied}/{len(criteria)} · required {required}/{len(criteria)}"))
+            layout.addWidget(QLabel(
+                f"Retained assessment: {satisfied}/{len(criteria)} · not revalidated"
+                if trading_run and trading_run.replay_qualification_withheld else
+                f"Setup readiness: {satisfied}/{len(criteria)} · required {required}/{len(criteria)}"))
             for item in criteria:
                 criterion_id = str(item.get("id", ""))
                 checkbox = QCheckBox(str(item.get("name", criterion_id)))
