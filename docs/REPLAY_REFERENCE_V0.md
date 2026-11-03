@@ -1,6 +1,6 @@
 # Manual Replay reference — Trial B prerequisite
 
-Status: implemented on `feature/replay-reference-v0`, from main `0a10928b3200490848816f1653920446b31db250`. Operator acceptance pending. Schema 53 / Trade Plan Alpha 0.7 unchanged. This is an isolated rehearsal prerequisite, not a Silver Bullet strategy or routine TDA/Watch readiness claim. Draft documentation PR #116 is independent and unchanged.
+Status: implemented on `feature/replay-reference-v0`, from main `0a10928b3200490848816f1653920446b31db250`. Operator checks 371–373 PASS, reported 2026-11-03 against implementation `ef7914d8819380ee94c0cdab4300b7276a2d8009` in draft PR #117; not merged. Schema 53 / Trade Plan Alpha 0.7 unchanged. This is an isolated rehearsal prerequisite, not a Silver Bullet strategy or routine TDA/Watch readiness claim. Draft documentation PR #116 is independent and unchanged.
 
 ## Contract and owners
 
@@ -27,7 +27,7 @@ Use this **new, dedicated** directory. The launcher starts one synthetic MNQ Rep
 ### 371 — advance one run and preserve earlier context
 
 1. In TDA, enter a short synthetic expectation in a station. Complete the placeholder stations, or use the existing explicit incomplete-TDA override for this fixture. Enter Watch. This is not a test of adopted TDA content.
-2. In Watch's observation input, record `Initial expectation at 09:15 — synthetic rehearsal; no trading permission.` Use the existing capture action. Note the Trading Run identity.
+2. In Watch's inline observation input (not the Capture Study Find popout), record `Initial expectation at 09:15 — synthetic rehearsal; no trading permission.` Use the existing capture action. Note the Trading Run identity.
 3. Advance TradingView Replay independently to 10:15 on the same historical day, if available. Cockpit must not follow automatically. For a mechanics-only check, simply use the stated reference; report that TradingView coordination was not exercised.
 4. Click **Set Replay reference…**, enter `2026-10-09 10:15:00`, and Apply. No note or second confirmation is required. Confirm the same run, manual 10:15 NY time and NYAM orientation. The repeated-hour selector can stay unchanged for this date.
 5. Record `Second observation at 10:15 — operator-attested.` No FVG, criteria or AMDX phase should have been assigned by changing the clock.
@@ -50,7 +50,7 @@ Report 371–373 individually. These checks establish this bounded behavior, not
 
 ## Verification boundary
 
-Focused automated tests cover forward/no-op/rejected movement, DST and midnight, immutable original context and earlier evidence, atomic failure, stale writers, retry identity, independent timestamps, retained qualification and other-environment behavior, pinned gestures, open capture content, native Review rendering and restart. Adjacent owner regressions cover shared-calendar transactions/migration, time rules, Watch qualification/composition, contextual Study capture, Review and launcher/journey behavior. Exact executed results are recorded in PROJECT_STATE.md; operator checks remain NOT TESTED until reported.
+Focused automated tests cover forward/no-op/rejected movement, DST and midnight, immutable original context and earlier evidence, atomic failure, stale writers, retry identity, independent timestamps, retained qualification and other-environment behavior, pinned gestures, open capture content, native Review rendering and restart. Adjacent owner regressions cover shared-calendar transactions/migration, time rules, Watch qualification/composition, contextual Study capture, Review and launcher/journey behavior. Exact executed results are recorded in PROJECT_STATE.md; operator checks 371–373 are now PASS as reported. No new automated execution or unreported TradingView coordination is claimed.
 
 No TradingView connection, price-data feed, unattended observation, interactive requalification, new plan revision, automatic news refresh, cross-day progression or rewind. Watch-to-Study still does not persist exact run/time/AMDX linkage; this command does not strengthen that association.
 

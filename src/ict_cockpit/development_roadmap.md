@@ -4,9 +4,11 @@
 
 Development status only — separate from your study progress, trade plan and competency assessments. This is a snapshot shipped with your installed version, not a live GitHub tracker.
 
-**Updated:** 2026-11-02 · manual Replay reference prerequisite; operator acceptance pending.
+**Updated:** 2026-11-03 · manual Replay reference prerequisite operator-accepted; PR #117 draft/unmerged.
 
 ## Accepted — foundations you have exercised
+
+- **Manual Replay reference:** operator 371–373 PASS for progression, restart/rejection and evidence review. PR #117 remains draft/unmerged; no strategy or trading permission follows.
 
 - **Consolidated everyday baseline:** PRs #76–115 merged with history and branches preserved. All resulting trees verified; final tree matches the 1,332-test regression gate. Operator checks 281–370 remain accepted.
 
@@ -20,17 +22,17 @@ Development status only — separate from your study progress, trade plan and co
 - **Recent correction:** review redo and the brief missing-Observation highlight passed operator checks.
 - **TDA → Watch journey:** implemented and developer-tested (two end-to-end checks); operator 366–368 PASS for the normal handoff, contextual capture/analysis return and restart. The portable chart-facing Study Find capture also works very well in practical use. Everyday launch and durable recovery are also accepted within their documented scope.
 
-Accepted means the stated behavior passed its review. This stack is now merged; final styling, every future feature and suite-wide coverage of local refinements remain separate.
+Accepted means the stated behavior passed its review. PRs #76–115 are merged; PR #117 is not; final styling, every future feature and suite-wide coverage of local refinements remain separate.
 
 ## In progress — keep the forest in view
 
-**Trial B prerequisite:** manual forward progression of one Replay reference, preserving launch context/evidence and withholding authorization from retained assessments. Implemented; focused validation recorded in the handoff. This is not automatic TradingView synchronization or adopted Silver Bullet rules.
+**Trial B prerequisite:** manual forward progression of one Replay reference, preserving launch context/evidence and withholding authorization from retained assessments. Implemented and operator-accepted; focused validation recorded in the handoff. PR #117 remains draft/unmerged. This is not automatic TradingView synchronization or adopted Silver Bullet rules.
 
-**Current operator check:** 371–373 in a new isolated Replay fixture. Authentic durable Study work remains separate. No repeat historical smoke campaign is requested.
+**Current operator check:** prerequisite checks 371–373 passed. No repeat prerequisite exercise is requested. Authentic durable Study work remains separate from Trial B.
 
 ## Next — remaining workflow milestones
 
-1. **Accept the bounded prerequisite:** verify manual time progression, continuity and truthful evidence in the isolated fixture.
+1. **Prepare the Trial B rehearsal:** retain the accepted prerequisite and its isolated workspace/evidence boundaries.
 2. **Manual-first Trial B rehearsal:** NYAM Silver Bullet as an exploratory process/usability exercise, not strategy validation. Broader TDA/Watch operational readiness and Rev A analytical definition remain unfinished.
 
 ## Deferred — retained without blocking the core
